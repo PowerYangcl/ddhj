@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TCityMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TCityModel">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="pinyin" property="pinyin" jdbcType="VARCHAR" />
+		<result column="air" property="air" jdbcType="INTEGER" />
+		<result column="pm" property="pm" jdbcType="INTEGER" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, name, pinyin, air, pm, create_user, DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS create_time,
+		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS update_time
+	</sql>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TCityModel">
+		insert into t_city
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			name,
+			<if test="pinyin != null">
+				pinyin,
+			</if>
+			<if test="air != null">
+				air,
+			</if>
+			<if test="pm != null">
+				pm,
+			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{name,jdbcType=VARCHAR},
+			#{pinyin,jdbcType=VARCHAR},
+			<if test="air != null">
+				#{air,jdbcType=INTEGER},
+			</if>
+			<if test="pm != null">
+				#{pm,jdbcType=INTEGER},
+			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</trim>
+	</insert>
+	<insert id="batchInsertCity" parameterType="list">
+		insert into t_city
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			name,
+			pinyin,
+			air,
+			pm,
+			create_user,
+			create_time,
+			update_user,
+			update_time
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.uuid,jdbcType=VARCHAR},
+				#{item.name,jdbcType=VARCHAR},
+				#{item.pinyin,jdbcType=VARCHAR},
+				#{item.air,jdbcType=INTEGER},
+				#{item.pm,jdbcType=INTEGER},
+				#{item.createUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.createTime,jdbcType=VARCHAR},'%Y-%m-%d
+				%H:%i:%s'),
+				#{item.updateUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			</trim>
+		</foreach>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.com.ddhj.model.TCityModel">
+		update t_city
+		<set>
+			<if test="air != null">
+				air = #{air,jdbcType=INTEGER},
+			</if>
+			<if test="pm != null">
+				pm = #{pm,jdbcType=INTEGER},
+			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time
+			=STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'))
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

@@ -17,9 +17,14 @@ public class CityAirTest {
 	@Autowired
 	private ICityAirService service;
 
-	@Test
 	public void getCityAir() {
 		JSONObject obj = service.getCityAir("北京");
+		System.out.println(obj.toJSONString());
+	}
+
+	@Test
+	public void getCityPM() {
+		JSONObject obj = service.getCityPM("北京");
 		System.out.println(obj.toJSONString());
 	}
 }
