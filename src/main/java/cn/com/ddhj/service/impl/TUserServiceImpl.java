@@ -1,13 +1,19 @@
 package cn.com.ddhj.service.impl;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.ddhj.dto.TUserDto;
+import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TUserMapper;
 import cn.com.ddhj.model.TUser;
 import cn.com.ddhj.result.tuser.LoginResult;
+import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.service.ITUserService;
+import cn.com.ddhj.util.DateUtil;
+
 /**
  * 
  * 类: TUserServiceImpl <br>
@@ -20,25 +26,57 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 
 	@Autowired
 	private TUserMapper mapper;
+
 	/**
 	 * 
 	 * 方法: login <br>
 	 * 描述: TODO
+	 * 
 	 * @param dto
-	 * @return 
+	 * @return
 	 * @see cn.com.ddhj.service.ITUserService#login(cn.com.ddhj.dto.TUserDto)
 	 */
 	@Override
 	public LoginResult login(TUserDto dto) {
 		LoginResult result = new LoginResult();
 		TUser user = mapper.findTUser(dto);
-		if(user != null){
+		if (user != null) {
 			result.setResultCode(0);
 			result.setResultMessage("");
 			result.setUserToken(user.getUuid());
-		}else{
+		} else {
 			result.setResultCode(-1);
-			result.setResultMessage("用户不存在");			
+			result.setResultMessage("用户不存在");
+		}
+		return result;
+	}
+
+	@Override
+	public RegisterResult register(TUser entity) {
+		RegisterResult result = new RegisterResult();
+		if (entity.getPhone() == null || "".equals(entity.getPhone())) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户手机号不能为空");
+		} else if (entity.getPassword() == null || "".equals(entity.getPhone())) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户密码不能为空");
+		} else {
+			String userCode = WebHelper.getInstance().getUniqueCode("U");
+			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+			entity.setUserCode(userCode);
+			entity.setCreateTime(DateUtil.getSysDateTime());
+			entity.setCreateUser(userCode);
+			entity.setUpdateUser(userCode);
+			entity.setUpdateTime(DateUtil.getSysDateTime());
+			int flag = mapper.insertSelective(entity);
+			if (flag > 0) {
+				result.setResultCode(0);
+				result.setResultMessage("注册成功");
+				result.setUserToken(userCode);
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("注册失败");
+			}
 		}
 		return result;
 	}

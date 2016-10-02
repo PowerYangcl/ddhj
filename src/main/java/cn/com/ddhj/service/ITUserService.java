@@ -3,6 +3,7 @@ package cn.com.ddhj.service;
 import cn.com.ddhj.dto.TUserDto;
 import cn.com.ddhj.model.TUser;
 import cn.com.ddhj.result.tuser.LoginResult;
+import cn.com.ddhj.result.tuser.RegisterResult;
 
 /**
  * 
@@ -24,4 +25,15 @@ public interface ITUserService extends IBaseService<TUser, TUserDto> {
 	 * @return
 	 */
 	LoginResult login(TUserDto dto);
+	
+	/**
+	 * 
+	 * 方法: register <br>
+	 * 描述: 用户注册 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月2日 下午12:03:25
+	 * @param dto
+	 * @return
+	 */
+	RegisterResult register(TUser entity);
 }
