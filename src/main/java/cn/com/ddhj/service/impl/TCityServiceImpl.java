@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import cn.com.ddhj.dto.TCityDto;
 import cn.com.ddhj.mapper.TCityMapper;
-import cn.com.ddhj.model.TCityModel;
+import cn.com.ddhj.model.TCity;
 import cn.com.ddhj.service.ITCityService;
 
 /**
@@ -18,7 +18,7 @@ import cn.com.ddhj.service.ITCityService;
  * 时间: 2016年10月1日 下午11:29:41
  */
 @Service
-public class TCityServiceImpl extends BaseServiceImpl<TCityModel, TCityMapper, TCityDto> implements ITCityService {
+public class TCityServiceImpl extends BaseServiceImpl<TCity, TCityMapper, TCityDto> implements ITCityService {
 
 	@Autowired
 	private TCityMapper mapper;
@@ -33,7 +33,7 @@ public class TCityServiceImpl extends BaseServiceImpl<TCityModel, TCityMapper, T
 	 * @see cn.com.ddhj.service.ITCityService#batchInsertCity(java.util.List)
 	 */
 	@Override
-	public int batchInsertCity(List<TCityModel> list) {
+	public int batchInsertCity(List<TCity> list) {
 		return mapper.batchInsertCity(list);
 	}
 
@@ -44,10 +44,10 @@ public class TCityServiceImpl extends BaseServiceImpl<TCityModel, TCityMapper, T
 	 * 
 	 * @param city
 	 * @return
-	 * @see cn.com.ddhj.service.ITCityService#findCityByName(cn.com.ddhj.model.TCityModel)
+	 * @see cn.com.ddhj.service.ITCityService#findCityByName(cn.com.ddhj.model.TCity)
 	 */
 	@Override
-	public int findCityByName(TCityModel city) {
+	public int findCityByName(TCity city) {
 		return mapper.findCityByName(city);
 	}
 
@@ -58,10 +58,10 @@ public class TCityServiceImpl extends BaseServiceImpl<TCityModel, TCityMapper, T
 	 * 
 	 * @param city
 	 * @return
-	 * @see cn.com.ddhj.service.ITCityService#updateByName(cn.com.ddhj.model.TCityModel)
+	 * @see cn.com.ddhj.service.ITCityService#updateByName(cn.com.ddhj.model.TCity)
 	 */
 	@Override
-	public int updateByName(TCityModel city) {
+	public int updateByName(TCity city) {
 		return mapper.updateByName(city);
 	}
 

@@ -1,32 +1,46 @@
 package cn.com.ddhj.model;
+
 /**
  * 
  * 类: TCity <br>
  * 描述: 城市列表 <br>
  * 作者: zhy<br>
- * 时间: 2016年10月1日 下午10:49:49
+ * 时间: 2016年10月2日 上午9:33:08
  */
-public class TCityModel extends BaseModel {
-	
+public class TCity extends BaseModel {
+
+	/**
+	 * 城市编码
+	 */
+	private String cityCode;
+
 	/**
 	 * 城市名称
 	 */
 	private String name;
 
 	/**
-	 * 城市拼音
+	 * 城市名称拼音
 	 */
 	private String pinyin;
 
 	/**
-	 * 空气质量 0 可查询 1 不可查询
+	 * 是否可查询空气质量
 	 */
 	private Integer air;
 
 	/**
-	 * pm2.5查询 0 可查询 1 不可查询
+	 * 是否可查询pm2.5
 	 */
 	private Integer pm;
+
+	public String getCityCode() {
+		return cityCode;
+	}
+
+	public void setCityCode(String cityCode) {
+		this.cityCode = cityCode;
+	}
 
 	public String getName() {
 		return name;

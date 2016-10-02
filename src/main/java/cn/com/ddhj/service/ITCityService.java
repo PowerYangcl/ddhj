@@ -3,7 +3,7 @@ package cn.com.ddhj.service;
 import java.util.List;
 
 import cn.com.ddhj.dto.TCityDto;
-import cn.com.ddhj.model.TCityModel;
+import cn.com.ddhj.model.TCity;
 
 /**
  * 
@@ -12,7 +12,7 @@ import cn.com.ddhj.model.TCityModel;
  * 作者: zhy<br>
  * 时间: 2016年10月1日 下午10:59:49
  */
-public interface ITCityService extends IBaseService<TCityModel, TCityDto> {
+public interface ITCityService extends IBaseService<TCity, TCityDto> {
 
 	/**
 	 * 
@@ -24,7 +24,7 @@ public interface ITCityService extends IBaseService<TCityModel, TCityDto> {
 	 * @param list
 	 * @return
 	 */
-	int batchInsertCity(List<TCityModel> list);
+	int batchInsertCity(List<TCity> list);
 
 	/**
 	 * 
@@ -36,7 +36,7 @@ public interface ITCityService extends IBaseService<TCityModel, TCityDto> {
 	 * @param city
 	 * @return
 	 */
-	int findCityByName(TCityModel city);
+	int findCityByName(TCity city);
 
 	/**
 	 * 
@@ -48,6 +48,6 @@ public interface ITCityService extends IBaseService<TCityModel, TCityDto> {
 	 * @param city
 	 * @return
 	 */
-	int updateByName(TCityModel city);
+	int updateByName(TCity city);
 
 }

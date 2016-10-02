@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.com.ddhj.mapper.TCityMapper">
-	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TCityModel">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TCity">
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="city_code" property="cityCode" jdbcType="VARCHAR" />
 		<result column="name" property="name" jdbcType="VARCHAR" />
 		<result column="pinyin" property="pinyin" jdbcType="VARCHAR" />
 		<result column="air" property="air" jdbcType="INTEGER" />
@@ -14,24 +15,30 @@
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, uuid, name, pinyin, air, pm, create_user, DATE_FORMAT(
+		id, uuid, city_code, name, pinyin, air, pm, create_user,
 		create_time,
-		'%Y-%m-%d'
-		) AS create_time,
 		update_user,
-		DATE_FORMAT(
-		update_time,
-		'%Y-%m-%d'
-		) AS update_time
+		update_time
 	</sql>
-	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TCityModel">
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_city
+		where city_code = #{cityCode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from t_city
+		where
+		city_code = #{cityCode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TCity">
 		insert into t_city
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			uuid,
+			city_code,
 			name,
-			<if test="pinyin != null">
-				pinyin,
-			</if>
+			pinyin,
 			<if test="air != null">
 				air,
 			</if>
@@ -45,6 +52,7 @@
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			#{uuid,jdbcType=VARCHAR},
+			#{cityCode,jdbcType=VARCHAR},
 			#{name,jdbcType=VARCHAR},
 			#{pinyin,jdbcType=VARCHAR},
 			<if test="air != null">
@@ -65,6 +73,7 @@
 		insert into t_city
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			uuid,
+			city_code,
 			name,
 			pinyin,
 			air,
@@ -79,6 +88,7 @@
 			separator=",">
 			<trim prefix="(" suffix=")" suffixOverrides=",">
 				#{item.uuid,jdbcType=VARCHAR},
+				#{item.cityCode,jdbcType=VARCHAR},
 				#{item.name,jdbcType=VARCHAR},
 				#{item.pinyin,jdbcType=VARCHAR},
 				#{item.air,jdbcType=INTEGER},
@@ -93,19 +103,25 @@
 			</trim>
 		</foreach>
 	</insert>
-	<update id="updateByPrimaryKeySelective" parameterType="cn.com.ddhj.model.TCityModel">
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TCity">
 		update t_city
 		<set>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="pinyin != null">
+				pinyin = #{pinyin,jdbcType=VARCHAR},
+			</if>
 			<if test="air != null">
 				air = #{air,jdbcType=INTEGER},
 			</if>
 			<if test="pm != null">
 				pm = #{pm,jdbcType=INTEGER},
 			</if>
-			update_user = #{updateUser,jdbcType=VARCHAR},
-			update_time
-			=STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'))
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</set>
-		where id = #{id,jdbcType=INTEGER}
+		where city_code = #{cityCode,jdbcType=VARCHAR}
 	</update>
 </mapper>
