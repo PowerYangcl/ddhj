@@ -14,6 +14,7 @@ import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.service.ITUserService;
 import cn.com.ddhj.util.DateUtil;
+import cn.com.ddhj.util.MD5Util;
 
 /**
  * 
@@ -40,6 +41,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 	@Override
 	public LoginResult login(TUserDto dto) {
 		LoginResult result = new LoginResult();
+		dto.setPassword(MD5Util.md5Hex(dto.getPassword()));
 		TUser user = mapper.findTUser(dto);
 		if (user != null) {
 			TUser entity = new TUser();
