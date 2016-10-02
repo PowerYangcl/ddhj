@@ -6,9 +6,10 @@ import org.junit.Test;
 
 import com.itextpdf.text.DocumentException;
 
+import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.util.PdfUtil;
 
-public class PdfTest {
+public class PdfTest extends BaseTest {
 
 	@Test
 	public void createPDF() {

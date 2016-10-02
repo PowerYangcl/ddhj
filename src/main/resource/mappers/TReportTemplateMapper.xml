@@ -78,10 +78,15 @@
 		where code = #{code,jdbcType=VARCHAR}
 	</update>
 	<select id="findReportTemplateByType" parameterType="java.lang.String"
-		resultMap="BaseResultMaps">
+		resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from t_report_template
 		where `type` = #{type,jdbcType=VARCHAR}
+	</select>
+	<select id="findReportTemplateAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_report_template
 	</select>
 </mapper>

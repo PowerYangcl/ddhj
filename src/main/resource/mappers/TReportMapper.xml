@@ -38,7 +38,7 @@
 		from t_report
 		where `code` = #{code,jdbcType=VARCHAR}
 	</select>
-	<delete id="deleteByCode" parameterType="java.lang.VARCHAR">
+	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from t_report
 		where `code` = #{code,jdbcType=VARCHAR}
 	</delete>

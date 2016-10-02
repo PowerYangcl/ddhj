@@ -3,6 +3,7 @@ package cn.com.ddhj.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -13,6 +14,11 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import cn.com.ddhj.annotation.Inject;
+import cn.com.ddhj.base.BaseClass;
+import cn.com.ddhj.model.TReportTemplate;
+import cn.com.ddhj.service.ITReportTemplateService;
+
 /**
  * 
  * 类: PdfUtil <br>
@@ -20,13 +26,19 @@ import com.itextpdf.text.pdf.PdfWriter;
  * 作者: zhy<br>
  * 时间: 2016年10月2日 下午7:20:35
  */
-public class PdfUtil {
+public class PdfUtil extends BaseClass {
+
+	@Inject
+	private ITReportTemplateService service;
 
 	private static PdfUtil self;
 
 	public static PdfUtil instance() {
 		if (self == null) {
-			self = new PdfUtil();
+			synchronized (PdfUtil.class) {
+				if (self == null)
+					self = new PdfUtil();
+			}
 		}
 		return self;
 	}
@@ -43,36 +55,73 @@ public class PdfUtil {
 		PdfWriter.getInstance(document, new FileOutputStream(new File("D:\\report.pdf")));
 		document.addTitle("环境质量报告");
 		document.addSubject("环境质量报告");
+		List<TReportTemplate> list = service.findReportTemplateAll();
 		// 打开文档
 		document.open();
 		document.setPageCount(4);
 		// 向文档中添加内容
-		document.add(new Paragraph("噪音", titleFont));
-		// 噪音描述
-		Chunk noiseDesc = new Chunk(
-				"噪音，会影响人类的生活。从总体讲噪音是由物体振动产生，凡是妨碍人们正常休息、学习和工作的声音，以及对人们要听的声音产生干扰的声音。噪音污染主要来源于交通运输、车辆鸣笛、工业噪音、建筑施工、社会噪音如音乐厅、高音喇叭、早市和人的大声说话等。且随工业与交通的发展而日 趋严重，噪音污染是除大气污 染，水体污染外的城市第三大污染。",
-				textFont);
-		document.add(noiseDesc);
-		// 分段
+		document.add(new Paragraph(getTemplateContent("report", list), textFont));
 		document.add(new Paragraph("\n"));
-		// 噪音报告
-		Paragraph noisePara = new Paragraph();
-		Chunk noistReportDesc = new Chunk(
-				"目前您所处的地理区域噪音标准为：0-1类标准（昼间50-55分贝，夜间40-45分贝）：优，属于适宜居住噪声范围，适用于疗养区、高级别墅区、高级宾馆、居住、文教机关等区域；按照普通人的听力水平，50分贝相当于正常交谈的声音，30-40分贝是比较安静的正常环境。此类区域特别适合要求环境安静的人群。",
-				textFont);
-		noisePara.add(noistReportDesc);
-		document.add(noisePara);
+		// 噪音
+		document.add(new Paragraph("噪音", titleFont));
+		Chunk noiseDesc = new Chunk(getTemplateContent("noise", list), textFont);
+		document.add(noiseDesc);
+		document.add(new Paragraph("\n"));
+		// 水质
+		document.add(new Paragraph("水质", titleFont));
+		Chunk waterDesc = new Chunk(getTemplateContent("water", list), textFont);
+		document.add(waterDesc);
+		document.add(new Paragraph("\n"));
+		// 空气质量
+		document.add(new Paragraph("空气质量", titleFont));
+		Chunk airDesc = new Chunk(getTemplateContent("air", list), textFont);
+		document.add(airDesc);
+		document.add(new Paragraph("\n"));
+		// 土壤
+		document.add(new Paragraph("土壤", titleFont));
+		Chunk soilDesc = new Chunk(getTemplateContent("soil", list), textFont);
+		document.add(soilDesc);
+		document.add(new Paragraph("\n"));
+		// 垃圾处理设施
+		document.add(new Paragraph("垃圾处理设施", titleFont));
+		Chunk rubbishDesc = new Chunk(getTemplateContent("rubbish", list), textFont);
+		document.add(rubbishDesc);
+		document.add(new Paragraph("\n"));
+		// 绿地率
+		document.add(new Paragraph("绿地率", titleFont));
+		Chunk afforestDesc = new Chunk(getTemplateContent("afforest", list), textFont);
+		document.add(afforestDesc);
+		document.add(new Paragraph("\n"));
+		// 容积率
+		document.add(new Paragraph("容积率", titleFont));
+		Chunk volumeDesc = new Chunk(getTemplateContent("volume", list), textFont);
+		document.add(volumeDesc);
+		document.add(new Paragraph("\n"));
 		// 关闭文档
 		document.close();
 	}
 
-	public static void main(String[] args) {
-		try {
-			PdfUtil.instance().createPDF();
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+	/**
+	 * 
+	 * 方法: getTemplateContent <br>
+	 * 描述: 获取模板的内容 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月3日 上午12:24:32
+	 * 
+	 * @param type
+	 * @param list
+	 * @return
+	 */
+	private static String getTemplateContent(String type, List<TReportTemplate> list) {
+		String content = "";
+		if (list != null && list.size() > 0) {
+			for (TReportTemplate model : list) {
+				if (type.equals(model.getType())) {
+					content = model.getContent();
+					break;
+				}
+			}
 		}
+		return content;
 	}
 }
