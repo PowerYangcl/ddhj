@@ -23,4 +23,16 @@ public interface TUserMapper extends BaseMapper<TUser, TUserDto> {
 	 * @return
 	 */
 	TUser findTUser(TUserDto dto);
+
+	/**
+	 * 
+	 * 方法: userLoginAndLogOut <br>
+	 * 描述: 用户登录和登出公共接口 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月2日 下午12:18:45
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	int userLoginAndLogOut(TUser entity);
 }

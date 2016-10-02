@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TUserDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TUserMapper;
@@ -41,9 +42,18 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 		LoginResult result = new LoginResult();
 		TUser user = mapper.findTUser(dto);
 		if (user != null) {
-			result.setResultCode(0);
-			result.setResultMessage("");
-			result.setUserToken(user.getUuid());
+			TUser entity = new TUser();
+			entity.setUuid(user.getUuid());
+			entity.setIsLogin(0);
+			int flag = mapper.userLoginAndLogOut(entity);
+			if (flag >= 0) {
+				result.setResultCode(0);
+				result.setResultMessage("");
+				result.setUserToken(user.getUuid());
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("用户登录失败");
+			}
 		} else {
 			result.setResultCode(-1);
 			result.setResultMessage("用户不存在");
@@ -77,6 +87,32 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 				result.setResultCode(-1);
 				result.setResultMessage("注册失败");
 			}
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: logOut <br>
+	 * 描述: TODO
+	 * 
+	 * @param uid
+	 * @return
+	 * @see cn.com.ddhj.service.ITUserService#logOut(java.lang.String)
+	 */
+	@Override
+	public BaseResult logOut(String uid) {
+		BaseResult result = new BaseResult();
+		TUser entity = new TUser();
+		entity.setUuid(uid);
+		entity.setIsLogin(0);
+		int flag = mapper.userLoginAndLogOut(entity);
+		if (flag >= 0) {
+			result.setResultCode(0);
+			result.setResultMessage("用户登出成功");
+		} else {
+			result.setResultCode(0);
+			result.setResultMessage("用户登出失败");
 		}
 		return result;
 	}
