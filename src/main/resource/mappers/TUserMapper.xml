@@ -93,7 +93,7 @@
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</trim>
 	</insert>
-	<update id="updateByCode(T)" parameterType="cn.com.ddhj.model.TUser">
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TUser">
 		update t_user
 		<set>
 			<if test="password != null">
@@ -117,4 +117,13 @@
 		</set>
 		where user_code = #{userCode,jdbcType=VARCHAR}
 	</update>
+	<!-- 登录验证用户 -->
+	<select id="findTUser" parameterType="cn.com.ddhj.dto.TUserDto"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_user
+		where phone = #{phone,jdbcType=VARCHAR}
+		and `password` = ${password,jdbcType=VARCHAR}
+	</select>
 </mapper>
