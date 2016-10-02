@@ -28,11 +28,36 @@ import java.net.URLEncoder;
 public class CurrentPositionEnvironment {
 
 	// 配置您申请的KEY
-	public static final String KEY = "e06872cce776a7fd22b66251127512e7";
+	public static final String KEY1 = "e06872cce776a7fd22b66251127512e7";
 	
 	public static void main(String[] args) {
 		
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	/**
@@ -49,7 +74,7 @@ public class CurrentPositionEnvironment {
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("lng", "119.9772857");			// 经度 (如：119.9772857)
 		param.put("lat", "27.327578");				// 纬度 (如：27.327578)
-		param.put("key", KEY);							// 申请的APPKEY
+		param.put("key", KEY1);							// 申请的APPKEY
 		param.put("type", "2");								// 传递的坐标类型,1:GPS 2:百度经纬度 3：谷歌经纬度
 		param.put("dtype", "json");								// 返回数据格式：json或xml,默认json
 
