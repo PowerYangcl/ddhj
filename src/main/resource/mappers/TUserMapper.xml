@@ -124,8 +124,7 @@
 		<include refid="Base_Column_List" />
 		from t_user
 		where phone = #{phone,jdbcType=VARCHAR}
-		and `password` =
-		${password,jdbcType=VARCHAR}
+		and `password` = #{password,jdbcType=VARCHAR}
 	</select>
 	<!-- 用户登录和登出公共接口 -->
 	<update id="userLoginAndLogOut" parameterType="cn.com.ddhj.model.TUser">
@@ -134,7 +133,7 @@
 			is_login = #{isLogin,jdbcType=INTEGER}
 		</set>
 		<where>
-			uid = #{uid,jdbcType=VARCHAR}
+			uuid = #{uuid,jdbcType=VARCHAR}
 		</where>
 	</update>
 </mapper>
