@@ -16,8 +16,16 @@
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, uuid, city_code, name, pinyin, air, pm, create_user,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
 		create_time,
 		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
 		update_time
 	</sql>
 	<select id="selectByCode" resultMap="BaseResultMap"

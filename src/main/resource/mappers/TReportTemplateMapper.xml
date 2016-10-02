@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TReportTemplateMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TReportTemplate">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="content" property="content" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, code, type,content, create_user,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
+		update_time
+	</sql>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_report_template
+		where `code` = #{code,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from
+		t_report_template
+		where `code` = #{code,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TReportTemplate">
+		insert into t_report_template
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			`code`,
+			`type`,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			content
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			#{type,jdbcType=VARCHAR},
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{content,jdbcType=LONGVARCHAR}
+		</trim>
+	</insert>
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TReportTemplate">
+		update t_report_template
+		<set>
+			type = #{type,jdbcType=VARCHAR},
+			update_user =
+			#{updateUser,jdbcType=VARCHAR},
+			update_time =
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			content =
+			#{content,jdbcType=LONGVARCHAR}
+		</set>
+		where code = #{code,jdbcType=VARCHAR}
+	</update>
+	<select id="findReportTemplateByType" parameterType="java.lang.String"
+		resultMap="BaseResultMaps">
+		select
+		<include refid="Base_Column_List" />
+		from t_report_template
+		where `type` = #{type,jdbcType=VARCHAR}
+	</select>
+</mapper>
