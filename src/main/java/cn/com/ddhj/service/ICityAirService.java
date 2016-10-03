@@ -57,4 +57,15 @@ public interface ICityAirService {
 	 * @return
 	 */
 	JSONObject getCityPM(String cityName);
+
+	/**
+	 * 
+	 * 方法: getAQILevel <br>
+	 * 描述: 获取空气质量等级 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月3日 下午9:17:54
+	 * 
+	 * @return
+	 */
+	Integer getAQILevel(String cityName);
 }

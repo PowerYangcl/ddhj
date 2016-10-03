@@ -17,7 +17,9 @@ import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TReport;
 import cn.com.ddhj.model.TReportEnvironmentLevel;
 import cn.com.ddhj.model.TReportTemplate;
+import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.ITReportService;
+import cn.com.ddhj.service.IWaterQualityService;
 import cn.com.ddhj.util.PdfUtil;
 
 /**
@@ -30,8 +32,6 @@ import cn.com.ddhj.util.PdfUtil;
 @Service
 public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, BaseDto> implements ITReportService {
 
-	private static final String PATH = "d:/";
-
 	@Autowired
 	private TReportTemplateMapper templateMapper;
 
@@ -39,6 +39,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TReportEnvironmentLevelMapper levelMapper;
 	@Autowired
 	private TLandedPropertyMapper lpMapper;
+	@Autowired
+	private ICityAirService cityAirService;
+	@Autowired
+	private IWaterQualityService waterQualityService;
 
 	/**
 	 * 
@@ -50,8 +54,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * @see cn.com.ddhj.service.ITReportService#createPDF(com.alibaba.fastjson.JSONArray)
 	 */
 	@Override
-	public String createPDF(String code) {
-		String path = PATH + code + ".pdf";
+	public String createPDF(String code, String path) {
+		path = path + code + ".pdf";
 		// 根据code获取地产楼盘信息
 		TLandedProperty lp = lpMapper.selectByCode(code);
 		List<TReportTemplate> templateList = templateMapper.findReportTemplateAll();
@@ -72,6 +76,11 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		} else if (volume > 5) {
 			volumeLevel = 3;
 		}
+		// 空气质量等级
+		Integer airLevel = cityAirService.getAQILevel(lp.getCity());
+		// 水质量等级
+		Integer waterLevel = waterQualityService.getWaterLevel("北京密云古北口");
+
 		if (templateList != null && templateList.size() > 0) {
 			JSONArray array = new JSONArray();
 			for (int i = 0; i < templateList.size(); i++) {
@@ -83,6 +92,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					obj.put("level", getLevelContent(model.getType(), afforestLevel, levelList));
 				} else if ("volume".equals(model.getType())) {
 					obj.put("level", getLevelContent(model.getType(), volumeLevel, levelList));
+				} else if ("air".equals(model.getType())) {
+					obj.put("level", getLevelContent(model.getType(), airLevel, levelList));
+				} else if ("water".equals(model.getType())) {
+					obj.put("level", getLevelContent(model.getType(), waterLevel, levelList));
 				} else {
 					obj.put("level", getLevelContent(model.getType(), 1, levelList));
 				}
