@@ -87,7 +87,7 @@ public class PureNetUtil {
 				// 从连接中获取输入流
 				InputStream in = conn.getInputStream();
 				// 对输入流进行封装
-				reader = new BufferedReader(new InputStreamReader(in));
+				reader = new BufferedReader(new InputStreamReader(in,"UTF-8"));
 				String str = null;
 				sb = new StringBuffer();
 				// 从输入流中读取数据

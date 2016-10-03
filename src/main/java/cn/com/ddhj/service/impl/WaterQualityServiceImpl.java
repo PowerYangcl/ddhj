@@ -3,6 +3,8 @@ package cn.com.ddhj.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.service.IWaterQualityService;
@@ -15,6 +17,7 @@ import cn.com.ddhj.util.PureNetUtil;
  * 作者: zhy<br>
  * 时间: 2016年10月3日 下午8:53:54
  */
+@Service
 public class WaterQualityServiceImpl implements IWaterQualityService {
 
 	private static final String KEY = "935ddb80b6c973938852bd9e38d1777b";

@@ -46,6 +46,7 @@ public class PdfUtil extends BaseClass {
 
 		Font titleFont = new Font(bfChinese, 12, Font.NORMAL);
 		Font textFont = new Font(bfChinese, 8, Font.NORMAL);
+		
 		// 建立一个书写器(Writer)与document对象关联，通过书写器(Writer)可以将文档写入到磁盘中
 		File file = new File(path);
 		if (!file.exists()) {
