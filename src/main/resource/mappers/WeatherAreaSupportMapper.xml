@@ -21,6 +21,14 @@
 			zid = #{zid,jdbcType=INTEGER}
 	</select>
 	
+	<!-- 查库找到支持地区列表 -->
+	<select id="findSupportAreas" resultMap="BaseResultMap" >
+		select
+			*
+		from 
+			weather_area_support 
+	</select>
+	
 	
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from weather_area_support where zid = #{zid,jdbcType=INTEGER}
