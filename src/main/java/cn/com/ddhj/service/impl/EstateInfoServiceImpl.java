@@ -6,9 +6,6 @@ import java.util.Map;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.com.ddhj.dto.EstateInfoDto;
-import cn.com.ddhj.mapper.IEstateInfoMapper;
-import cn.com.ddhj.model.EstateInfo;
 import cn.com.ddhj.result.estateInfo.CityResult;
 import cn.com.ddhj.result.estateInfo.EstateResult;
 import cn.com.ddhj.service.IEstateInfoService;
@@ -24,9 +21,7 @@ import cn.com.ddhj.util.PureNetUtil;
  * @author Yangcl 
  * @version 1.0.1
  */
-public class EstateInfoServiceImpl 
-						  extends BaseServiceImpl<EstateInfo, IEstateInfoMapper, EstateInfoDto>
-						  implements IEstateInfoService{
+public class EstateInfoServiceImpl implements IEstateInfoService{
 
 	/**
 	 * @descriptions 支持查询地产信息的城市列表
