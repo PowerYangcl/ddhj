@@ -18,6 +18,6 @@ public class TReportTest extends BaseTest {
 
 	@Test
 	public void createPDF() {
-		service.createPDF();
+		service.createPDF("LP161003100031","d:/");
 	}
 }

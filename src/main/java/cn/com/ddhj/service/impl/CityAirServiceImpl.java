@@ -21,7 +21,7 @@ import cn.com.ddhj.util.PureNetUtil;
 @Service
 public class CityAirServiceImpl implements ICityAirService {
 
-	private static final String KEY = "931fc0d7a07f0b09aa219a4008782f87";
+	private static final String KEY = "f74ac8fbf0d992b02420a03387ed8341";
 
 	/**
 	 * 
@@ -189,5 +189,35 @@ public class CityAirServiceImpl implements ICityAirService {
 			}
 		}
 		return flag;
+	}
+
+	/**
+	 * 
+	 * 方法: getAQILevel <br>
+	 * 描述: TODO
+	 * 
+	 * @return
+	 * @see cn.com.ddhj.service.ICityAirService#getAQILevel()
+	 */
+	@Override
+	public Integer getAQILevel(String cityName) {
+		Integer level = 1;
+		JSONObject air = this.getCityAir(cityName);
+		if (air != null) {
+			JSONObject citynow = JSONObject.parseObject(air.getString("citynow"));
+			Integer aqi = citynow.getInteger("AQI");
+			if (aqi >= 50 && aqi <= 100) {
+				level = 2;
+			} else if (aqi >= 101 && aqi <= 150) {
+				level = 3;
+			} else if (aqi >= 151 && aqi <= 200) {
+				level = 4;
+			} else if (aqi >= 201 && aqi <= 300) {
+				level = 5;
+			} else if (aqi > 301) {
+				level = 6;
+			}
+		}
+		return level;
 	}
 }

@@ -104,4 +104,8 @@ public class DateUtil {
 	public static Date strToDateTime(String str) throws ParseException {
 		return sdfDateTime.parse(str);
 	}
+	
+	public static String sysDateToStrForFile(){
+		return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+	}
 }

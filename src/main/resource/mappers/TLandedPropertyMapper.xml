@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TLandedPropertyMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TLandedProperty">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="total" property="total" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="completion" property="completion" jdbcType="VARCHAR" />
+		<result column="propertyType" property="propertyType" jdbcType="VARCHAR" />
+		<result column="propertyCompany" property="propertyCompany"
+			jdbcType="VARCHAR" />
+		<result column="price" property="price" jdbcType="VARCHAR" />
+		<result column="volumeRate" property="volumeRate" jdbcType="VARCHAR" />
+		<result column="propertyCosts" property="propertyCosts"
+			jdbcType="VARCHAR" />
+		<result column="parking" property="parking" jdbcType="VARCHAR" />
+		<result column="greeningRate" property="greeningRate" jdbcType="VARCHAR" />
+		<result column="gfa" property="gfa" jdbcType="VARCHAR" />
+		<result column="metro" property="metro" jdbcType="VARCHAR" />
+		<result column="lat" property="lat" jdbcType="VARCHAR" />
+		<result column="lng" property="lng" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="addressFull" property="addressFull" jdbcType="LONGVARCHAR" />
+		<result column="bus" property="bus" jdbcType="LONGVARCHAR" />
+		<result column="images" property="images" jdbcType="LONGVARCHAR" />
+		<result column="overview" property="overview" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, code, title, total, city, completion,
+		propertyType,
+		propertyCompany, price,
+		volumeRate, propertyCosts,
+		parking, greeningRate, gfa, metro, lat, lng,addressFull, bus, images,
+		overview,
+		create_user,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
+		update_time
+	</sql>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_landed_property
+		where `code` = #{code,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from
+		t_landed_property
+		where `code` = #{code,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TLandedProperty">
+		insert into t_landed_property
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			code,
+			<if test="title != null">
+				title,
+			</if>
+			<if test="total != null">
+				total,
+			</if>
+			<if test="city != null">
+				city,
+			</if>
+			<if test="completion != null">
+				completion,
+			</if>
+			<if test="propertyType != null">
+				propertyType,
+			</if>
+			<if test="propertyCompany != null">
+				propertyCompany,
+			</if>
+			<if test="price != null">
+				price,
+			</if>
+			<if test="volumeRate != null">
+				volumeRate,
+			</if>
+			<if test="propertyCosts != null">
+				propertyCosts,
+			</if>
+			<if test="parking != null">
+				parking,
+			</if>
+			<if test="greeningRate != null">
+				greeningRate,
+			</if>
+			<if test="gfa != null">
+				gfa,
+			</if>
+			<if test="metro != null">
+				metro,
+			</if>
+			<if test="lat != null">
+				lat,
+			</if>
+			<if test="lng != null">
+				lng,
+			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			<if test="addressFull != null">
+				addressFull,
+			</if>
+			<if test="bus != null">
+				bus,
+			</if>
+			<if test="images != null">
+				images,
+			</if>
+			<if test="overview != null">
+				overview,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="total != null">
+				#{total,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				#{city,jdbcType=VARCHAR},
+			</if>
+			<if test="completion != null">
+				#{completion,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyType != null">
+				#{propertyType,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyCompany != null">
+				#{propertyCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				#{price,jdbcType=VARCHAR},
+			</if>
+			<if test="volumeRate != null">
+				#{volumeRate,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyCosts != null">
+				#{propertyCosts,jdbcType=VARCHAR},
+			</if>
+			<if test="parking != null">
+				#{parking,jdbcType=VARCHAR},
+			</if>
+			<if test="greeningRate != null">
+				#{greeningRate,jdbcType=VARCHAR},
+			</if>
+			<if test="gfa != null">
+				#{gfa,jdbcType=VARCHAR},
+			</if>
+			<if test="metro != null">
+				#{metro,jdbcType=VARCHAR},
+			</if>
+			<if test="lat != null">
+				#{lat,jdbcType=VARCHAR},
+			</if>
+			<if test="lng != null">
+				#{lng,jdbcType=VARCHAR},
+			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			<if test="addressfull != null">
+				#{addressfull,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="bus != null">
+				#{bus,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="images != null">
+				#{images,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="overview != null">
+				#{overview,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<!-- 从聚合数据导入地产楼盘信息 -->
+	<insert id="batchInsertTLandedProperty" parameterType="list">
+		insert into t_landed_property
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			code,
+			title,
+			total,
+			city,
+			completion,
+			propertyType,
+			propertyCompany,
+			price,
+			volumeRate,
+			propertyCosts,
+			parking,
+			greeningRate,
+			gfa,
+			metro,
+			lat,
+			lng,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			addressFull,
+			bus,
+			images,
+			overview
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.uuid,jdbcType=VARCHAR},
+				#{item.code,jdbcType=VARCHAR},
+				#{item.title,jdbcType=VARCHAR},
+				#{item.total,jdbcType=VARCHAR},
+				#{item.city,jdbcType=VARCHAR},
+				#{item.completion,jdbcType=VARCHAR},
+				#{item.propertyType,jdbcType=VARCHAR},
+				#{item.propertyCompany,jdbcType=VARCHAR},
+				#{item.price,jdbcType=VARCHAR},
+				#{item.volumeRate,jdbcType=VARCHAR},
+				#{item.propertyCosts,jdbcType=VARCHAR},
+				#{item.parking,jdbcType=VARCHAR},
+				#{item.greeningRate,jdbcType=VARCHAR},
+				#{item.gfa,jdbcType=VARCHAR},
+				#{item.metro,jdbcType=VARCHAR},
+				#{item.lat,jdbcType=VARCHAR},
+				#{item.lng,jdbcType=VARCHAR},
+				#{item.createUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.createTime,jdbcType=VARCHAR},'%Y-%m-%d
+				%H:%i:%s'),
+				#{item.updateUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+				#{item.addressFull,jdbcType=LONGVARCHAR},
+				#{item.bus,jdbcType=LONGVARCHAR},
+				#{item.images,jdbcType=LONGVARCHAR},
+				#{item.overview,jdbcType=LONGVARCHAR}
+			</trim>
+		</foreach>
+	</insert>
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TLandedProperty">
+		update t_landed_property
+		<set>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="total != null">
+				total = #{total,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				city = #{city,jdbcType=VARCHAR},
+			</if>
+			<if test="completion != null">
+				completion = #{completion,jdbcType=VARCHAR},
+			</if>
+			<if test="propertytype != null">
+				propertyType = #{propertytype,jdbcType=VARCHAR},
+			</if>
+			<if test="propertycompany != null">
+				propertyCompany = #{propertycompany,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				price = #{price,jdbcType=VARCHAR},
+			</if>
+			<if test="volumerate != null">
+				volumeRate = #{volumerate,jdbcType=VARCHAR},
+			</if>
+			<if test="propertycosts != null">
+				propertyCosts = #{propertycosts,jdbcType=VARCHAR},
+			</if>
+			<if test="parking != null">
+				parking = #{parking,jdbcType=VARCHAR},
+			</if>
+			<if test="greeningrate != null">
+				greeningRate = #{greeningrate,jdbcType=VARCHAR},
+			</if>
+			<if test="gfa != null">
+				gfa = #{gfa,jdbcType=VARCHAR},
+			</if>
+			<if test="metro != null">
+				metro = #{metro,jdbcType=VARCHAR},+
+			</if>
+			<if test="lat != null">
+				lat = #{lat,jdbcType=VARCHAR},
+			</if>
+			<if test="lng != null">
+				lng = #{lng,jdbcType=VARCHAR},
+			</if>
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			<if test="addressfull != null">
+				addressFull = #{addressfull,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="bus != null">
+				bus = #{bus,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="images != null">
+				images = #{images,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="overview != null">
+				overview = #{overview,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where `code` = #{code,jdbcType=INTEGER}
+	</update>
+</mapper>

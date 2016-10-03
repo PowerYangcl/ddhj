@@ -1,6 +1,5 @@
 package cn.com.ddhj.service;
 
-
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.model.TReport;
 
@@ -23,5 +22,5 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @param array
 	 * @return
 	 */
-	String createPDF();
+	String createPDF(String code,String path);
 }
