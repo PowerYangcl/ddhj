@@ -2,12 +2,16 @@ package cn.com.ddhj.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -18,6 +22,11 @@ import java.util.Map;
  * 时间: 2016年10月1日 下午4:55:37
  */
 public class PureNetUtil {
+	
+	public static String userAgent =  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36";
+	
+	
+	
 	/**
 	 * get方法直接调用post方法
 	 * 
@@ -102,4 +111,83 @@ public class PureNetUtil {
 		}
 		return null;
 	}
+	
+	/**
+	 * @descriptions get方式提交
+	 *
+	 * @param strUrl
+	 * @param params
+	 * @return
+	 * @date 2016年10月3日 下午9:10:05
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	 public static String get(String strUrl, Map params) {
+		 	String method = "GET";
+		 	HttpURLConnection conn = null;
+	        BufferedReader reader = null;
+	        String rs = null;
+	        try {
+	            StringBuffer sb = new StringBuffer();
+	            if(method==null || method.equals("GET")){
+	                strUrl = strUrl+"?"+urlencode(params);
+	            }
+	            URL url = new URL(strUrl);
+	            conn = (HttpURLConnection) url.openConnection();
+	            if(method==null || method.equals("GET")){
+	                conn.setRequestMethod("GET");
+	            }else{
+	                conn.setRequestMethod("POST");
+	                conn.setDoOutput(true);
+	            }
+	            conn.setRequestProperty("User-agent", userAgent);
+	            conn.setUseCaches(false);
+	            conn.setConnectTimeout(30000);
+	            conn.setReadTimeout(30000);
+	            conn.setInstanceFollowRedirects(false);
+	            conn.connect();
+	            if (params!= null && method.equals("POST")) {
+	                try {
+	                    DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+	                        out.writeBytes(urlencode(params));
+	                } catch (Exception e) {
+	                    // TODO: handle exception
+	                }
+	            }
+	            InputStream is = conn.getInputStream();
+	            reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+	            String strRead = null;
+	            while ((strRead = reader.readLine()) != null) {
+	                sb.append(strRead);
+	            }
+	            rs = sb.toString();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        } finally {
+	            if (reader != null) {
+	                try {
+						reader.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+	            }
+	            if (conn != null) {
+	                conn.disconnect();
+	            }
+	        }
+	        return rs;
+	    }
+	 
+	    //将map型转为请求参数型
+	    public static String urlencode(Map<String,Object>data) {
+	        StringBuilder sb = new StringBuilder();
+	        for (Map.Entry i : data.entrySet()) {
+	            try {
+	                sb.append(i.getKey()).append("=").append(URLEncoder.encode(i.getValue()+"","UTF-8")).append("&");
+	            } catch (UnsupportedEncodingException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	        return sb.toString();
+	    }
 }
