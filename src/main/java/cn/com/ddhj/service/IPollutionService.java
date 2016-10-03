@@ -23,4 +23,56 @@ public interface IPollutionService {
 	public JSONObject supportCityInfo();
 	
 	
+	/**
+	 * @descriptions 城市污染查询|城市污染源列表
+	 *
+	 * @param city 参数依赖 @supportCityInfo()接口中的code
+	 * @return
+	 * @date 2016年10月3日 下午7:37:07
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject findPollutionDistributionList(String city);
+	
+	
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
