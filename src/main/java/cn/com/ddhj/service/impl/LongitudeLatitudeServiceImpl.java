@@ -3,6 +3,8 @@ package cn.com.ddhj.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -18,6 +20,7 @@ import cn.com.ddhj.util.PureNetUtil;
  * @author Yangcl 
  * @version 1.0.1
  */
+@Service
 public class LongitudeLatitudeServiceImpl implements ILongitudeLatitudeService {
 
 	/**
