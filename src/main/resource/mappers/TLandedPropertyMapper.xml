@@ -51,7 +51,7 @@
 		) AS
 		update_time
 	</sql>
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+	<select id="selectByCode" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
 		select
 		<include refid="Base_Column_List" />

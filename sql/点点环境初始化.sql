@@ -105,7 +105,7 @@ CREATE TABLE t_report_template (
 	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
 	uuid VARCHAR (50) DEFAULT '' COMMENT 'uuid',
 	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '环境报告模板编码',
-	`name` varchar(20) not null COMMENT '名称',
+	`name` VARCHAR (20) NOT NULL COMMENT '名称',
 	type VARCHAR (50) UNIQUE COMMENT '模板类型',
 	content text COMMENT '模板内容',
 	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
@@ -129,6 +129,38 @@ CREATE TABLE t_report_comment (
 	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
 	update_time datetime NOT NULL COMMENT '最后修改时间'
 ) COMMENT '报告评论表';
+
+DROP TABLE
+IF EXISTS t_landed_property;
+
+CREATE TABLE t_landed_property (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) DEFAULT '' COMMENT 'uuid',
+	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '楼盘编码',
+	title VARCHAR (50) NOT NULL UNIQUE COMMENT '楼盘名称',
+	addressFull text COMMENT '楼盘详细地址',
+	total VARCHAR (50) COMMENT '户数',
+	city VARCHAR (20) COMMENT '所属城市',
+	`completion` VARCHAR (50) COMMENT '楼盘完成时间',
+	propertyType VARCHAR (50) COMMENT '类型',
+	propertyCompany VARCHAR (100) COMMENT '物业公司',
+	price VARCHAR (50) COMMENT '价格',
+	volumeRate VARCHAR (50) COMMENT '容积率',
+	propertyCosts VARCHAR (20) COMMENT '物业费',
+	parking VARCHAR (50) COMMENT '停车位',
+	greeningRate VARCHAR (50) COMMENT '绿化率',
+	gfa VARCHAR (50) COMMENT '楼盘面积',
+	metro VARCHAR (50) COMMENT '周边地铁',
+	bus text COMMENT '公交车',
+	lat VARCHAR (20) COMMENT '维度',
+	lng VARCHAR (20) COMMENT '经度',
+	images text COMMENT '图片列表',
+	overview text COMMENT '楼盘综述',
+	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_time datetime NOT NULL COMMENT '创建时间',
+	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_time datetime NOT NULL COMMENT '最后修改时间'
+) COMMENT '地产楼盘列表';
 
 #============获取唯一键函数 start ========================
 DROP PROCEDURE

@@ -38,7 +38,7 @@ public class PdfUtil extends BaseClass {
 		return self;
 	}
 
-	public void createPDF(JSONArray array,String path) throws DocumentException, IOException {
+	public String createPDF(JSONArray array, String path) throws DocumentException, IOException {
 		// 建立com.lowagie.text.Document对象的实例
 		Document document = new Document(PageSize.A4, 36.0F, 36.0F, 36.0F, 36.0F);
 		// 字体的定义：这里用的是自带的jar里面的字体
@@ -47,7 +47,11 @@ public class PdfUtil extends BaseClass {
 		Font titleFont = new Font(bfChinese, 12, Font.NORMAL);
 		Font textFont = new Font(bfChinese, 8, Font.NORMAL);
 		// 建立一个书写器(Writer)与document对象关联，通过书写器(Writer)可以将文档写入到磁盘中
-		PdfWriter.getInstance(document, new FileOutputStream(new File(path)));
+		File file = new File(path);
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		PdfWriter.getInstance(document, new FileOutputStream(file));
 		document.addTitle("环境质量报告");
 		document.addSubject("环境质量报告");
 		// 打开文档
@@ -68,5 +72,6 @@ public class PdfUtil extends BaseClass {
 		}
 		// 关闭文档
 		document.close();
+		return path;
 	}
 }
