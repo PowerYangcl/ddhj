@@ -1,5 +1,7 @@
 package cn.com.ddhj;
 
+import java.net.URLEncoder;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +18,17 @@ public class TReportTest extends BaseTest {
 	@Autowired
 	private ITReportService service;
 
-	@Test
 	public void createPDF() {
 		service.createPDF("LP161003100031","d:/");
+	}
+
+	@Test
+	public void t(){
+		try {
+			String str = "%E5%8C%97%E4%BA%AC";
+			System.out.println(URLEncoder.encode("北京"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

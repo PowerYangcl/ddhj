@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.impl;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ import cn.com.ddhj.util.PureNetUtil;
 @Service
 public class CityAirServiceImpl implements ICityAirService {
 
-	private static final String KEY = "f74ac8fbf0d992b02420a03387ed8341";
+	private static final String KEY = "2c5b736e4a1674265ae4a83cb864f64d";
 
 	/**
 	 * 
@@ -62,10 +63,11 @@ public class CityAirServiceImpl implements ICityAirService {
 	public JSONObject getCityAir(String cityName) {
 		String url = "http://web.juhe.cn:8080/environment/air/cityair";
 		JSONObject obj = null;
-		if (isAirCity(cityName)) {
+		try {
 			Map<String, String> param = new HashMap<String, String>();
 			param.put("key", KEY);
-			param.put("city", cityName);
+			String city = URLEncoder.encode(cityName, "UTF-8");
+			param.put("city", city);
 			String result = PureNetUtil.post(url, param);
 			if (result != null && !"".equals(result)) {
 				obj = JSONObject.parseObject(result);
@@ -74,10 +76,11 @@ public class CityAirServiceImpl implements ICityAirService {
 				obj.put("code", "-1");
 				obj.put("message", "查询数据为空");
 			}
-		} else {
+		} catch (Exception e) {
+			e.printStackTrace();
 			obj = new JSONObject();
 			obj.put("code", "-1");
-			obj.put("message", "查询城市无法查询空气质量信息");
+			obj.put("message", "查询数据错误");
 		}
 		return obj;
 	}
@@ -204,7 +207,8 @@ public class CityAirServiceImpl implements ICityAirService {
 		Integer level = 1;
 		JSONObject air = this.getCityAir(cityName);
 		if (air != null) {
-			JSONObject citynow = JSONObject.parseObject(air.getString("citynow"));
+			JSONArray result = JSONArray.parseArray(air.getString("result"));
+			JSONObject citynow = JSONObject.parseObject(result.getJSONObject(0).getString("citynow"));
 			Integer aqi = citynow.getInteger("AQI");
 			if (aqi >= 50 && aqi <= 100) {
 				level = 2;
