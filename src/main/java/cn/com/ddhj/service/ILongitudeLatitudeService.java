@@ -2,10 +2,7 @@ package cn.com.ddhj.service;
 
 import com.alibaba.fastjson.JSONObject;
 
-import cn.com.ddhj.dto.LongitudeLatitudeDto;
-import cn.com.ddhj.model.LongitudeLatitude;
-
-public interface ILongitudeLatitudeService  extends IBaseService<LongitudeLatitude, LongitudeLatitudeDto>{
+public interface ILongitudeLatitudeService {
 	
 	/**
 	 * @descriptions 获取当前地理位置信息

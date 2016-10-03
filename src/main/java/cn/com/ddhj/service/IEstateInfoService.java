@@ -2,10 +2,8 @@ package cn.com.ddhj.service;
 
 import com.alibaba.fastjson.JSONObject;
 
-import cn.com.ddhj.dto.EstateInfoDto;
-import cn.com.ddhj.model.EstateInfo;
 
-public interface IEstateInfoService extends IBaseService<EstateInfo, EstateInfoDto>{
+public interface IEstateInfoService {
 	
 	/**
 	 * @descriptions 支持查询地产信息的城市列表

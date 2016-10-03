@@ -6,9 +6,6 @@ import java.util.Map;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.com.ddhj.dto.LongitudeLatitudeDto;
-import cn.com.ddhj.mapper.ILongitudeLatitudeMapper;
-import cn.com.ddhj.model.LongitudeLatitude;
 import cn.com.ddhj.result.llConvertion.ConversionResult;
 import cn.com.ddhj.result.longitudeLatitude.LongitudeLatitudeResult;
 import cn.com.ddhj.service.ILongitudeLatitudeService;
@@ -21,9 +18,7 @@ import cn.com.ddhj.util.PureNetUtil;
  * @author Yangcl 
  * @version 1.0.1
  */
-public class LongitudeLatitudeServiceImpl  
-						 extends BaseServiceImpl<LongitudeLatitude,ILongitudeLatitudeMapper, LongitudeLatitudeDto> 
-						 implements ILongitudeLatitudeService {
+public class LongitudeLatitudeServiceImpl implements ILongitudeLatitudeService {
 
 	/**
 	 * @descriptions 经纬度地址解析|获取当前地理位置信息
