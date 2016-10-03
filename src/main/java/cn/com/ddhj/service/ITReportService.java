@@ -1,7 +1,9 @@
 package cn.com.ddhj.service;
 
+
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.model.TReport;
+
 /**
  * 
  * 类: ITReportService <br>
@@ -11,4 +13,15 @@ import cn.com.ddhj.model.TReport;
  */
 public interface ITReportService extends IBaseService<TReport, BaseDto> {
 
+	/**
+	 * 
+	 * 方法: createPDF <br>
+	 * 描述: 创建pdf报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月3日 下午1:56:13
+	 * 
+	 * @param array
+	 * @return
+	 */
+	String createPDF();
 }

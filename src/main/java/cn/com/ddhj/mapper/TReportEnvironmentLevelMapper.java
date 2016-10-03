@@ -1,5 +1,7 @@
 package cn.com.ddhj.mapper;
 
+import java.util.List;
+
 import cn.com.ddhj.dto.TReportEnvironmentLevelDto;
 import cn.com.ddhj.model.TReportEnvironmentLevel;
 
@@ -22,5 +24,16 @@ public interface TReportEnvironmentLevelMapper extends BaseMapper<TReportEnviron
 	 * @param type
 	 * @return
 	 */
-	public TReportEnvironmentLevel findTReportEnvironmentLevelByType(TReportEnvironmentLevelDto dto);
+	TReportEnvironmentLevel findTReportEnvironmentLevelByType(TReportEnvironmentLevelDto dto);
+
+	/**
+	 * 
+	 * 方法: findTReportEnvironmentLevelAll <br>
+	 * 描述: 查询等级描述信息列表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月3日 下午2:06:57
+	 * 
+	 * @return
+	 */
+	List<TReportEnvironmentLevel> findTReportEnvironmentLevelAll();
 }

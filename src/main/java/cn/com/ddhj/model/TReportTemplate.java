@@ -11,9 +11,19 @@ public class TReportTemplate extends BaseModel {
 
 	private String code;
 
+	private String name;
+
 	private String type;
 
 	private String content;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String getCode() {
 		return code;

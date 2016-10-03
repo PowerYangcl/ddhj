@@ -38,7 +38,7 @@ CREATE TABLE t_user (
 	user_code VARCHAR (50) NOT NULL UNIQUE COMMENT '用户编码',
 	phone VARCHAR (20) NOT NULL UNIQUE COMMENT '手机号',
 	`password` VARCHAR (50) NOT NULL COMMENT '密码',
-	nick_name VARCHAR (50) NOT NULL UNIQUE COMMENT '昵称',
+	nick_name VARCHAR (50) DEFAULT '' UNIQUE COMMENT '昵称',
 	head_pic VARCHAR (500) DEFAULT '' COMMENT '头像',
 	e_mail VARCHAR (100) DEFAULT '' COMMENT '邮箱',
 	is_login INT DEFAULT 0 COMMENT '是否已登录 0 已登录 1 已登出',
@@ -47,6 +47,88 @@ CREATE TABLE t_user (
 	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
 	update_time datetime NOT NULL COMMENT '最后修改时间'
 ) COMMENT '注册用户表';
+
+DROP TABLE
+IF EXISTS t_report_level;
+
+CREATE TABLE t_report_level (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) COMMENT 'uuid',
+	`code` VARCHAR (50) NOT NULL COMMENT '等级编号',
+	`name` VARCHAR (50) NOT NULL COMMENT '等级名称',
+	`status` INT DEFAULT 0 COMMENT '是否可用 0 可用 1 不可用',
+	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_time datetime NOT NULL COMMENT '创建时间',
+	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_time datetime NOT NULL COMMENT '最后修改时间'
+) COMMENT '报告等级表';
+
+DROP TABLE
+IF EXISTS t_report;
+
+CREATE TABLE t_report (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) COMMENT 'uuid',
+	`code` VARCHAR (50) UNIQUE COMMENT '报告编码',
+	`name` VARCHAR (50) COMMENT '楼盘名称',
+	address VARCHAR (200) COMMENT '楼盘地址',
+	pic VARCHAR (200) COMMENT '图标',
+	image VARCHAR (200) COMMENT '大图',
+	levels VARCHAR (100) COMMENT '报告等级',
+	price DECIMAL (18, 2) DEFAULT '0.00' COMMENT '价格',
+	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_time datetime NOT NULL COMMENT '创建时间',
+	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_time datetime NOT NULL COMMENT '最后修改时间'
+) COMMENT '报告列表';
+
+DROP TABLE
+IF EXISTS t_report_environment_level;
+
+CREATE TABLE t_report_environment_level (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) DEFAULT '' COMMENT 'uuid',
+	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '环境报告环境等级编码',
+	type VARCHAR (50) COMMENT '类型',
+	`level` INT DEFAULT 0 COMMENT '环境等级',
+	content text COMMENT '等级描述内容',
+	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_time datetime NOT NULL COMMENT '创建时间',
+	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_time datetime NOT NULL COMMENT '最后修改时间'
+) COMMENT '环境报告环境等级描述';
+
+DROP TABLE
+IF EXISTS t_report_template;
+
+CREATE TABLE t_report_template (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) DEFAULT '' COMMENT 'uuid',
+	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '环境报告模板编码',
+	`name` varchar(20) not null COMMENT '名称',
+	type VARCHAR (50) UNIQUE COMMENT '模板类型',
+	content text COMMENT '模板内容',
+	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_time datetime NOT NULL COMMENT '创建时间',
+	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_time datetime NOT NULL COMMENT '最后修改时间'
+) COMMENT '报告模板表';
+
+DROP TABLE
+IF EXISTS t_report_comment;
+
+CREATE TABLE t_report_comment (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) COMMENT 'uuid',
+	user_code VARCHAR (50) NOT NULL COMMENT '用户编号',
+	report_code VARCHAR (50) NOT NULL COMMENT '报告编号',
+	content text NOT NULL COMMENT '评论内容',
+	rate INT DEFAULT 0 COMMENT '好评等级',
+	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_time datetime NOT NULL COMMENT '创建时间',
+	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_time datetime NOT NULL COMMENT '最后修改时间'
+) COMMENT '报告评论表';
 
 #============获取唯一键函数 start ========================
 DROP PROCEDURE
@@ -161,5 +243,4 @@ SELECT
 	) AS webcode;
 
 
-END
-#================== end ==================================
+END #================== end ==================================

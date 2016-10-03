@@ -25,13 +25,14 @@ public interface ITReportTemplateService extends IBaseService<TReportTemplate, B
 	 * @return
 	 */
 	TReportTemplate findReportTemplateByType(String type);
-	
+
 	/**
 	 * 
 	 * 方法: findReportTemplateAll <br>
 	 * 描述: 获取所有报告模板 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月3日 上午12:11:36
+	 * 
 	 * @return
 	 */
 	List<TReportTemplate> findReportTemplateAll();

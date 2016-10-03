@@ -51,7 +51,7 @@
 			create_user,
 			create_time,
 			update_user,
-			update_time
+			update_time,
 			<if test="content != null">
 				content,
 			</if>
@@ -102,5 +102,11 @@
 		where type=#{type,jdbcType=VARCHAR}
 		and
 		`level` = #{level,jdbcType=INTEGER}
+	</select>
+	<!-- 查询等级描述信息列表 -->
+	<select id="findTReportEnvironmentLevelAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_report_environment_level
 	</select>
 </mapper>
