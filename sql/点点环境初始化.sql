@@ -54,14 +54,13 @@ IF EXISTS t_report_level;
 CREATE TABLE t_report_level (
 	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
 	uuid VARCHAR (50) COMMENT 'uuid',
-	`code` VARCHAR (50) NOT NULL COMMENT '等级编号',
-	`name` VARCHAR (50) NOT NULL COMMENT '等级名称',
-	`status` INT DEFAULT 0 COMMENT '是否可用 0 可用 1 不可用',
+	`code` VARCHAR (50) UNIQUE COMMENT '等级编码',
+	`name` VARCHAR (50) COMMENT '等级名称',
 	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
 	create_time datetime NOT NULL COMMENT '创建时间',
 	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
 	update_time datetime NOT NULL COMMENT '最后修改时间'
-) COMMENT '报告等级表';
+) COMMENT '环境报告等级';
 
 DROP TABLE
 IF EXISTS t_report;
@@ -70,17 +69,20 @@ CREATE TABLE t_report (
 	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
 	uuid VARCHAR (50) COMMENT 'uuid',
 	`code` VARCHAR (50) UNIQUE COMMENT '报告编码',
-	`name` VARCHAR (50) COMMENT '楼盘名称',
-	address VARCHAR (200) COMMENT '楼盘地址',
-	pic VARCHAR (200) COMMENT '图标',
-	image VARCHAR (200) COMMENT '大图',
-	levels VARCHAR (100) COMMENT '报告等级',
+	houses_code VARCHAR (50) COMMENT '楼盘编码',
+	title VARCHAR (200) DEFAULT '' COMMENT '报告标题',
+	`level_code` VARCHAR (50) DEFAULT 'RL161004100007' COMMENT '报告等级编码 默认等级为普通',
+	pic VARCHAR (200) DEFAULT '' COMMENT '图标',
+	image VARCHAR (200) DEFAULT '' COMMENT '大图',
+	rang INT DEFAULT 3 COMMENT '范围,默认为公里,默认设置为3',
 	price DECIMAL (18, 2) DEFAULT '0.00' COMMENT '价格',
+	path VARCHAR (500) DEFAULT '' COMMENT '文件路径',
+	detail text COMMENT '报告说明',
 	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
 	create_time datetime NOT NULL COMMENT '创建时间',
 	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
 	update_time datetime NOT NULL COMMENT '最后修改时间'
-) COMMENT '报告列表';
+) COMMENT '环境报告列表';
 
 DROP TABLE
 IF EXISTS t_report_environment_level;
@@ -137,7 +139,7 @@ CREATE TABLE t_landed_property (
 	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
 	uuid VARCHAR (50) DEFAULT '' COMMENT 'uuid',
 	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '楼盘编码',
-	title VARCHAR (50) NOT NULL UNIQUE COMMENT '楼盘名称',
+	title VARCHAR (50) NOT NULL  COMMENT '楼盘名称',
 	addressFull text COMMENT '楼盘详细地址',
 	total VARCHAR (50) COMMENT '户数',
 	city VARCHAR (20) COMMENT '所属城市',
@@ -161,6 +163,94 @@ CREATE TABLE t_landed_property (
 	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
 	update_time datetime NOT NULL COMMENT '最后修改时间'
 ) COMMENT '地产楼盘列表';
+
+DROP TABLE
+IF EXISTS t_rubbish_recycling;
+
+CREATE TABLE t_rubbish_recycling (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	city VARCHAR (20) NOT NULL COMMENT '所属区域',
+	`name` VARCHAR (50) NOT NULL COMMENT '名称',
+	address VARCHAR (500) NOT NULL COMMENT '详细地址',
+	lat VARCHAR (50) NOT NULL COMMENT '纬度',
+	lng VARCHAR (50) NOT NULL COMMENT '经度'
+) COMMENT '垃圾回收站';
+
+DROP TABLE
+IF EXISTS t_villa;
+
+CREATE TABLE t_villa (
+	`id` INT (11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	city VARCHAR (20) NOT NULL COMMENT '城市',
+	`name` VARCHAR (50) NOT NULL COMMENT '名称',
+	lat VARCHAR (50) NOT NULL COMMENT '纬度',
+	lng VARCHAR (50) NOT NULL COMMENT '经度'
+) COMMENT '别墅区';
+
+DROP TABLE
+IF EXISTS t_industrial_park;
+
+CREATE TABLE t_industrial_park (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	city VARCHAR (20) NOT NULL COMMENT '所属区域',
+	`name` VARCHAR (50) NOT NULL COMMENT '名称',
+	ADDress VARCHAR (500) NOT NULL COMMENT '详细地址',
+	lat VARCHAR (50) NOT NULL COMMENT '纬度',
+	lng VARCHAR (50) NOT NULL COMMENT '经度'
+) COMMENT '工业园';
+
+DROP TABLE
+IF EXISTS t_chemical_plant;
+
+CREATE TABLE t_chemical_plant (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	city VARCHAR (20) NOT NULL COMMENT '所属区域',
+	`name` VARCHAR (50) NOT NULL COMMENT '名称',
+	address VARCHAR (500) NOT NULL COMMENT '详细地址',
+	lat VARCHAR (50) NOT NULL COMMENT '纬度',
+	lng VARCHAR (50) NOT NULL COMMENT '经度'
+) COMMENT '化工厂';
+
+DROP TABLE
+IF EXISTS t_sewage_treatment_plant;
+
+CREATE TABLE t_sewage_treatment_plant (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	city VARCHAR (20) NOT NULL COMMENT '所属区域',
+	`name` VARCHAR (50) NOT NULL COMMENT '名称',
+	address VARCHAR (500) NOT NULL COMMENT '详细地址',
+	lat VARCHAR (50) NOT NULL COMMENT '纬度',
+	lng VARCHAR (50) NOT NULL COMMENT '经度'
+) COMMENT '污水处理厂';
+
+DROP TABLE
+IF EXISTS t_report_comment_type;
+
+CREATE TABLE t_report_comment_type (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) COMMENT 'uuid',
+	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '类型编码',
+	`name` VARCHAR (50) NOT NULL COMMENT '类型名称',
+	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_time datetime NOT NULL COMMENT '创建时间',
+	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_time datetime NOT NULL COMMENT '最后修改时间'
+) COMMENT '环境报告评论类型';
+
+DROP TABLE
+IF EXISTS t_report_comment;
+
+CREATE TABLE t_report_comment (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) COMMENT 'uuid',
+	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '评论编码',
+	content text COMMENT '评论内容',
+	type_code varchar(50) DEFAULT '' COMMENT '评论类型',
+	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_time datetime NOT NULL COMMENT '创建时间',
+	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_time datetime NOT NULL COMMENT '最后修改时间'
+) COMMENT '环境报告评论';
 
 #============获取唯一键函数 start ========================
 DROP PROCEDURE

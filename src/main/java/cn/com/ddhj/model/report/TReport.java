@@ -33,6 +33,16 @@ public class TReport extends BaseModel {
 
 	private String detail;
 
+	private String address;
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
 	public String getCode() {
 		return code;
 	}

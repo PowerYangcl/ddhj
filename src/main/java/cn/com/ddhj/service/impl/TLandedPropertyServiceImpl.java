@@ -43,34 +43,50 @@ public class TLandedPropertyServiceImpl extends BaseServiceImpl<TLandedProperty,
 	 */
 	@Override
 	public void insertDataFromAPI() {
-		String key = "f74ac8fbf0d992b02420a03387ed8341";
-		String url = "http://v.juhe.cn/estate/query";
-		Map<String, String> param = new HashMap<String, String>();
-		param.put("city", "北京");
-		param.put("q", "");
-		param.put("key", key);
-		param.put("page", String.valueOf(1));
-		param.put("dtype", "json");
-		String responseJson = PureNetUtil.post(url, param);
-		if (responseJson != null && !"".equals(responseJson)) {
-			JSONObject result = JSONObject.parseObject(responseJson);
-			if (result != null && result.getString("result") != null && !"".equals(result.getString("result"))) {
-				JSONArray array = JSONArray.parseArray(result.getString("result"));
-				List<TLandedProperty> list = new ArrayList<TLandedProperty>();
-				for (int i = 0; i < array.size(); i++) {
-					JSONObject obj = array.getJSONObject(i);
-					TLandedProperty model = obj.toJavaObject(TLandedProperty.class);
-					model.setUuid(UUID.randomUUID().toString().replace("-", ""));
-					model.setCode(WebHelper.getInstance().getUniqueCode("LP"));
-					model.setCreateUser("system");
-					model.setCreateTime(DateUtil.getSysDateTime());
-					model.setUpdateUser("system");
-					model.setUpdateTime(DateUtil.getSysDateTime());
-					list.add(model);
+		int page = 1;
+		boolean flag = true;
+		while (flag) {
+			String key = "f74ac8fbf0d992b02420a03387ed8341";
+			String url = "http://v.juhe.cn/estate/query";
+			Map<String, String> param = new HashMap<String, String>();
+			param.put("city", "北京");
+			param.put("q", "");
+			param.put("key", key);
+			param.put("page", String.valueOf(page));
+			param.put("dtype", "json");
+			String responseJson = PureNetUtil.post(url, param);
+			if (responseJson != null && !"".equals(responseJson)) {
+				JSONObject result = JSONObject.parseObject(responseJson);
+				if (result != null && result.getString("result") != null && !"".equals(result.getString("result"))) {
+					JSONArray array = JSONArray.parseArray(result.getString("result"));
+					if (array != null && array.size() > 0) {
+						List<TLandedProperty> list = new ArrayList<TLandedProperty>();
+						for (int i = 0; i < array.size(); i++) {
+							JSONObject obj = array.getJSONObject(i);
+							TLandedProperty model = obj.toJavaObject(TLandedProperty.class);
+							model.setUuid(UUID.randomUUID().toString().replace("-", ""));
+							model.setCode(WebHelper.getInstance().getUniqueCode("LP"));
+							model.setCreateUser("system");
+							model.setCreateTime(DateUtil.getSysDateTime());
+							model.setUpdateUser("system");
+							model.setUpdateTime(DateUtil.getSysDateTime());
+							list.add(model);
+						}
+						mapper.batchInsertTLandedProperty(list);
+					} else {
+						flag = false;
+						break;
+					}
+				} else {
+					flag = false;
+					break;
 				}
-
-				mapper.batchInsertTLandedProperty(list);
 			}
+			if (page == 20000) {
+				flag = false;
+				break;
+			}
+			page++;
 		}
 	}
 

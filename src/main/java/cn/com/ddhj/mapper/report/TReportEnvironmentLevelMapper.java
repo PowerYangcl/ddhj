@@ -2,7 +2,7 @@ package cn.com.ddhj.mapper.report;
 
 import java.util.List;
 
-import cn.com.ddhj.dto.TReportEnvironmentLevelDto;
+import cn.com.ddhj.dto.report.TReportEnvironmentLevelDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 

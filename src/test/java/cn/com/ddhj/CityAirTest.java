@@ -19,12 +19,12 @@ public class CityAirTest extends BaseTest {
 	@Autowired
 	private ICityAirService service;
 
+	@Test
 	public void getCityAir() {
 		JSONObject obj = service.getCityNowAir("北京");
 		System.out.println(obj.toJSONString());
 	}
 
-	@Test
 	public void getCityWeeksAir() {
 		JSONArray array = service.getLastWeekAir("北京");
 		System.out.println(array.toJSONString());

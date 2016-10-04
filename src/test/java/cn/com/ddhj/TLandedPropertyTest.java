@@ -19,6 +19,7 @@ public class TLandedPropertyTest extends BaseTest {
 	@Autowired
 	private ITLandedPropertyService service;
 
+	@Test
 	public void insert() {
 		service.insertDataFromAPI();
 	}
@@ -27,10 +28,9 @@ public class TLandedPropertyTest extends BaseTest {
 		TLandedProperty model = service.selectByCode("LP161003100031");
 		System.out.println(JSONObject.toJSON(model));
 	}
-	
-	@Test
-	public void ii(){
-		Double afforest = Double.valueOf("33.12%".substring(0,"33.12%".indexOf("%")));
+
+	public void ii() {
+		Double afforest = Double.valueOf("33.12%".substring(0, "33.12%".indexOf("%")));
 		System.out.println(afforest);
 	}
 }
