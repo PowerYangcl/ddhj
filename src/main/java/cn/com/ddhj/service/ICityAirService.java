@@ -3,6 +3,8 @@ package cn.com.ddhj.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.com.ddhj.dto.CityAqi;
+
 /**
  * 
  * 类: ICityAirService <br>
@@ -80,4 +82,32 @@ public interface ICityAirService {
 	 * @return
 	 */
 	Integer getAQILevel(String cityName);
+	
+	public CityAqi getCityAqi(String cityName);
+	
+	// 阵雨 正常活动 优
+	public JSONObject getWeatherInfo(String city);
+	
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

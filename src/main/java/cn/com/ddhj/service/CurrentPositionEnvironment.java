@@ -3,6 +3,8 @@ package cn.com.ddhj.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -36,109 +38,56 @@ public class CurrentPositionEnvironment {
 	public static final String KEY1 = "e06872cce776a7fd22b66251127512e7";
 	
 	public static void main(String[] args) {
-		 getRequestJWD();
-	}
-	
-	
-	 
-	public static JSONArray getRequestJWD() {
-		String url = "http://123.56.169.49:8338/environment/servlet/environmentZHInterface";
-		JSONObject obj = null;
-		JSONArray array = new JSONArray();
-		Map<String, String> param = new HashMap<String, String>();
-		param.put("hourAQI", "150");			// 经度 (如：119.9772857)
-		param.put("dayAQI", "150");				// 纬度 (如：27.327578)
-		param.put("s", "2");							// 申请的APPKEY
-		param.put("z1", "2");								// 传递的坐标类型,1:GPS 2:百度经纬度 3：谷歌经纬度
-		param.put("z2", "2");								// 返回数据格式：json或xml,默认json
-		param.put("l", "0.5");	
-		param.put("j", "5");	
-		param.put("t", "2");	 
 		
-		 
-		String result =  get(url, param );
- 
-		if (result != null && !"".equals(result)) {
-			obj = JSONObject.parseObject(result);
-			// 如果状态=200时，获取城市列表
-			if (obj.getInteger("resultCode") == 200) {
-				array = JSONArray.parseArray(obj.getString("result"));
-			}
-		}
-		return array;
+//		getRequest1();
+		
+		JSONObject obj = getCityWeather("北京");
+		
+		JSONObject result = JSONObject.parseObject(obj.getString("result"));
+		JSONObject data = JSONObject.parseObject(result.getString("data"));
+		
+		JSONObject realtime = JSONObject.parseObject(data.getString("realtime"));
+		// {"img":"3","temperature":"14","humidity":"92","info":"阵雨"}
+		JSONObject weather = JSONObject.parseObject(realtime.getString("weather"));
+		
+		JSONObject pm25 = JSONObject.parseObject(data.getString("pm25"));
+		// {"des":"可正常活动。","curPm":"39","pm25":"27","level":1,"pm10":"55","quality":"优"}
+		JSONObject pm25_ = JSONObject.parseObject(pm25.getString("pm25"));
+		
+		
+		String info = weather.getString("info");
+		String quality = pm25_.getString("quality");
+		String des = pm25_.getString("des");
+		
+		
+		int a = 0 ; 
+		System.out.println(a); 
 	}
-
 	
+	private static JSONObject getCityWeather(String city) {
+		String url = "http://op.juhe.cn/onebox/weather/query";
+		JSONObject obj = null;
+		try {
+			Map<String, String> param = new HashMap<String, String>();
+			param.put("key", "cb6b71e3dc87bb434da0a8babf701936");
+			param.put("cityname", city); 
+			String result = PureNetUtil.get(url, param);
+			if (result != null && !"".equals(result)) {
+				obj = JSONObject.parseObject(result);
+			} else {
+				obj = new JSONObject();
+				obj.put("code", "-1");
+				obj.put("message", "查询数据为空");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			obj = new JSONObject();
+			obj.put("code", "-1");
+			obj.put("message", "查询数据错误");
+		}
+		return obj;
+	}
 	
-	
-	 public static String get(String strUrl, Map params) {
-		 	String method = "GET";
-		 	HttpURLConnection conn = null;
-	        BufferedReader reader = null;
-	        String rs = null;
-	        try {
-	            StringBuffer sb = new StringBuffer();
-	            if(method==null || method.equals("GET")){
-	                strUrl = strUrl+"?"+urlencode(params);
-	            }
-	            URL url = new URL(strUrl);
-	            conn = (HttpURLConnection) url.openConnection();
-	            if(method==null || method.equals("GET")){
-	                conn.setRequestMethod("GET");
-	            }else{
-	                conn.setRequestMethod("POST");
-	                conn.setDoOutput(true);
-	            }
-	            conn.setRequestProperty("User-agent", userAgent);
-	            conn.setUseCaches(false);
-	            conn.setConnectTimeout(DEF_CONN_TIMEOUT);
-	            conn.setReadTimeout(DEF_READ_TIMEOUT);
-	            conn.setInstanceFollowRedirects(false);
-	            conn.connect();
-	            if (params!= null && method.equals("POST")) {
-	                try {
-	                    DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-	                        out.writeBytes(urlencode(params));
-	                } catch (Exception e) {
-	                    // TODO: handle exception
-	                }
-	            }
-	            InputStream is = conn.getInputStream();
-	            reader = new BufferedReader(new InputStreamReader(is, DEF_CHATSET));
-	            String strRead = null;
-	            while ((strRead = reader.readLine()) != null) {
-	                sb.append(strRead);
-	            }
-	            rs = sb.toString();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        } finally {
-	            if (reader != null) {
-	                try {
-						reader.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-	            }
-	            if (conn != null) {
-	                conn.disconnect();
-	            }
-	        }
-	        return rs;
-	    }
-	 
-	    //将map型转为请求参数型
-	    public static String urlencode(Map<String,Object>data) {
-	        StringBuilder sb = new StringBuilder();
-	        for (Map.Entry i : data.entrySet()) {
-	            try {
-	                sb.append(i.getKey()).append("=").append(URLEncoder.encode(i.getValue()+"","UTF-8")).append("&");
-	            } catch (UnsupportedEncodingException e) {
-	                e.printStackTrace();
-	            }
-	        }
-	        return sb.toString();
-	    }
 	
 	
  

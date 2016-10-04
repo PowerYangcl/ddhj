@@ -27,6 +27,20 @@ public interface IEstateInfoService {
 	 * @version 1.0.0.1
 	 */
 	public JSONObject estateInfoList(String city , String keyword , int page);
+	
+	
+	/**
+	 * @descriptions 地产检索|周边地产，根据经纬度确定周边的地产列表，范围10Km 
+	 *
+	 * @param lng 经度
+	 * @param lat 纬度
+	 * @return
+	 * @date 2016年10月4日 下午6:14:15
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject estateInfoList(String lng , String lat , String page);
+	
 } 
 
 

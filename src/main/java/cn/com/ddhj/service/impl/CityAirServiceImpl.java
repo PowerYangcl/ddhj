@@ -2,6 +2,7 @@ package cn.com.ddhj.service.impl;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.com.ddhj.dto.CityAqi;
+import cn.com.ddhj.dto.CityAqiData;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.util.PureNetUtil;
 
@@ -115,7 +118,7 @@ public class CityAirServiceImpl implements ICityAirService {
 	 * 描述: TODO
 	 * 
 	 * @param cityName
-	 * @return
+	 * @return {"date":"2016-10-04 20:00","city":"北京","AQI":"57","quality":"良"}
 	 * @see cn.com.ddhj.service.ICityAirService#getCityNowAir(java.lang.String)
 	 */
 	@Override
@@ -270,4 +273,129 @@ public class CityAirServiceImpl implements ICityAirService {
 		}
 		return level;
 	}
+
+	
+	
+	/**
+	 * @descriptions 返回当前时间的Aqi数据以及历史7天的Aqi数据
+	 *
+	 * @param cityName
+	 * @return
+	 * @date 2016年10月4日 下午8:55:07
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public CityAqi getCityAqi(String cityName) {
+		CityAqi e = new CityAqi();
+		JSONObject air = getCityAir(cityName);
+		if (air != null && air.getInteger("resultcode") == 200) {
+			JSONArray result = JSONArray.parseArray(air.getString("result"));
+			CityAqiData data = JSONObject.parseObject(JSONObject.parseObject(result.getJSONObject(0).getString("citynow")).toJSONString(), CityAqiData.class);
+			e.setEntity(data);
+			JSONArray array = new JSONArray();
+			JSONObject weeks = JSONObject.parseObject(result.getJSONObject(0).getString("lastTwoWeeks"));
+			if (weeks != null) {
+				for (int i = 1; i <= 7; i++) {
+					JSONObject obj = weeks.getJSONObject(i + "");
+					array.add(obj);
+				}
+				List<CityAqiData> list = JSONObject.parseArray(array.toJSONString() , CityAqiData.class);
+				e.setList(list); 
+			}
+		} 
+		return e;
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @descriptions 访问天气预报接口
+	 *
+	 * @param city
+	 * @return
+	 * @date 2016年10月5日 上午12:35:34
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	private JSONObject getCityWeather(String city) {
+		String url = "http://op.juhe.cn/onebox/weather/query";
+		JSONObject obj = null;
+		try {
+			Map<String, String> param = new HashMap<String, String>();
+			param.put("key", "cb6b71e3dc87bb434da0a8babf701936");
+			param.put("cityname", city); 
+			String result = PureNetUtil.get(url, param);
+			if (result != null && !"".equals(result)) {
+				obj = JSONObject.parseObject(result);
+			} else {
+				obj = new JSONObject();
+				obj.put("code", "-1");
+				obj.put("message", "查询数据为空");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			obj = new JSONObject();
+			obj.put("code", "-1");
+			obj.put("message", "查询数据错误");
+		}
+		return obj;
+	}
+
+	/**
+	 * @descriptions 获取天气信息
+	 *
+	 * @param city
+	 * @return
+	 * @date 2016年10月5日 上午1:09:38
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject getWeatherInfo(String city) {
+		JSONObject res = new JSONObject();
+
+		JSONObject obj = this.getCityWeather(city);
+		if (obj.getString("reason").equals("successed!")) {
+			JSONObject result = JSONObject.parseObject(obj.getString("result"));
+			JSONObject data = JSONObject.parseObject(result.getString("data"));
+			JSONObject realtime = JSONObject.parseObject(data.getString("realtime"));
+			// {"img":"3","temperature":"14","humidity":"92","info":"阵雨"}
+			JSONObject weather = JSONObject.parseObject(realtime.getString("weather"));
+			JSONObject pm25 = JSONObject.parseObject(data.getString("pm25"));
+			// {"des":"可正常活动。","curPm":"39","pm25":"27","level":1,"pm10":"55","quality":"优"}
+			JSONObject pm25_ = JSONObject.parseObject(pm25.getString("pm25"));
+			String info = weather.getString("info");
+			String quality = pm25_.getString("quality");
+			String des = pm25_.getString("des");
+			
+			res.put("info", info);					// 阵雨
+			res.put("quality", quality);	    // 优
+			res.put("des", des);					// 可正常活动。
+			return res;
+		}
+
+		return null;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
