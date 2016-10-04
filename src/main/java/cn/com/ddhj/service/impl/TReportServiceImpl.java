@@ -21,6 +21,7 @@ import cn.com.ddhj.model.TReportTemplate;
 import cn.com.ddhj.result.report.PDFReportResult;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.ITReportService;
+import cn.com.ddhj.service.ITRubbishRecyclingService;
 import cn.com.ddhj.service.IWaterQualityService;
 import cn.com.ddhj.util.PdfUtil;
 
@@ -45,6 +46,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private ICityAirService cityAirService;
 	@Autowired
 	private IWaterQualityService waterQualityService;
+	@Autowired
+	private ITRubbishRecyclingService rubbishService;
 
 	/**
 	 * 
@@ -63,8 +66,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (!file.exists()) {
 				file.mkdirs();
 			}
-			String filePath = "report/"+code+".pdf";
-			path = path+"/"+filePath;
+			String filePath = "report/" + code + ".pdf";
+			path = path + "/" + filePath;
 			// 根据code获取地产楼盘信息
 			TLandedProperty lp = lpMapper.selectByCode(code);
 			List<TReportTemplate> templateList = templateMapper.findReportTemplateAll();
@@ -89,7 +92,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			Integer airLevel = cityAirService.getAQILevel(lp.getCity());
 			// 水质量等级
 			Integer waterLevel = waterQualityService.getWaterLevel("北京密云古北口");
-
+			// 垃圾设施等级
+			Integer rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
 			if (templateList != null && templateList.size() > 0) {
 				JSONArray array = new JSONArray();
 				for (int i = 0; i < templateList.size(); i++) {
@@ -105,6 +109,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						obj.put("level", getLevelContent(model.getType(), airLevel, levelList));
 					} else if ("water".equals(model.getType())) {
 						obj.put("level", getLevelContent(model.getType(), waterLevel, levelList));
+					} else if ("rubbish".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), rubbishLevel, levelList));
 					} else {
 						obj.put("level", getLevelContent(model.getType(), 1, levelList));
 					}

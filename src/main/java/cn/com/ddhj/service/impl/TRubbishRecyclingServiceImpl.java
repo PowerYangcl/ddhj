@@ -52,8 +52,9 @@ public class TRubbishRecyclingServiceImpl
 	 * 
 	 * 方法: getDistance <br>
 	 * 描述: TODO
+	 * 
 	 * @param dto
-	 * @return 
+	 * @return
 	 * @see cn.com.ddhj.service.ITRubbishRecyclingService#getDistance(cn.com.ddhj.dto.TRubbishRecyclingDto)
 	 */
 	@Override
@@ -62,6 +63,31 @@ public class TRubbishRecyclingServiceImpl
 		Double ll = CommonUtil.getDistanceFromLL(Double.valueOf(dto.getLat()), Double.valueOf(dto.getLng()),
 				Double.valueOf(model.getLat()), Double.valueOf(model.getLng()));
 		return ll;
+	}
+
+	/**
+	 * 
+	 * 方法: getRubbishLevel <br>
+	 * 描述: TODO
+	 * 
+	 * @param distance
+	 * @return
+	 * @see cn.com.ddhj.service.ITRubbishRecyclingService#getRubbishLevel(java.lang.Double)
+	 */
+	@Override
+	public Integer getRubbishLevel(String city, String lat, String lng) {
+		Integer level = 1;
+		TRubbishRecyclingDto dto = new TRubbishRecyclingDto();
+		dto.setCity(city);
+		dto.setLat(lat);
+		dto.setLng(lng);
+		Double distance = this.getDistance(dto);
+		if (distance > 300 && distance <= 1000) {
+			level = 2;
+		} else if (distance <= 300) {
+			level = 3;
+		}
+		return level;
 	}
 
 }

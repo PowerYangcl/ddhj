@@ -12,7 +12,6 @@ import cn.com.ddhj.dto.TRubbishRecyclingDto;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.model.TRubbishRecycling;
 import cn.com.ddhj.service.ITRubbishRecyclingService;
-import cn.com.ddhj.util.CommonUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring/spring.xml", "classpath:spring/spring-mybatis.xml" })

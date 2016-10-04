@@ -35,4 +35,15 @@ public interface ITRubbishRecyclingService extends IBaseService<TRubbishRecyclin
 	 * @return
 	 */
 	Double getDistance(TRubbishRecyclingDto dto);
+	
+	/**
+	 * 
+	 * 方法: getRubbishLevel <br>
+	 * 描述: 获取垃圾回收设施级别 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月4日 下午12:26:56
+	 * @param distance
+	 * @return
+	 */
+	Integer getRubbishLevel(String city,String lat,String lng);
 }
