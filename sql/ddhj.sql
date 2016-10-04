@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50628
 File Encoding         : 65001
 
-Date: 2016-10-04 10:29:23
+Date: 2016-10-04 22:15:02
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -30,7 +30,7 @@ CREATE TABLE `sys_webcode` (
   `flag_date` int(11) DEFAULT '1' COMMENT '是否日期列',
   PRIMARY KEY (`zid`),
   UNIQUE KEY `code_start` (`code_start`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='系统编码表';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='系统编码表';
 
 -- ----------------------------
 -- Records of sys_webcode
@@ -38,6 +38,8 @@ CREATE TABLE `sys_webcode` (
 INSERT INTO `sys_webcode` VALUES ('1', '829530e188b811e6b41c8c89a5086523', 'T', '161003', '100000', '100024', '', '1');
 INSERT INTO `sys_webcode` VALUES ('2', '4cb21976892d11e69aa28c89a5086523', 'TL', '161003', '100000', '100045', '', '1');
 INSERT INTO `sys_webcode` VALUES ('3', '05319fe9895411e69aa28c89a5086523', 'LP', '161003', '100000', '100040', '', '1');
+INSERT INTO `sys_webcode` VALUES ('4', 'be0b3ef88a2d11e693a88c89a5086523', 'RL', '161004', '100000', '100009', '', '1');
+INSERT INTO `sys_webcode` VALUES ('5', '6a02f5128a3411e693a88c89a5086523', 'R', '161004', '100000', '100011', '', '1');
 
 -- ----------------------------
 -- Table structure for t_airenviroment
@@ -1074,23 +1076,27 @@ CREATE TABLE `t_report` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `uuid` varchar(50) DEFAULT NULL COMMENT 'uuid',
   `code` varchar(50) DEFAULT NULL COMMENT '报告编码',
-  `name` varchar(50) DEFAULT NULL COMMENT '楼盘名称',
-  `address` varchar(200) DEFAULT NULL COMMENT '楼盘地址',
-  `pic` varchar(200) DEFAULT NULL COMMENT '图标',
-  `image` varchar(200) DEFAULT NULL COMMENT '大图',
-  `levels` varchar(100) DEFAULT NULL COMMENT '报告等级',
+  `houses_code` varchar(50) DEFAULT NULL COMMENT '楼盘编码',
+  `title` varchar(200) DEFAULT '' COMMENT '报告标题',
+  `level_code` varchar(50) DEFAULT 'RL161004100007' COMMENT '报告等级编码 默认等级为普通',
+  `pic` varchar(200) DEFAULT '' COMMENT '图标',
+  `image` varchar(200) DEFAULT '' COMMENT '大图',
+  `rang` int(11) DEFAULT '3' COMMENT '范围,默认为公里,默认设置为3',
   `price` decimal(18,2) DEFAULT '0.00' COMMENT '价格',
+  `path` varchar(500) DEFAULT '' COMMENT '文件路径',
+  `detail` text COMMENT '报告说明',
   `create_user` varchar(20) NOT NULL COMMENT '创建人',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_user` varchar(20) NOT NULL COMMENT '最后修改人',
   `update_time` datetime NOT NULL COMMENT '最后修改时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='报告列表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='环境报告列表';
 
 -- ----------------------------
 -- Records of t_report
 -- ----------------------------
+INSERT INTO `t_report` VALUES ('1', 'b5b7d9e9dbd848d180b2ec171196e479', 'R161004100011', 'LP161003100031', '测试环境报告添加', 'RL161004100007', '', '', '10', '1.00', 'report/LP161003100031.pdf', '', 'system', '2016-10-04 22:08:39', 'system', '2016-10-04 22:08:39');
 
 -- ----------------------------
 -- Table structure for t_report_comment
@@ -1168,19 +1174,22 @@ DROP TABLE IF EXISTS `t_report_level`;
 CREATE TABLE `t_report_level` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `uuid` varchar(50) DEFAULT NULL COMMENT 'uuid',
-  `code` varchar(50) NOT NULL COMMENT '等级编号',
-  `name` varchar(50) NOT NULL COMMENT '等级名称',
-  `status` int(11) DEFAULT '0' COMMENT '是否可用 0 可用 1 不可用',
+  `code` varchar(50) DEFAULT NULL COMMENT '等级编码',
+  `name` varchar(50) DEFAULT NULL COMMENT '等级名称',
   `create_user` varchar(20) NOT NULL COMMENT '创建人',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_user` varchar(20) NOT NULL COMMENT '最后修改人',
   `update_time` datetime NOT NULL COMMENT '最后修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='报告等级表';
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='环境报告等级';
 
 -- ----------------------------
 -- Records of t_report_level
 -- ----------------------------
+INSERT INTO `t_report_level` VALUES ('1', 'd1f3d6ee22c3469bac1807c5e3283946', 'RL161004100007', '普通', 'system', '2016-10-04 20:28:08', 'system', '2016-10-04 20:28:08');
+INSERT INTO `t_report_level` VALUES ('2', '4e3c7381518a41418339d356f04a27e6', 'RL161004100008', '高级', 'system', '2016-10-04 20:28:08', 'system', '2016-10-04 20:28:08');
+INSERT INTO `t_report_level` VALUES ('3', '970c0ea5d94544228937fb44a8fdb882', 'RL161004100009', '专业', 'system', '2016-10-04 20:28:08', 'system', '2016-10-04 20:28:08');
 
 -- ----------------------------
 -- Table structure for t_report_template
