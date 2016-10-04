@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
-import cn.com.ddhj.dto.TReportDto;
+import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.report.ITReportService;

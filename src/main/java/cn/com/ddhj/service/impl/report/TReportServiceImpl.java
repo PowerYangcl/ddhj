@@ -13,7 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
-import cn.com.ddhj.dto.TReportDto;
+import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
@@ -153,7 +153,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * 
 	 * @param dto
 	 * @return
-	 * @see cn.com.ddhj.service.report.ITReportService#getReportData(cn.com.ddhj.dto.TReportDto)
+	 * @see cn.com.ddhj.service.report.ITReportService#getReportData(cn.com.ddhj.dto.report.TReportDto)
 	 */
 	@Override
 	public TReportLResult getReportData(TReportDto dto) {

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.com.ddhj.base.BaseResult;
-import cn.com.ddhj.dto.TReportDto;
+import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.report.PDFReportResult;
 import cn.com.ddhj.result.report.TReportLResult;

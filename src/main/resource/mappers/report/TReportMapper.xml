@@ -163,7 +163,7 @@
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
-	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.TReportDto"
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.report.TReportDto"
 		resultMap="BaseResultMap">
 		SELECT
 		r.id,
@@ -188,7 +188,7 @@
 		</where>
 		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
-	<select id="findEntityAllCount" parameterType="cn.com.ddhj.dto.TReportDto"
+	<select id="findEntityAllCount" parameterType="cn.com.ddhj.dto.report.TReportDto"
 		resultType="java.lang.Integer">
 		SELECT
 		count(1)

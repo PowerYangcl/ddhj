@@ -94,7 +94,7 @@
 		where code = #{code,jdbcType=VARCHAR}
 	</update>
 	<!-- 根据环境等级和类型查询等级描述信息 -->
-	<select id="findTReportEnvironmentLevelByType" parameterType="cn.com.ddhj.dto.TReportEnvironmentLevelDto"
+	<select id="findTReportEnvironmentLevelByType" parameterType="cn.com.ddhj.dto.report.TReportEnvironmentLevelDto"
 		resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
