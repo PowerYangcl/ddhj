@@ -1,9 +1,10 @@
-package cn.com.ddhj.mapper;
+package cn.com.ddhj.mapper.report;
 
 import java.util.List;
 
 import cn.com.ddhj.dto.BaseDto;
-import cn.com.ddhj.model.TReportTemplate;
+import cn.com.ddhj.mapper.BaseMapper;
+import cn.com.ddhj.model.report.TReportTemplate;
 
 /**
  * 

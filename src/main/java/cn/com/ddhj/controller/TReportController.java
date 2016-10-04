@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.com.ddhj.result.report.PDFReportResult;
-import cn.com.ddhj.service.ITReportService;
+import cn.com.ddhj.service.report.ITReportService;
 
 @Controller
 @RequestMapping("report/")

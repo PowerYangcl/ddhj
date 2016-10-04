@@ -1,12 +1,13 @@
-package cn.com.ddhj.service.impl;
+package cn.com.ddhj.service.impl.report;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.ddhj.dto.TReportEnvironmentLevelDto;
-import cn.com.ddhj.mapper.TReportEnvironmentLevelMapper;
-import cn.com.ddhj.model.TReportEnvironmentLevel;
-import cn.com.ddhj.service.ITReportEnvironmentLevelService;
+import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
+import cn.com.ddhj.model.report.TReportEnvironmentLevel;
+import cn.com.ddhj.service.impl.BaseServiceImpl;
+import cn.com.ddhj.service.report.ITReportEnvironmentLevelService;
 
 /**
  * 
@@ -30,7 +31,7 @@ public class TReportEnvironmentLevelServiceImpl
 	 * 
 	 * @param dto
 	 * @return
-	 * @see cn.com.ddhj.service.ITReportEnvironmentLevelService#findTReportEnvironmentLevelByType(cn.com.ddhj.dto.TReportEnvironmentLevelDto)
+	 * @see cn.com.ddhj.service.report.ITReportEnvironmentLevelService#findTReportEnvironmentLevelByType(cn.com.ddhj.dto.TReportEnvironmentLevelDto)
 	 */
 	@Override
 	public TReportEnvironmentLevel findTReportEnvironmentLevelByType(TReportEnvironmentLevelDto dto) {

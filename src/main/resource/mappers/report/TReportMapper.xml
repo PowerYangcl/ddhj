@@ -1,37 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.com.ddhj.mapper.TReportMapper">
-	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TReport">
+<mapper namespace="cn.com.ddhj.mapper.report.TReportMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.report.TReport">
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
 		<result column="code" property="code" jdbcType="VARCHAR" />
-		<result column="name" property="name" jdbcType="VARCHAR" />
-		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="houses_code" property="housesCode" jdbcType="VARCHAR" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="level_code" property="levelCode" jdbcType="VARCHAR" />
 		<result column="pic" property="pic" jdbcType="VARCHAR" />
 		<result column="image" property="image" jdbcType="VARCHAR" />
-		<result column="levels" property="levels" jdbcType="VARCHAR" />
+		<result column="rang" property="rang" jdbcType="INTEGER" />
 		<result column="price" property="price" jdbcType="DECIMAL" />
+		<result column="path" property="path" jdbcType="VARCHAR" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="detail" property="detail" jdbcType="LONGVARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, uuid, code, name, address, pic, image, levels, price,
-		create_user,
-		DATE_FORMAT(
-		create_time,
-		'%Y-%m-%d'
-		) AS
-		create_time,
-		update_user,
-		DATE_FORMAT(
-		update_time,
-		'%Y-%m-%d'
-		) AS
+		id, uuid, code, houses_code, title, level_code, pic, image,
+		rang, price,
+		path,detail, create_user,
+		create_time, update_user,
 		update_time
 	</sql>
-	<select id="selectByCode" resultMap="BaseResultMap"
+	<select id="selectByCode" resultMap="ResultMapWithBLOBs"
 		parameterType="java.lang.String">
 		select
 		<include refid="Base_Column_List" />
@@ -42,67 +37,76 @@
 		delete from t_report
 		where `code` = #{code,jdbcType=VARCHAR}
 	</delete>
-	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TReport">
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.report.TReport">
 		insert into t_report
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			uuid,
 			code,
-			name,
-			<if test="address != null">
-				address,
-			</if>
+			houses_code,
+			title,
+			level_code,
 			<if test="pic != null">
 				pic,
 			</if>
 			<if test="image != null">
 				image,
 			</if>
-			<if test="levels != null">
-				levels,
+			<if test="rang != null">
+				rang,
 			</if>
 			<if test="price != null">
 				price,
 			</if>
+			<if test="path != null">
+				path,
+			</if>
 			create_user,
 			create_time,
 			update_user,
-			update_time
+			update_time,
+			detail
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			#{uuid,jdbcType=VARCHAR},
 			#{code,jdbcType=VARCHAR},
-			#{name,jdbcType=VARCHAR},
-			<if test="address != null">
-				#{address,jdbcType=VARCHAR},
-			</if>
+			#{housesCode,jdbcType=VARCHAR},
+			#{title,jdbcType=VARCHAR},
+			#{levelCode,jdbcType=VARCHAR},
 			<if test="pic != null">
 				#{pic,jdbcType=VARCHAR},
 			</if>
 			<if test="image != null">
 				#{image,jdbcType=VARCHAR},
 			</if>
-			<if test="levels != null">
-				#{levels,jdbcType=VARCHAR},
+			<if test="rang != null">
+				#{rang,jdbcType=INTEGER},
 			</if>
 			<if test="price != null">
 				#{price,jdbcType=DECIMAL},
+			</if>
+			<if test="path != null">
+				#{path,jdbcType=VARCHAR},
 			</if>
 			#{createUser,jdbcType=VARCHAR},
 			STR_TO_DATE(
 			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 			#{updateUser,jdbcType=VARCHAR},
 			STR_TO_DATE(
-			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{content,jdbcType=LONGVARCHAR}
+			<if test="detail != null">
+				#{detail,jdbcType=LONGVARCHAR},
+			</if>
 		</trim>
 	</insert>
-	<update id="updateByCode" parameterType="cn.com.ddhj.model.TReport">
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.report.TReport">
 		update t_report
 		<set>
-			<if test="name != null">
-				name = #{name,jdbcType=VARCHAR},
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
 			</if>
-			<if test="address != null">
-				address = #{address,jdbcType=VARCHAR},
+			<if test="levelCode != null">
+				level_code = #{levelCode,jdbcType=VARCHAR},
 			</if>
 			<if test="pic != null">
 				pic = #{pic,jdbcType=VARCHAR},
@@ -110,17 +114,32 @@
 			<if test="image != null">
 				image = #{image,jdbcType=VARCHAR},
 			</if>
-			<if test="levels != null">
-				levels = #{levels,jdbcType=VARCHAR},
+			<if test="rang != null">
+				rang = #{rang,jdbcType=INTEGER},
 			</if>
 			<if test="price != null">
 				price = #{price,jdbcType=DECIMAL},
+			</if>
+			<if test="path != null">
+				path = #{path,jdbcType=VARCHAR},
 			</if>
 			update_user = #{updateUser,jdbcType=VARCHAR},
 			update_time =
 			STR_TO_DATE(
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			<if test="detail != null">
+				detail = #{detail,jdbcType=LONGVARCHAR}
+			</if>
 		</set>
-		where code = #{code,jdbcType=VARCHAR}
+		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.TReportDto"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_report
+		where `code` = #{code,jdbcType=VARCHAR}
+	</select>
+	<select id="findEntityAllCount" parameterType="cn.com.ddhj.dto.TReportDto"
+		resultType="java.lang.Integer"></select>
 </mapper>

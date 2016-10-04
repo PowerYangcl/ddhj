@@ -8,8 +8,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.helper.WebHelper;
-import cn.com.ddhj.model.TReportEnvironmentLevel;
-import cn.com.ddhj.service.ITReportEnvironmentLevelService;
+import cn.com.ddhj.model.report.TReportEnvironmentLevel;
+import cn.com.ddhj.service.report.ITReportEnvironmentLevelService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring/spring.xml", "classpath:spring/spring-mybatis.xml" })

@@ -1,7 +1,8 @@
-package cn.com.ddhj.service;
+package cn.com.ddhj.service.report;
 
 import cn.com.ddhj.dto.TReportEnvironmentLevelDto;
-import cn.com.ddhj.model.TReportEnvironmentLevel;
+import cn.com.ddhj.model.report.TReportEnvironmentLevel;
+import cn.com.ddhj.service.IBaseService;
 
 /**
  * 

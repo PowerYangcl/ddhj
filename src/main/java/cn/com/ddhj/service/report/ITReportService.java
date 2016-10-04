@@ -1,8 +1,11 @@
-package cn.com.ddhj.service;
+package cn.com.ddhj.service.report;
 
 import cn.com.ddhj.dto.BaseDto;
-import cn.com.ddhj.model.TReport;
+import cn.com.ddhj.dto.TReportDto;
+import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.report.PDFReportResult;
+import cn.com.ddhj.result.report.TReportResult;
+import cn.com.ddhj.service.IBaseService;
 
 /**
  * 
@@ -24,4 +27,16 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @return
 	 */
 	PDFReportResult createPDF(String code, String path);
+
+	/**
+	 * 
+	 * 方法: getReportData <br>
+	 * 描述: 获取报告列表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月4日 下午5:58:28
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	TReportResult getReportData(TReportDto dto);
 }

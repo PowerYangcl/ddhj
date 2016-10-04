@@ -1,6 +1,7 @@
-package cn.com.ddhj.service.impl;
+package cn.com.ddhj.service.impl.report;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,19 +11,22 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.dto.TReportDto;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
-import cn.com.ddhj.mapper.TReportEnvironmentLevelMapper;
-import cn.com.ddhj.mapper.TReportMapper;
-import cn.com.ddhj.mapper.TReportTemplateMapper;
+import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
+import cn.com.ddhj.mapper.report.TReportMapper;
+import cn.com.ddhj.mapper.report.TReportTemplateMapper;
 import cn.com.ddhj.model.TLandedProperty;
-import cn.com.ddhj.model.TReport;
-import cn.com.ddhj.model.TReportEnvironmentLevel;
-import cn.com.ddhj.model.TReportTemplate;
+import cn.com.ddhj.model.report.TReport;
+import cn.com.ddhj.model.report.TReportEnvironmentLevel;
+import cn.com.ddhj.model.report.TReportTemplate;
 import cn.com.ddhj.result.report.PDFReportResult;
+import cn.com.ddhj.result.report.TReportResult;
 import cn.com.ddhj.service.ICityAirService;
-import cn.com.ddhj.service.ITReportService;
 import cn.com.ddhj.service.ITRubbishRecyclingService;
 import cn.com.ddhj.service.IWaterQualityService;
+import cn.com.ddhj.service.impl.BaseServiceImpl;
+import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.PdfUtil;
 
 /**
@@ -35,6 +39,8 @@ import cn.com.ddhj.util.PdfUtil;
 @Service
 public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, BaseDto> implements ITReportService {
 
+	@Autowired
+	private TReportMapper mapper;
 	@Autowired
 	private TReportTemplateMapper templateMapper;
 
@@ -56,7 +62,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * 
 	 * @param array
 	 * @return
-	 * @see cn.com.ddhj.service.ITReportService#createPDF(com.alibaba.fastjson.JSONArray)
+	 * @see cn.com.ddhj.service.report.ITReportService#createPDF(com.alibaba.fastjson.JSONArray)
 	 */
 	@Override
 	public PDFReportResult createPDF(String code, String path) {
@@ -155,5 +161,36 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 		}
 		return content;
+	}
+
+	/**
+	 * 
+	 * 方法: getReportData <br>
+	 * 描述: TODO
+	 * 
+	 * @param dto
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#getReportData(cn.com.ddhj.dto.TReportDto)
+	 */
+	@Override
+	public TReportResult getReportData(TReportDto dto) {
+		dto.setStart(dto.getPageIndex() * dto.getPageSize());
+		TReportResult result = new TReportResult();
+		String city = dto.getCity();
+		if (city != null && !"".equals(city)) {
+			List<TReport> list = mapper.findEntityAll(dto);
+			if (list != null && list.size() > 0) {
+				result.setRepList(list);
+				Integer total = mapper.findEntityAllCount(dto);
+				result.setRepCount(total);
+			} else {
+				result.setRepList(new ArrayList<TReport>());
+				result.setRepCount(0);
+			}
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("查询地点不能为空");
+		}
+		return null;
 	}
 }

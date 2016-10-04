@@ -1,9 +1,10 @@
-package cn.com.ddhj.service;
+package cn.com.ddhj.service.report;
 
 import java.util.List;
 
 import cn.com.ddhj.dto.BaseDto;
-import cn.com.ddhj.model.TReportTemplate;
+import cn.com.ddhj.model.report.TReportTemplate;
+import cn.com.ddhj.service.IBaseService;
 
 /**
  * 

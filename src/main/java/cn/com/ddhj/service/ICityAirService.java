@@ -25,7 +25,7 @@ public interface ICityAirService {
 
 	/**
 	 * 
-	 * 方法: getCityAir <br>
+	 * 方法: getCityNowAir <br>
 	 * 描述: 城市空气质量 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月1日 下午8:57:11
@@ -33,7 +33,19 @@ public interface ICityAirService {
 	 * @param cityName
 	 * @return
 	 */
-	JSONObject getCityAir(String cityName);
+	JSONObject getCityNowAir(String cityName);
+
+	/**
+	 * 
+	 * 方法: getLastWeekAir <br>
+	 * 描述: 获取城市历史七天的空气质量 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月4日 下午7:57:33
+	 * 
+	 * @param cityName
+	 * @return
+	 */
+	JSONArray getLastWeekAir(String cityName);
 
 	/**
 	 * 

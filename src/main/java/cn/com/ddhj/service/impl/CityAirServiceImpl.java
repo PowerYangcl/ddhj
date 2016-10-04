@@ -52,41 +52,6 @@ public class CityAirServiceImpl implements ICityAirService {
 
 	/**
 	 * 
-	 * 方法: getCityAir <br>
-	 * 描述: TODO
-	 * 
-	 * @param cityName
-	 * @return
-	 * @see cn.com.ddhj.service.ICityAirService#getCityAir(java.lang.String)
-	 */
-	@Override
-	public JSONObject getCityAir(String cityName) {
-		String url = "http://web.juhe.cn:8080/environment/air/cityair";
-		JSONObject obj = null;
-		try {
-			Map<String, String> param = new HashMap<String, String>();
-			param.put("key", KEY);
-			String city = URLEncoder.encode(cityName, "UTF-8");
-			param.put("city", city);
-			String result = PureNetUtil.post(url, param);
-			if (result != null && !"".equals(result)) {
-				obj = JSONObject.parseObject(result);
-			} else {
-				obj = new JSONObject();
-				obj.put("code", "-1");
-				obj.put("message", "查询数据为空");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			obj = new JSONObject();
-			obj.put("code", "-1");
-			obj.put("message", "查询数据错误");
-		}
-		return obj;
-	}
-
-	/**
-	 * 
 	 * 方法: getPMCityData <br>
 	 * 描述: TODO
 	 * 
@@ -141,6 +106,87 @@ public class CityAirServiceImpl implements ICityAirService {
 			obj.put("message", "查询城市无法查询pm2.5信息");
 		}
 
+		return obj;
+	}
+
+	/**
+	 * 
+	 * 方法: getCityNowAir <br>
+	 * 描述: TODO
+	 * 
+	 * @param cityName
+	 * @return
+	 * @see cn.com.ddhj.service.ICityAirService#getCityNowAir(java.lang.String)
+	 */
+	@Override
+	public JSONObject getCityNowAir(String cityName) {
+		JSONObject air = getCityAir(cityName);
+		if (air != null && air.getInteger("resultcode") == 200) {
+			JSONArray result = JSONArray.parseArray(air.getString("result"));
+			return JSONObject.parseObject(result.getJSONObject(0).getString("citynow"));
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * 
+	 * 方法: getLastWeekAir <br>
+	 * 描述: TODO
+	 * 
+	 * @param cityName
+	 * @return
+	 * @see cn.com.ddhj.service.ICityAirService#getLastWeekAir(java.lang.String)
+	 */
+	@Override
+	public JSONArray getLastWeekAir(String cityName) {
+		JSONObject air = getCityAir(cityName);
+		JSONArray array = new JSONArray();
+		if (air != null && air.getInteger("resultcode") == 200) {
+			JSONArray result = JSONArray.parseArray(air.getString("result"));
+			JSONObject weeks = JSONObject.parseObject(result.getJSONObject(0).getString("lastTwoWeeks"));
+			if (weeks != null) {
+				for (int i = 1; i <= 7; i++) {
+					JSONObject obj = weeks.getJSONObject(i + "");
+					array.add(obj);
+				}
+			}
+		}
+		return array;
+	}
+
+	/**
+	 * 
+	 * 方法: getCityAir <br>
+	 * 描述: 获取城市空气质量数据 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月4日 下午8:00:21
+	 * 
+	 * @param cityName
+	 * @return
+	 */
+	private static JSONObject getCityAir(String cityName) {
+		String url = "http://web.juhe.cn:8080/environment/air/cityair";
+		JSONObject obj = null;
+		try {
+			Map<String, String> param = new HashMap<String, String>();
+			param.put("key", KEY);
+			String city = URLEncoder.encode(cityName, "UTF-8");
+			param.put("city", city);
+			String result = PureNetUtil.post(url, param);
+			if (result != null && !"".equals(result)) {
+				obj = JSONObject.parseObject(result);
+			} else {
+				obj = new JSONObject();
+				obj.put("code", "-1");
+				obj.put("message", "查询数据为空");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			obj = new JSONObject();
+			obj.put("code", "-1");
+			obj.put("message", "查询数据错误");
+		}
 		return obj;
 	}
 
@@ -205,7 +251,7 @@ public class CityAirServiceImpl implements ICityAirService {
 	@Override
 	public Integer getAQILevel(String cityName) {
 		Integer level = 1;
-		JSONObject air = this.getCityAir(cityName);
+		JSONObject air = getCityAir(cityName);
 		if (air != null) {
 			JSONArray result = JSONArray.parseArray(air.getString("result"));
 			JSONObject citynow = JSONObject.parseObject(result.getJSONObject(0).getString("citynow"));
