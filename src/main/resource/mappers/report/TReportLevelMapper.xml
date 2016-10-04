@@ -72,4 +72,11 @@
 		</set>
 		where `code` = #{code,jdbcType=INTEGER}
 	</update>
+	<!-- 获取所有等级 -->
+	<select id="findEntityAll" resultMap="BaseResultMap">
+		select
+		`code`,`name`
+		from
+		t_report_level
+	</select>
 </mapper>

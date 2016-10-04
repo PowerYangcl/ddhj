@@ -1,10 +1,12 @@
 package cn.com.ddhj.service.report;
 
+import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TReportDto;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.report.PDFReportResult;
-import cn.com.ddhj.result.report.TReportResult;
+import cn.com.ddhj.result.report.TReportLResult;
+import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.IBaseService;
 
 /**
@@ -16,7 +18,6 @@ import cn.com.ddhj.service.IBaseService;
  */
 public interface ITReportService extends IBaseService<TReport, BaseDto> {
 
-	
 	/**
 	 * 
 	 * 方法: createPDF <br>
@@ -39,5 +40,42 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @param dto
 	 * @return
 	 */
-	TReportResult getReportData(TReportDto dto);
+	TReportLResult getReportData(TReportDto dto);
+
+	/**
+	 * 
+	 * 方法: insert <br>
+	 * 描述: 添加新的环境报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月4日 下午9:04:56
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	BaseResult insert(TReport entity, String path);
+
+	/**
+	 * 
+	 * 方法: updateByCode <br>
+	 * 描述: 编辑现有的环境报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月4日 下午9:22:14
+	 * 
+	 * @param entity
+	 * @param path
+	 * @return
+	 */
+	BaseResult updateByCode(TReport entity, String path);
+
+	/**
+	 * 
+	 * 方法: getTReport <br>
+	 * 描述: 根据编码查询报告详情 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月4日 下午9:59:40
+	 * 
+	 * @param code
+	 * @return
+	 */
+	TReportSelResult getTReport(String code);
 }

@@ -38,10 +38,25 @@
 	</sql>
 	<select id="selectByCode" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
-		select
-		<include refid="Base_Column_List" />
-		from t_report
-		where `code` = #{code,jdbcType=VARCHAR}
+		SELECT
+		r.id,
+		r.`code`,
+		r.pic,
+		r.image,
+		r.rang,
+		r.create_time,
+		lp.addressFull
+		as address,
+		r.price,
+		r.path
+		FROM
+		t_report AS r
+		LEFT JOIN
+		t_landed_property
+		AS lp ON
+		r.houses_code = lp.`code`
+		where r.`code` =
+		#{code,jdbcType=VARCHAR}
 	</select>
 	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from t_report
@@ -54,7 +69,9 @@
 			code,
 			houses_code,
 			title,
-			level_code,
+			<if test="levelCode != null">
+				level_code,
+			</if>
 			<if test="pic != null">
 				pic,
 			</if>
@@ -74,14 +91,18 @@
 			create_time,
 			update_user,
 			update_time,
-			detail
+			<if test="detail != null">
+				detail,
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			#{uuid,jdbcType=VARCHAR},
 			#{code,jdbcType=VARCHAR},
 			#{housesCode,jdbcType=VARCHAR},
 			#{title,jdbcType=VARCHAR},
-			#{levelCode,jdbcType=VARCHAR},
+			<if test="levelCode != null">
+				#{levelCode,jdbcType=VARCHAR},
+			</if>
 			<if test="pic != null">
 				#{pic,jdbcType=VARCHAR},
 			</if>
@@ -182,6 +203,5 @@
 				lp.city = #{city,jdbcType=VARCHAR}
 			</if>
 		</where>
-
 	</select>
 </mapper>

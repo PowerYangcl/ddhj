@@ -3,6 +3,7 @@ package cn.com.ddhj.service.impl.report;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,13 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TReportDto;
+import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
+import cn.com.ddhj.mapper.report.TReportLevelMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.report.TReportTemplateMapper;
 import cn.com.ddhj.model.TLandedProperty;
@@ -21,12 +25,14 @@ import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 import cn.com.ddhj.model.report.TReportTemplate;
 import cn.com.ddhj.result.report.PDFReportResult;
-import cn.com.ddhj.result.report.TReportResult;
+import cn.com.ddhj.result.report.TReportLResult;
+import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.ITRubbishRecyclingService;
 import cn.com.ddhj.service.IWaterQualityService;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.report.ITReportService;
+import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.PdfUtil;
 
 /**
@@ -41,6 +47,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 	@Autowired
 	private TReportMapper mapper;
+	@Autowired
+	private TReportLevelMapper reportLevelMapper;
 	@Autowired
 	private TReportTemplateMapper templateMapper;
 
@@ -140,6 +148,129 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 	/**
 	 * 
+	 * 方法: getReportData <br>
+	 * 描述: TODO
+	 * 
+	 * @param dto
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#getReportData(cn.com.ddhj.dto.TReportDto)
+	 */
+	@Override
+	public TReportLResult getReportData(TReportDto dto) {
+		dto.setStart(dto.getPageIndex() * dto.getPageSize());
+		TReportLResult result = new TReportLResult();
+		String city = dto.getCity();
+		if (city != null && !"".equals(city)) {
+			List<TReport> list = mapper.findEntityAll(dto);
+			if (list != null && list.size() > 0) {
+				result.setRepList(list);
+				Integer total = mapper.findEntityAllCount(dto);
+				result.setRepCount(total);
+			} else {
+				result.setRepList(new ArrayList<TReport>());
+				result.setRepCount(0);
+			}
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("查询地点不能为空");
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * 方法: insert <br>
+	 * 描述: TODO
+	 * 
+	 * @param entity
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#insert(cn.com.ddhj.model.report.TReport)
+	 */
+	@Override
+	public BaseResult insert(TReport entity, String path) {
+		BaseResult result = new BaseResult();
+		String code = WebHelper.getInstance().getUniqueCode("R");
+		PDFReportResult pdfResult = this.createPDF(entity.getHousesCode(), path);
+		pdfResult.setResultCode(0);
+		if (pdfResult.getResultCode() == 0) {
+			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+			entity.setCode(code);
+			entity.setCreateUser("system");
+			entity.setUpdateUser("system");
+			entity.setCreateTime(DateUtil.getSysDateTime());
+			entity.setUpdateTime(DateUtil.getSysDateTime());
+			entity.setPath(pdfResult.getPath());
+			int flag = mapper.insertSelective(entity);
+			if (flag > 0) {
+				result.setResultCode(0);
+				result.setResultMessage("添加成功");
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("添加失败");
+			}
+		} else {
+			result.setResultCode(pdfResult.getResultCode());
+			result.setResultMessage(pdfResult.getResultMessage());
+		}
+		return result;
+	}
+
+	@Override
+	public BaseResult updateByCode(TReport entity, String path) {
+		BaseResult result = new BaseResult();
+		PDFReportResult pdfResult = this.createPDF(entity.getHousesCode(), path);
+		pdfResult.setResultCode(0);
+		if (pdfResult.getResultCode() == 0) {
+			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+			entity.setUpdateUser("system");
+			entity.setUpdateTime(DateUtil.getSysDateTime());
+			entity.setPath(pdfResult.getPath());
+			int flag = mapper.updateByCode(entity);
+			if (flag > 0) {
+				result.setResultCode(0);
+				result.setResultMessage("修改成功");
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("修改失败");
+			}
+		} else {
+			result.setResultCode(pdfResult.getResultCode());
+			result.setResultMessage(pdfResult.getResultMessage());
+		}
+		return result;
+
+	}
+
+	/**
+	 * 
+	 * 方法: getTReport <br>
+	 * 描述: TODO
+	 * 
+	 * @param code
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#getTReport(java.lang.String)
+	 */
+	@Override
+	public TReportSelResult getTReport(String code) {
+		TReportSelResult result = new TReportSelResult();
+		TReport report = mapper.selectByCode(code);
+		if (report != null) {
+			result.setLevelList(reportLevelMapper.findEntityAll());
+			result.setAddress(report.getAddress());
+			result.setDetail(report.getDetail());
+			result.setImage(report.getImage());
+			result.setPic(report.getPic());
+			result.setPrice(report.getPrice());
+			result.setResultCode(0);
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("环境报告为空");
+		}
+		return result;
+	}
+
+	/**
+	 * 
 	 * 方法: getLevelContent <br>
 	 * 描述: 获取环境等级描述信息 <br>
 	 * 作者: zhy<br>
@@ -163,34 +294,4 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return content;
 	}
 
-	/**
-	 * 
-	 * 方法: getReportData <br>
-	 * 描述: TODO
-	 * 
-	 * @param dto
-	 * @return
-	 * @see cn.com.ddhj.service.report.ITReportService#getReportData(cn.com.ddhj.dto.TReportDto)
-	 */
-	@Override
-	public TReportResult getReportData(TReportDto dto) {
-		dto.setStart(dto.getPageIndex() * dto.getPageSize());
-		TReportResult result = new TReportResult();
-		String city = dto.getCity();
-		if (city != null && !"".equals(city)) {
-			List<TReport> list = mapper.findEntityAll(dto);
-			if (list != null && list.size() > 0) {
-				result.setList(list);
-				Integer total = mapper.findEntityAllCount(dto);
-				result.setTotal(total);
-			} else {
-				result.setList(new ArrayList<TReport>());
-				result.setTotal(0);
-			}
-		} else {
-			result.setResultCode(-1);
-			result.setResultMessage("查询地点不能为空");
-		}
-		return null;
-	}
 }
