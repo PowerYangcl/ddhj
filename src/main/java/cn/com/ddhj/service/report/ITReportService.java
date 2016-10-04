@@ -16,6 +16,7 @@ import cn.com.ddhj.service.IBaseService;
  */
 public interface ITReportService extends IBaseService<TReport, BaseDto> {
 
+	
 	/**
 	 * 
 	 * 方法: createPDF <br>

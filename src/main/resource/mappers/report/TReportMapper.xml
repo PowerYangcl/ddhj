@@ -13,6 +13,7 @@
 		<result column="rang" property="rang" jdbcType="INTEGER" />
 		<result column="price" property="price" jdbcType="DECIMAL" />
 		<result column="path" property="path" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
@@ -23,10 +24,19 @@
 		id, uuid, code, houses_code, title, level_code, pic, image,
 		rang, price,
 		path,detail, create_user,
-		create_time, update_user,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
 		update_time
 	</sql>
-	<select id="selectByCode" resultMap="ResultMapWithBLOBs"
+	<select id="selectByCode" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
 		select
 		<include refid="Base_Column_List" />
@@ -93,7 +103,6 @@
 			#{updateUser,jdbcType=VARCHAR},
 			STR_TO_DATE(
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
-			#{content,jdbcType=LONGVARCHAR}
 			<if test="detail != null">
 				#{detail,jdbcType=LONGVARCHAR},
 			</if>
@@ -135,11 +144,44 @@
 	</update>
 	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.TReportDto"
 		resultMap="BaseResultMap">
-		select
-		<include refid="Base_Column_List" />
-		from t_report
-		where `code` = #{code,jdbcType=VARCHAR}
+		SELECT
+		r.id,
+		r.`code`,
+		r.pic,
+		r.image,
+		r.rang,
+		r.create_time,
+		lp.addressFull
+		as address,
+		r.price,
+		r.path
+		FROM
+		t_report AS r
+		LEFT JOIN t_landed_property
+		AS lp ON
+		r.houses_code = lp.`code`
+		<where>
+			<if test="city != null and city != ''">
+				lp.city = #{city,jdbcType=VARCHAR}
+			</if>
+		</where>
+		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
 	<select id="findEntityAllCount" parameterType="cn.com.ddhj.dto.TReportDto"
-		resultType="java.lang.Integer"></select>
+		resultType="java.lang.Integer">
+		SELECT
+		count(1)
+		FROM
+		t_report AS r
+		LEFT JOIN t_landed_property
+		AS lp ON
+		r.houses_code =
+		lp.`code`
+		<where>
+			<if test="city != null and city != ''">
+				lp.city = #{city,jdbcType=VARCHAR}
+			</if>
+		</where>
+
+	</select>
 </mapper>

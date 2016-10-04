@@ -180,12 +180,12 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (city != null && !"".equals(city)) {
 			List<TReport> list = mapper.findEntityAll(dto);
 			if (list != null && list.size() > 0) {
-				result.setRepList(list);
+				result.setList(list);
 				Integer total = mapper.findEntityAllCount(dto);
-				result.setRepCount(total);
+				result.setTotal(total);
 			} else {
-				result.setRepList(new ArrayList<TReport>());
-				result.setRepCount(0);
+				result.setList(new ArrayList<TReport>());
+				result.setTotal(0);
 			}
 		} else {
 			result.setResultCode(-1);

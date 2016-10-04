@@ -1,7 +1,7 @@
 package cn.com.ddhj.service;
 
-import com.alibaba.fastjson.JSONObject;
-
+import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.base.PageResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.model.BaseModel;
 
@@ -27,7 +27,7 @@ public interface IBaseService<T extends BaseModel, DTO extends BaseDto> {
 	 * @param entity
 	 * @return
 	 */
-	JSONObject insertSelective(T entity);
+	BaseResult insertSelective(T entity);
 
 	/**
 	 * 
@@ -39,7 +39,7 @@ public interface IBaseService<T extends BaseModel, DTO extends BaseDto> {
 	 * @param entity
 	 * @return
 	 */
-	JSONObject updateByCode(T entity);
+	BaseResult updateByCode(T entity);
 
 	/**
 	 * 
@@ -51,7 +51,7 @@ public interface IBaseService<T extends BaseModel, DTO extends BaseDto> {
 	 * @param code
 	 * @return
 	 */
-	JSONObject deleteByCode(String code);
+	BaseResult deleteByCode(String code);
 
 	/**
 	 * 
@@ -87,5 +87,5 @@ public interface IBaseService<T extends BaseModel, DTO extends BaseDto> {
 	 * @param dto
 	 * @return
 	 */
-	JSONObject findEntityToPage(DTO dto);
+	PageResult<T> findEntityToPage(DTO dto);
 }

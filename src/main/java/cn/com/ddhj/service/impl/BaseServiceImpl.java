@@ -6,8 +6,8 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alibaba.fastjson.JSONObject;
-
+import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.base.PageResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.BaseModel;
@@ -41,7 +41,8 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 	 * @see cn.com.ath.service.IBaseService#insertSelective(cn.com.ath.model.BaseModel)
 	 */
 	@Override
-	public JSONObject insertSelective(T entity) {
+	public BaseResult insertSelective(T entity) {
+		BaseResult result = new BaseResult();
 		if (entity.getUuid() == null || "".equals(entity.getUuid())) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 		}
@@ -50,23 +51,21 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 		}
 		entity.setUpdateUser(entity.getCreateUser());
 		entity.setUpdateTime(entity.getCreateTime());
-
-		JSONObject obj = new JSONObject();
 		try {
-			int result = mapper.insertSelective(entity);
-			if (result > 0) {
-				obj.put("code", 0);
-				obj.put("msg", "添加成功");
+			int flag = mapper.insertSelective(entity);
+			if (flag > 0) {
+				result.setResultCode(0);
+				result.setResultMessage("添加成功");
 			} else {
-				obj.put("code", 0);
-				obj.put("msg", "添加失败");
+				result.setResultCode(-1);
+				result.setResultMessage("添加失败");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			obj.put("code", -1);
-			obj.put("msg", "添加错误，请联系管理员");
+			result.setResultCode(-1);
+			result.setResultMessage("添加错误，请联系管理员");
 		}
-		return obj;
+		return result;
 	}
 
 	/**
@@ -79,26 +78,25 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 	 * @see cn.com.ath.service.IBaseService#updateByCode(cn.com.ath.model.BaseModel)
 	 */
 	@Override
-	public JSONObject updateByCode(T entity) {
+	public BaseResult updateByCode(T entity) {
+		BaseResult result = new BaseResult();
 		if (entity.getUpdateTime() == null || "".equals(entity.getUpdateTime())) {
 			entity.setUpdateTime(DateUtil.getSysDateTime());
 		}
-		JSONObject obj = new JSONObject();
 		try {
-			int result = mapper.updateByCode(entity);
-			if (result > 0) {
-				obj.put("code", 0);
-				obj.put("msg", "编辑成功");
+			int flag = mapper.updateByCode(entity);
+			if (flag >= 0) {
+				result.setResultCode(0);
+				result.setResultMessage("编辑成功");
 			} else {
-				obj.put("code", 0);
-				obj.put("msg", "编辑失败");
+				result.setResultCode(-1);
+				result.setResultMessage("编辑失败");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			obj.put("code", -1);
-			obj.put("msg", "编辑错误，请联系管理员");
+			result.setResultCode(-1);
+			result.setResultMessage("编辑错误，请联系管理员");
 		}
-		return obj;
+		return result;
 	}
 
 	/**
@@ -125,23 +123,23 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 	 * @see cn.com.ath.service.IBaseService#deleteByCode(java.lang.String)
 	 */
 	@Override
-	public JSONObject deleteByCode(String code) {
-		JSONObject obj = new JSONObject();
+	public BaseResult deleteByCode(String code) {
+		BaseResult result = new BaseResult();
 		try {
-			int result = mapper.deleteByCode(code);
-			if (result >= 0) {
-				obj.put("code", 0);
-				obj.put("msg", "删除成功");
+			int flag = mapper.deleteByCode(code);
+			if (flag >= 0) {
+				result.setResultCode(0);
+				result.setResultMessage("删除成功");
 			} else {
-				obj.put("code", -1);
-				obj.put("msg", "删除失败");
+				result.setResultCode(0);
+				result.setResultMessage("删除失败");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			obj.put("code", -1);
-			obj.put("msg", "删除错误，请联系管理员");
+			result.setResultCode(0);
+			result.setResultMessage("删除错误，请联系管理员");
 		}
-		return obj;
+		return result;
 	}
 
 	/**
@@ -168,16 +166,21 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 	 * @see cn.com.ath.service.IBaseService#findEntityToPage(cn.com.ath.dto.BaseDto)
 	 */
 	@Override
-	public JSONObject findEntityToPage(DTO dto) {
+	public PageResult<T> findEntityToPage(DTO dto) {
+		PageResult<T> result = new PageResult<T>();
 		dto.setStart(dto.getPageIndex() * dto.getPageSize());
 		List<T> list = mapper.findEntityAll(dto);
-		if (list == null || list.size() <= 0) {
+		int total = mapper.findEntityAllCount(dto);
+		if (list != null && list.size() > 0) {
+			result.setResultCode(0);
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("获取数据为空");
 			list = new ArrayList<T>();
 		}
-		int total = mapper.findEntityAllCount(dto);
-		JSONObject obj = new JSONObject();
-		obj.put("data", list);
-		obj.put("total", total);
-		return obj;
+
+		result.setList(list);
+		result.setTotal(total);
+		return result;
 	}
 }
