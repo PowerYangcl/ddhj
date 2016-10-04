@@ -24,7 +24,7 @@ public class CommonUtil {
 	 * @param lat2
 	 * @return
 	 */
-	public static String getDistanceFromLL(double lat1, double lon1, double lat2, double lon2) {
+	public static Double getDistanceFromLL(double lat1, double lon1, double lat2, double lon2) {
 		double ew1, ns1, ew2, ns2;
 		double dx, dy, dew;
 		double distance;
@@ -44,15 +44,6 @@ public class CommonUtil {
 		dy = Constant.DEF_R * (ns1 - ns2); // 南北方向长度(在经度圈上的投影长度)
 		// 勾股定理求斜边长
 		distance = Math.sqrt(dx * dx + dy * dy);
-		return trans(distance);
-	}
-
-	private static String trans(double distance) {
-		boolean isBig = false; // 是否为大于等于1000m
-		if (distance >= 1000) {
-			distance /= 1000;
-			isBig = true;
-		}
-		return (new DecimalFormat(".00").format(distance)) + (isBig ? "km" : "m");
+		return Double.valueOf(new DecimalFormat(".00").format(distance));
 	}
 }
