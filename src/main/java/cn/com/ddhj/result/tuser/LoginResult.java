@@ -1,6 +1,7 @@
 package cn.com.ddhj.result.tuser;
 
 import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.model.TUser;
 
 /**
  * 
@@ -15,6 +16,16 @@ public class LoginResult extends BaseResult {
 	 * 用户认证串
 	 */
 	private String userToken;
+
+	private TUser user;
+	
+	public TUser getUser() {
+		return user;
+	}
+
+	public void setUser(TUser user) {
+		this.user = user;
+	}
 
 	public String getUserToken() {
 		return userToken;
