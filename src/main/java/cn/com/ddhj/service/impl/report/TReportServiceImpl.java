@@ -162,7 +162,11 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (dto.getPosition() != null && !"".equals(dto.getPosition())) {
 			// 获取传入坐标
 			String[] p = dto.getPosition().split(",");
-			double[] around = CommonUtil.getAround(Double.valueOf(p[0]), Double.valueOf(p[1]), 10 * 1000);
+			int raidus = 10 * 1000;
+			if (dto.getRaidus() != null) {
+				raidus = dto.getRaidus() * 1000;
+			}
+			double[] around = CommonUtil.getAround(Double.valueOf(p[0]), Double.valueOf(p[1]), raidus);
 			dto.setMinLat(String.valueOf(around[0]));
 			dto.setMinLng(String.valueOf(around[1]));
 			dto.setMaxLat(String.valueOf(around[2]));

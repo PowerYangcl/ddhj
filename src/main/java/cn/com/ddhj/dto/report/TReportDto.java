@@ -12,10 +12,22 @@ import cn.com.ddhj.dto.BaseDto;
 public class TReportDto extends BaseDto {
 
 	private String position;
+	/**
+	 * 范围，默认为公里数
+	 */
+	private Integer raidus;
 	private String minLat;
 	private String minLng;
 	private String maxLat;
 	private String maxLng;
+
+	public Integer getRaidus() {
+		return raidus;
+	}
+
+	public void setRaidus(Integer raidus) {
+		this.raidus = raidus;
+	}
 
 	public String getPosition() {
 		return position;
