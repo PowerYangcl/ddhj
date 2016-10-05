@@ -43,7 +43,7 @@ public class TUserController {
 				session.setAttribute(result.getUserToken(), result.getUser());
 			}
 			return result;
-		} else if ("".equals(api.getApiTarget())) {
+		} else if ("logout".equals(api.getApiTarget())) {
 			BaseResult result = service.logOut(obj.getString("userToken"));
 			if (result.getResultCode() == 0) {
 				session.removeAttribute(obj.getString("userToken"));
