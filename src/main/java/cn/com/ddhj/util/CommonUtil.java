@@ -46,4 +46,33 @@ public class CommonUtil {
 		distance = Math.sqrt(dx * dx + dy * dy);
 		return Double.valueOf(new DecimalFormat(".00").format(distance));
 	}
+
+	/**
+	 * 
+	 * 方法: getAround <br>
+	 * 描述: 根据经纬度和距离获取经纬度范围的最大值和最小值 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月6日 上午12:22:17
+	 * 
+	 * @param lat
+	 * @param lng
+	 * @param raidus
+	 * @return
+	 */
+	public static double[] getAround(double lat, double lng, int raidus) {
+		Double latitude = lat;
+		Double longitude = lng;
+		Double degree = (24901 * 1609) / 360.0;
+		double raidusMile = raidus;
+		Double dpmLat = 1 / degree;
+		Double radiusLat = dpmLat * raidusMile;
+		Double minLat = latitude - radiusLat;
+		Double maxLat = latitude + radiusLat;
+		Double mpdLng = degree * Math.cos(latitude * (Constant.DEF_PI / 180));
+		Double dpmLng = 1 / mpdLng;
+		Double radiusLng = dpmLng * raidusMile;
+		Double minLng = longitude - radiusLng;
+		Double maxLng = longitude + radiusLng;
+		return new double[] { minLat, minLng, maxLat, maxLng };
+	}
 }

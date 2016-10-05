@@ -11,14 +11,50 @@ import cn.com.ddhj.dto.BaseDto;
  */
 public class TReportDto extends BaseDto {
 
-	private String city;
+	private String position;
+	private String minLat;
+	private String minLng;
+	private String maxLat;
+	private String maxLng;
 
-	public String getCity() {
-		return city;
+	public String getPosition() {
+		return position;
 	}
 
-	public void setCity(String city) {
-		this.city = city;
+	public void setPosition(String position) {
+		this.position = position;
+	}
+
+	public String getMinLat() {
+		return minLat;
+	}
+
+	public void setMinLat(String minLat) {
+		this.minLat = minLat;
+	}
+
+	public String getMinLng() {
+		return minLng;
+	}
+
+	public void setMinLng(String minLng) {
+		this.minLng = minLng;
+	}
+
+	public String getMaxLat() {
+		return maxLat;
+	}
+
+	public void setMaxLat(String maxLat) {
+		this.maxLat = maxLat;
+	}
+
+	public String getMaxLng() {
+		return maxLng;
+	}
+
+	public void setMaxLng(String maxLng) {
+		this.maxLng = maxLng;
 	}
 
 }

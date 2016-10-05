@@ -28,25 +28,27 @@ public class TReportTest extends BaseTest {
 		service.createPDF("LP161003100031", "d:/");
 	}
 
+	@Test
 	public void page() {
 		TReportDto dto = new TReportDto();
-		dto.setPageIndex(1);
+		String position = "39.9091529846191,116.244064331055";
+		dto.setPosition(position);
+		dto.setPageIndex(0);
 		dto.setPageSize(10);
-		System.out.println(JSONObject.toJSON(service.findEntityToPage(dto)));
+		System.out.println(JSONObject.toJSON(service.getReportData(dto)));
 	}
 
 	public void insert() {
 		TReport entity = new TReport();
 		entity.setTitle("测试环境报告添加");
 		entity.setPrice(BigDecimal.ONE);
-		entity.setHousesCode("LP161003100031");
+		entity.setHousesCode("LP161004101471");
 		entity.setRang(10);
 		entity.setDetail("");
 		BaseResult result = service.insert(entity, "d:/");
 		System.out.println(JSONObject.toJSON(result));
 	}
 
-	@Test
 	public void getTReport() {
 		String code = "R161004100011";
 		TReportSelResult result = service.getTReport(code);

@@ -17,6 +17,8 @@ public class TReport extends BaseModel {
 
 	private String housesCode;
 
+	private String housesName;
+
 	private String title;
 
 	private String levelCode;
@@ -49,14 +51,6 @@ public class TReport extends BaseModel {
 
 	public void setCode(String code) {
 		this.code = code;
-	}
-
-	public String getHousesCode() {
-		return housesCode;
-	}
-
-	public void setHousesCode(String housesCode) {
-		this.housesCode = housesCode;
 	}
 
 	public String getTitle() {
@@ -121,6 +115,22 @@ public class TReport extends BaseModel {
 
 	public void setDetail(String detail) {
 		this.detail = detail;
+	}
+
+	public String getHousesCode() {
+		return housesCode;
+	}
+
+	public void setHousesCode(String housesCode) {
+		this.housesCode = housesCode;
+	}
+
+	public String getHousesName() {
+		return housesName;
+	}
+
+	public void setHousesName(String housesName) {
+		this.housesName = housesName;
 	}
 
 }

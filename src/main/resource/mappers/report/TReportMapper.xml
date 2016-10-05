@@ -6,6 +6,7 @@
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
 		<result column="code" property="code" jdbcType="VARCHAR" />
 		<result column="houses_code" property="housesCode" jdbcType="VARCHAR" />
+		<result column="houses_name" property="housesName" jdbcType="VARCHAR" />
 		<result column="title" property="title" jdbcType="VARCHAR" />
 		<result column="level_code" property="levelCode" jdbcType="VARCHAR" />
 		<result column="pic" property="pic" jdbcType="VARCHAR" />
@@ -168,23 +169,25 @@
 		SELECT
 		r.id,
 		r.`code`,
+		r.houses_code,
 		r.pic,
 		r.image,
 		r.rang,
 		r.create_time,
-		lp.addressFull
-		as address,
+		lp.title AS `name`,
+		lp.addressFull AS address,
 		r.price,
 		r.path
 		FROM
 		t_report AS r
-		LEFT JOIN t_landed_property
-		AS lp ON
-		r.houses_code = lp.`code`
+		LEFT JOIN t_landed_property AS lp ON r.houses_code =
+		lp.`code`
 		<where>
-			<if test="city != null and city != ''">
-				lp.city = #{city,jdbcType=VARCHAR}
-			</if>
+			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND
+			#{maxLat,jdbcType=VARCHAR})
+			AND
+			(lp.lng BETWEEN
+			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
 		</where>
 		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
@@ -199,9 +202,11 @@
 		r.houses_code =
 		lp.`code`
 		<where>
-			<if test="city != null and city != ''">
-				lp.city = #{city,jdbcType=VARCHAR}
-			</if>
+			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND
+			#{maxLat,jdbcType=VARCHAR})
+			AND
+			(lp.lng BETWEEN
+			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
 		</where>
 	</select>
 </mapper>

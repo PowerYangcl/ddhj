@@ -32,6 +32,7 @@ import cn.com.ddhj.service.ITRubbishRecyclingService;
 import cn.com.ddhj.service.IWaterQualityService;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.report.ITReportService;
+import cn.com.ddhj.util.CommonUtil;
 import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.PdfUtil;
 
@@ -157,10 +158,16 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 */
 	@Override
 	public TReportLResult getReportData(TReportDto dto) {
-		dto.setStart(dto.getPageIndex() * dto.getPageSize());
 		TReportLResult result = new TReportLResult();
-		String city = dto.getCity();
-		if (city != null && !"".equals(city)) {
+		if (dto.getPosition() != null && !"".equals(dto.getPosition())) {
+			// 获取传入坐标
+			String[] p = dto.getPosition().split(",");
+			double[] around = CommonUtil.getAround(Double.valueOf(p[0]), Double.valueOf(p[1]), 10 * 1000);
+			dto.setMinLat(String.valueOf(around[0]));
+			dto.setMinLng(String.valueOf(around[1]));
+			dto.setMaxLat(String.valueOf(around[2]));
+			dto.setMaxLng(String.valueOf(around[3]));
+			dto.setStart(dto.getPageIndex() * dto.getPageSize());
 			List<TReport> list = mapper.findEntityAll(dto);
 			if (list != null && list.size() > 0) {
 				result.setRepList(list);
@@ -172,9 +179,9 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 		} else {
 			result.setResultCode(-1);
-			result.setResultMessage("查询地点不能为空");
+			result.setResultMessage("查询位置不能为空");
 		}
-		return null;
+		return result;
 	}
 
 	/**
