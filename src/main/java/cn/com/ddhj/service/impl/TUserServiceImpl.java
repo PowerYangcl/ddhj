@@ -50,6 +50,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			int flag = mapper.userLoginAndLogOut(entity);
 			if (flag >= 0) {
 				result.setResultCode(0);
+				result.setUser(user);
 				result.setResultMessage("");
 				result.setUserToken(user.getUuid());
 			} else {
@@ -83,6 +84,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			int flag = mapper.insertSelective(entity);
 			if (flag > 0) {
 				result.setResultCode(0);
+				result.setUser(entity);
 				result.setResultMessage("注册成功");
 				result.setUserToken(userCode);
 			} else {
