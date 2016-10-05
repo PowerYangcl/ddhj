@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TUserDto;
@@ -31,6 +32,7 @@ public class TUserController {
 	 * @return
 	 */
 	@RequestMapping("register")
+	@ResponseBody
 	public RegisterResult register(TUser entity, HttpSession session) {
 		RegisterResult result = service.register(entity);
 		if (result.getResultCode() == 0) {
@@ -50,6 +52,7 @@ public class TUserController {
 	 * @return
 	 */
 	@RequestMapping("login")
+	@ResponseBody
 	public LoginResult login(TUserDto dto, HttpSession session) {
 		LoginResult result = service.login(dto);
 		if (result.getResultCode() == 0) {
@@ -69,6 +72,7 @@ public class TUserController {
 	 * @return
 	 */
 	@RequestMapping("logout")
+	@ResponseBody
 	public BaseResult logOut(String userToken, HttpSession session) {
 		BaseResult result = service.logOut(userToken);
 		if (result.getResultCode() == 0) {

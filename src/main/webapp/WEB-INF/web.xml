@@ -45,6 +45,10 @@
 		<listener-class>
 			org.springframework.web.context.request.RequestContextListener</listener-class>
 	</listener>
+	<!-- system initializer -->
+	<listener>
+		<listener-class>cn.com.ddhj.init.ServerletListener</listener-class>
+	</listener>
 	<welcome-file-list>
 		<welcome-file>/index/index.jsp</welcome-file>
 	</welcome-file-list>

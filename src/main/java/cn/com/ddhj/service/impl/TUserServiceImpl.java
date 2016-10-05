@@ -51,7 +51,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			if (flag >= 0) {
 				result.setResultCode(0);
 				result.setUser(user);
-				result.setResultMessage("");
+				result.setResultMessage("登录成功");
 				result.setUserToken(user.getUuid());
 			} else {
 				result.setResultCode(-1);
@@ -76,6 +76,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 		} else {
 			String userCode = WebHelper.getInstance().getUniqueCode("U");
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+			entity.setPassword(MD5Util.md5Hex(entity.getPassword()));
 			entity.setUserCode(userCode);
 			entity.setCreateTime(DateUtil.getSysDateTime());
 			entity.setCreateUser(userCode);

@@ -10,6 +10,8 @@ import cn.com.ddhj.annotation.Inject;
 import cn.com.ddhj.util.SpringCtxUtil;
 
 public class BaseClass {
+	public static BaseLog logger = new BaseLog();
+
 	public BaseClass() {
 		inject(this.getClass());
 	}
@@ -50,4 +52,9 @@ public class BaseClass {
 	public <T> T getBean(String beanName) throws BeansException {
 		return (T) SpringCtxUtil.getBean(beanName);
 	}
+
+	public static BaseLog getLogger() {
+		return logger;
+	}
+
 }
