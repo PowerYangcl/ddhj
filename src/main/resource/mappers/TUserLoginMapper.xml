@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TUserLoginMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TUserLogin">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="user_token" property="userToken" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_date" property="createDate" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, user_token, create_user, DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time
+	</sql>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TUserLogin">
+		insert into t_user_login
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			id,
+			uuid,
+			user_token,
+			create_user,
+			create_date,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=INTEGER},
+			#{uuid,jdbcType=VARCHAR},
+			#{userToken,jdbcType=VARCHAR},
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</trim>
+	</insert>
+	<select id="findLoginByUuid" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_user_login
+		where uuid=#{uuid,jdbcType=VARCHAR}
+	</select>
+	<delete id="deletByUuid" parameterType="java.lang.String">
+		delete from t_user_login
+		where uuid=#{uuid,jdbcType=VARCHAR}
+	</delete>
+</mapper>

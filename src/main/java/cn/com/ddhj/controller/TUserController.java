@@ -7,6 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
+
+import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TUserDto;
 import cn.com.ddhj.model.TUser;
@@ -21,63 +24,36 @@ public class TUserController {
 	@Autowired
 	private ITUserService service;
 
-	/**
-	 * 
-	 * 方法: register <br>
-	 * 描述: 注册用户 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月2日 下午7:40:52
-	 * 
-	 * @param entity
-	 * @return
-	 */
-	@RequestMapping("register")
+	@RequestMapping("api")
 	@ResponseBody
-	public RegisterResult register(TUser entity, HttpSession session) {
-		RegisterResult result = service.register(entity);
-		if (result.getResultCode() == 0) {
-			session.setAttribute(entity.getUuid(), entity);
+	private BaseResult api(BaseAPI api, HttpSession session) {
+		JSONObject obj = JSONObject.parseObject(api.getApiInput());
+		if ("register".equals(api.getApiTarget())) {
+			// 用户注册
+			TUser entity = obj.toJavaObject(TUser.class);
+			RegisterResult result = service.register(entity);
+			if (result.getResultCode() == 0) {
+				session.setAttribute(result.getUserToken(), entity);
+			}
+			return result;
+		} else if ("login".equals(api.getApiTarget())) {
+			TUserDto dto = obj.toJavaObject(TUserDto.class);
+			LoginResult result = service.login(dto);
+			if (result.getResultCode() == 0) {
+				session.setAttribute(result.getUserToken(), result.getUser());
+			}
+			return result;
+		} else if ("".equals(api.getApiTarget())) {
+			BaseResult result = service.logOut(obj.getString("userToken"));
+			if (result.getResultCode() == 0) {
+				session.removeAttribute(obj.getString("userToken"));
+			}
+			return result;
+		} else {
+			BaseResult result = new BaseResult();
+			result.setResultCode(-1);
+			result.setResultMessage("接口调用失败");
+			return result;
 		}
-		return result;
-	}
-
-	/**
-	 * 
-	 * 方法: login <br>
-	 * 描述: 用户登录 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月2日 下午7:41:29
-	 * 
-	 * @param dto
-	 * @return
-	 */
-	@RequestMapping("login")
-	@ResponseBody
-	public LoginResult login(TUserDto dto, HttpSession session) {
-		LoginResult result = service.login(dto);
-		if (result.getResultCode() == 0) {
-			session.setAttribute(result.getUser().getUuid(), result.getUser());
-		}
-		return result;
-	}
-
-	/**
-	 * 
-	 * 方法: logOut <br>
-	 * 描述: 用户登出 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月2日 下午7:42:02
-	 * 
-	 * @param uid
-	 * @return
-	 */
-	@RequestMapping("logout")
-	@ResponseBody
-	public BaseResult logOut(String userToken, HttpSession session) {
-		BaseResult result = service.logOut(userToken);
-		if (result.getResultCode() == 0) {
-			session.removeAttribute(userToken);
-		}
-		return result;
 	}
 }

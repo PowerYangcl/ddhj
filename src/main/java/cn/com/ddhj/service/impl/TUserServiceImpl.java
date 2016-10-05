@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TUserDto;
 import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.TUserLoginMapper;
 import cn.com.ddhj.mapper.TUserMapper;
 import cn.com.ddhj.model.TUser;
+import cn.com.ddhj.model.TUserLogin;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.service.ITUserService;
@@ -28,6 +30,8 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 
 	@Autowired
 	private TUserMapper mapper;
+	@Autowired
+	private TUserLoginMapper loginMapper;
 
 	/**
 	 * 
@@ -49,10 +53,17 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			entity.setIsLogin(0);
 			int flag = mapper.userLoginAndLogOut(entity);
 			if (flag >= 0) {
+				// 添加登录信息到用户登录表
+				TUserLogin login = new TUserLogin();
+				login.setUuid(UUID.randomUUID().toString().replace("-", ""));
+				login.setUserToken(entity.getUuid());
+				login.setCreateUser(user.getUserCode());
+				login.setCreateTime(DateUtil.getSysDateTime());
+				loginMapper.insertSelective(login);
 				result.setResultCode(0);
 				result.setUser(user);
 				result.setResultMessage("登录成功");
-				result.setUserToken(user.getUuid());
+				result.setUserToken(login.getUuid());
 			} else {
 				result.setResultCode(-1);
 				result.setResultMessage("用户登录失败");
@@ -74,23 +85,40 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			result.setResultCode(-1);
 			result.setResultMessage("用户密码不能为空");
 		} else {
-			String userCode = WebHelper.getInstance().getUniqueCode("U");
-			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
-			entity.setPassword(MD5Util.md5Hex(entity.getPassword()));
-			entity.setUserCode(userCode);
-			entity.setCreateTime(DateUtil.getSysDateTime());
-			entity.setCreateUser(userCode);
-			entity.setUpdateUser(userCode);
-			entity.setUpdateTime(DateUtil.getSysDateTime());
-			int flag = mapper.insertSelective(entity);
-			if (flag > 0) {
-				result.setResultCode(0);
-				result.setUser(entity);
-				result.setResultMessage("注册成功");
-				result.setUserToken(userCode);
+			TUserDto dto = new TUserDto();
+			dto.setPhone(entity.getPhone());
+			dto.setPassword(MD5Util.md5Hex(entity.getPassword()));
+			TUser user = mapper.findTUser(dto);
+			if (user == null) {
+				String userCode = WebHelper.getInstance().getUniqueCode("U");
+				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+				entity.setPassword(MD5Util.md5Hex(entity.getPassword()));
+				entity.setUserCode(userCode);
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				entity.setCreateUser(userCode);
+				entity.setUpdateUser(userCode);
+				entity.setUpdateTime(DateUtil.getSysDateTime());
+				int flag = mapper.insertSelective(entity);
+				if (flag > 0) {
+					// 添加登录信息到用户登录表
+					TUserLogin login = new TUserLogin();
+					login.setUuid(UUID.randomUUID().toString().replace("-", ""));
+					login.setUserToken(entity.getUuid());
+					login.setCreateUser(entity.getUserCode());
+					login.setCreateTime(DateUtil.getSysDateTime());
+					loginMapper.insertSelective(login);
+					// end
+					result.setResultCode(0);
+					result.setUser(entity);
+					result.setResultMessage("注册成功");
+					result.setUserToken(login.getUuid());
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("注册失败");
+				}
 			} else {
 				result.setResultCode(-1);
-				result.setResultMessage("注册失败");
+				result.setResultMessage("用户已存在");
 			}
 		}
 		return result;
@@ -108,17 +136,25 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 	@Override
 	public BaseResult logOut(String uid) {
 		BaseResult result = new BaseResult();
-		TUser entity = new TUser();
-		entity.setUuid(uid);
-		entity.setIsLogin(0);
-		int flag = mapper.userLoginAndLogOut(entity);
-		if (flag >= 0) {
-			result.setResultCode(0);
-			result.setResultMessage("用户登出成功");
+		TUserLogin login = loginMapper.findLoginByUuid(uid);
+		if (login != null) {
+			TUser entity = new TUser();
+			entity.setUuid(login.getUserToken());
+			entity.setIsLogin(0);
+			int flag = mapper.userLoginAndLogOut(entity);
+			if (flag >= 0) {
+				loginMapper.deletByUuid(uid);
+				result.setResultCode(0);
+				result.setResultMessage("用户登出成功");
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("用户登出失败");
+			}
 		} else {
-			result.setResultCode(0);
+			result.setResultCode(-1);
 			result.setResultMessage("用户登出失败");
 		}
+
 		return result;
 	}
 
