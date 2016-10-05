@@ -23,8 +23,7 @@ import cn.com.ddhj.dto.CityAqiData;
 import cn.com.ddhj.result.estateInfo.EData;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.IEstateInfoService;
-import cn.com.ddhj.service.IWaterQualityService;
-import cn.com.ddhj.service.IWeatherAreaSupportService;
+import cn.com.ddhj.service.ILongitudeLatitudeService;
 import cn.com.ddhj.util.PureNetUtil;
 
 
@@ -41,8 +40,10 @@ public class EnvironmentController {
 	
 	private static Logger logger=Logger.getLogger(EnvironmentController.class);
 	
-	@Autowired
-	private IWeatherAreaSupportService weatherService;  // aqi相关信息
+//	@Autowired
+//	private IWeatherAreaSupportService weatherService;  // aqi相关信息
+//	@Autowired
+//	private IWaterQualityService waterService; // 水环境:水质分类
 	
 	/**
 	 * 生态状况:绿化率指数 	0.5或1  【地产检索接口->"greeningRate":"50%"】
@@ -52,16 +53,17 @@ public class EnvironmentController {
 	private IEstateInfoService estateService;  // 地产信息相关接口 
 	
 	@Autowired
-	private IWaterQualityService waterService; // 水环境:水质分类
+	private ICityAirService cityAirService;
 	
 	@Autowired
-	private ICityAirService cityAirService;
+	private ILongitudeLatitudeService llService;
 	
 	/**
 	 * @descriptions 环境综合评分接口|1032
 	 *
 	 * @param position|经纬度逗号分隔
 	 * @param title | 地产名称
+	 * @param city |当前城市名称 如：北京，注意不是北京市
 	 * @return
 	 * @date 2016年10月4日 下午5:30:13
 	 * @author Yangcl 
@@ -69,61 +71,87 @@ public class EnvironmentController {
 	 */
 	@RequestMapping(value = "1032", produces = { "application/json;charset=utf-8" })
 	@ResponseBody
-	public JSONObject envScore(String position , String title , String city){
-		String[] arr = position.split(",");
-		String lng = arr[0];
-		String lat = arr[1];
+	public JSONObject apiEnvScore(String position , String title , String city){
+//		String[] arr = position.split(",");
+//		String lng = arr[0];
+//		String lat = arr[1];
 		
 		JSONObject result = new JSONObject();
 		
-		String greeningRate = "1";  // 如下条件不满足则用默认值
-		String volumeRate = "1";	   // 如下条件不满足则用默认值
-		JSONObject estate = this.estateList(position, "1"); // 获取楼盘信息
-		if(estate.getString("code").equals("1")) {
-			List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
-			if(estateList != null && estateList.size() > 0){
-				for(EData e : estateList){
-					if(e.getTitle().equals(title)){
-						if(e.getGreeningRate().equals("50%")){
-							greeningRate = "0.5"; 
+		try {
+			result.put("name", city); // 位置名称
+			String greeningRate = "1";  // 如下条件不满足则用默认值
+			String volumeRate = "1";	   // 如下条件不满足则用默认值
+			JSONObject estate = this.estateList(position, "1"); // 获取楼盘信息
+			if(estate.getString("code").equals("1")) {
+				List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
+				if(estateList != null && estateList.size() > 0){
+					for(EData e : estateList){
+						if(e.getTitle().equals(title)){
+							if(e.getGreeningRate().equals("50%")){
+								greeningRate = "0.5"; 
+							}
+							volumeRate = e.getVolumeRate();			
 						}
-						volumeRate = e.getVolumeRate();			
 					}
 				}
+			} 
+			CityAqi aqi = cityAirService.getCityAqi(city);
+			String hourAqi = aqi.getEntity().getAQI();
+			String dayAqi = "";
+			for(CityAqiData d : aqi.getList()){
+				dayAqi += d.getAQI() + ",";
 			}
-		} 
-		CityAqi aqi = cityAirService.getCityAqi(city);
-		String hourAqi = aqi.getEntity().getAQI();
-		String dayAqi = "";
-		for(CityAqiData d : aqi.getList()){
-			dayAqi += d.getAQI() + ",";
+			dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
+			String score = this.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate);
+			result.put("score", score); // 环境综合评分
+			result.put("level", this.scoreLevel(score));  // 环境等级
+			result.put("AQIList", this.initAqiList(aqi.getList()));  
+			
+			JSONObject weather = cityAirService.getWeatherInfo(city);
+			
+			List<EnvInfo> envList = new ArrayList<>();
+			EnvInfo air = new EnvInfo();
+			air.setName("空气");
+			air.setMemo(aqi.getEntity().getAQI());
+			air.setLevel(aqi.getEntity().getQuality()); 
+			envList.add(air);
+			EnvInfo wea = new EnvInfo();
+			wea.setName("天气");
+			wea.setMemo(weather.getString("info"));
+			wea.setLevel(weather.getString("quality")); 
+			envList.add(wea);
+			// 数据模糊，暂时写死
+			EnvInfo gar = new EnvInfo();
+			gar.setName("垃圾");
+			gar.setMemo("2Km以外");
+			gar.setLevel("较远"); 
+			envList.add(gar);
+			EnvInfo water = new EnvInfo();
+			water.setName("水质");
+			water.setMemo("色度低"); 
+			water.setLevel("优良");  
+			envList.add(water);
+			EnvInfo noise = new EnvInfo();
+			noise.setName("噪音");
+			noise.setMemo("2Km以外"); 
+			noise.setLevel("较少"); 
+			envList.add(noise);
+			result.put("detailList", envList);  // 环境明细
+			
+			result.put("level", this.scoreLevel(score));  // 环境等级
+			result.put("tiptitle", weather.getString("des"));  // 提示标题
+			
+			result.put("resultCode", 1); 
+			result.put("resultMessage", "SUCCESS"); 
+			return  result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("resultCode", 0); 
+			result.put("resultMessage", "系统内部错误"); 
+			return  result;
 		}
-		dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
-		
-		result.put("score", this.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate)); 
-		result.put("AQIList", this.initAqiList(aqi.getList()));  
-		
-		JSONObject weather = cityAirService.getWeatherInfo(city);
-		
-		List<EnvInfo> envList = new ArrayList<>();
-		EnvInfo air = new EnvInfo();
-		air.setName("空气");
-		air.setMemo(aqi.getEntity().getAQI());
-		air.setLevel(aqi.getEntity().getQuality()); 
-		envList.add(air);
-		EnvInfo wea = new EnvInfo();
-		wea.setName("天气");
-		wea.setMemo(weather.getString("info"));
-		wea.setLevel(weather.getString("quality")); 
-		envList.add(wea);
-		result.put("detailList", envList);  // 环境明细
-		
-		
-		
-		result.put("tiptitle", weather.getString("des"));  // 提示标题
-		return  result;
 	}
-	
 	
 	
 	/**
@@ -131,6 +159,7 @@ public class EnvironmentController {
 	 * 								 城市名称|北京，上海，广州，深圳
 	 *
 	 * @param position|经纬度逗号分隔
+	 * @param city |当前城市名称 如：北京，注意不是北京市
 	 * @param page | 当前第几页，每页数据20条
 	 * @return
 	 * @date 2016年10月4日 下午5:30:13
@@ -139,12 +168,58 @@ public class EnvironmentController {
 	 */
 	@RequestMapping(value = "1033", produces = { "application/json;charset=utf-8" })
 	@ResponseBody
-	public JSONObject estateList(String position  , String page){
+	public JSONObject apiEstateList(String position , String city , String page){
+		JSONObject result = new JSONObject();
 		String[] arr = position.split(",");
-		String lng = arr[0];
-		String lat = arr[1];
+		String lat = arr[0];
+		String lng = arr[1];
+		
+		JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");
+		if(addr.getString("code").equals("1")){
+			result.put("currname", addr.getString("address"));
+			JSONObject eListInfo = this.estateList(position, page); // 请求聚合接口，获取周边地产信息
+			if(eListInfo.getString("code").equals("1")){
+				List<EData> list = JSONArray.parseArray(eListInfo.getString("list") , EData.class); // 获取地产信息列表
+				if(list != null && list.size() > 0){       
+					List<Estate> projectList = new ArrayList<>();
+					for(int i = 0 ; i < list.size() ; i ++){
+						EData e = list.get(i);
+						JSONObject info = this.apiEnvScore(position, e.getTitle(), city);
+						if(info.getString("resultCode").equals("1")){
+							String position_ = e.getLat() + "," + e.getLng();
+							String score = info.getString("score");
+							String level = info.getString("level");
+							projectList.add(new Estate(e.getTitle() , position_, level, score));
+						}
+					}
+					if(projectList.size() != 0){
+						result.put("resultCode", "1");
+						result.put("resultMessage", "SUCCESS");
+						result.put("projectlist", projectList); 
+					}
+				}else{
+					result.put("resultCode", "0");
+					result.put("resultMessage", "周围10Km没有地产信息");
+				}
+			}else{
+				result.put("resultCode", "0");
+				result.put("resultMessage", "检索周边地产信息失败" + eListInfo.getString("msg"));
+			}
+		}else{
+			result.put("resultCode", "0");
+			result.put("resultMessage", "经纬度地址解析失败，无法获取当前地理位置信息");
+		}
+		
+		return  result; 
+	}
+	
+	private JSONObject estateList(String position , String page){
+		String[] arr = position.split(",");
+		String lat = arr[0];
+		String lng = arr[1]; 
 		return  estateService.estateInfoList(lng, lat, page); 
 	}
+	
 	
 	
 	/**
@@ -277,6 +352,28 @@ public class EnvironmentController {
 		return list_;
 	}
 	
+	/**
+	 * @descriptions 根据教授接口返回的综合评分，返回环境等级。
+	 *
+	 * @param score
+	 * @return
+	 * @date 2016年10月5日 下午2:06:35
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	private String scoreLevel(String score_){
+		Integer score = Integer.valueOf(score_);
+		String level = "优";
+		if(score > 120 && score < 200){
+			level = "良";
+		}else if(score > 200 && score <300){
+			level = "中";
+		}else if(score > 300){
+			level = "差";
+		}
+		
+		return level;
+	}
 	
 	
 	// 收录此代码
@@ -377,7 +474,53 @@ class EnvInfo{
 	
 }
 
-
+/**
+ * @descriptions 接口1033 | 响应消息体封装
+ *
+ * @date 2016年10月5日 下午4:24:51
+ * @author Yangcl 
+ * @version 1.0.1
+ */
+class Estate{
+	private String name;
+	private String position;
+	private String level;
+	private String score;
+	
+	
+	
+	public Estate(String name, String position, String level, String score) {
+		this.name = name;
+		this.position = position;
+		this.level = level;
+		this.score = score;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getPosition() {
+		return position;
+	}
+	public void setPosition(String position) {
+		this.position = position;
+	}
+	public String getLevel() {
+		return level;
+	}
+	public void setLevel(String level) {
+		this.level = level;
+	}
+	public String getScore() {
+		return score;
+	}
+	public void setScore(String score) {
+		this.score = score;
+	}
+}
 
 
 
