@@ -11,7 +11,7 @@ import cn.com.ddhj.dto.BaseDto;
  */
 public class TReportDto extends BaseDto {
 
-	private String position;
+	private String code;
 	/**
 	 * 范围，默认为公里数
 	 */
@@ -29,12 +29,12 @@ public class TReportDto extends BaseDto {
 		this.raidus = raidus;
 	}
 
-	public String getPosition() {
-		return position;
+	public String getCode() {
+		return code;
 	}
 
-	public void setPosition(String position) {
-		this.position = position;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getMinLat() {

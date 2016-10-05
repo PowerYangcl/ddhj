@@ -159,31 +159,39 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Override
 	public TReportLResult getReportData(TReportDto dto) {
 		TReportLResult result = new TReportLResult();
-		if (dto.getPosition() != null && !"".equals(dto.getPosition())) {
+		if (dto.getCode() != null && !"".equals(dto.getCode())) {
 			// 获取传入坐标
-			String[] p = dto.getPosition().split(",");
-			int raidus = 10 * 1000;
-			if (dto.getRaidus() != null) {
-				raidus = dto.getRaidus() * 1000;
-			}
-			double[] around = CommonUtil.getAround(Double.valueOf(p[0]), Double.valueOf(p[1]), raidus);
-			dto.setMinLat(String.valueOf(around[0]));
-			dto.setMinLng(String.valueOf(around[1]));
-			dto.setMaxLat(String.valueOf(around[2]));
-			dto.setMaxLng(String.valueOf(around[3]));
-			dto.setStart(dto.getPageIndex() * dto.getPageSize());
-			List<TReport> list = mapper.findEntityAll(dto);
-			if (list != null && list.size() > 0) {
-				result.setRepList(list);
-				Integer total = mapper.findEntityAllCount(dto);
-				result.setRepCount(total);
+			TLandedProperty lp = lpMapper.selectByCode(dto.getCode());
+			if (lp != null) {
+				// 查询环境报告的楼盘名称
+				result.setName(lp.getTitle());
+				int raidus = 10 * 1000;
+				if (dto.getRaidus() != null) {
+					raidus = dto.getRaidus() * 1000;
+				}
+				double[] around = CommonUtil.getAround(Double.valueOf(lp.getLat()), Double.valueOf(lp.getLng()),
+						raidus);
+				dto.setMinLat(String.valueOf(around[0]));
+				dto.setMinLng(String.valueOf(around[1]));
+				dto.setMaxLat(String.valueOf(around[2]));
+				dto.setMaxLng(String.valueOf(around[3]));
+				dto.setStart(dto.getPageIndex() * dto.getPageSize());
+				List<TReport> list = mapper.findEntityAll(dto);
+				if (list != null && list.size() > 0) {
+					result.setRepList(list);
+					Integer total = mapper.findEntityAllCount(dto);
+					result.setRepCount(total);
+				} else {
+					result.setRepList(new ArrayList<TReport>());
+					result.setRepCount(0);
+				}
 			} else {
-				result.setRepList(new ArrayList<TReport>());
-				result.setRepCount(0);
+				result.setResultCode(-1);
+				result.setResultMessage("查询楼盘不存在");
 			}
 		} else {
 			result.setResultCode(-1);
-			result.setResultMessage("查询位置不能为空");
+			result.setResultMessage("查询楼盘编码不能为空");
 		}
 		return result;
 	}
@@ -272,6 +280,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			result.setImage(report.getImage());
 			result.setPic(report.getPic());
 			result.setPrice(report.getPrice());
+			result.setName(report.getHousesName());
 			result.setResultCode(0);
 		} else {
 			result.setResultCode(-1);

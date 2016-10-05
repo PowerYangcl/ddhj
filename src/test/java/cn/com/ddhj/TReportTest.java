@@ -31,8 +31,8 @@ public class TReportTest extends BaseTest {
 	@Test
 	public void page() {
 		TReportDto dto = new TReportDto();
-		String position = "39.9091529846191,116.244064331055";
-		dto.setPosition(position);
+//		String position = "39.9091529846191,116.244064331055";
+		dto.setCode("LP161004101471");
 		dto.setPageIndex(0);
 		dto.setPageSize(10);
 		System.out.println(JSONObject.toJSON(service.getReportData(dto)));
@@ -50,7 +50,7 @@ public class TReportTest extends BaseTest {
 	}
 
 	public void getTReport() {
-		String code = "R161004100011";
+		String code = "R161006100001";
 		TReportSelResult result = service.getTReport(code);
 		System.out.println(JSONObject.toJSON(result));
 	}

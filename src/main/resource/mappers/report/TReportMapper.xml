@@ -46,6 +46,7 @@
 		r.image,
 		r.rang,
 		r.create_time,
+		lp.title AS houses_name,
 		lp.addressFull
 		as address,
 		r.price,
@@ -55,7 +56,8 @@
 		LEFT JOIN
 		t_landed_property
 		AS lp ON
-		r.houses_code = lp.`code`
+		r.houses_code =
+		lp.`code`
 		where r.`code` =
 		#{code,jdbcType=VARCHAR}
 	</select>

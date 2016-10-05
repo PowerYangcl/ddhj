@@ -19,13 +19,13 @@ public class TLandedPropertyTest extends BaseTest {
 	@Autowired
 	private ITLandedPropertyService service;
 
-	@Test
 	public void insert() {
 		service.insertDataFromAPI();
 	}
 
+	@Test
 	public void select() {
-		TLandedProperty model = service.selectByCode("LP161003100031");
+		TLandedProperty model = service.selectByCode("LP161004101471");
 		System.out.println(JSONObject.toJSON(model));
 	}
 

@@ -14,8 +14,20 @@ import cn.com.ddhj.model.report.TReport;
  */
 public class TReportLResult extends BaseResult {
 
+	/**
+	 * 楼盘名称
+	 */
+	private String name;
 	private Integer repCount;
 	private List<TReport> repList;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public Integer getRepCount() {
 		return repCount;
