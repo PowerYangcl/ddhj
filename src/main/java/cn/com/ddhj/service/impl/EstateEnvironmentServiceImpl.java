@@ -1,4 +1,4 @@
-package cn.com.ddhj.controller;
+package cn.com.ddhj.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,55 +8,55 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.dto.CityAqi;
 import cn.com.ddhj.dto.CityAqiData;
+import cn.com.ddhj.mapper.TLandedPropertyMapper;
+import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.result.estateInfo.EData;
 import cn.com.ddhj.service.ICityAirService;
+import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.IEstateInfoService;
 import cn.com.ddhj.service.ILongitudeLatitudeService;
 import cn.com.ddhj.util.PureNetUtil;
 
 
 /**
- * @descriptions 环境信息相关接口 
+ * @descriptions 地产环境信息相关
  *
  * @date 2016年10月4日 下午5:13:23
  * @author Yangcl 
  * @version 1.0.1
  */
-@Controller
-@RequestMapping("env/")
-public class EnvironmentController {
+@Service
+public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	
-	private static Logger logger=Logger.getLogger(EnvironmentController.class);
-	
-//	@Autowired
-//	private IWeatherAreaSupportService weatherService;  // aqi相关信息
-//	@Autowired
-//	private IWaterQualityService waterService; // 水环境:水质分类
+	private static Logger logger=Logger.getLogger(EstateEnvironmentServiceImpl.class);
 	
 	/**
 	 * 生态状况:绿化率指数 	0.5或1  【地产检索接口->"greeningRate":"50%"】
 	 * 生态状况:容积率指数 	0~9之间 【地产检索接口->"volumeRate":"0.46"】
 	 */
-	@Autowired
+	@Resource
 	private IEstateInfoService estateService;  // 地产信息相关接口 
 	
-	@Autowired
+	@Resource
 	private ICityAirService cityAirService;
 	
-	@Autowired
+	@Resource
 	private ILongitudeLatitudeService llService;
+	
+	@Resource
+	private TLandedPropertyMapper lrMapper;
+	
 	
 	/**
 	 * @descriptions 环境综合评分接口|1032
@@ -68,38 +68,34 @@ public class EnvironmentController {
 	 * @date 2016年10月4日 下午5:30:13
 	 * @author Yangcl 
 	 * @version 1.0.0.1
-	 */
-	@RequestMapping(value = "1032")
-	@ResponseBody
-	public JSONObject apiEnvScore(String position , String title , String city){
-//		String[] arr = position.split(",");
-//		String lng = arr[0];
-//		String lat = arr[1];
-		
+	 */ 
+	public JSONObject apiEnvScore(String position , String city){
 		JSONObject result = new JSONObject();
-		if(StringUtils.isAnyBlank(position ,title , city)){
-			result.put("resultCode", 0); 
+		if(StringUtils.isAnyBlank(position , city)){
+			result.put("resultCode", -1); 
 			result.put("resultMessage", "参数不得为空"); 
 			return result;
 		}
-		
-		
 		try {
-			result.put("name", city); // 位置名称
 			String greeningRate = "1";  // 如下条件不满足则用默认值
-			String volumeRate = "1";	   // 如下条件不满足则用默认值
-			JSONObject estate = this.estateList(position, "1"); // 获取楼盘信息
+			String volumeRate = "0.4";	   // 如下条件不满足则用默认值
+			JSONObject estate = this.estateList(position, "1" , "1"); // 获取楼盘信息
 			if(estate.getString("code").equals("1")) {
 				List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
-				if(estateList != null && estateList.size() > 0){
-					for(EData e : estateList){
-						if(e.getTitle().equals(title)){
-							if(e.getGreeningRate().equals("50%")){
-								greeningRate = "0.5"; 
+				try {
+					if(estateList != null && estateList.size() > 0){
+						EData e = estateList.get(0);               // 因为精度是1米 所以只有一条记录，且就是这个楼盘
+						result.put("name", e.getTitle()); // 位置名称
+						if(StringUtils.isNoneBlank(e.getGreeningRate())){
+							if(Integer.valueOf(e.getGreeningRate().split("%")[0])/100 < 0.5){   // 潜在的异常点
+								greeningRate = "0.5"; //教授接口返回HTTP Status 500 - 绿化率指数l只能是0.5或1|真坑爹
 							}
-							volumeRate = e.getVolumeRate();			
 						}
+						// 聚合接口的容积率均返回错误数据，"volumeRate": "一期2.45元/平米/月;二期2.45/平米/月；三期3.1元/",	
+						// volumeRate = "0.4"; // 这里写定一个默认值		
 					}
+				} catch (Exception e) {
+					greeningRate = "1";
 				}
 			} 
 			CityAqi aqi = cityAirService.getCityAqi(city);
@@ -148,12 +144,12 @@ public class EnvironmentController {
 			result.put("level", this.scoreLevel(score));  // 环境等级
 			result.put("tiptitle", weather.getString("des"));  // 提示标题
 			
-			result.put("resultCode", 1); 
+			result.put("resultCode", 0); 
 			result.put("resultMessage", "SUCCESS"); 
 			return  result;
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.put("resultCode", 0); 
+			result.put("resultCode", -1); 
 			result.put("resultMessage", "系统内部错误"); 
 			return  result;
 		}
@@ -171,13 +167,11 @@ public class EnvironmentController {
 	 * @date 2016年10月4日 下午5:30:13
 	 * @author Yangcl 
 	 * @version 1.0.0.1
-	 */
-	@RequestMapping(value = "1033")
-	@ResponseBody
+	 */ 
 	public JSONObject apiEstateList(String position , String city , String page){
 		JSONObject result = new JSONObject();
 		if(StringUtils.isAnyBlank(position , city , page)){
-			result.put("resultCode", 0); 
+			result.put("resultCode", -1); 
 			result.put("resultMessage", "参数不得为空"); 
 			return result;
 		}
@@ -196,40 +190,50 @@ public class EnvironmentController {
 					List<Estate> projectList = new ArrayList<>();
 					for(int i = 0 ; i < list.size() ; i ++){
 						EData e = list.get(i);
-						JSONObject info = this.apiEnvScore(position, e.getTitle(), city);
-						if(info.getString("resultCode").equals("1")){
-							String position_ = e.getLat() + "," + e.getLng();
+						String position_ = e.getLat() + "," + e.getLng();
+						JSONObject info = this.apiEnvScore(position_ , city);
+						if(info.getString("resultCode").equals("0")){
 							String score = info.getString("score");
 							String level = info.getString("level");
-							projectList.add(new Estate(e.getTitle() , position_, level, score));
+							String number = "";
+							List<TLandedProperty> lp = lrMapper.findCodeByTitle(e.getTitle());
+							if(lp != null && lp.size() > 0){
+								number = lp.get(0).getCode();
+							}
+							projectList.add(new Estate(e.getTitle() , position_, level, score , number)); 
 						}
 					}
 					if(projectList.size() != 0){
-						result.put("resultCode", "1");
+						result.put("resultCode", 0);
 						result.put("resultMessage", "SUCCESS");
 						result.put("projectlist", projectList); 
 					}
 				}else{
-					result.put("resultCode", "0");
+					result.put("resultCode", -1);
 					result.put("resultMessage", "周围10Km没有地产信息");
 				}
 			}else{
-				result.put("resultCode", "0");
+				result.put("resultCode", -1);
 				result.put("resultMessage", "检索周边地产信息失败" + eListInfo.getString("msg"));
 			}
 		}else{
-			result.put("resultCode", "0");
+			result.put("resultCode", -1);
 			result.put("resultMessage", "经纬度地址解析失败，无法获取当前地理位置信息");
 		}
 		
+		System.out.println(result);  
 		return  result; 
 	}
 	
 	private JSONObject estateList(String position , String page){
+		return  this.estateList(position, page , "10000");  
+	}
+	
+	private JSONObject estateList(String position , String page , String radius){
 		String[] arr = position.split(",");
 		String lat = arr[0];
 		String lng = arr[1]; 
-		return  estateService.estateInfoList(lng, lat, page , "10000"); 
+		return  estateService.estateInfoList(lng, lat, page , radius); 
 	}
 	
 	
@@ -374,7 +378,7 @@ public class EnvironmentController {
 	 * @version 1.0.0.1
 	 */
 	private String scoreLevel(String score_){
-		Integer score = Integer.valueOf(score_);
+		Double score = Double.valueOf(score_);
 		String level = "优";
 		if(score > 120 && score < 200){
 			level = "良";
@@ -421,6 +425,7 @@ public class EnvironmentController {
 		
 		return str;
 	}
+
 }
 
 
@@ -498,14 +503,16 @@ class Estate{
 	private String position;
 	private String level;
 	private String score;
+	private String number; // 楼盘在数据库里的编号
 	
 	
 	
-	public Estate(String name, String position, String level, String score) {
+	public Estate(String name, String position, String level, String score , String number) {
 		this.name = name;
 		this.position = position;
 		this.level = level;
 		this.score = score;
+		this.number = number;
 	}
 	
 	public String getName() {
@@ -531,6 +538,12 @@ class Estate{
 	}
 	public void setScore(String score) {
 		this.score = score;
+	}
+	public String getNumber() {
+		return number;
+	}
+	public void setNumber(String number) {
+		this.number = number;
 	}
 }
 

@@ -18,6 +18,7 @@ import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
+import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITUserService;
 import cn.com.ddhj.service.report.ITReportService;
 
@@ -27,10 +28,13 @@ public class ApiController {
 	private ITReportService reportService;
 	@Autowired
 	private ITUserService userService;
+	
+	@Autowired
+	private IEstateEnvironmentService estateEnvService; 
 
 	@RequestMapping("api")
 	@ResponseBody
-	public BaseResult api(BaseAPI api, HttpSession session) {
+	public JSONObject api(BaseAPI api, HttpSession session) {
 		JSONObject obj = JSONObject.parseObject(api.getApiInput());
 		if ("user_register".equals(api.getApiTarget())) {
 			// 用户注册
@@ -39,33 +43,42 @@ public class ApiController {
 			if (result.getResultCode() == 0) {
 				session.setAttribute(result.getUserToken(), entity);
 			}
-			return result;
+			return JSONObject.parseObject(JSONObject.toJSONString(result));                      // 修正所有的返回值为JSONObject 
 		} else if ("user_login".equals(api.getApiTarget())) {
 			TUserDto dto = obj.toJavaObject(TUserDto.class);
 			LoginResult result = userService.login(dto);
 			if (result.getResultCode() == 0) {
 				session.setAttribute(result.getUserToken(), result.getUser());
 			}
-			return result;
+			return JSONObject.parseObject(JSONObject.toJSONString(result)); 
 		} else if ("user_logout".equals(api.getApiTarget())) {
 			BaseResult result = userService.logOut(obj.getString("userToken"));
 			if (result.getResultCode() == 0) {
 				session.removeAttribute(obj.getString("userToken"));
 			}
-			return result;
+			return JSONObject.parseObject(JSONObject.toJSONString(result)); 
 		} else if ("report_data".equals(api.getApiTarget())) {
 			TReportDto dto = obj.toJavaObject(TReportDto.class);
 			TReportLResult result = reportService.getReportData(dto);
-			return result;
+			return JSONObject.parseObject(JSONObject.toJSONString(result)); 
 		} else if ("report_sel".equals(api.getApiTarget())) {
 			String code = obj.getString("code");
 			TReportSelResult result = reportService.getTReport(code);
-			return result;
+			return JSONObject.parseObject(JSONObject.toJSONString(result)); 
+		} else if ("1032".equals(api.getApiTarget())) {  // 环境综合评分接口
+			String position = obj.getString("position");
+			String city = obj.getString("city");
+			return estateEnvService.apiEnvScore(position , city); 
+		}else if ("1033".equals(api.getApiTarget())) {  // 楼盘列表|检索该经纬度附近10Km内的楼盘信息
+			String position = obj.getString("position");
+			String city = obj.getString("city");
+			String page = obj.getString("page");
+			return estateEnvService.apiEstateList(position, city, page); 
 		} else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(-1);
 			result.setResultMessage("调用接口失败");
-			return result;
+			return JSONObject.parseObject(JSONObject.toJSONString(result)); 
 		}
 	}
 }

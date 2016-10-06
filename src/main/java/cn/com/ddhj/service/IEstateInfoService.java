@@ -39,7 +39,7 @@ public interface IEstateInfoService {
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject estateInfoList(String lng , String lat , String page);
+	public JSONObject estateInfoList(String lng , String lat , String page , String radius);
 	
 } 
 

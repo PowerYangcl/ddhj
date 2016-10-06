@@ -116,7 +116,7 @@ public class EstateInfoServiceImpl implements IEstateInfoService{
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject estateInfoList(String lng, String lat  , String page) {
+	public JSONObject estateInfoList(String lng, String lat  , String page , String radius) {
 		String key = "f74ac8fbf0d992b02420a03387ed8341";
 		String url = "http://v.juhe.cn/estate/local";
 		
@@ -124,7 +124,7 @@ public class EstateInfoServiceImpl implements IEstateInfoService{
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("lng", lng);					// 经度 (如：119.9772857)
 		param.put("lat", lat);					// 纬度 (如：27.327578)
-		param.put("radius", "10000");		// 检索半径，默认10000 单位米
+		param.put("radius", radius);		// 检索半径，默认5000 米
 		param.put("page", page);				// 页数，默认1,每页返回20条 
 		param.put("key", key);			 
 		 
@@ -135,7 +135,7 @@ public class EstateInfoServiceImpl implements IEstateInfoService{
 			if(cr.getResultcode().equals("200")){
 				result.put("code" , "1");
 				result.put("msg" , "SUCCESS");
-				result.put("list" , cr.getResult()); 
+				result.put("list" , JSONObject.toJSON(cr.getResult())); 
 			}else{
 				result.put("code" , "0");
 				result.put("msg" , cr.getReason() + "|请联系后台开发人员调试");

@@ -25,4 +25,15 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, BaseD
 	 * @return
 	 */
 	int batchInsertTLandedProperty(List<TLandedProperty> list);
+	
+	/**
+	 * @descriptions 根据楼盘名称寻找楼盘在数据库里的编号
+	 *
+	 * @param name
+	 * @return
+	 * @date 2016年10月6日 下午4:44:17
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public List<TLandedProperty>  findCodeByTitle(String name); 
 }
