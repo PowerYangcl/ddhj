@@ -181,6 +181,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					result.setRepList(list);
 					Integer total = mapper.findEntityAllCount(dto);
 					result.setRepCount(total);
+					result.setResultCode(0);
+					result.setResultMessage("查询楼盘列表成功");
 				} else {
 					result.setRepList(new ArrayList<TReport>());
 					result.setRepCount(0);
@@ -282,6 +284,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			result.setPrice(report.getPrice());
 			result.setName(report.getHousesName());
 			result.setResultCode(0);
+			result.setResultMessage("查询报告成功");
 		} else {
 			result.setResultCode(-1);
 			result.setResultMessage("环境报告为空");
