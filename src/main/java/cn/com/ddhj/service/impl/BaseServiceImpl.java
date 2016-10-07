@@ -93,6 +93,7 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 				result.setResultMessage("编辑失败");
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			result.setResultCode(-1);
 			result.setResultMessage("编辑错误，请联系管理员");
 		}
@@ -179,8 +180,8 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 			list = new ArrayList<T>();
 		}
 
-		result.setList(list);
-		result.setTotal(total);
+		result.setRepList(list);
+		result.setRepCount(total);
 		return result;
 	}
 }

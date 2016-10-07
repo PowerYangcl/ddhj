@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.TUserDto;
+import cn.com.ddhj.mapper.TUserMapper;
 import cn.com.ddhj.model.TUser;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
@@ -23,6 +24,8 @@ public class TUserTest extends BaseTest {
 
 	@Autowired
 	private ITUserService service;
+	@Autowired
+	private TUserMapper mapper;
 
 	public void register() {
 		TUser entity = new TUser();
@@ -40,10 +43,15 @@ public class TUserTest extends BaseTest {
 		System.out.println(JSONObject.toJSON(result));
 	}
 	
-	@Test
 	public void logOut(){
 		String uuid = "68423c774bd24815b577633dc494b56e";
 		BaseResult result = service.logOut(uuid);
 		System.out.println(JSONObject.toJSON(result));
+	}
+	
+	@Test
+	public void findTUserByUuid(){
+		String uuid = "8c91581b84fd4e69bbf28363aa38b11a";
+		System.out.println(mapper.findTUserByUuid(uuid));
 	}
 }

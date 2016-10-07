@@ -22,6 +22,16 @@ public class BaseAPI {
 	 */
 	private String apiInput;
 
+	private String userToken;
+
+	public String getUserToken() {
+		return userToken;
+	}
+
+	public void setUserToken(String userToken) {
+		this.userToken = userToken;
+	}
+
 	public String getApiKey() {
 		return apiKey;
 	}

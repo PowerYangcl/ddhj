@@ -13,23 +13,23 @@ import java.util.List;
  */
 public class PageResult<T> extends BaseResult {
 
-	private List<T> list;
-	private Integer total;
+	private List<T> repList;
+	private Integer repCount;
 
-	public List<T> getList() {
-		return list;
+	public List<T> getRepList() {
+		return repList;
 	}
 
-	public void setList(List<T> list) {
-		this.list = list;
+	public void setRepList(List<T> repList) {
+		this.repList = repList;
 	}
 
-	public Integer getTotal() {
-		return total;
+	public Integer getRepCount() {
+		return repCount;
 	}
 
-	public void setTotal(Integer total) {
-		this.total = total;
+	public void setRepCount(Integer repCount) {
+		this.repCount = repCount;
 	}
 
 }

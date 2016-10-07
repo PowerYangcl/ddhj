@@ -124,7 +124,16 @@
 		<include refid="Base_Column_List" />
 		from t_user
 		where phone = #{phone,jdbcType=VARCHAR}
-		and `password` = #{password,jdbcType=VARCHAR}
+		and `password` =
+		#{password,jdbcType=VARCHAR}
+	</select>
+	<!-- 登录验证用户 -->
+	<select id="findTUserByUuid" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_user
+		where uuid=#{uuid,jdbcType=VARCHAR}
 	</select>
 	<!-- 用户登录和登出公共接口 -->
 	<update id="userLoginAndLogOut" parameterType="cn.com.ddhj.model.TUser">

@@ -18,5 +18,4 @@ public class TUserLogin extends BaseModel {
 	public void setUserToken(String userToken) {
 		this.userToken = userToken;
 	}
-
 }

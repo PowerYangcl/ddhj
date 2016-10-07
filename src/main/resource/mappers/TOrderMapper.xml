@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TOrderMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TOrder">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="report_code" property="reportCode" jdbcType="VARCHAR" />
+		<result column="pay_price" property="payPrice" jdbcType="DECIMAL" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="pic" property="pic" jdbcType="VARCHAR" />
+		<result column="image" property="image" jdbcType="VARCHAR" />
+		<result column="level_name" property="levelName" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, code, report_code, pay_price, status,
+		create_user, create_time,
+		update_user,
+		update_time
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_order
+		where `code` = #{code,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from t_order
+		where `code` = #{code,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TOrder">
+		insert into t_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			code,
+			report_code,
+			pay_price,
+			<if test="status != null">
+				status,
+			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			#{reportCode,jdbcType=VARCHAR},
+			#{payPrice,jdbcType=DECIMAL},
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</trim>
+	</insert>
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TOrder">
+		update t_order
+		<set>
+			<if test="payPrice != null">
+				pay_price = #{payPrice,jdbcType=DECIMAL},
+			</if>
+			<if test="status != null">
+				`status` = #{status,jdbcType=INTEGER},
+			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</set>
+		where `code` = #{code,jdbcType=VARCHAR}
+	</update>
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.TOrderDto"
+		resultMap="BaseResultMap">
+		SELECT
+		o.`code` AS `code`,
+		o.pay_price AS pay_price,
+		o.`status` AS
+		`status`,
+		r.pic AS pic,
+		r.image AS image,
+		rl.`name` AS level_name,
+		lp.addressFull AS address
+		FROM
+		t_order AS o
+		LEFT JOIN t_report AS r ON
+		o.report_code = r.`code`
+		LEFT JOIN t_landed_property AS lp ON
+		r.houses_code = lp.`code`
+		LEFT JOIN t_report_level AS rl ON
+		r.level_code = rl.`code`
+		<where>
+			<if test="status != null">
+				o.`status` = #{status,jdbcType=INTEGER}
+			</if>
+		</where>
+		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="findEntityAllCount" parameterType="cn.com.ddhj.dto.TOrderDto"
+		resultType="java.lang.Integer">
+		SELECT count(1)
+		FROM
+		t_order AS o
+		LEFT JOIN t_report AS r ON
+		o.report_code = r.`code`
+		LEFT JOIN t_landed_property AS lp ON
+		r.houses_code = lp.`code`
+		LEFT JOIN t_report_level AS rl ON
+		r.level_code = rl.`code`
+		<where>
+			<if test="status != null">
+				o.`status` = #{status,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+</mapper>

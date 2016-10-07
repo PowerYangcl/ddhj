@@ -35,4 +35,16 @@ public interface TUserMapper extends BaseMapper<TUser, TUserDto> {
 	 * @return
 	 */
 	int userLoginAndLogOut(TUser entity);
+
+	/**
+	 * 
+	 * 方法: findTUserByUuid <br>
+	 * 描述: 根据uuid查询注册用户信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月7日 下午3:23:51
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	TUser findTUserByUuid(String uuid);
 }
