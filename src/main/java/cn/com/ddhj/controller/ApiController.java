@@ -16,6 +16,8 @@ import cn.com.ddhj.dto.TUserDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TUser;
+import cn.com.ddhj.result.order.OrderAddResult;
+import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
@@ -86,7 +88,7 @@ public class ApiController {
 		// 订单相关
 		else if ("order_add".equals(api.getApiTarget())) {
 			TOrder entity = obj.toJavaObject(TOrder.class);
-			BaseResult result = orderService.insertSelective(entity, api.getUserToken());
+			OrderAddResult result = orderService.insertSelective(entity, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_data".equals(api.getApiTarget())) {
 			TOrderDto dto = obj.toJavaObject(TOrderDto.class);
@@ -95,6 +97,9 @@ public class ApiController {
 		} else if ("order_edit".equals(api.getApiTarget())) {
 			TOrder entity = obj.toJavaObject(TOrder.class);
 			BaseResult result = orderService.updateByCode(entity, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		} else if ("order_affirm".equals(api.getApiTarget())) {
+			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();

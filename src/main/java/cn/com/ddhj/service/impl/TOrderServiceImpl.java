@@ -1,6 +1,8 @@
 package cn.com.ddhj.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +14,13 @@ import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.mapper.TUserLoginMapper;
 import cn.com.ddhj.mapper.TUserMapper;
+import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TUser;
 import cn.com.ddhj.model.TUserLogin;
+import cn.com.ddhj.model.report.TReport;
+import cn.com.ddhj.result.order.OrderAddResult;
+import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.util.DateUtil;
@@ -35,6 +41,8 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	private TUserLoginMapper loginMapper;
 	@Autowired
 	private TUserMapper userMapper;
+	@Autowired
+	private TReportMapper reportMapper;
 
 	@Override
 	public TOrderResult findEntityToPage(TOrderDto dto) {
@@ -66,13 +74,14 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	 *      java.lang.String)
 	 */
 	@Override
-	public BaseResult insertSelective(TOrder entity, String userToken) {
-		BaseResult result = new BaseResult();
+	public OrderAddResult insertSelective(TOrder entity, String userToken) {
+		OrderAddResult result = new OrderAddResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		if (login != null) {
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
-				entity.setCode(WebHelper.getInstance().getUniqueCode("D"));
+				String code = WebHelper.getInstance().getUniqueCode("D");
+				entity.setCode(code);
 				entity.setCreateUser(user.getUserCode());
 				entity.setCreateTime(DateUtil.getSysDateTime());
 				entity.setUpdateUser(user.getUserCode());
@@ -80,6 +89,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				mapper.insertSelective(entity);
 				result.setResultCode(0);
 				result.setResultMessage("创建订单成功");
+				result.setCode(code);
 			} else {
 				result.setResultCode(-1);
 				result.setResultMessage("无效用户");
@@ -121,6 +131,52 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		} else {
 			result.setResultCode(-1);
 			result.setResultMessage("无效用户");
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: orderAffirm <br>
+	 * 描述: TODO
+	 * 
+	 * @param codes
+	 * @return
+	 * @see cn.com.ddhj.service.ITOrderService#orderAffirm(java.lang.String)
+	 */
+	@Override
+	public OrderAffirmResult orderAffirm(String codes) {
+		OrderAffirmResult result = new OrderAffirmResult();
+		if (codes != null && !"".equals(codes)) {
+			try {
+				List<String> list = Arrays.asList(codes.split(","));
+				if (list != null && list.size() > 0) {
+					List<TReport> reports = reportMapper.findRreportByChart(list);
+					if (reports != null && reports.size() > 0) {
+						BigDecimal payMoney = BigDecimal.ZERO;
+						for (TReport r : reports) {
+							payMoney.add(r.getPrice());
+						}
+						result.setResultCode(0);
+						result.setResultMessage("获取环境报告成功");
+						result.setPageMoney(payMoney);
+						result.setReportList(reports);
+					} else {
+						result.setResultCode(-1);
+						result.setResultMessage("环境报告为空");
+					}
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("无效参数");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				result.setResultCode(-1);
+				result.setResultMessage("无效参数");
+			}
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("无效参数");
 		}
 		return result;
 	}

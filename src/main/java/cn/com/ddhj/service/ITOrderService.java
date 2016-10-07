@@ -3,6 +3,8 @@ package cn.com.ddhj.service;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.result.order.OrderAddResult;
+import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.TOrderResult;
 
 /**
@@ -23,7 +25,7 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @return
 	 * @see cn.com.ddhj.service.IBaseService#insertSelective(cn.com.ddhj.model.BaseModel)
 	 */
-	BaseResult insertSelective(TOrder entity, String userToken);
+	OrderAddResult insertSelective(TOrder entity, String userToken);
 
 	/**
 	 * 
@@ -48,4 +50,16 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @see cn.com.ddhj.service.IBaseService#findEntityToPage(cn.com.ddhj.dto.BaseDto)
 	 */
 	TOrderResult findEntityToPage(TOrderDto dto);
+
+	/**
+	 * 
+	 * 方法: orderAffirm <br>
+	 * 描述: 根据报告code数组查询报告集合 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月7日 下午4:31:34
+	 * 
+	 * @param codes
+	 * @return
+	 */
+	OrderAffirmResult orderAffirm(String codes);
 }

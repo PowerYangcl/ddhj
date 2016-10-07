@@ -21,6 +21,7 @@ public class TReport extends BaseModel {
 
 	private String title;
 
+	private String levelName;
 	private String levelCode;
 
 	private String pic;
@@ -131,6 +132,14 @@ public class TReport extends BaseModel {
 
 	public void setHousesName(String housesName) {
 		this.housesName = housesName;
+	}
+
+	public String getLevelName() {
+		return levelName;
+	}
+
+	public void setLevelName(String levelName) {
+		this.levelName = levelName;
 	}
 
 }

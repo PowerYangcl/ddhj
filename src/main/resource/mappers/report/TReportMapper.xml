@@ -8,6 +8,7 @@
 		<result column="houses_code" property="housesCode" jdbcType="VARCHAR" />
 		<result column="houses_name" property="housesName" jdbcType="VARCHAR" />
 		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="level_name" property="levelName" jdbcType="VARCHAR" />
 		<result column="level_code" property="levelCode" jdbcType="VARCHAR" />
 		<result column="pic" property="pic" jdbcType="VARCHAR" />
 		<result column="image" property="image" jdbcType="VARCHAR" />
@@ -210,5 +211,23 @@
 			(lp.lng BETWEEN
 			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
 		</where>
+	</select>
+	<select id="findRreportByChart" parameterType="list" resultMap="BaseResultMap">
+		SELECT
+		r.`code`,
+		r.title,
+		r.price,
+		rl.`name` AS level_name
+		FROM
+		t_report AS
+		r
+		LEFT JOIN t_report_level AS rl ON r.level_code = rl.`code`
+		where
+		r.code
+		in
+		<foreach collection="list" item="item" index="index" open="("
+			close=")" separator=",">
+			#{item,jdbcType=VARCHAR}
+		</foreach>
 	</select>
 </mapper>

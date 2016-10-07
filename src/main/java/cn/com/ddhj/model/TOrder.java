@@ -17,13 +17,15 @@ public class TOrder extends BaseModel {
 
 	private BigDecimal payPrice;
 
+	private String payCode;
+	private String invoiceTitle;
 	private Integer status;
 
 	private String pic;
 	private String image;
 	private String levelName;
 	private String address;
-	
+
 	public String getPic() {
 		return pic;
 	}
@@ -86,6 +88,22 @@ public class TOrder extends BaseModel {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public String getPayCode() {
+		return payCode;
+	}
+
+	public void setPayCode(String payCode) {
+		this.payCode = payCode;
+	}
+
+	public String getInvoiceTitle() {
+		return invoiceTitle;
+	}
+
+	public void setInvoiceTitle(String invoiceTitle) {
+		this.invoiceTitle = invoiceTitle;
 	}
 
 }

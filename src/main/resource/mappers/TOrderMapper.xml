@@ -7,6 +7,9 @@
 		<result column="code" property="code" jdbcType="VARCHAR" />
 		<result column="report_code" property="reportCode" jdbcType="VARCHAR" />
 		<result column="pay_price" property="payPrice" jdbcType="DECIMAL" />
+		<result column="pay_code" property="payCode" jdbcType="VARCHAR" />
+		<result column="invoice_title" property="invoiceTitle"
+			jdbcType="VARCHAR" />
 		<result column="status" property="status" jdbcType="INTEGER" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
@@ -18,7 +21,8 @@
 		<result column="address" property="address" jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, uuid, code, report_code, pay_price, status,
+		id, uuid, code, report_code,
+		pay_price,pay_code,invoice_title, status,
 		create_user, create_time,
 		update_user,
 		update_time
@@ -41,6 +45,10 @@
 			code,
 			report_code,
 			pay_price,
+			pay_code,
+			<if test="invoiceTitle != null">
+				invoice_title,
+			</if>
 			<if test="status != null">
 				status,
 			</if>
@@ -54,6 +62,10 @@
 			#{code,jdbcType=VARCHAR},
 			#{reportCode,jdbcType=VARCHAR},
 			#{payPrice,jdbcType=DECIMAL},
+			#{payCode,jdbcType=VARCHAR},
+			<if test="invoiceTitle != null">
+				#{invoiceTitle,jdbcType=VARCHAR},
+			</if>
 			<if test="status != null">
 				#{status,jdbcType=INTEGER},
 			</if>
@@ -75,7 +87,8 @@
 				`status` = #{status,jdbcType=INTEGER},
 			</if>
 			update_user = #{updateUser,jdbcType=VARCHAR},
-			update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			update_time =
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>

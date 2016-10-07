@@ -15,6 +15,7 @@ import cn.com.ddhj.base.PageResult;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.service.ITOrderService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -24,11 +25,14 @@ public class TOrderTest extends BaseTest {
 	@Autowired
 	private ITOrderService service;
 
+	@Test
 	public void insert() {
 		TOrder entity = new TOrder();
 		entity.setCode(WebHelper.getInstance().getUniqueCode("D"));
 		entity.setReportCode("R161006100001");
 		entity.setCreateUser("system");
+		entity.setPayCode("PT161007100002");
+		entity.setInvoiceTitle("个人");
 		entity.setPayPrice(BigDecimal.TEN);
 		entity.setUpdateUser("system");
 		service.insertSelective(entity);
@@ -43,12 +47,17 @@ public class TOrderTest extends BaseTest {
 
 	}
 
-	@Test
 	public void edit() {
 		TOrder entity = new TOrder();
 		entity.setCode("D161007100001");
 		entity.setStatus(1);
 		entity.setUpdateUser("system");
 		service.updateByCode(entity);
+	}
+
+	public void orderAffirm() {
+		String codes = "R161006100001";
+		OrderAffirmResult result = service.orderAffirm(codes);
+		System.out.println(JSONObject.toJSON(result));
 	}
 }
