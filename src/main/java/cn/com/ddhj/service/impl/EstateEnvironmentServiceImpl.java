@@ -113,7 +113,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				String score = this.getDoctorScore(hourAqi, hourAqi, "0.5", "0.5");
 				result.put("score", score); // 环境综合评分
 				result.put("level", this.scoreLevel(score));  // 环境等级
-				result.put("value", "16");// 环境值
+//				result.put("value", "16");// 环境值 经过讨论，这个值不再显示
 				
 				result.put("weather", weather); 
 				result.put("windpower", windpower); 
