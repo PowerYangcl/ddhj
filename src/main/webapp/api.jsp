@@ -48,31 +48,33 @@
 </head>
 <body>
 	<form id="apiForm" action="">
-		<div style="text-align: center;">
-			<table style="text-align: center;">
+		<div>
+			<table border="1" cellpadding="3" cellspacing="0"
+				style="width: 60%; margin: auto">
 				<tr>
-					<td>api_key:</td>
-					<td><input type="text" name="apiKey" id="apiKey" value="">
-					</td>
+					<td style="width: 100px;">api_key:</td>
+					<td style="padding: 10px"><input type="text" name="apiKey"
+						id="apiKey" value=""></td>
 				</tr>
 				<tr>
-					<td>api_target:</td>
-					<td><input type="text" name="apiTarget" id="apiTarget" value="">
-					</td>
+					<td style="width: 100px;">api_target:</td>
+					<td style="padding: 10px"><input type="text" name="apiTarget"
+						id="apiTarget" value=""></td>
 				</tr>
 				<tr>
-					<td>api_input</td>
-					<td style="width: 200px;"><textarea id="apiInput" name="apiInput" rows="3" cols=""></textarea>
-					</td>
+					<td style="width: 100px;">api_input</td>
+					<td style="padding: 10px"><textarea
+							style="width: 500px; height: 100px;" id="apiInput"
+							name="apiInput" rows="3" cols=""></textarea></td>
 				</tr>
 				<tr>
-					<td>user_token:</td>
-					<td><input type="text" name="userToken" id="userToken" value="">
-					</td>
+					<td style="width: 100px;">user_token:</td>
+					<td style="padding: 10px"><input type="text" name="userToken"
+						id="userToken" value=""></td>
 				</tr>
 				<tr>
-					<td colspan="2">
-						<input type="button" onclick="api();" value=" 测试 " style="width:50px;">
+					<td colspan="2" style="text-align: center;"><input
+						type="button" onclick="api();" value=" 测试 " style="width: 50px;">
 					</td>
 				</tr>
 			</table>

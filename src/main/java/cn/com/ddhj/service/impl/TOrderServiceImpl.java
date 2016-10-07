@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,12 +47,21 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	private TReportMapper reportMapper;
 
 	@Override
-	public TOrderResult findEntityToPage(TOrderDto dto) {
+	public TOrderResult findEntityToPage(TOrderDto dto, HttpServletRequest request) {
 		TOrderResult result = new TOrderResult();
 		dto.setStart(dto.getPageIndex() * dto.getPageSize());
 		List<TOrder> list = mapper.findEntityAll(dto);
 		int total = mapper.findEntityAllCount(dto);
 		if (list != null && list.size() > 0) {
+			if (request != null) {
+				String path = request.getContextPath();
+				String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+						+ path + "/";
+				for (int i = 0; i < list.size(); i++) {
+					TOrder order = list.get(i);
+					order.setPath(basePath + order.getPath());
+				}
+			}
 			result.setResultCode(0);
 		} else {
 			result.setResultCode(-1);

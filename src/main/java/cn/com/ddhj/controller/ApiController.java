@@ -1,5 +1,6 @@
 package cn.com.ddhj.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class ApiController {
 
 	@RequestMapping("api")
 	@ResponseBody
-	public JSONObject api(BaseAPI api, HttpSession session) {
+	public JSONObject api(BaseAPI api, HttpSession session, HttpServletRequest request) {
 		JSONObject obj = JSONObject.parseObject(api.getApiInput());
 		if ("user_register".equals(api.getApiTarget())) {
 			// 用户注册
@@ -92,7 +93,7 @@ public class ApiController {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_data".equals(api.getApiTarget())) {
 			TOrderDto dto = obj.toJavaObject(TOrderDto.class);
-			TOrderResult result = orderService.findEntityToPage(dto);
+			TOrderResult result = orderService.findEntityToPage(dto, request);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_edit".equals(api.getApiTarget())) {
 			TOrder entity = obj.toJavaObject(TOrder.class);

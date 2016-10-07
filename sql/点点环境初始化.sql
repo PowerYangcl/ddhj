@@ -274,7 +274,7 @@ CREATE TABLE t_order (
 	pay_price DECIMAL (18, 2) DEFAULT '0.00' COMMENT '实际支付价格',
 	pay_code VARCHAR (50) DEFAULT '' COMMENT '支付方式编码',
 	invoice_title VARCHAR (100) DEFAULT '' COMMENT '发票抬头',
-	`status` INT DEFAULT 0 COMMENT '订单状态 0 未支付 1 已支付 2 已取消',
+	`status` INT DEFAULT 0 COMMENT '订单状态 0 未支付 1 已支付未下载 2 已支付已下载 3 已取消',
 	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
 	create_time datetime NOT NULL COMMENT '创建时间',
 	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',

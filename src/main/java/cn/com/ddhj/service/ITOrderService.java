@@ -1,5 +1,7 @@
 package cn.com.ddhj.service;
 
+import javax.servlet.http.HttpServletRequest;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.model.TOrder;
@@ -49,7 +51,7 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @return
 	 * @see cn.com.ddhj.service.IBaseService#findEntityToPage(cn.com.ddhj.dto.BaseDto)
 	 */
-	TOrderResult findEntityToPage(TOrderDto dto);
+	TOrderResult findEntityToPage(TOrderDto dto, HttpServletRequest request);
 
 	/**
 	 * 

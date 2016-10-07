@@ -37,6 +37,7 @@ public class TOrderTest extends BaseTest {
 		service.insertSelective(entity);
 	}
 
+	@Test
 	public void data() {
 		TOrderDto dto = new TOrderDto();
 		dto.setPageIndex(0);
@@ -54,7 +55,6 @@ public class TOrderTest extends BaseTest {
 		service.updateByCode(entity);
 	}
 
-	@Test
 	public void orderAffirm() {
 		String codes = "R161006100001";
 		OrderAffirmResult result = service.orderAffirm(codes);

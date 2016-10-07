@@ -97,10 +97,13 @@
 		SELECT
 		o.`code` AS `code`,
 		o.pay_price AS pay_price,
+		o.pay_code as pay_code,
 		o.`status` AS
 		`status`,
+		r.title,
 		r.pic AS pic,
 		r.image AS image,
+		r.path,
 		rl.`name` AS level_name,
 		lp.addressFull AS address
 		FROM

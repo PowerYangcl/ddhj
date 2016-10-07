@@ -61,7 +61,6 @@ public class TReportController {
 	public PDFReportResult createPDF(String code, HttpServletRequest request) {
 		// 获取项目路径
 		String filePath = request.getSession().getServletContext().getRealPath("");
-		System.out.println(filePath);
 		return service.createPDF(code, filePath);
 	}
 
