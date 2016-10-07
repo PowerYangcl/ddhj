@@ -38,15 +38,26 @@ CREATE TABLE t_user (
 	user_code VARCHAR (50) NOT NULL UNIQUE COMMENT '用户编码',
 	phone VARCHAR (20) NOT NULL UNIQUE COMMENT '手机号',
 	`password` VARCHAR (50) NOT NULL COMMENT '密码',
-	nick_name VARCHAR (50) DEFAULT '' UNIQUE COMMENT '昵称',
+	nick_name VARCHAR (50) DEFAULT '' COMMENT '昵称',
 	head_pic VARCHAR (500) DEFAULT '' COMMENT '头像',
 	e_mail VARCHAR (100) DEFAULT '' COMMENT '邮箱',
 	is_login INT DEFAULT 0 COMMENT '是否已登录 0 已登录 1 已登出',
-	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_user VARCHAR (20) DEFAULT 'admin' NOT NULL COMMENT '创建人',
 	create_time datetime NOT NULL COMMENT '创建时间',
-	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_user VARCHAR (20) DEFAULT 'admin' NOT NULL COMMENT '最后修改人',
 	update_time datetime NOT NULL COMMENT '最后修改时间'
 ) COMMENT '注册用户表';
+
+DROP TABLE
+IF EXISTS t_user_login;
+
+CREATE TABLE t_user_login (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) NOT NULL COMMENT 'uuid',
+	user_token VARCHAR (50) NOT NULL COMMENT 't_user表的uuid',
+	create_user VARCHAR (50) DEFAULT '' COMMENT '创建人',
+	create_time datetime COMMENT '创建时间'
+) COMMENT '用户登录表';
 
 DROP TABLE
 IF EXISTS t_report_level;
@@ -139,7 +150,7 @@ CREATE TABLE t_landed_property (
 	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
 	uuid VARCHAR (50) DEFAULT '' COMMENT 'uuid',
 	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '楼盘编码',
-	title VARCHAR (50) NOT NULL  COMMENT '楼盘名称',
+	title VARCHAR (50) NOT NULL COMMENT '楼盘名称',
 	addressFull text COMMENT '楼盘详细地址',
 	total VARCHAR (50) COMMENT '户数',
 	city VARCHAR (20) COMMENT '所属城市',
@@ -245,12 +256,44 @@ CREATE TABLE t_report_comment (
 	uuid VARCHAR (50) COMMENT 'uuid',
 	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '评论编码',
 	content text COMMENT '评论内容',
-	type_code varchar(50) DEFAULT '' COMMENT '评论类型',
+	type_code VARCHAR (50) DEFAULT '' COMMENT '评论类型',
 	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
 	create_time datetime NOT NULL COMMENT '创建时间',
 	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
 	update_time datetime NOT NULL COMMENT '最后修改时间'
 ) COMMENT '环境报告评论';
+
+DROP TABLE
+IF EXISTS t_order;
+
+CREATE TABLE t_order (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) COMMENT 'uuid',
+	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '订单编码',
+	report_code VARCHAR (50) NOT NULL COMMENT '环境报告编码',
+	pay_price DECIMAL (18, 2) DEFAULT '0.00' COMMENT '实际支付价格',
+	pay_code VARCHAR (50) DEFAULT '' COMMENT '支付方式编码',
+	invoice_title VARCHAR (100) DEFAULT '' COMMENT '发票抬头',
+	`status` INT DEFAULT 0 COMMENT '订单状态 0 未支付 1 已支付 2 已取消',
+	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_time datetime NOT NULL COMMENT '创建时间',
+	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_time datetime NOT NULL COMMENT '最后修改时间'
+) COMMENT '订单表';
+
+DROP TABLE
+IF EXISTS t_pay_type;
+
+CREATE TABLE t_pay_type (
+	id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	uuid VARCHAR (50) COMMENT 'uuid',
+	`code` VARCHAR (50) NOT NULL UNIQUE COMMENT '支付方式编码',
+	`name` VARCHAR (50) NOT NULL COMMENT '支付方式名称',
+	create_user VARCHAR (20) NOT NULL COMMENT '创建人',
+	create_time datetime NOT NULL COMMENT '创建时间',
+	update_user VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	update_time datetime NOT NULL COMMENT '最后修改时间'
+) COMMENT '支付方式';
 
 #============获取唯一键函数 start ========================
 DROP PROCEDURE
