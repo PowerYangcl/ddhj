@@ -215,6 +215,8 @@
 	<select id="findRreportByChart" parameterType="list" resultMap="BaseResultMap">
 		SELECT
 		r.`code`,
+		r.pic,
+		r.image,
 		r.title,
 		r.price,
 		rl.`name` AS level_name

@@ -25,7 +25,6 @@ public class TOrderTest extends BaseTest {
 	@Autowired
 	private ITOrderService service;
 
-	@Test
 	public void insert() {
 		TOrder entity = new TOrder();
 		entity.setCode(WebHelper.getInstance().getUniqueCode("D"));
@@ -55,9 +54,18 @@ public class TOrderTest extends BaseTest {
 		service.updateByCode(entity);
 	}
 
+	@Test
 	public void orderAffirm() {
 		String codes = "R161006100001";
 		OrderAffirmResult result = service.orderAffirm(codes);
 		System.out.println(JSONObject.toJSON(result));
+	}
+
+	public void payTest() {
+		double pay = 0;
+		for (int i = 0; i < 5; i++) {
+			pay += BigDecimal.TEN.doubleValue();
+		}
+		System.out.println(pay);
 	}
 }

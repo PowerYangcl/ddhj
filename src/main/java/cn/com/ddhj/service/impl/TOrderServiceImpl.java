@@ -153,13 +153,14 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				if (list != null && list.size() > 0) {
 					List<TReport> reports = reportMapper.findRreportByChart(list);
 					if (reports != null && reports.size() > 0) {
-						BigDecimal payMoney = BigDecimal.ZERO;
-						for (TReport r : reports) {
-							payMoney.add(r.getPrice());
+						double payMoney = 0;
+						for (int i = 0; i < reports.size(); i++) {
+							TReport r = reports.get(i);
+							payMoney += r.getPrice().doubleValue();
 						}
 						result.setResultCode(0);
 						result.setResultMessage("获取环境报告成功");
-						result.setPageMoney(payMoney);
+						result.setPageMoney(BigDecimal.valueOf(payMoney));
 						result.setReportList(reports);
 					} else {
 						result.setResultCode(-1);
