@@ -1,5 +1,7 @@
 package cn.com.ddhj.service.impl;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +9,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +26,11 @@ import cn.com.ddhj.model.TUserLogin;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
+import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.service.ITOrderService;
+import cn.com.ddhj.service.impl.orderpay.OrderPayProcess;
+import cn.com.ddhj.service.impl.orderpay.prepare.PayGatePreparePayProcess;
 import cn.com.ddhj.util.DateUtil;
 
 /**
@@ -191,6 +197,51 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			result.setResultMessage("无效参数");
 		}
 		return result;
+	}
+
+	@Override
+	public OrderPayResult orderPay(String openID, String orderCode, String payType, String returnUrl) {
+		if(StringUtils.isBlank(returnUrl)){
+			returnUrl = "";
+		}
+		
+		String errorMsg = null;
+		
+		PayGatePreparePayProcess.PaymentResult result = null;
+		if("449746280003".equals(payType)){
+			// 支付宝支付
+			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl);
+		}else if("449746280005".equals(payType)){
+			// 微信支付
+			if(StringUtils.isNotBlank(openID)){
+				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl);
+			}else{
+				errorMsg = "openID is Empty!";
+			}
+		}else{
+			errorMsg = "PayType Not Implemented!";
+		}
+		
+		if(result != null && !result.upFlagTrue()){
+			errorMsg = StringUtils.trimToEmpty(result.getResultMessage());
+		}
+		
+		if(errorMsg == null){
+			return "redirect:"+result.payUrl;
+		}
+		
+		response.setContentType("text/html;charset=UTF-8");
+		PrintWriter out;
+		try {
+			out = response.getWriter();
+			out.write(errorMsg);
+			if(out!=null) {
+				out.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

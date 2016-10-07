@@ -102,6 +102,9 @@ public class ApiController {
 		} else if ("order_affirm".equals(api.getApiTarget())) {
 			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		} else if ("order_pay".equals(api.getApiTarget())) {
+			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"));
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(-1);
