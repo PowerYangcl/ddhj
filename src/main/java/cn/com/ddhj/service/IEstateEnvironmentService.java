@@ -1,8 +1,23 @@
 package cn.com.ddhj.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 public interface IEstateEnvironmentService {
+	
+	
+	/**
+	 * @descriptions 地区环境接口|1025
+	 *
+	 * @param position
+	 * @param city |当前城市名称 如：北京，注意不是北京市
+	 * @return
+	 * @date 2016年10月7日 下午8:19:29
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject apiAreaEnv(String position , String city);
+	
 
 	/**
 	 * @descriptions 环境综合评分接口|1032

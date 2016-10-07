@@ -26,6 +26,7 @@ import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.IEstateInfoService;
 import cn.com.ddhj.service.ILongitudeLatitudeService;
+import cn.com.ddhj.service.IWeatherAreaSupportService;
 import cn.com.ddhj.util.PureNetUtil;
 
 
@@ -56,6 +57,84 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	
 	@Resource
 	private TLandedPropertyMapper lrMapper;
+	
+	@Resource
+	private IWeatherAreaSupportService wasService;
+	
+	
+	
+	/**
+	 * @descriptions 地区环境接口|1025
+	 *
+	 * @param position
+	 * @param city |当前城市名称 如：北京，注意不是北京市
+	 * @return
+	 * @date 2016年10月7日 下午8:19:29
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject apiAreaEnv(String position , String city) {
+		JSONObject result = new JSONObject();
+		if(StringUtils.isAnyBlank(position)){
+			result.put("resultCode", -1); 
+			result.put("resultMessage", "参数不得为空"); 
+			return result;
+		}
+		
+		try {
+			String[] arr = position.split(",");
+			String lat = arr[0];
+			String lng = arr[1];
+			JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");
+			if(addr.getString("code").equals("1")){
+				result.put("name", addr.getString("business").split(",")[0]); // 位置名称
+			}
+			
+			JSONObject obj = wasService.getWeatherWithPosition(lng, lat);
+			if(obj.getString("resultcode").equals("200")){
+				JSONObject result_ = JSONObject.parseObject(obj.getString("result")); 
+				JSONObject today = JSONObject.parseObject(result_.getString("today")); 
+				String weather = today.getString("weather");
+				String windpower = today.getString("wind");
+				String tempmin = today.getString("temperature").split("~")[0].split("℃")[0];
+				String tempmax = today.getString("temperature").split("~")[1].split("℃")[0];
+				String tiptitle = today.getString("dressing_advice");
+				SimpleDateFormat sdf= new SimpleDateFormat("yyyy.MM.dd");
+				String tiptime = sdf.format(new Date()) + today.getString("week");  
+				
+				
+				CityAqi aqi = cityAirService.getCityAqi(city);
+				String hourAqi = aqi.getEntity().getAQI();
+				String dayAqi = "";
+				for(CityAqiData d : aqi.getList()){
+					dayAqi += d.getAQI() + ",";
+				}
+				dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
+				String score = this.getDoctorScore(hourAqi, hourAqi, "0.5", "0.5");
+				result.put("score", score); // 环境综合评分
+				result.put("level", this.scoreLevel(score));  // 环境等级
+				result.put("value", "16");// 环境值
+				
+				result.put("weather", weather); 
+				result.put("windpower", windpower); 
+				result.put("tempmin", tempmin); 
+				result.put("tempmax", tempmax); 
+				result.put("tiptitle", tiptitle); 
+				result.put("tiptime", tiptime); 
+				result.put("resultCode", 0); 
+				result.put("resultMessage", "SUCCESS"); 
+				return result;
+			}else{
+				result.put("resultCode", -1); 
+				result.put("resultMessage", "天气查询接口返回空"); 
+				return result;
+			}
+		} catch (Exception e) {
+			result.put("resultCode", -1); 
+			result.put("resultMessage", "平台内部错误"); 
+			return result;
+		}
+	}
 	
 	
 	/**
@@ -200,7 +279,12 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 							if(lp != null && lp.size() > 0){
 								number = lp.get(0).getCode();
 							}
-							projectList.add(new Estate(e.getTitle() , position_, level, score , number)); 
+							String img = "";
+							if(e.getImages() != null && e.getImages().size() > 0){
+								img = e.getImages().get(0);
+							}
+							String distance = this.getDistance(lat, lng, e.getLat(), e.getLng());
+							projectList.add(new Estate(e.getTitle() , position_, level, score , number , img , distance + "Km以内")); 
 						}
 					}
 					if(projectList.size() != 0){
@@ -236,7 +320,43 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		return  estateService.estateInfoList(lng, lat, page , radius); 
 	}
 	
-	
+	/**
+	 * @descriptions 根据两个位置的经纬度，来计算两地的距离（单位为KM）
+	 *
+	 * @param lat1_ 用户经度
+	 * @param lng1_ 用户纬度
+	 * @param lat2_ 商家经度
+	 * @param lng2_ 商家纬度
+	 * @return
+	 * @date 2016年10月7日 下午10:25:46
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+    public String getDistance(String lat1_, String lng1_, String lat2_, String lng2_) {
+    	double earthRadius = 6378.137; // 地球半径
+    	
+        Double lat1 = Double.parseDouble(lat1_);
+        Double lng1 = Double.parseDouble(lng1_);
+        Double lat2 = Double.parseDouble(lat2_);
+        Double lng2 = Double.parseDouble(lng2_); 
+         
+        double radLat1 = rad(lat1);
+        double radLat2 = rad(lat2);
+        double difference = radLat1 - radLat2;
+        double mdifference = rad(lng1) - rad(lng2);
+        double distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(difference / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(mdifference / 2), 2)));
+        distance = distance * earthRadius;
+        distance = Math.round(distance * 10000) / 10000;
+        String distanceStr = distance+"";
+        distanceStr = distanceStr. substring(0, distanceStr.indexOf("."));
+         
+        return distanceStr;
+    }
+    
+    private double rad(double d) { 
+        return d * Math.PI / 180.0; 
+    }
+    
 	
 	/**
 	 * @descriptions 获取教授数学模型综合评分|噪音和水质暂时默认为2
@@ -393,6 +513,14 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	
 	
 	// 收录此代码
+	/**
+	 * @descriptions 重组日期
+	 *
+	 * @param date 2014-05-08
+	 * @date 2016年10月4日 下午10:43:34
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
 	public String showWeekday2(String date) {
 		String[] arr = date.split("-");
 		Calendar temp = Calendar.getInstance();
@@ -505,14 +633,17 @@ class Estate{
 	private String score;
 	private String number; // 楼盘在数据库里的编号
 	
+	private String img;
+	private String distance;
 	
-	
-	public Estate(String name, String position, String level, String score , String number) {
+	public Estate(String name, String position, String level, String score , String number , String img , String distance) {
 		this.name = name;
 		this.position = position;
 		this.level = level;
 		this.score = score;
 		this.number = number;
+		this.img = img;
+		this.distance = distance; 
 	}
 	
 	public String getName() {
