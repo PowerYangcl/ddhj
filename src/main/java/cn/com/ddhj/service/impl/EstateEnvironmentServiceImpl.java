@@ -86,8 +86,12 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			String lat = arr[0];
 			String lng = arr[1];
 			JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");
-			if(addr.getString("code").equals("1")){
+			if(addr.getString("code").equals("1") && StringUtils.isNotBlank(addr.getString("business")) ){
 				result.put("name", addr.getString("business").split(",")[0]); // 位置名称
+			}else{
+				result.put("resultCode", -1); 
+				result.put("resultMessage", "附近未发现可用位置信息"); 
+				return result;
 			}
 			
 			JSONObject obj = wasService.getWeatherWithPosition(lng, lat);
