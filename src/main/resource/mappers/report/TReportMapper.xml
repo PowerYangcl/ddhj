@@ -46,8 +46,14 @@
 		r.pic,
 		r.image,
 		r.rang,
+		r.detail,
+		DATE_FORMAT(
 		r.create_time,
-		lp.title AS houses_name,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		lp.title AS
+		houses_name,
 		lp.addressFull
 		as address,
 		r.price,
@@ -59,7 +65,8 @@
 		AS lp ON
 		r.houses_code =
 		lp.`code`
-		where r.`code` =
+		where
+		r.`code` =
 		#{code,jdbcType=VARCHAR}
 	</select>
 	<delete id="deleteByCode" parameterType="java.lang.String">
