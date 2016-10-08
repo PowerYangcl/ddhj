@@ -71,7 +71,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * @see cn.com.ddhj.service.report.ITReportService#createPDF(com.alibaba.fastjson.JSONArray)
 	 */
 	@Override
-	public PDFReportResult createPDF(String code, String path) {
+	public PDFReportResult createPDF(String code, String housesCode, String path) {
 		PDFReportResult result = new PDFReportResult();
 		try {
 			File file = new File(path);
@@ -81,7 +81,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			String filePath = "report/" + code + ".pdf";
 			path = path + "/" + filePath;
 			// 根据code获取地产楼盘信息
-			TLandedProperty lp = lpMapper.selectByCode(code);
+			TLandedProperty lp = lpMapper.selectByCode(housesCode);
 			List<TReportTemplate> templateList = templateMapper.findReportTemplateAll();
 			List<TReportEnvironmentLevel> levelList = levelMapper.findTReportEnvironmentLevelAll();
 			// 获取绿地率等级
@@ -208,7 +208,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult insert(TReport entity, String path) {
 		BaseResult result = new BaseResult();
 		String code = WebHelper.getInstance().getUniqueCode("R");
-		PDFReportResult pdfResult = this.createPDF(entity.getHousesCode(), path);
+		PDFReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -236,7 +236,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Override
 	public BaseResult updateByCode(TReport entity, String path) {
 		BaseResult result = new BaseResult();
-		PDFReportResult pdfResult = this.createPDF(entity.getHousesCode(), path);
+		PDFReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
