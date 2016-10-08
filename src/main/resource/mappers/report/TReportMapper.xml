@@ -219,11 +219,15 @@
 		r.image,
 		r.title,
 		r.price,
-		rl.`name` AS level_name
+		r.houses_code,
+		rl.`name`
+		AS level_name
 		FROM
 		t_report AS
 		r
-		LEFT JOIN t_report_level AS rl ON r.level_code = rl.`code`
+		LEFT JOIN t_report_level AS rl ON
+		r.level_code =
+		rl.`code`
 		where
 		r.code
 		in
@@ -231,5 +235,17 @@
 			close=")" separator=",">
 			#{item,jdbcType=VARCHAR}
 		</foreach>
+	</select>
+	<select id="findReportByHousesCode" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		SELECT
+		rl.`name` as level_name,
+		r.`code`
+		FROM
+		t_report AS r
+		LEFT
+		JOIN t_report_level AS rl ON r.level_code = rl.`code`
+		WHERE
+		r.houses_code = 'LP161004101471';
 	</select>
 </mapper>

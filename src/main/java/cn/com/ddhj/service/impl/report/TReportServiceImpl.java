@@ -17,7 +17,6 @@ import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
-import cn.com.ddhj.mapper.report.TReportLevelMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.report.TReportTemplateMapper;
 import cn.com.ddhj.model.TLandedProperty;
@@ -48,8 +47,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 	@Autowired
 	private TReportMapper mapper;
-	@Autowired
-	private TReportLevelMapper reportLevelMapper;
 	@Autowired
 	private TReportTemplateMapper templateMapper;
 
@@ -276,7 +273,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		TReportSelResult result = new TReportSelResult();
 		TReport report = mapper.selectByCode(code);
 		if (report != null) {
-			result.setLevelList(reportLevelMapper.findEntityAll());
+			result.setLevelList(mapper.findReportByHousesCode(report.getHousesCode()));
 			result.setAddress(report.getAddress());
 			result.setDetail(report.getDetail());
 			result.setImage(report.getImage());

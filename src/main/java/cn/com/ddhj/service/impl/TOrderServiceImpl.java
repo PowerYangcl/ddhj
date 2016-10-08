@@ -167,6 +167,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 						double payMoney = 0;
 						for (int i = 0; i < reports.size(); i++) {
 							TReport r = reports.get(i);
+							r.setLevelList(reportMapper.findReportByHousesCode(r.getHousesCode()));
 							payMoney += r.getPrice().doubleValue();
 						}
 						result.setResultCode(0);
