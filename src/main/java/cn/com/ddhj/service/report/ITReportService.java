@@ -28,7 +28,7 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @param array
 	 * @return
 	 */
-	PDFReportResult createPDF(String code, String path);
+	PDFReportResult createPDF(String code, String housesCode, String path);
 
 	/**
 	 * 

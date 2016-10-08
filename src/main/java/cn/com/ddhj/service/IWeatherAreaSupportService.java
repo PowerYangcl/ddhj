@@ -58,6 +58,19 @@ public interface IWeatherAreaSupportService extends IBaseService<WeatherAreaSupp
 	 * @version 1.0.0.1
 	 */
 	public String findDayAqi(String lon , String lat , String startTime , String endTime);
+	
+	
+	/**
+	 * @descriptions 全国天气预报|根据GPS坐标查询天气
+	 *
+	 * @param lon 经度，如：116.39277
+	 * @param lat 纬度，如：39.933748
+	 * @return
+	 * @date 2016年10月7日 下午8:48:52
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject getWeatherWithPosition(String lon , String lat);
 }
 
 

@@ -13,7 +13,6 @@ import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.report.TReport;
-import cn.com.ddhj.result.report.PDFReportResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.report.ITReportService;
@@ -43,25 +42,6 @@ public class TReportController {
 			result.setResultMessage("调用接口失败");
 			return result;
 		}
-	}
-
-	/**
-	 * 
-	 * 方法: createPDF <br>
-	 * 描述: 创建pdf格式的环境报告 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月4日 下午9:43:19
-	 * 
-	 * @param code
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping("createpdf")
-	@ResponseBody
-	public PDFReportResult createPDF(String code, HttpServletRequest request) {
-		// 获取项目路径
-		String filePath = request.getSession().getServletContext().getRealPath("");
-		return service.createPDF(code, filePath);
 	}
 
 	/**

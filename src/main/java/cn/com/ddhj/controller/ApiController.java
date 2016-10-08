@@ -86,6 +86,10 @@ public class ApiController {
 			String city = obj.getString("city");
 			String page = obj.getString("page");
 			return estateEnvService.apiEstateList(position, city, page);
+		}else if ("1025".equals(api.getApiTarget())) { // 地区环境接口 
+			String position = obj.getString("position");
+			String city = obj.getString("city");
+			return estateEnvService.apiAreaEnv(position, city); 
 		}
 		// 订单相关
 		else if ("order_add".equals(api.getApiTarget())) {

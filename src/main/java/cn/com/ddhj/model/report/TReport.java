@@ -1,6 +1,7 @@
 package cn.com.ddhj.model.report;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import cn.com.ddhj.model.BaseModel;
 
@@ -37,6 +38,19 @@ public class TReport extends BaseModel {
 	private String detail;
 
 	private String address;
+
+	/**
+	 * 根据楼盘编码获取的报告集合
+	 */
+	private List<TReport> levelList;
+
+	public List<TReport> getLevelList() {
+		return levelList;
+	}
+
+	public void setLevelList(List<TReport> levelList) {
+		this.levelList = levelList;
+	}
 
 	public String getAddress() {
 		return address;

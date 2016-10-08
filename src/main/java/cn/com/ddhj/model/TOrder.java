@@ -29,11 +29,21 @@ public class TOrder extends BaseModel {
 
 	private String image;
 
+	private String detail;
+
 	private String path;
 
 	private String levelName;
 
 	private String address;
+
+	public String getDetail() {
+		return detail;
+	}
+
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
 
 	public String getPath() {
 		return path;
