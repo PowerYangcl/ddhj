@@ -1,5 +1,7 @@
 package cn.com.ddhj.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +145,36 @@ public class WeatherAreaSupporServicetImpl
 			}
 		}
 		return "-1";
+	}
+
+	/**
+	 * @descriptions 全国天气预报|根据GPS坐标查询天气
+	 *
+	 * @param lon 经度，如：116.39277
+	 * @param lat 纬度，如：39.933748
+	 * @return
+	 * @date 2016年10月7日 下午8:48:52
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject getWeatherWithPosition(String lon, String lat) {
+		String key = "d915236d734c8a417e48116ee70a4257";
+		String url = "http://v.juhe.cn/weather/geo";
+		
+		Map<String, String> param = new HashMap<String, String>();
+		param.put("lon", lon);					 
+		param.put("lat", lat);					 
+		param.put("key", key);		
+//		param.put("format", "1");	
+		param.put("dtype", "json");	
+		
+		JSONObject obj = new JSONObject();
+		String responseJson = PureNetUtil.post(url , param);
+		if (responseJson != null && !"".equals(responseJson)) {
+			obj = JSONObject.parseObject(responseJson);
+		}
+		
+		return obj;
 	}
 	
 	
