@@ -53,6 +53,13 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @see cn.com.ddhj.service.IBaseService#findEntityToPage(cn.com.ddhj.dto.BaseDto)
 	 */
 	TOrderResult findEntityToPage(TOrderDto dto, HttpServletRequest request);
+	
+	/**
+	 * 按定单编号查询定单
+	 * @param orderCode
+	 * @return
+	 */
+	TOrder selectByCode(String orderCode);
 
 	/**
 	 * 

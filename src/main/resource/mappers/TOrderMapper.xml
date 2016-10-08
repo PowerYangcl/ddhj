@@ -34,6 +34,13 @@
 		from t_order
 		where `code` = #{code,jdbcType=VARCHAR}
 	</select>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_order
+		where `code` = #{code,jdbcType=VARCHAR}
+	</select>	
 	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from t_order
 		where `code` = #{code,jdbcType=VARCHAR}

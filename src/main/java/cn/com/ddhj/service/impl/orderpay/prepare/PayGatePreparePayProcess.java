@@ -6,9 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.fastjson.JSON;
 
+import cn.com.ddhj.mapper.TOrderMapper;
+import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.service.impl.orderpay.PaymentChannel;
 import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
 import cn.com.ddhj.service.impl.orderpay.utils.PayGateUtils;
@@ -19,18 +22,20 @@ import cn.com.ddhj.service.impl.orderpay.utils.PayGateUtils;
  */
 public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProcess.PaymentInput, R extends PayGatePreparePayProcess.PaymentResult> extends PreparePayProcess<I, R>{
 
+	@Autowired
+	private TOrderMapper orderMapper;
+	
 	@Override
 	protected R doProcess(I input) {
 		R result = getResult();
 		String bigOrderCode = input.bigOrderCode;
-		
-		Map bigOrderInfo = payService.getOrderInfoSupper(bigOrderCode);
-		
+		TOrder order = orderMapper.selectByCode(bigOrderCode);
+
 		Map<String,String> param = createPayGateParam(input);
 		param.put("c_mid", XmasPayConfig.getPayGateMid());
 		param.put("c_order", bigOrderCode);
 		//modify XXX
-		param.put("c_orderamount", new BigDecimal((char[]) bigOrderInfo.get("due_money")).toString());
+		param.put("c_orderamount", String.valueOf(order.getPayPrice()));
 		param.put("c_ymd", DateFormatUtils.format(new Date(), "yyyyMMdd"));
 		param.put("c_moneytype", "1");
 		param.put("c_retflag", "1");
@@ -46,6 +51,7 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 		}
 		
 		// 如果设置了reurl则表示需要前台同步支付结果
+		input.reurl = XmasPayConfig.getPayGateReturnUrl();
 		if(input.reurl != null){
 			param.put("c_reurl", input.reurl);
 			param.put("c_retflag", "2");
@@ -55,7 +61,8 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 		
 		// 网页支付直接构造提交表单，非网页支付则用接口请求支付参数
 		if(PaymentChannel.APP == input.payChannel 
-				|| PaymentChannel.BARCODE == input.payChannel){
+				|| PaymentChannel.BARCODE == input.payChannel
+				|| PaymentChannel.WAP == input.payChannel){
 			String responseText = null;
 			
 			Map<String, String> logMap = new HashMap<String, String>();

@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import cn.com.ddhj.mapper.TOrderMapper;
+import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.service.impl.orderpay.AbstractPaymentProcess;
 import cn.com.ddhj.service.impl.orderpay.PaymentChannel;
 import cn.com.ddhj.service.impl.orderpay.config.OrderConfig;
@@ -16,6 +19,9 @@ import cn.com.ddhj.service.impl.orderpay.config.OrderConfig;
  */
 public abstract class PreparePayProcess<I extends PreparePayProcess.PaymentInput, R extends PreparePayProcess.PaymentResult> extends AbstractPaymentProcess<I, R>{
 
+	@Autowired
+	private TOrderMapper orderMapper;
+	
 	@Override
 	public R process(I input) {
 		R result = getResult();
@@ -52,55 +58,32 @@ public abstract class PreparePayProcess<I extends PreparePayProcess.PaymentInput
 			return result;
 		}
 		
-		Map bigOrderInfo = payService.getOrderInfoSupper(bigOrderCode);
-		if(bigOrderInfo == null){
+		
+		TOrder order = orderMapper.selectByCode(bigOrderCode);
+		if(order == null){
 			result.setResultCode(0);
 			result.setResultMessage("订单不存在[ "+bigOrderCode+"]");
 			return result;
 		}
 		
-		if(OrderConfig.PAY_TYPE_2.equals(bigOrderInfo.get("pay_type"))){
-			result.setResultCode(0);
-			result.setResultMessage("请勿支付货到付款的订单");
-			return result;
-		}
-		
-		//modify XXX
-		if(new BigDecimal((char[]) bigOrderInfo.get("payed_money")).compareTo(new BigDecimal((char[]) bigOrderInfo.get("due_money"))) >= 0){
+		if(order.getStatus() == 1){
 			result.setResultCode(0);
 			result.setResultMessage("订单已支付");
 			return result;
 		}
 		
-		Map supperPayment = payService.getOrderInfoSupperPayment(bigOrderCode);
-		if(supperPayment != null){
+		if(order.getStatus() == 2){
 			result.setResultCode(0);
-			result.setResultMessage("订单已支付");
+			result.setResultMessage("订单已取消");
 			return result;
 		}
 		
-		List<Map> orderInfoList = payService.getOrderInfoList(bigOrderCode);
-		if(orderInfoList.isEmpty()){
+		if(order.getPayPrice().compareTo(new BigDecimal(0.0)) <= 0) {
 			result.setResultCode(0);
-			result.setResultMessage("订单异常");
+			result.setResultMessage("订单支付金额小于等于0.0");
 			return result;
 		}
-		
-		// 0元单问题，检查是否订单列表里面包含未支付的订单
-		boolean payed = true;
-		for(Map orderInfo : orderInfoList){
-			if(OrderConfig.ORDER_STATUS_1.equals(orderInfo.get("order_status"))){
-				payed = false;
-				break;
-			}
-		}
-		
-		// 如果有未支付的订单，则还可以继续支付
-		if(payed){
-			result.setResultCode(0);
-			result.setResultMessage("订单已支付");
-			return result;
-		}
+
 		return null;
 	}
 	

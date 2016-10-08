@@ -53,7 +53,7 @@ public class BeansHelper extends BaseClass {
 	private synchronized void initBeanFactory() {
 
 		if (beanFactory == null) {
-			String[] sSpringConfig = new String[] { "classpath*:/spring/spring/*.xml" };
+			String[] sSpringConfig = new String[] { "classpath*:/spring/spring*.xml" };
 			beanFactory = new ClassPathXmlApplicationContext(sSpringConfig).getBeanFactory();
 
 		}

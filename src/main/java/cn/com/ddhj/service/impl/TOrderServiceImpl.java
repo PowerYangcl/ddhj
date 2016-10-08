@@ -30,6 +30,7 @@ import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.impl.orderpay.OrderPayProcess;
+import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
 import cn.com.ddhj.service.impl.orderpay.prepare.PayGatePreparePayProcess;
 import cn.com.ddhj.util.DateUtil;
 
@@ -77,6 +78,16 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		result.setRepList(list);
 		result.setRepCount(total);
 		return result;
+	}
+	
+	/**
+	 * 按定单编号查询定单
+	 * @param orderCode
+	 * @return
+	 */
+	@Override
+	public TOrder selectByCode(String orderCode) {
+		return mapper.selectByCode(orderCode);
 	}
 
 	/**
@@ -202,39 +213,54 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 
 	@Override
 	public OrderPayResult orderPay(String openID, String orderCode, String payType, String returnUrl) {
-		if(StringUtils.isBlank(returnUrl)){
-			returnUrl = "";
-		}
-		
 		OrderPayResult payResult = new OrderPayResult();
-		String errorMsg = null;
+		payResult.setResultCode(0);
+		payResult.setResultMessage("支付成功");
+		payResult.setRedirectUrl(XmasPayConfig.getPayGateReturnUrl());
 		
-		PayGatePreparePayProcess.PaymentResult result = null;
-		if("449746280003".equals(payType)){
-			// 支付宝支付
-			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl);
-		}else if("449746280005".equals(payType)){
-			// 微信支付
-			if(StringUtils.isNotBlank(openID)){
-				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl);
-			}else{
-				errorMsg = "openID is Empty!";
-			}
-		}else{
-			errorMsg = "PayType Not Implemented!";
+		TOrder order = mapper.selectByCode(orderCode);
+		if(order != null) {
+			order.setStatus(1);
+			order.setUpdateUser("zz");
+			order.setUpdateTime("2016-10-08 20:20:20");
+			mapper.updateByCode(order);
 		}
+		return payResult;
 		
-		if(result != null && !result.upFlagTrue()){
-			errorMsg = StringUtils.trimToEmpty(result.getResultMessage());
-		}
-		
-		if(StringUtils.isEmpty(errorMsg)){
-			payResult.setRedirectUrl("redirect:"+result.payUrl);
-			return payResult;
-		} else {
-			payResult.setErrorMsg(errorMsg);
-			return payResult;
-		}
+		//###########################
+//		if(StringUtils.isBlank(returnUrl)){
+//			returnUrl = "";
+//		}
+//		
+//		OrderPayResult payResult = new OrderPayResult();
+//		String errorMsg = null;
+//		
+//		PayGatePreparePayProcess.PaymentResult result = null;
+//		if("PT161007100002".equals(payType)){
+//			// 支付宝支付
+//			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl);
+//		}else if("PT161007100001".equals(payType)){
+//			// 微信支付
+//			if(StringUtils.isNotBlank(openID)){
+//				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl);
+//			}else{
+//				errorMsg = "openID is Empty!";
+//			}
+//		}else{
+//			errorMsg = "PayType Not Implemented!";
+//		}
+//		
+//		if(result != null && !result.upFlagTrue()){
+//			errorMsg = StringUtils.trimToEmpty(result.getResultMessage());
+//		}
+//		
+//		if(StringUtils.isEmpty(errorMsg)){
+//			payResult.setRedirectUrl("redirect:"+result.payUrl);
+//			return payResult;
+//		} else {
+//			payResult.setErrorMsg(errorMsg);
+//			return payResult;
+//		}
 	}
 
 }
