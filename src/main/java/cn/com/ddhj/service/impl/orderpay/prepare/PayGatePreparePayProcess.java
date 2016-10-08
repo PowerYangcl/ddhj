@@ -2,6 +2,7 @@ package cn.com.ddhj.service.impl.orderpay.prepare;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -10,6 +11,7 @@ import com.alibaba.fastjson.JSON;
 
 import cn.com.ddhj.service.impl.orderpay.PaymentChannel;
 import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
+import cn.com.ddhj.service.impl.orderpay.utils.PayGateUtils;
 
 /**
  * 请求支付网关获取支付信息基类
@@ -56,7 +58,7 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 				|| PaymentChannel.BARCODE == input.payChannel){
 			String responseText = null;
 			
-			MDataMap logMap = new MDataMap();
+			Map<String, String> logMap = new HashMap<String, String>();
 			logMap.put("action", "submitPayGate");
 			logMap.put("target", bigOrderCode);
 			logMap.put("method", "com.srnpr.xmaspay.process.prepare.PayGatePreparePayProcess#doProcess");

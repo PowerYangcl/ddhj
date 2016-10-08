@@ -1,4 +1,4 @@
-package cn.com.ddhj.service.impl.orderpay;
+package cn.com.ddhj.service.impl.orderpay.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -13,8 +13,7 @@ import java.util.Set;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.srnpr.zapcom.basemodel.MDataMap;
-import com.srnpr.zapcom.basesupport.WebClientSupport;
+import cn.com.ddhj.util.PureNetUtil;
 
 /**
  * 支付网关工具类
@@ -83,7 +82,8 @@ public class PayGateUtils {
 	 * @throws Exception 
 	 */
 	public static String createOrder(Map<String,String> param, String gateUrl) throws Exception{
-		Map header = new HashMap("Content-Type","application/x-www-form-urlencoded");
-		return WebClientSupport.upPost(gateUrl, new MDataMap(new HashMap<String, Object>(param)), header);
+//		Map<String, String> header = new HashMap<String, String>();
+		//return WebClientSupport.upPost(gateUrl, new MDataMap(new HashMap<String, Object>(param)), header);
+		return PureNetUtil.post(gateUrl, param);
 	}
 }

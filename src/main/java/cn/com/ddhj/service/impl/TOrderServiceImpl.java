@@ -205,6 +205,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			returnUrl = "";
 		}
 		
+		OrderPayResult payResult = new OrderPayResult();
 		String errorMsg = null;
 		
 		PayGatePreparePayProcess.PaymentResult result = null;
@@ -226,22 +227,13 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			errorMsg = StringUtils.trimToEmpty(result.getResultMessage());
 		}
 		
-		if(errorMsg == null){
-			return "redirect:"+result.payUrl;
+		if(StringUtils.isEmpty(errorMsg)){
+			payResult.setRedirectUrl("redirect:"+result.payUrl);
+			return payResult;
+		} else {
+			payResult.setErrorMsg(errorMsg);
+			return payResult;
 		}
-		
-		response.setContentType("text/html;charset=UTF-8");
-		PrintWriter out;
-		try {
-			out = response.getWriter();
-			out.write(errorMsg);
-			if(out!=null) {
-				out.close();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 }

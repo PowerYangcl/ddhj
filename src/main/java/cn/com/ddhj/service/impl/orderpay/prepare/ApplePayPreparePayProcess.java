@@ -7,15 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minidev.json.JSONObject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
-import com.srnpr.xmaspay.config.XmasPayConfig;
-import com.srnpr.xmaspay.util.ApplePayUtils;
-import com.srnpr.zapcom.basemodel.MDataMap;
+import com.alibaba.fastjson.JSONObject;
+
+import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
+import cn.com.ddhj.service.impl.orderpay.utils.ApplePayUtils;
+
+
 
 /**
  * 获取苹果支付的待支付信息
@@ -28,9 +29,9 @@ public class ApplePayPreparePayProcess extends PreparePayProcess<ApplePayPrepare
 		PaymentResult result = new PaymentResult();
 		String bigOrderCode = input.bigOrderCode;
 		
-		MDataMap bigOrderInfo = payService.getOrderInfoSupper(bigOrderCode);
-		List<MDataMap> orderInfoList = payService.getOrderInfoList(bigOrderCode);
-		MDataMap orderAddressMap = payService.getOrderAddress(orderInfoList.get(0).get("order_code"));
+		Map bigOrderInfo = payService.getOrderInfoSupper(bigOrderCode);
+		List<Map> orderInfoList = payService.getOrderInfoList(bigOrderCode);
+		Map orderAddressMap = payService.getOrderAddress(orderInfoList.get(0).get("order_code").toString());
 		
 		Map<String,String> dataMap = new HashMap<String,String>();
 		dataMap.put("oid_partner", XmasPayConfig.getApplePayOidPartner());
@@ -38,28 +39,32 @@ public class ApplePayPreparePayProcess extends PreparePayProcess<ApplePayPrepare
 		dataMap.put("busi_partner", "109001");
 		dataMap.put("no_order", bigOrderCode);
 		try {
-			dataMap.put("dt_order", DateFormatUtils.format(DateUtils.parseDate(bigOrderInfo.get("create_time"), "yyyy-MM-dd HH:mm:ss"), "yyyyMMddHHmmss"));
+			dataMap.put("dt_order", DateFormatUtils.format(DateUtils.parseDate(bigOrderInfo.get("create_time").toString(), "yyyy-MM-dd HH:mm:ss"), "yyyyMMddHHmmss"));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			dataMap.put("dt_order", DateFormatUtils.format(new Date(), "yyyyMMddHHmmss"));
 		}
 		
-		dataMap.put("money_order", bigOrderInfo.get("due_money"));
+		dataMap.put("money_order", bigOrderInfo.get("due_money").toString());
 		dataMap.put("notify_url", XmasPayConfig.getApplePayNotifyUrl());
 		
 		// 风控参数
-		MDataMap memberInfoMap = payService.getMemberInfo(bigOrderInfo.get("buyer_code"));
+		Map memberInfoMap = payService.getMemberInfo(bigOrderInfo.get("buyer_code").toString());
 		Map<String,String> riskMap = new HashMap<String, String>();
 		riskMap.put("frms_ware_category", "4001");
-		riskMap.put("user_info_dt_registe", StringUtils.trimToEmpty(memberInfoMap.get("create_time")).replaceAll("[-:\\s]", ""));
-		riskMap.put("delivery_addr_province", orderAddressMap.get("area_code").substring(0, 2)+"0000");
-		riskMap.put("delivery_addr_city", orderAddressMap.get("area_code").substring(0, 4)+"00");
-		riskMap.put("delivery_phone", orderAddressMap.get("mobilephone"));
+		riskMap.put("user_info_dt_registe", StringUtils.trimToEmpty(memberInfoMap.get("create_time").toString()).replaceAll("[-:\\s]", ""));
+		riskMap.put("delivery_addr_province", orderAddressMap.get("area_code").toString().substring(0, 2)+"0000");
+		riskMap.put("delivery_addr_city", orderAddressMap.get("area_code").toString().substring(0, 4)+"00");
+		riskMap.put("delivery_phone", orderAddressMap.get("mobilephone").toString());
 		riskMap.put("logistics_mode", "2");
 		riskMap.put("delivery_cycle", "24h");
 		
+		new JSONObject();
+		
 		// 设置风控参数
-		dataMap.put("risk_item", new JSONObject(riskMap).toJSONString());
+		JSONObject json = new JSONObject();
+		json.putAll(riskMap);
+		dataMap.put("risk_item", JSONObject.toJSONString(json));
 		// 订单有效期
 		dataMap.put("valid_order", "1440");
 		// 设置签名
@@ -67,7 +72,7 @@ public class ApplePayPreparePayProcess extends PreparePayProcess<ApplePayPrepare
 		
 		// 不参与签名的字段
 		dataMap.put("ap_merchant_id", XmasPayConfig.getApplePayApMerchantId());
-		dataMap.put("user_id", bigOrderInfo.get("buyer_code"));
+		dataMap.put("user_id", bigOrderInfo.get("buyer_code").toString());
 		
 		// 设置返回值
 		result.oid_partner = dataMap.get("oid_partner");

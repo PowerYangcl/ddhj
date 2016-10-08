@@ -6,8 +6,9 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.srnpr.xmaspay.PaymentChannel;
-import com.srnpr.xmaspay.config.PayGateConfig;
+
+import cn.com.ddhj.service.impl.orderpay.PaymentChannel;
+import cn.com.ddhj.service.impl.orderpay.config.PayGateConfig;
 
 /**
  * 微信支付
