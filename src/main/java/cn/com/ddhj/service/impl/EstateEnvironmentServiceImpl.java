@@ -106,14 +106,17 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				SimpleDateFormat sdf= new SimpleDateFormat("yyyy.MM.dd");
 				String tiptime = sdf.format(new Date()) + today.getString("week");  
 				
-				
-				CityAqi aqi = cityAirService.getCityAqi(city);
-				String hourAqi = aqi.getEntity().getAQI();
+				String hourAqi = "80";
 				String dayAqi = "";
-				for(CityAqiData d : aqi.getList()){
-					dayAqi += d.getAQI() + ",";
+				CityAqi aqi = cityAirService.getCityAqi(city);
+				if(aqi.getEntity() != null) {
+					hourAqi = aqi.getEntity().getAQI();
+					for(CityAqiData d : aqi.getList()){
+						dayAqi += d.getAQI() + ",";
+					}
+					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
 				}
-				dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
+				
 				String score = this.getDoctorScore(hourAqi, hourAqi, "0.5", "0.5");
 				result.put("score", score); // 环境综合评分
 				result.put("level", this.scoreLevel(score));  // 环境等级
@@ -181,25 +184,34 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 					greeningRate = "1";
 				}
 			} 
-			CityAqi aqi = cityAirService.getCityAqi(city);
-			String hourAqi = aqi.getEntity().getAQI();
+			
+			String hourAqi = "80";
 			String dayAqi = "";
-			for(CityAqiData d : aqi.getList()){
-				dayAqi += d.getAQI() + ",";
+			CityAqi aqi = cityAirService.getCityAqi(city);
+			if(aqi.getEntity() != null) {
+				hourAqi = aqi.getEntity().getAQI();
+				for(CityAqiData d : aqi.getList()){
+					dayAqi += d.getAQI() + ",";
+				}
+				dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
 			}
-			dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
+			
 			String score = this.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate);
 			result.put("score", score); // 环境综合评分
 			result.put("level", this.scoreLevel(score));  // 环境等级
-			result.put("AQIList", this.initAqiList(aqi.getList()));  
+			if(aqi.getList() != null){
+				result.put("AQIList", this.initAqiList(aqi.getList()));  
+			}
 			
 			JSONObject weather = cityAirService.getWeatherInfo(city);
 			
 			List<EnvInfo> envList = new ArrayList<>();
 			EnvInfo air = new EnvInfo();
 			air.setName("空气");
-			air.setMemo(aqi.getEntity().getAQI());
-			air.setLevel(aqi.getEntity().getQuality()); 
+			if(aqi.getEntity() != null){
+				air.setMemo(aqi.getEntity().getAQI());
+				air.setLevel(aqi.getEntity().getQuality()); 
+			}
 			envList.add(air);
 			EnvInfo wea = new EnvInfo();
 			wea.setName("天气");
@@ -229,6 +241,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			
 			result.put("resultCode", 0); 
 			result.put("resultMessage", "SUCCESS"); 
+			System.out.println("1032接口：" + result); 
 			return  result;
 		} catch (Exception e) {
 			e.printStackTrace();

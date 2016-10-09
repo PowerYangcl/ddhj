@@ -1,16 +1,23 @@
 package cn.com.ddhj.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.com.ddhj.dto.landedProperty.LandLatLngDto;
+import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.result.estateInfo.CityResult;
+import cn.com.ddhj.result.estateInfo.EData;
 import cn.com.ddhj.result.estateInfo.EstateResult;
 import cn.com.ddhj.service.IEstateInfoService;
+import cn.com.ddhj.util.CommonUtil;
 import cn.com.ddhj.util.PureNetUtil;
 
 
@@ -26,6 +33,9 @@ import cn.com.ddhj.util.PureNetUtil;
 @Service
 public class EstateInfoServiceImpl implements IEstateInfoService{
 
+	@Resource
+	private TLandedPropertyMapper lpMapper;
+	
 	/**
 	 * @descriptions 支持查询地产信息的城市列表
 	 *
@@ -106,6 +116,31 @@ public class EstateInfoServiceImpl implements IEstateInfoService{
 	}
 
 	
+	public JSONObject estateInfoList(String lng, String lat  , String page , String radius) {
+		double[] around = CommonUtil.getAround(Double.valueOf(lat), Double.valueOf(lng), Integer.valueOf(radius)); 
+		LandLatLngDto dto = new LandLatLngDto(); 
+		dto.setPage(Integer.valueOf(page));
+		dto.setMinLat(String.valueOf(around[0]));
+		dto.setMinLng(String.valueOf(around[1]));
+		dto.setMaxLat(String.valueOf(around[2]));
+		dto.setMaxLng(String.valueOf(around[3]));
+		
+		List<EData> list = lpMapper.findLandedPropertyAll(dto);
+		JSONObject result = new JSONObject();
+		if (list != null && list.size() > 0) {
+			result.put("code" , "1");
+			result.put("msg" , "SUCCESS");
+			result.put("list" , JSONObject.toJSON(list));  
+			
+		}else{
+			result.put("code" , "0");
+			result.put("msg" , "聚合接口响应数据为空");
+		}
+		
+		return result;
+	}
+	
+	
 	/**
 	 * @descriptions 地产检索|周边地产，根据经纬度确定周边的地产列表，范围10Km 
 	 *
@@ -116,7 +151,7 @@ public class EstateInfoServiceImpl implements IEstateInfoService{
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject estateInfoList(String lng, String lat  , String page , String radius) {
+	public JSONObject estateInfoList2(String lng, String lat  , String page , String radius) {
 		String key = "f74ac8fbf0d992b02420a03387ed8341";
 		String url = "http://v.juhe.cn/estate/local";
 		

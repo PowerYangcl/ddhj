@@ -3,7 +3,9 @@ package cn.com.ddhj.mapper;
 import java.util.List;
 
 import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.dto.landedProperty.LandLatLngDto;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.result.estateInfo.EData;
 
 /**
  * 
@@ -36,4 +38,38 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, BaseD
 	 * @version 1.0.0.1
 	 */
 	public List<TLandedProperty>  findCodeByTitle(String name); 
+	
+	
+	public List<EData> findLandedPropertyAll(LandLatLngDto dto);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
