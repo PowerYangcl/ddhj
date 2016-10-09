@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,26 +87,45 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			List<TReportEnvironmentLevel> levelList = levelMapper.findTReportEnvironmentLevelAll();
 			// 获取绿地率等级
 			int afforestLevel = 1;
-			Double afforest = Double.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
-			if (afforest > 25 && afforest < 30) {
-				afforestLevel = 2;
-			} else if (afforest < 25) {
-				afforestLevel = 3;
-			}
+			// if (lp.getGreeningRate() != null &&
+			// !"".equals(lp.getGreeningRate())
+			// && !StringUtils.isEmpty(lp.getGreeningRate())) {
+			// Double afforest =
+			// Double.valueOf(lp.getGreeningRate().substring(0,
+			// lp.getGreeningRate().indexOf("%")));
+			// if (afforest > 25 && afforest < 30) {
+			// afforestLevel = 2;
+			// } else if (afforest < 25) {
+			// afforestLevel = 3;
+			// }
+			// }
 			// 获取容积率等级
 			int volumeLevel = 1;
-			Double volume = Double.valueOf(lp.getVolumeRate().substring(0, lp.getVolumeRate().indexOf("元")));
-			if (volume > 3 && volume < 5) {
-				volumeLevel = 2;
-			} else if (volume > 5) {
-				volumeLevel = 3;
+			if (lp.getVolumeRate() != null && !"".equals(lp.getVolumeRate())) {
+				try {
+					Double volume = Double.valueOf(lp.getVolumeRate());
+					if (volume > 3 && volume < 5) {
+						volumeLevel = 2;
+					} else if (volume > 5) {
+						volumeLevel = 3;
+					}
+				} catch (Exception e) {
+					volumeLevel = 1;
+				}
 			}
 			// 空气质量等级
-			Integer airLevel = cityAirService.getAQILevel(lp.getCity());
+			Integer airLevel = 1;
+			// if (lp.getCity() != null && !"".equals(lp.getCity())) {
+			// airLevel = cityAirService.getAQILevel(lp.getCity());
+			// }
 			// 水质量等级
-			Integer waterLevel = waterQualityService.getWaterLevel("北京密云古北口");
+			Integer waterLevel = 1;// waterQualityService.getWaterLevel("北京密云古北口");
 			// 垃圾设施等级
-			Integer rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
+			Integer rubbishLevel = 1;
+			if (StringUtils.isEmpty(lp.getCity()) && StringUtils.isEmpty(lp.getLat())
+					&& StringUtils.isEmpty(lp.getLng())) {
+				rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
+			}
 			if (templateList != null && templateList.size() > 0) {
 				JSONArray array = new JSONArray();
 				for (int i = 0; i < templateList.size(); i++) {

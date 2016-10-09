@@ -2,7 +2,9 @@ package cn.com.ddhj;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -23,6 +25,7 @@ import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.report.PDFReportResult;
 import cn.com.ddhj.result.report.TReportSelResult;
+import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.DateUtil;
 
@@ -37,6 +40,8 @@ public class TReportTest extends BaseTest {
 
 	@Autowired
 	private TLandedPropertyMapper lpMapper;
+	@Autowired
+	private ICityAirService airService;
 
 	public void createPDF() {
 		service.createPDF(WebHelper.getInstance().getUniqueCode("R"), "LP161003100031", "d:/");
@@ -147,7 +152,8 @@ public class TReportTest extends BaseTest {
 			reports.add(entity3);
 			code++;
 		}
-		service.insertReportData(reports);
+		System.out.println(reports.size());
+		// service.insertReportData(reports);
 	}
 
 	public void getTReport() {
