@@ -44,7 +44,7 @@ public class TReportTest extends BaseTest {
 	private ICityAirService airService;
 
 	public void createPDF() {
-		service.createPDF(WebHelper.getInstance().getUniqueCode("R"), "LP161003100031", "d:/");
+		service.createPDF(WebHelper.getInstance().getUniqueCode("R"), "LP161003100031", "E:/");
 	}
 
 	public void page() {
@@ -64,7 +64,7 @@ public class TReportTest extends BaseTest {
 		entity.setRang(10);
 		entity.setDetail("测试环境报告-普通，报告说明");
 		entity.setLevelCode("RL161006100001");
-		BaseResult result = service.insert(entity, "d:/");
+		BaseResult result = service.insert(entity, "E:/");
 		System.out.println(JSONObject.toJSON(result));
 		TReport entity2 = new TReport();
 		entity2.setTitle("测试环境报告");
@@ -73,7 +73,7 @@ public class TReportTest extends BaseTest {
 		entity2.setRang(10);
 		entity2.setDetail("测试环境报告-高级，报告说明");
 		entity2.setLevelCode("RL161006100002");
-		BaseResult result2 = service.insert(entity2, "d:/");
+		BaseResult result2 = service.insert(entity2, "E:/");
 		System.out.println(JSONObject.toJSON(result2));
 		TReport entity3 = new TReport();
 		entity3.setTitle("测试环境报告");
@@ -82,7 +82,7 @@ public class TReportTest extends BaseTest {
 		entity3.setRang(10);
 		entity3.setDetail("测试环境报告-专业，报告说明");
 		entity3.setLevelCode("RL161006100003");
-		BaseResult result3 = service.insert(entity3, "d:/");
+		BaseResult result3 = service.insert(entity3, "E:/");
 		System.out.println(JSONObject.toJSON(result3));
 	}
 
@@ -103,7 +103,7 @@ public class TReportTest extends BaseTest {
 			entity.setPic("");
 			entity.setImage("");
 			entity.setRang(10);
-			PDFReportResult r = service.createPDF(entity.getCode(), lp.getCode(), "d:/");
+			PDFReportResult r = service.createPDF(entity.getCode(), lp.getCode(), "E:/");
 			entity.setPath(r.getPath());
 			entity.setPrice(BigDecimal.TEN);
 			entity.setDetail(lp.getTitle() + "-环境报告说明-普通");
@@ -122,7 +122,7 @@ public class TReportTest extends BaseTest {
 			entity2.setPic("");
 			entity2.setImage("");
 			entity2.setRang(10);
-			PDFReportResult r2 = service.createPDF(entity2.getCode(), lp.getCode(), "d:/");
+			PDFReportResult r2 = service.createPDF(entity2.getCode(), lp.getCode(), "E:/");
 			entity2.setPath(r2.getPath());
 			entity2.setPrice(BigDecimal.TEN);
 			entity2.setDetail(lp.getTitle() + "-环境报告说明-高级");
@@ -141,7 +141,7 @@ public class TReportTest extends BaseTest {
 			entity3.setPic("");
 			entity3.setImage("");
 			entity3.setRang(10);
-			PDFReportResult r3 = service.createPDF(entity3.getCode(), lp.getCode(), "d:/");
+			PDFReportResult r3 = service.createPDF(entity3.getCode(), lp.getCode(), "E:/");
 			entity3.setPath(r3.getPath());
 			entity3.setPrice(BigDecimal.TEN);
 			entity3.setDetail(lp.getTitle() + "-环境报告说明-专业");
@@ -152,8 +152,8 @@ public class TReportTest extends BaseTest {
 			reports.add(entity3);
 			code++;
 		}
+		service.insertReportData(reports);
 		System.out.println(reports.size());
-		// service.insertReportData(reports);
 	}
 
 	public void getTReport() {

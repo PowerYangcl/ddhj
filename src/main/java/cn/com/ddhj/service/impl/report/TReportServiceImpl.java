@@ -333,6 +333,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				for (int i = 0; i < multiple; i++) {
 					List<TReport> subList = list.subList(count * 10000, (count + 1) * 10000 - 1);
 					mapper.insertReportData(subList);
+					count++;
 				}
 				List<TReport> remainderList = list.subList(count * 10000, list.size());
 				mapper.insertReportData(remainderList);
