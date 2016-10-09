@@ -295,6 +295,33 @@ CREATE TABLE t_pay_type (
 	update_time datetime NOT NULL COMMENT '最后修改时间'
 ) COMMENT '支付方式';
 
+DROP TABLE
+IF EXISTS t_payment;
+
+CREATE TABLE `t_payment` (
+	`id` INT (11) NOT NULL,
+	`uuid` VARCHAR (50) DEFAULT NULL,
+	`order_code` VARCHAR (50) DEFAULT NULL,
+	`mid` VARCHAR (45) DEFAULT '' COMMENT '支付网关分配的商户编号',
+	`amount` DECIMAL (11, 2) DEFAULT '0.00' COMMENT '订单总金额',
+	`ymd` VARCHAR (45) DEFAULT '' COMMENT '订单产生时间',
+	`money_type` VARCHAR (11) DEFAULT '' COMMENT '支付币种',
+	`dealtime` VARCHAR (32) DEFAULT '' COMMENT '支付时间',
+	`succmark` VARCHAR (11) DEFAULT '' COMMENT '交易成功标识',
+	`cause` VARCHAR (200) DEFAULT '' COMMENT '失败原因',
+	`memo1` VARCHAR (200) DEFAULT '' COMMENT '商户参数一',
+	`memo2` VARCHAR (200) DEFAULT '' COMMENT '商户参数二',
+	`signstr` VARCHAR (32) DEFAULT '' COMMENT '签名',
+	`paygate` VARCHAR (11) DEFAULT '' COMMENT '支付网关',
+	`create_user` VARCHAR (20) NOT NULL COMMENT '创建人',
+	`create_time` datetime NOT NULL COMMENT '创建时间',
+	`update_user` VARCHAR (20) NOT NULL COMMENT '最后修改人',
+	`update_time` datetime NOT NULL COMMENT '最后修改时间',
+	PRIMARY KEY (`id`)
+);
+
+
+
 #============获取唯一键函数 start ========================
 DROP PROCEDURE
 IF EXISTS proc_get_unique_code;

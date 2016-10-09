@@ -1,11 +1,10 @@
 package cn.com.ddhj.service.impl;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,7 +29,6 @@ import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.impl.orderpay.OrderPayProcess;
-import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
 import cn.com.ddhj.service.impl.orderpay.prepare.PayGatePreparePayProcess;
 import cn.com.ddhj.util.DateUtil;
 
@@ -79,9 +77,10 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		result.setRepCount(total);
 		return result;
 	}
-	
+
 	/**
 	 * 按定单编号查询定单
+	 * 
 	 * @param orderCode
 	 * @return
 	 */
@@ -108,6 +107,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		if (login != null) {
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
+				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 				String code = WebHelper.getInstance().getUniqueCode("D");
 				entity.setCode(code);
 				entity.setCreateUser(user.getUserCode());
@@ -214,34 +214,34 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	@Override
 	public OrderPayResult orderPay(String openID, String orderCode, String payType, String returnUrl) {
 
-		if(StringUtils.isBlank(returnUrl)){
+		if (StringUtils.isBlank(returnUrl)) {
 			returnUrl = "";
 		}
-		
+
 		OrderPayResult payResult = new OrderPayResult();
 		String errorMsg = null;
-		
+
 		PayGatePreparePayProcess.PaymentResult result = null;
-		if("PT161007100002".equals(payType)){
+		if ("PT161007100002".equals(payType)) {
 			// 支付宝支付
 			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl);
-		}else if("PT161007100001".equals(payType)){
+		} else if ("PT161007100001".equals(payType)) {
 			// 微信支付
-			if(StringUtils.isNotBlank(openID)){
+			if (StringUtils.isNotBlank(openID)) {
 				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl);
-			}else{
+			} else {
 				errorMsg = "openID is Empty!";
 			}
-		}else{
+		} else {
 			errorMsg = "PayType Not Implemented!";
 		}
-		
-		if(result != null && !result.upFlagTrue()){
+
+		if (result != null && !result.upFlagTrue()) {
 			errorMsg = StringUtils.trimToEmpty(result.getResultMessage());
 		}
-		
-		if(StringUtils.isEmpty(errorMsg)){
-			payResult.setRedirectUrl("redirect:"+result.payUrl);
+
+		if (StringUtils.isEmpty(errorMsg)) {
+			payResult.setRedirectUrl("redirect:" + result.payUrl);
 			return payResult;
 		} else {
 			payResult.setErrorMsg(errorMsg);

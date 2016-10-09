@@ -338,11 +338,22 @@
 		from 
 			t_landed_property
 		where 
-			`title` = #{name , jdbcType=INTEGER}
+			title = #{name}
 	</select>
 	
-	
-	
+	<resultMap id="ResultMap" type="cn.com.ddhj.result.estateInfo.EData"> </resultMap>
+	<select id="findLandedPropertyAll" parameterType="cn.com.ddhj.dto.landedProperty.LandLatLngDto" resultMap="ResultMap">
+		SELECT
+			*
+		FROM
+			t_landed_property AS lp 
+		<where>
+			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND #{maxLat,jdbcType=VARCHAR})
+			AND
+			(lp.lng BETWEEN #{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
+		</where>
+		limit #{page , jdbcType=INTEGER} , 10 
+	</select>
 	
 	
 </mapper>
