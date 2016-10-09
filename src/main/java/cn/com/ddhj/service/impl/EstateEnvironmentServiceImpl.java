@@ -199,15 +199,19 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			String score = this.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate);
 			result.put("score", score); // 环境综合评分
 			result.put("level", this.scoreLevel(score));  // 环境等级
-			result.put("AQIList", this.initAqiList(aqi.getList()));  
+			if(aqi.getList() != null){
+				result.put("AQIList", this.initAqiList(aqi.getList()));  
+			}
 			
 			JSONObject weather = cityAirService.getWeatherInfo(city);
 			
 			List<EnvInfo> envList = new ArrayList<>();
 			EnvInfo air = new EnvInfo();
 			air.setName("空气");
-			air.setMemo(aqi.getEntity().getAQI());
-			air.setLevel(aqi.getEntity().getQuality()); 
+			if(aqi.getEntity() != null){
+				air.setMemo(aqi.getEntity().getAQI());
+				air.setLevel(aqi.getEntity().getQuality()); 
+			}
 			envList.add(air);
 			EnvInfo wea = new EnvInfo();
 			wea.setName("天气");

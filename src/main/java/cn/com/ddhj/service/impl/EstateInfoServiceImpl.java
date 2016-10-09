@@ -130,7 +130,7 @@ public class EstateInfoServiceImpl implements IEstateInfoService{
 		if (list != null && list.size() > 0) {
 			result.put("code" , "1");
 			result.put("msg" , "SUCCESS");
-			result.put("list" , list); 
+			result.put("list" , JSONObject.toJSON(list));  
 			
 		}else{
 			result.put("code" , "0");
