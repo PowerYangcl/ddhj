@@ -26,4 +26,13 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * @return
 	 */
 	List<TReport> findRreportByChart(List<String> list);
+
+	/**
+	 * 
+	 * 根据楼盘编码查询所属楼盘的报告列表<br>
+	 * 
+	 * @param housesCode
+	 * @return
+	 */
+	List<TReport> findReportByHousesCode(String housesCode);
 }

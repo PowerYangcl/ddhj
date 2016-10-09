@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.report.TReportSelResult;
@@ -30,7 +31,7 @@ public class TReportTest extends BaseTest {
 	private TReportMapper mapper;
 
 	public void createPDF() {
-		service.createPDF("LP161003100031", "d:/");
+		service.createPDF(WebHelper.getInstance().getUniqueCode("R"), "LP161003100031", "d:/");
 	}
 
 	public void page() {
@@ -42,24 +43,43 @@ public class TReportTest extends BaseTest {
 		System.out.println(JSONObject.toJSON(service.getReportData(dto)));
 	}
 
+	@Test
 	public void insert() {
 		TReport entity = new TReport();
-		entity.setTitle("测试环境报告添加");
-		entity.setPrice(BigDecimal.ONE);
+		entity.setTitle("测试环境报告");
+		entity.setPrice(BigDecimal.TEN);
 		entity.setHousesCode("LP161004101471");
 		entity.setRang(10);
-		entity.setDetail("");
+		entity.setDetail("测试环境报告-普通，报告说明");
+		entity.setLevelCode("RL161006100001");
 		BaseResult result = service.insert(entity, "d:/");
 		System.out.println(JSONObject.toJSON(result));
+		TReport entity2 = new TReport();
+		entity2.setTitle("测试环境报告");
+		entity2.setPrice(BigDecimal.TEN);
+		entity2.setHousesCode("LP161004101471");
+		entity2.setRang(10);
+		entity2.setDetail("测试环境报告-高级，报告说明");
+		entity2.setLevelCode("RL161006100002");
+		BaseResult result2 = service.insert(entity2, "d:/");
+		System.out.println(JSONObject.toJSON(result2));
+		TReport entity3 = new TReport();
+		entity3.setTitle("测试环境报告");
+		entity3.setPrice(BigDecimal.TEN);
+		entity3.setHousesCode("LP161004101471");
+		entity3.setRang(10);
+		entity3.setDetail("测试环境报告-专业，报告说明");
+		entity3.setLevelCode("RL161006100003");
+		BaseResult result3 = service.insert(entity3, "d:/");
+		System.out.println(JSONObject.toJSON(result3));
 	}
 
 	public void getTReport() {
-		String code = "R161006100001";
+		String code = "R161008100006";
 		TReportSelResult result = service.getTReport(code);
 		System.out.println(JSONObject.toJSON(result));
 	}
 
-	@Test
 	public void findRreportByChart() {
 		List<String> list = new ArrayList<String>();
 		list.add("R161006100001");

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import cn.com.ddhj.base.BaseResult;
-import cn.com.ddhj.model.report.TReportLevel;
+import cn.com.ddhj.model.report.TReport;
 
 /**
  * 
@@ -22,7 +22,7 @@ public class TReportSelResult extends BaseResult {
 	private String detail;
 	private String address;
 	private BigDecimal price;
-	private List<TReportLevel> levelList;
+	private List<TReport> levelList;
 
 	public String getCode() {
 		return code;
@@ -80,11 +80,11 @@ public class TReportSelResult extends BaseResult {
 		this.price = price;
 	}
 
-	public List<TReportLevel> getLevelList() {
+	public List<TReport> getLevelList() {
 		return levelList;
 	}
 
-	public void setLevelList(List<TReportLevel> levelList) {
+	public void setLevelList(List<TReport> levelList) {
 		this.levelList = levelList;
 	}
 

@@ -46,8 +46,14 @@
 		r.pic,
 		r.image,
 		r.rang,
+		r.detail,
+		DATE_FORMAT(
 		r.create_time,
-		lp.title AS houses_name,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		lp.title AS
+		houses_name,
 		lp.addressFull
 		as address,
 		r.price,
@@ -59,7 +65,8 @@
 		AS lp ON
 		r.houses_code =
 		lp.`code`
-		where r.`code` =
+		where
+		r.`code` =
 		#{code,jdbcType=VARCHAR}
 	</select>
 	<delete id="deleteByCode" parameterType="java.lang.String">
@@ -219,11 +226,15 @@
 		r.image,
 		r.title,
 		r.price,
-		rl.`name` AS level_name
+		r.houses_code,
+		rl.`name`
+		AS level_name
 		FROM
 		t_report AS
 		r
-		LEFT JOIN t_report_level AS rl ON r.level_code = rl.`code`
+		LEFT JOIN t_report_level AS rl ON
+		r.level_code =
+		rl.`code`
 		where
 		r.code
 		in
@@ -231,5 +242,17 @@
 			close=")" separator=",">
 			#{item,jdbcType=VARCHAR}
 		</foreach>
+	</select>
+	<select id="findReportByHousesCode" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		SELECT
+		rl.`name` as level_name,
+		r.`code`
+		FROM
+		t_report AS r
+		LEFT
+		JOIN t_report_level AS rl ON r.level_code = rl.`code`
+		WHERE
+		r.houses_code = 'LP161004101471';
 	</select>
 </mapper>

@@ -17,7 +17,6 @@ import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
-import cn.com.ddhj.mapper.report.TReportLevelMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.report.TReportTemplateMapper;
 import cn.com.ddhj.model.TLandedProperty;
@@ -49,8 +48,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Autowired
 	private TReportMapper mapper;
 	@Autowired
-	private TReportLevelMapper reportLevelMapper;
-	@Autowired
 	private TReportTemplateMapper templateMapper;
 
 	@Autowired
@@ -74,7 +71,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * @see cn.com.ddhj.service.report.ITReportService#createPDF(com.alibaba.fastjson.JSONArray)
 	 */
 	@Override
-	public PDFReportResult createPDF(String code, String path) {
+	public PDFReportResult createPDF(String code, String housesCode, String path) {
 		PDFReportResult result = new PDFReportResult();
 		try {
 			File file = new File(path);
@@ -84,7 +81,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			String filePath = "report/" + code + ".pdf";
 			path = path + "/" + filePath;
 			// 根据code获取地产楼盘信息
-			TLandedProperty lp = lpMapper.selectByCode(code);
+			TLandedProperty lp = lpMapper.selectByCode(housesCode);
 			List<TReportTemplate> templateList = templateMapper.findReportTemplateAll();
 			List<TReportEnvironmentLevel> levelList = levelMapper.findTReportEnvironmentLevelAll();
 			// 获取绿地率等级
@@ -182,10 +179,12 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					Integer total = mapper.findEntityAllCount(dto);
 					result.setRepCount(total);
 					result.setResultCode(0);
-					result.setResultMessage("查询楼盘列表成功");
+					result.setResultMessage("查询楼盘环境报告列表成功");
 				} else {
 					result.setRepList(new ArrayList<TReport>());
 					result.setRepCount(0);
+					result.setResultCode(-1);
+					result.setResultMessage("环境报告为空");
 				}
 			} else {
 				result.setResultCode(-1);
@@ -211,7 +210,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult insert(TReport entity, String path) {
 		BaseResult result = new BaseResult();
 		String code = WebHelper.getInstance().getUniqueCode("R");
-		PDFReportResult pdfResult = this.createPDF(entity.getHousesCode(), path);
+		PDFReportResult pdfResult = this.createPDF(code, entity.getHousesCode(), path);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -239,7 +238,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Override
 	public BaseResult updateByCode(TReport entity, String path) {
 		BaseResult result = new BaseResult();
-		PDFReportResult pdfResult = this.createPDF(entity.getHousesCode(), path);
+		PDFReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -276,7 +275,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		TReportSelResult result = new TReportSelResult();
 		TReport report = mapper.selectByCode(code);
 		if (report != null) {
-			result.setLevelList(reportLevelMapper.findEntityAll());
+			result.setLevelList(mapper.findReportByHousesCode(report.getHousesCode()));
 			result.setAddress(report.getAddress());
 			result.setDetail(report.getDetail());
 			result.setImage(report.getImage());
