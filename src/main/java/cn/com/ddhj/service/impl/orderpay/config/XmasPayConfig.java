@@ -48,8 +48,8 @@ public class XmasPayConfig{
 	public static String getPayGateReturnUrl() {
 ////		return config.bConfig("xmaspay.paygate_return_url");
 //		return "http://qhbeta-cfamily.qhw.yshqi.com/cfamily/manage/paygate_notify.ftl";
-		return "http://stockwyz.xicp.net/ddhj/payNotify.htm";
-		//return "http://112.126.93.46:8080/ddhj/payNotify.htm";
+//		return "http://stockwyz.xicp.net/ddhj/payNotify.htm";
+		return "http://112.126.93.46:8080/ddhj/payNotify.htm";
 	}
 //	
 //	/**
