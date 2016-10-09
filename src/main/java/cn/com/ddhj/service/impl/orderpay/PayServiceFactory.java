@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.BeansException;
 
 import cn.com.ddhj.helper.BeansHelper;
+import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
 import cn.com.ddhj.service.impl.orderpay.prepare.AlipayPreparePayProcess;
 import cn.com.ddhj.service.impl.orderpay.prepare.ApplePayPreparePayProcess;
 import cn.com.ddhj.service.impl.orderpay.prepare.WechatPreparePayProcess;
@@ -323,9 +324,9 @@ public class PayServiceFactory {
 		return getBean(ApplePayPreparePayProcess.class);
 	}
 	
-//	public PaymentProcess<PayGateNotifyPayProcess.PaymentInput,PayGateNotifyPayProcess.PaymentResult> getPayGateNotifyPayProcess(){
-//		return getBean(PayGateNotifyPayProcess.class);
-//	}
+	public PaymentProcess<PayGateNotifyPayProcess.PaymentInput,PayGateNotifyPayProcess.PaymentResult> getPayGateNotifyPayProcess(){
+		return getBean(PayGateNotifyPayProcess.class);
+	}
 //	
 //	public PaymentProcess<ApplePayNotifyPayProcess.PaymentInput,ApplePayNotifyPayProcess.PaymentResult> getApplePayNotifyPayProcess(){
 //		return getBean(ApplePayNotifyPayProcess.class);

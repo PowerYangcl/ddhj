@@ -17,9 +17,9 @@ public class OrderConfig {
 	public static final String PAY_TYPE_2 = "449716200002";
 	
 	/** 支付宝 */
-	public static final String PAY_TYPE_3 = "449746280003";
+	public static final String PAY_TYPE_3 = "PT161007100002";
 	/** 微信支付 */
-	public static final String PAY_TYPE_5 = "449746280005";
+	public static final String PAY_TYPE_5 = "PT161007100001";
 	/** 苹果支付 */
 	public static final String PAY_TYPE_13 = "449746280013";
 	

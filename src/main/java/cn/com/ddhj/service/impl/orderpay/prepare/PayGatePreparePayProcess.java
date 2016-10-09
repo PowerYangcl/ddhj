@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,9 +52,11 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 		}
 		
 		// 如果设置了reurl则表示需要前台同步支付结果
-		input.reurl = XmasPayConfig.getPayGateReturnUrl();
-		if(input.reurl != null){
+		if(StringUtils.isNotEmpty(input.reurl)){
 			param.put("c_reurl", input.reurl);
+			param.put("c_retflag", "2");
+		} else {
+			param.put("c_reurl", XmasPayConfig.getPayGateDefaultReURL());
 			param.put("c_retflag", "2");
 		}
 		

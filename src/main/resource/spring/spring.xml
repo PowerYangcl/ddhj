@@ -10,4 +10,5 @@ http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 	<context:component-scan base-package="cn.com.ddhj.service" />
 	<bean id="AlipayPreparePayProcess" class="cn.com.ddhj.service.impl.orderpay.prepare.AlipayPreparePayProcess"></bean>
 	<bean id="WechatPreparePayProcess" class="cn.com.ddhj.service.impl.orderpay.prepare.WechatPreparePayProcess"></bean>
+	<bean id="PayGateNotifyPayProcess" class="cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess"></bean>
 </beans>

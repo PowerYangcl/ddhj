@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TPaymentMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TPayment">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="order_code" property="orderCode" jdbcType="VARCHAR" />
+		<result column="mid" property="mid" jdbcType="VARCHAR" />
+		<result column="ymd" property="ymd" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+		<result column="money_type" property="moneyType" jdbcType="VARCHAR" />
+		<result column="dealtime" property="dealtime" jdbcType="VARCHAR" />
+		<result column="succmark" property="succmark" jdbcType="VARCHAR" />
+		<result column="cause" property="cause" jdbcType="VARCHAR" />
+		<result column="memo1" property="memo1" jdbcType="VARCHAR" />
+		<result column="memo2" property="memo2" jdbcType="VARCHAR" />
+		<result column="signstr" property="signstr" jdbcType="VARCHAR" />
+		<result column="paygate" property="paygate" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, order_code, mid,
+		ymd,amount,money_type, dealtime,succmark,cause,memo1,memo2,signstr,paygate,
+		create_user, create_time,
+		update_user,
+		update_time
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_payment
+		where `order_code` = #{orderCode,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_payment
+		where `order_code` = #{orderCode,jdbcType=VARCHAR}
+	</select>	
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from t_payment
+		where `order_code` = #{orderCode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TPayment">
+		insert into t_payment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			<if test="mid != null">
+				mid,
+			</if>
+			amount,
+			ymd,
+			money_type,
+			dealtime,
+			succmark,
+			<if test="cause != null">
+				cause,
+			</if>
+			<if test="memo1 != null">
+				memo1,
+			</if>
+			<if test="memo2 != null">
+				memo2,
+			</if>						
+			signstr,
+			paygate,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			<if test="mid != null">
+				#{mid,jdbcType=VARCHAR},
+			</if>
+			#{amount,jdbcType=DECIMAL},
+			#{ymd,jdbcType=VARCHAR},
+			#{money_type,jdbcType=VARCHAR},
+			#{dealtime,jdbcType=VARCHAR},
+			#{succmark,jdbcType=VARCHAR},
+			<if test="cause != null">
+				#{cause,jdbcType=VARCHAR},
+			</if>
+			<if test="memo1 != null">
+				#{memo1,jdbcType=VARCHAR},
+			</if>
+			<if test="memo2 != null">
+				#{memo2,jdbcType=VARCHAR},
+			</if>
+			signstr,
+			paygate,
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</trim>
+	</insert>
+</mapper>
