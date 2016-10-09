@@ -7,6 +7,7 @@ import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
+import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.TOrderResult;
 
 /**
@@ -64,4 +65,10 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @return
 	 */
 	OrderAffirmResult orderAffirm(String codes);
+	
+	/**
+	 * 订单支付
+	 * @return
+	 */
+	OrderPayResult orderPay(String openID, String orderCode, String payType, String returnUrl);
 }

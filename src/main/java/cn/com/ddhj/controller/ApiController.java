@@ -19,6 +19,7 @@ import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TUser;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
+import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
@@ -105,6 +106,10 @@ public class ApiController {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_affirm".equals(api.getApiTarget())) {
 			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"));
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		} else if ("order_pay".equals(api.getApiTarget())) {
+			OrderPayResult result = orderService.orderPay(obj.getString("openID"), 
+					obj.getString("orderCode"), obj.getString("payType"), obj.getString("returnUrl"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();
