@@ -338,7 +338,7 @@
 		from 
 			t_landed_property
 		where 
-			title = #{name ,jdbcType=VARCHAR}
+			title = #{name}
 	</select>
 	
 	
