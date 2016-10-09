@@ -43,6 +43,7 @@ public class TReportTest extends BaseTest {
 		System.out.println(JSONObject.toJSON(service.getReportData(dto)));
 	}
 
+	@Test
 	public void insert() {
 		TReport entity = new TReport();
 		entity.setTitle("测试环境报告");
@@ -73,7 +74,6 @@ public class TReportTest extends BaseTest {
 		System.out.println(JSONObject.toJSON(result3));
 	}
 
-	@Test
 	public void getTReport() {
 		String code = "R161008100006";
 		TReportSelResult result = service.getTReport(code);

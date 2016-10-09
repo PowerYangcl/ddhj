@@ -210,7 +210,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult insert(TReport entity, String path) {
 		BaseResult result = new BaseResult();
 		String code = WebHelper.getInstance().getUniqueCode("R");
-		PDFReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path);
+		PDFReportResult pdfResult = this.createPDF(code, entity.getHousesCode(), path);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
