@@ -293,6 +293,46 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 	/**
 	 * 
+	 * 方法: insertReportData <br>
+	 * 描述: TODO
+	 * 
+	 * @param list
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#insertReportData(java.util.List)
+	 */
+	@Override
+	public BaseResult insertReportData(List<TReport> list) {
+		BaseResult result = new BaseResult();
+		if (list != null && list.size() > 0) {
+			boolean flag = false;
+			if (list.size() <= 10000) {
+				mapper.insertReportData(list);
+			} else {
+				int multiple = list.size() / 10000;
+				int count = 0;
+				for (int i = 0; i < multiple; i++) {
+					List<TReport> subList = list.subList(count * 10000, (count + 1) * 10000 - 1);
+					mapper.insertReportData(subList);
+				}
+				List<TReport> remainderList = list.subList(count * 10000, list.size());
+				mapper.insertReportData(remainderList);
+			}
+			if (flag) {
+				result.setResultCode(0);
+				result.setResultMessage("批量添加报告集合成功");
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("批量添加报告集合失败");
+			}
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("批量添加报告集合为空");
+		}
+		return result;
+	}
+
+	/**
+	 * 
 	 * 方法: getLevelContent <br>
 	 * 描述: 获取环境等级描述信息 <br>
 	 * 作者: zhy<br>

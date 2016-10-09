@@ -329,22 +329,29 @@
 		</set>
 		where `code` = #{code,jdbcType=INTEGER}
 	</update>
-	
-	
-	<!-- 根据楼盘名称寻找楼盘在数据库里的编号 - Yangcl -->
-	<select id="findCodeByTitle" resultMap="BaseResultMap" parameterType="java.lang.String">
+	<!-- 获取所有楼盘信息 2016-10-09 zhy -->
+	<select id="findTLandedPropertyAll" resultMap="BaseResultMap">
 		select
-			*
-		from 
-			t_landed_property
-		where 
-			`title` = #{name , jdbcType=INTEGER}
+		<include refid="Base_Column_List" />
+		from t_landed_property
 	</select>
-	
-	
-	
-	
-	
+
+	<!-- 根据楼盘名称寻找楼盘在数据库里的编号 - Yangcl -->
+	<select id="findCodeByTitle" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		*
+		from
+		t_landed_property
+		where
+		`title` = #{name ,
+		jdbcType=INTEGER}
+	</select>
+
+
+
+
+
 </mapper>
 
 

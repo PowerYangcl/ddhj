@@ -140,6 +140,49 @@
 			</if>
 		</trim>
 	</insert>
+	<insert id="insertReportData" parameterType="list">
+		insert into t_report
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			code,
+			houses_code,
+			title,
+			level_code,
+			pic,
+			image,
+			rang,
+			price,
+			path,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			detail
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix=" (" suffix=")" suffixOverrides=",">
+				#{item.uuid,jdbcType=VARCHAR},
+				#{item.code,jdbcType=VARCHAR},
+				#{item.housesCode,jdbcType=VARCHAR},
+				#{item.title,jdbcType=VARCHAR},
+				#{item.levelCode,jdbcType=VARCHAR},
+				#{item.pic,jdbcType=VARCHAR},
+				#{item.image,jdbcType=VARCHAR},
+				#{item.rang,jdbcType=INTEGER},
+				#{item.price,jdbcType=DECIMAL},
+				#{item.path,jdbcType=VARCHAR},
+				#{item.createUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+				#{item.updateUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+				#{item.detail,jdbcType=LONGVARCHAR}
+			</trim>
+		</foreach>
+	</insert>
 	<update id="updateByCode" parameterType="cn.com.ddhj.model.report.TReport">
 		update t_report
 		<set>
