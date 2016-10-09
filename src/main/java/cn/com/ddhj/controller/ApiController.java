@@ -1,10 +1,13 @@
 package cn.com.ddhj.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -107,15 +110,24 @@ public class ApiController {
 		} else if ("order_affirm".equals(api.getApiTarget())) {
 			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} else if ("order_pay".equals(api.getApiTarget())) {
-			OrderPayResult result = orderService.orderPay(obj.getString("openID"), 
-					obj.getString("orderCode"), obj.getString("payType"), obj.getString("returnUrl"));
-			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(-1);
 			result.setResultMessage("调用接口失败");
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+	}
+	
+	@RequestMapping("/webPay/{orderCode}/{payType}")
+	public String webPay(@PathVariable("bigOrderCode") String orderCode, @PathVariable("payType") String payType,
+			HttpServletRequest request, HttpServletResponse response) {
+		String openID = request.getParameter("openID");
+		String returnUrl = request.getParameter("returnUrl");
+		OrderPayResult result = orderService.orderPay(openID, orderCode, payType, returnUrl);
+		if(StringUtils.isEmpty(result.getErrorMsg())) {
+			return "redirect:"+result.getRedirectUrl();
+		} else {
+			return JSONObject.toJSONString(result);
 		}
 	}
 }

@@ -61,8 +61,7 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 		
 		// 网页支付直接构造提交表单，非网页支付则用接口请求支付参数
 		if(PaymentChannel.APP == input.payChannel 
-				|| PaymentChannel.BARCODE == input.payChannel
-				|| PaymentChannel.WAP == input.payChannel){
+				|| PaymentChannel.BARCODE == input.payChannel){
 			String responseText = null;
 			
 			Map<String, String> logMap = new HashMap<String, String>();

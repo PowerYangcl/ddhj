@@ -213,54 +213,40 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 
 	@Override
 	public OrderPayResult orderPay(String openID, String orderCode, String payType, String returnUrl) {
-		OrderPayResult payResult = new OrderPayResult();
-		payResult.setResultCode(0);
-		payResult.setResultMessage("支付成功");
-		payResult.setRedirectUrl(XmasPayConfig.getPayGateReturnUrl());
-		
-		TOrder order = mapper.selectByCode(orderCode);
-		if(order != null) {
-			order.setStatus(1);
-			order.setUpdateUser("zz");
-			order.setUpdateTime("2016-10-08 20:20:20");
-			mapper.updateByCode(order);
+
+		if(StringUtils.isBlank(returnUrl)){
+			returnUrl = "";
 		}
-		return payResult;
 		
-		//###########################
-//		if(StringUtils.isBlank(returnUrl)){
-//			returnUrl = "";
-//		}
-//		
-//		OrderPayResult payResult = new OrderPayResult();
-//		String errorMsg = null;
-//		
-//		PayGatePreparePayProcess.PaymentResult result = null;
-//		if("PT161007100002".equals(payType)){
-//			// 支付宝支付
-//			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl);
-//		}else if("PT161007100001".equals(payType)){
-//			// 微信支付
-//			if(StringUtils.isNotBlank(openID)){
-//				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl);
-//			}else{
-//				errorMsg = "openID is Empty!";
-//			}
-//		}else{
-//			errorMsg = "PayType Not Implemented!";
-//		}
-//		
-//		if(result != null && !result.upFlagTrue()){
-//			errorMsg = StringUtils.trimToEmpty(result.getResultMessage());
-//		}
-//		
-//		if(StringUtils.isEmpty(errorMsg)){
-//			payResult.setRedirectUrl("redirect:"+result.payUrl);
-//			return payResult;
-//		} else {
-//			payResult.setErrorMsg(errorMsg);
-//			return payResult;
-//		}
+		OrderPayResult payResult = new OrderPayResult();
+		String errorMsg = null;
+		
+		PayGatePreparePayProcess.PaymentResult result = null;
+		if("PT161007100002".equals(payType)){
+			// 支付宝支付
+			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl);
+		}else if("PT161007100001".equals(payType)){
+			// 微信支付
+			if(StringUtils.isNotBlank(openID)){
+				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl);
+			}else{
+				errorMsg = "openID is Empty!";
+			}
+		}else{
+			errorMsg = "PayType Not Implemented!";
+		}
+		
+		if(result != null && !result.upFlagTrue()){
+			errorMsg = StringUtils.trimToEmpty(result.getResultMessage());
+		}
+		
+		if(StringUtils.isEmpty(errorMsg)){
+			payResult.setRedirectUrl("redirect:"+result.payUrl);
+			return payResult;
+		} else {
+			payResult.setErrorMsg(errorMsg);
+			return payResult;
+		}
 	}
 
 }
