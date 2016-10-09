@@ -184,7 +184,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					result.setRepList(new ArrayList<TReport>());
 					result.setRepCount(0);
 					result.setResultCode(-1);
-					result.setResultMessage("查询楼盘换将报告列表为空");
+					result.setResultMessage("环境报告为空");
 				}
 			} else {
 				result.setResultCode(-1);
