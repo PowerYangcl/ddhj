@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
@@ -370,6 +371,15 @@ public class CityAirServiceImpl implements ICityAirService {
 			String info = weather.getString("info");
 			String quality = pm25_.getString("quality");
 			String des = pm25_.getString("des");
+			if(StringUtils.isBlank(info)){
+				info = "天气还行";
+			}
+			if(StringUtils.isBlank(quality)){
+				quality = "优";
+			}
+			if(StringUtils.isBlank(des)){
+				des = "可正常活动";
+			}
 			
 			res.put("info", info);					// 阵雨
 			res.put("quality", quality);	    // 优
