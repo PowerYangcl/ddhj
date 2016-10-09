@@ -1,5 +1,8 @@
 package cn.com.ddhj.service.impl.orderpay;
 
+import java.util.Map;
+
+import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
 import cn.com.ddhj.service.impl.orderpay.prepare.AlipayPreparePayProcess;
 import cn.com.ddhj.service.impl.orderpay.prepare.ApplePayPreparePayProcess;
 import cn.com.ddhj.service.impl.orderpay.prepare.WechatPreparePayProcess;
@@ -48,16 +51,16 @@ public class PayServiceSupport {
 		return PayServiceFactory.getInstance().getApplePayPreparePayProcess().process(input);
 	}
 	
-//	/**
-//	 * 网关支付结果通知
-//	 * @param notifyParam 通知参数
-//	 * @return
-//	 */
-//	public static PayGateNotifyPayProcess.PaymentResult payGateNotify(Map<String,String> notifyParam){
-//		PayGateNotifyPayProcess.PaymentInput input = new PayGateNotifyPayProcess.PaymentInput();
-//		input.dataParam = notifyParam;
-//		return PayServiceFactory.getInstance().getPayGateNotifyPayProcess().process(input);
-//	}
+	/**
+	 * 网关支付结果通知
+	 * @param notifyParam 通知参数
+	 * @return
+	 */
+	public static PayGateNotifyPayProcess.PaymentResult payGateNotify(Map<String,String> notifyParam){
+		PayGateNotifyPayProcess.PaymentInput input = new PayGateNotifyPayProcess.PaymentInput();
+		input.dataParam = notifyParam;
+		return PayServiceFactory.getInstance().getPayGateNotifyPayProcess().process(input);
+	}
 //	
 //	/**
 //	 * 苹果支付结果通知

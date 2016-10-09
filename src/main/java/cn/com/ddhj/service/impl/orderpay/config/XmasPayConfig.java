@@ -48,17 +48,17 @@ public class XmasPayConfig{
 	public static String getPayGateReturnUrl() {
 ////		return config.bConfig("xmaspay.paygate_return_url");
 //		return "http://qhbeta-cfamily.qhw.yshqi.com/cfamily/manage/paygate_notify.ftl";
-		return "http://ddhj.eplans.cn/orderlist.html";
+		return "http://stockwyz.xicp.net/ddhj/payNotify.htm";
 	}
 //	
 //	/**
 //	 * 默认返回为支付网关的跳转地址
 //	 * @return
 //	 */
-//	public static String getPayGateDefaultReURL(){
+	public static String getPayGateDefaultReURL(){
 //////		return config.bConfig("xmaspay.paygate_reurl");
-//		return "http://ddhj.eplans.cn/orderlist.html";
-//	}
+		return "http://ddhj.eplans.cn/orderlist.html";
+	}
 //	
 //	/**
 //	 * 默认微信商城的跳转地址

@@ -1,5 +1,9 @@
 package cn.com.ddhj.controller;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -31,7 +35,11 @@ import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.ITUserService;
+import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
+import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
+import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
 import cn.com.ddhj.service.report.ITReportService;
+import cn.com.ddhj.util.DateUtil;
 
 @Controller
 public class ApiController {
@@ -118,16 +126,47 @@ public class ApiController {
 		}
 	}
 	
-	@RequestMapping("/webPay/{orderCode}/{payType}")
-	public String webPay(@PathVariable("bigOrderCode") String orderCode, @PathVariable("payType") String payType,
+	@RequestMapping("webPay/{orderCode}/{payType}")
+	public String webPay(@PathVariable("orderCode") String orderCode, @PathVariable("payType") String payType,
 			HttpServletRequest request, HttpServletResponse response) {
 		String openID = request.getParameter("openID");
 		String returnUrl = request.getParameter("returnUrl");
 		OrderPayResult result = orderService.orderPay(openID, orderCode, payType, returnUrl);
 		if(StringUtils.isEmpty(result.getErrorMsg())) {
-			return "redirect:"+result.getRedirectUrl();
+			return result.getRedirectUrl();
 		} else {
 			return JSONObject.toJSONString(result);
 		}
 	}
+	
+	@RequestMapping("payNotify")
+	@ResponseBody
+	public String payNotify(HttpServletRequest request, HttpServletResponse response) {
+		Enumeration<String> names = request.getParameterNames();
+		Map<String,String> notifyParam = new HashMap<String, String>();
+		String name;
+		while(names.hasMoreElements()){
+			name = names.nextElement();
+			notifyParam.put(name, StringUtils.trimToEmpty(request.getParameter(name)));
+		}
+		
+		PayGateNotifyPayProcess.PaymentResult result = PayServiceSupport.payGateNotify(notifyParam);
+		
+		if(result.getResultCode() == PaymentResult.SUCCESS) {
+			TOrder order = new TOrder();
+			order.setCode(result.notify.bigOrderCode);
+			order.setStatus(1);
+			order.setUpdateUser("paygate");
+			order.setUpdateTime(DateUtil.getSysDateTime());
+			orderService.updateByCode(order);
+		}
+		
+		StringBuilder build = new StringBuilder();
+		build.append("<result>1</result><reURL>"+result.reURL+"</reURL>");
+		if(result.getResultCode() != PaymentResult.SUCCESS){
+			build.append("<msg>").append(result.getResultMessage()).append("</msg>");
+		}
+		return build.toString();
+	}
+	
 }
