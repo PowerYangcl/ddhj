@@ -22,9 +22,6 @@ public class Task1032Aqi implements Callable<CityAqi>{
 	
 	
 	public CityAqi call() throws Exception {
-		for(int i = 0 ; i < 100 ; i ++){
-			System.out.println("aqi = " + i); 
-		}
 		CityAqi result = new CityAqi();
 		result = this.getCityAirService().getCityAqi(this.getCity()); 
 		return result;

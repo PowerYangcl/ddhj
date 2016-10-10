@@ -93,7 +93,29 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			String[] arr = position.split(",");
 			String lat = arr[0];
 			String lng = arr[1];
-			JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");
+//			JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");
+//			JSONObject obj = wasService.getWeatherWithPosition(lng, lat);
+long start = System.currentTimeMillis();
+			ExecutorService executor = Executors.newCachedThreadPool();
+			Task1025Position pos = new Task1025Position();
+			pos.setLlService(llService);
+			pos.setLat(lat);
+			pos.setLng(lng); 
+			Future<JSONObject> posTask =  executor.submit(pos); 
+			
+			Task1025Weather wea = new Task1025Weather();
+			wea.setWasService(wasService);
+			wea.setLat(lat);
+			wea.setLng(lng);
+			Future<JSONObject> weaTask =  executor.submit(wea);  
+			
+			JSONObject addr = posTask.get();
+			JSONObject obj = weaTask.get();
+	        executor.shutdown();
+long end = System.currentTimeMillis();
+System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
+	        			
+			
 			if(addr.getString("code").equals("1") && StringUtils.isNotBlank(addr.getString("business")) ){
 				result.put("name", addr.getString("business").split(",")[0]); // 位置名称
 			}else{
@@ -102,7 +124,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				return result;
 			}
 			
-			JSONObject obj = wasService.getWeatherWithPosition(lng, lat);
 			if(obj.getString("resultcode").equals("200")){
 				JSONObject result_ = JSONObject.parseObject(obj.getString("result")); 
 				JSONObject today = JSONObject.parseObject(result_.getString("today")); 
@@ -172,7 +193,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		}
 		try {
 //			JSONObject weather = cityAirService.getWeatherInfo(city);   // TODO 耗时接口
-			
+long start = System.currentTimeMillis();
 			ExecutorService executor = Executors.newCachedThreadPool();
 			Task1032Weather twea = new Task1032Weather();
 			twea.setCityAirService(cityAirService);
@@ -187,6 +208,8 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	        JSONObject weather = weaTask.get();
 	        CityAqi aqi = aqiFuture.get();
 	        executor.shutdown();
+long end = System.currentTimeMillis();
+System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
 	        
 	        
 //	        CityAqi aqi = cityAirService.getCityAqi(city);
@@ -224,8 +247,12 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				}
 			} 
 			
-			
+start = System.currentTimeMillis();
 			String score = this.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate);
+end = System.currentTimeMillis();
+System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " 毫秒"); 
+	        
+	        
 			result.put("score", score); // 环境综合评分
 			result.put("level", this.scoreLevel(score));  // 环境等级
 			if(aqi.getList() != null){

@@ -21,9 +21,6 @@ public class Task1032Weather implements Callable<JSONObject>{
 	
 	
 	public JSONObject call() throws Exception {
-		for(int i = 0 ; i < 100 ; i ++){
-			System.out.println("Task1032Weather = " + i); 
-		}
 		JSONObject result = new JSONObject();
 		result = this.getCityAirService().getWeatherInfo(this.getCity()); 
 		return result;
