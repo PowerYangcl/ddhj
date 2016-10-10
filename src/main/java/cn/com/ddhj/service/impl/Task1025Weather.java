@@ -4,7 +4,6 @@ import java.util.concurrent.Callable;
 
 import com.alibaba.fastjson.JSONObject;
 
-import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.IWeatherAreaSupportService;
 
 /**
