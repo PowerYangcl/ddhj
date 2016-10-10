@@ -65,9 +65,11 @@ public class TLpCommentServiceImpl extends BaseServiceImpl<TLpComment, TLpCommen
 					.divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP).doubleValue();
 			result.setGoodPercent((int) (goodPercent * 100));
 			result.setResultCode(0);
+			result.setTotal(total);
 			result.setResultMessage("获取楼盘最新5条数据成功");
 		} else {
 			list = new ArrayList<TLpComment>();
+			result.setTotal(0);
 			result.setResultCode(-1);
 			result.setResultMessage("暂无评价");
 			result.setGoodPercent(0);

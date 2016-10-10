@@ -197,7 +197,10 @@
 				and c.`level` = #{level,jdbcType=INTEGER}
 			</if>
 		</where>
-		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+		ORDER BY
+		c.create_time DESC
+		limit
+		#{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
 	<select id="findEntityAllCount" resultType="java.lang.Integer">
 		SELECT count(1) FROM

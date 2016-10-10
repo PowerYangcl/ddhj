@@ -36,6 +36,7 @@ public class TReportTest extends BaseTest {
 	@Autowired
 	private TLandedPropertyMapper lpMapper;
 
+	@Test
 	public void page() {
 		TReportDto dto = new TReportDto();
 		// String position = "39.9091529846191,116.244064331055";
@@ -138,7 +139,6 @@ public class TReportTest extends BaseTest {
 		System.out.println(reports.size());
 	}
 
-	@Test
 	public void getTReport() {
 		String code = "R161009100040";
 		TReportSelResult result = service.getTReport(code);
