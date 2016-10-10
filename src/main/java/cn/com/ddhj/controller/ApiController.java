@@ -101,17 +101,17 @@ public class ApiController {
 			String city = obj.getString("city");
 			JSONObject result_ = estateEnvService.apiEnvScore(position, city);
 			long end = System.currentTimeMillis();
-			System.out.println("接口耗时：" +  (end -start) + " 毫秒"); 
+			System.out.println("接口耗时：" + (end - start) + " 毫秒");
 			return result_;
 		} else if ("1033".equals(api.getApiTarget())) { // 楼盘列表|检索该经纬度附近10Km内的楼盘信息
 			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			String page = obj.getString("page");
-			JSONObject result_= estateEnvService.apiEstateList(position, city, page);
+			JSONObject result_ = estateEnvService.apiEstateList(position, city, page);
 			long end = System.currentTimeMillis();
-			
-			System.out.println("接口耗时：" +  (end -start)/1000 + " 秒"); 
+
+			System.out.println("接口耗时：" + (end - start) / 1000 + " 秒");
 			return result_;
 		} else if ("1025".equals(api.getApiTarget())) { // 地区环境接口
 			String position = obj.getString("position");
@@ -138,7 +138,7 @@ public class ApiController {
 		// 楼盘评价
 		else if ("lpc_add".equals(api.getApiTarget())) {
 			TLpComment lpc = obj.toJavaObject(TLpComment.class);
-			BaseResult result = lpcService.insertSelective(lpc);
+			BaseResult result = lpcService.insertSelective(lpc, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 楼盘最新5条评价
@@ -159,34 +159,34 @@ public class ApiController {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 	}
-	
+
 	@RequestMapping("webPay/{orderCode}/{payType}")
 	public String webPay(@PathVariable("orderCode") String orderCode, @PathVariable("payType") String payType,
 			HttpServletRequest request, HttpServletResponse response) {
 		String openID = request.getParameter("openID");
 		String returnUrl = request.getParameter("returnUrl");
 		OrderPayResult result = orderService.orderPay(openID, orderCode, payType, returnUrl);
-		if(StringUtils.isEmpty(result.getErrorMsg())) {
+		if (StringUtils.isEmpty(result.getErrorMsg())) {
 			return result.getRedirectUrl();
 		} else {
 			return JSONObject.toJSONString(result);
 		}
 	}
-	
+
 	@RequestMapping("payNotify")
 	@ResponseBody
 	public String payNotify(HttpServletRequest request, HttpServletResponse response) {
 		Enumeration<String> names = request.getParameterNames();
-		Map<String,String> notifyParam = new HashMap<String, String>();
+		Map<String, String> notifyParam = new HashMap<String, String>();
 		String name;
-		while(names.hasMoreElements()){
+		while (names.hasMoreElements()) {
 			name = names.nextElement();
 			notifyParam.put(name, StringUtils.trimToEmpty(request.getParameter(name)));
 		}
-		
+
 		PayGateNotifyPayProcess.PaymentResult result = PayServiceSupport.payGateNotify(notifyParam);
-		
-		if(result.getResultCode() == PaymentResult.SUCCESS) {
+
+		if (result.getResultCode() == PaymentResult.SUCCESS) {
 			TOrder order = new TOrder();
 			order.setCode(result.notify.bigOrderCode);
 			order.setStatus(1);
@@ -194,13 +194,13 @@ public class ApiController {
 			order.setUpdateTime(DateUtil.getSysDateTime());
 			orderService.updateByCode(order);
 		}
-		
+
 		StringBuilder build = new StringBuilder();
-		build.append("<result>1</result><reURL>"+result.reURL+"</reURL>");
-		if(result.getResultCode() != PaymentResult.SUCCESS){
+		build.append("<result>1</result><reURL>" + result.reURL + "</reURL>");
+		if (result.getResultCode() != PaymentResult.SUCCESS) {
 			build.append("<msg>").append(result.getResultMessage()).append("</msg>");
 		}
 		return build.toString();
 	}
-	
+
 }
