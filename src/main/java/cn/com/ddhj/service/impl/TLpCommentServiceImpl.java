@@ -15,8 +15,10 @@ import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLpCommentMapper;
 import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.mapper.TUserLoginMapper;
+import cn.com.ddhj.mapper.TUserMapper;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.TUser;
 import cn.com.ddhj.model.TUserLogin;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
@@ -40,6 +42,8 @@ public class TLpCommentServiceImpl extends BaseServiceImpl<TLpComment, TLpCommen
 	private TUserLoginMapper loginMapper;
 	@Autowired
 	private TOrderMapper orderMapper;
+	@Autowired
+	private TUserMapper userMapper;
 
 	/**
 	 * 
@@ -118,33 +122,40 @@ public class TLpCommentServiceImpl extends BaseServiceImpl<TLpComment, TLpCommen
 		// 验证用户是否已登录
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		if (login != null) {
-			/**
-			 * 查询用户最新购买楼盘记录
-			 */
-			TOrder dto = new TOrder();
-			dto.setHousesCode(entity.getLpCode());
-			dto.setCreateUser(entity.getCreateUser());
-			TOrder order = orderMapper.findOrderByComment(dto);
-			if (order != null) {
-				entity.setrCode(order.getReportCode());
-				entity.setRlCode(order.getLevelCode());
-				entity.setRlName(order.getLevelName());
-				entity.setOrderCode(order.getCode());
-				entity.setOrderTime(order.getCreateTime());
-			}
-			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
-			entity.setCode(WebHelper.getInstance().getUniqueCode("LPC"));
-			entity.setCreateTime(DateUtil.getSysDateTime());
-			entity.setUpdateUser(entity.getCreateUser());
-			entity.setUpdateTime(entity.getCreateTime());
-			int flag = mapper.insertSelective(entity);
-			if (flag > 0) {
-				result.setResultCode(-1);
-				result.setResultMessage("添加评论成功");
+			TUser user = userMapper.findTUserByUuid(login.getUserToken());
+			if (user != null) {
+				/**
+				 * 查询用户最新购买楼盘记录
+				 */
+				TOrder dto = new TOrder();
+				dto.setHousesCode(entity.getLpCode());
+				dto.setCreateUser(user.getUserCode());
+				TOrder order = orderMapper.findOrderByComment(dto);
+				if (order != null) {
+					entity.setrCode(order.getReportCode());
+					entity.setRlCode(order.getLevelCode());
+					entity.setRlName(order.getLevelName());
+					entity.setOrderCode(order.getCode());
+					entity.setOrderTime(order.getCreateTime());
+				}
+				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+				entity.setCode(WebHelper.getInstance().getUniqueCode("LPC"));
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				entity.setUpdateUser(entity.getCreateUser());
+				entity.setUpdateTime(entity.getCreateTime());
+				int flag = mapper.insertSelective(entity);
+				if (flag > 0) {
+					result.setResultCode(-1);
+					result.setResultMessage("添加评论成功");
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("添加评论失败");
+				}
 			} else {
 				result.setResultCode(-1);
-				result.setResultMessage("添加评论失败");
+				result.setResultMessage("用户不存在");
 			}
+
 		} else {
 			result.setResultCode(-1);
 			result.setResultMessage("用户未登录");
