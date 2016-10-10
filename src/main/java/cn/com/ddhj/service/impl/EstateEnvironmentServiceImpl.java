@@ -7,6 +7,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import javax.annotation.Resource;
 
@@ -167,7 +171,37 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			return result;
 		}
 		try {
-			JSONObject weather = cityAirService.getWeatherInfo(city);   // TODO 耗时接口
+//			JSONObject weather = cityAirService.getWeatherInfo(city);   // TODO 耗时接口
+			
+			ExecutorService executor = Executors.newCachedThreadPool();
+			Task1032Weather twea = new Task1032Weather();
+			twea.setCityAirService(cityAirService);
+			twea.setCity(city); 
+			Future<JSONObject> weaTask =  executor.submit(twea); 
+	        
+	        Task1032Aqi taqi = new Task1032Aqi();
+	        taqi.setCityAirService(cityAirService);
+	        taqi.setCity(city); 
+	        Future<CityAqi> aqiFuture = executor.submit(taqi);
+	        
+	        JSONObject weather = weaTask.get();
+	        CityAqi aqi = aqiFuture.get();
+	        executor.shutdown();
+	        
+	        
+//	        CityAqi aqi = cityAirService.getCityAqi(city);
+	        String hourAqi = "80";
+			String dayAqi = "";
+			if(aqi.getEntity() != null) {
+				hourAqi = aqi.getEntity().getAQI();
+				for(CityAqiData d : aqi.getList()){
+					dayAqi += d.getAQI() + ",";
+				}
+				dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
+			}
+			
+			
+			
 			String greeningRate = "1";  // 如下条件不满足则用默认值
 			String volumeRate = "0.4";	   // 如下条件不满足则用默认值
 			JSONObject estate = this.estateList(position, "1" , "1"); // 获取楼盘信息
@@ -190,16 +224,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				}
 			} 
 			
-			String hourAqi = "80";
-			String dayAqi = "";
-			CityAqi aqi = cityAirService.getCityAqi(city);
-			if(aqi.getEntity() != null) {
-				hourAqi = aqi.getEntity().getAQI();
-				for(CityAqiData d : aqi.getList()){
-					dayAqi += d.getAQI() + ",";
-				}
-				dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
-			}
 			
 			String score = this.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate);
 			result.put("score", score); // 环境综合评分
@@ -245,7 +269,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			
 			result.put("resultCode", 0); 
 			result.put("resultMessage", "SUCCESS"); 
-			System.out.println("1032接口：" + result); 
+//			System.out.println("1032接口：" + result); 
 			return  result;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -349,7 +373,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			result.put("resultMessage", "经纬度地址解析失败，无法获取当前地理位置信息");
 		}
 		
-		System.out.println(result);  
+//		System.out.println(result);  
 		return  result; 
 	}
 	
@@ -697,68 +721,6 @@ class Estate{
 
 
 /**
- 	public JSONObject apiEstateList1033(String position , String city , String page){
-		JSONObject result = new JSONObject();
-		if(StringUtils.isAnyBlank(position , city , page)){
-			result.put("resultCode", -1); 
-			result.put("resultMessage", "参数不得为空"); 
-			return result;
-		}
-		
-		String[] arr = position.split(",");
-		String lat = arr[0];
-		String lng = arr[1];
-		
-		JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");     // TODO 耗时接口  
-		if(addr.getString("code").equals("1")){
-			result.put("currname", addr.getString("address"));
-			JSONObject eListInfo = this.estateList(position, page); // 请求聚合接口，获取周边地产信息
-			if(eListInfo.getString("code").equals("1")){
-				List<EData> list = JSONArray.parseArray(eListInfo.getString("list") , EData.class); // 获取地产信息列表
-				if(list != null && list.size() > 0){       
-					List<Estate> projectList = new ArrayList<>();
-					for(int i = 0 ; i < list.size() ; i ++){
-						EData e = list.get(i);
-						String position_ = e.getLat() + "," + e.getLng();
-						JSONObject info = this.apiEnvScore(position_ , city);
-						if(info.getString("resultCode").equals("0")){
-							String score = info.getString("score");
-							String level = info.getString("level");
-							String number = "";
-							List<TLandedProperty> lp = lrMapper.findCodeByTitle(e.getTitle());
-							if(lp != null && lp.size() > 0){
-								number = lp.get(0).getCode();
-							}
-							String img = "";
-							if(e.getImages() != null && e.getImages().size() > 0){
-								img = e.getImages().get(0);
-							}
-							String distance = this.getDistance(lat, lng, e.getLat(), e.getLng());
-							projectList.add(new Estate(e.getTitle() , position_, level, score , number , img , distance + "Km以内")); 
-						}
-					}
-					if(projectList.size() != 0){
-						result.put("resultCode", 0);
-						result.put("resultMessage", "SUCCESS");
-						result.put("projectlist", projectList); 
-					}
-				}else{
-					result.put("resultCode", -1);
-					result.put("resultMessage", "周围10Km没有地产信息");
-				}
-			}else{
-				result.put("resultCode", -1);
-				result.put("resultMessage", "检索周边地产信息失败" + eListInfo.getString("msg"));
-			}
-		}else{
-			result.put("resultCode", -1);
-			result.put("resultMessage", "经纬度地址解析失败，无法获取当前地理位置信息");
-		}
-		
-		System.out.println(result);  
-		return  result; 
-	}
-	
 	
 	// 收录此代码 
  	重组日期

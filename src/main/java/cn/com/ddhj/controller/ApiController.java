@@ -89,9 +89,13 @@ public class ApiController {
 			TReportSelResult result = reportService.getTReport(code);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("1032".equals(api.getApiTarget())) { // 环境综合评分接口
+			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
-			return estateEnvService.apiEnvScore(position, city);
+			JSONObject result_ = estateEnvService.apiEnvScore(position, city);
+			long end = System.currentTimeMillis();
+			System.out.println("接口耗时：" +  (end -start) + " 毫秒"); 
+			return result_;
 		} else if ("1033".equals(api.getApiTarget())) { // 楼盘列表|检索该经纬度附近10Km内的楼盘信息
 			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
