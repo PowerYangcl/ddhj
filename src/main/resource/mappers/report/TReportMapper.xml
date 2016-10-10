@@ -140,6 +140,49 @@
 			</if>
 		</trim>
 	</insert>
+	<insert id="insertReportData" parameterType="list">
+		insert into t_report
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			code,
+			houses_code,
+			title,
+			level_code,
+			pic,
+			image,
+			rang,
+			price,
+			path,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			detail
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix=" (" suffix=")" suffixOverrides=",">
+				#{item.uuid,jdbcType=VARCHAR},
+				#{item.code,jdbcType=VARCHAR},
+				#{item.housesCode,jdbcType=VARCHAR},
+				#{item.title,jdbcType=VARCHAR},
+				#{item.levelCode,jdbcType=VARCHAR},
+				#{item.pic,jdbcType=VARCHAR},
+				#{item.image,jdbcType=VARCHAR},
+				#{item.rang,jdbcType=INTEGER},
+				#{item.price,jdbcType=DECIMAL},
+				#{item.path,jdbcType=VARCHAR},
+				#{item.createUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+				#{item.updateUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+				#{item.detail,jdbcType=LONGVARCHAR}
+			</trim>
+		</foreach>
+	</insert>
 	<update id="updateByCode" parameterType="cn.com.ddhj.model.report.TReport">
 		update t_report
 		<set>
@@ -190,7 +233,8 @@
 		r.path
 		FROM
 		t_report AS r
-		LEFT JOIN t_landed_property AS lp ON r.houses_code =
+		LEFT JOIN t_landed_property AS lp ON
+		r.houses_code =
 		lp.`code`
 		<where>
 			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND
@@ -255,22 +299,24 @@
 		WHERE
 		r.houses_code = 'LP161004101471';
 	</select>
-	
-	
-	<select id="findPriceByCode" parameterType="java.util.List" resultMap="BaseResultMap">
+
+
+	<select id="findPriceByCode" parameterType="java.util.List"
+		resultMap="BaseResultMap">
 		select
-			*
-		from 
-			t_report
-		where 
-			level_code = 'RL161006100001'
-		and 
-			houses_code in 
-		<foreach  item="item" index="index" collection="list"  open="(" close=")" separator="," >
-		          #{item}
-		</foreach>  
+		*
+		from
+		t_report
+		where
+		level_code = 'RL161006100001'
+		and
+		houses_code in
+		<foreach item="item" index="index" collection="list" open="("
+			close=")" separator=",">
+			#{item}
+		</foreach>
 	</select>
-	
+
 </mapper>
 
 

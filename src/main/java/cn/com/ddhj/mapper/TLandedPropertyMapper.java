@@ -39,27 +39,30 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, BaseD
 	 */
 	public List<TLandedProperty>  findCodeByTitle(List<String> titles); 
 	
-	
 	public List<EData> findLandedPropertyAll(LandLatLngDto dto);
+
+	/**
+	 * 
+	 * 方法: findTLandedPropertyAll <br>
+	 * 描述: 获取所有楼盘数据 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月9日 下午6:54:57
+	 * 
+	 * @return
+	 */
+	List<TLandedProperty> findTLandedPropertyAll();
+
+	/**
+	 * 
+	 * 方法: findTLandedPropertyCity <br>
+	 * 描述: 获取楼盘城市列表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月10日 上午10:02:30
+	 * 
+	 * @return
+	 */
+	List<String> findTLandedPropertyCity();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

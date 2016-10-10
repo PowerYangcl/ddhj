@@ -35,38 +35,20 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * @return
 	 */
 	List<TReport> findReportByHousesCode(String housesCode);
-	
-	// 根据楼盘code取报告的最低价格  
+
+	// 根据楼盘code取报告的最低价格
 	public List<TReport> findPriceByCode(List<String> lpcode);
+
+	/**
+	 * 
+	 * 方法: insertReportData <br>
+	 * 描述: 批量生成环境报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月9日 下午6:48:59
+	 * 
+	 * @param list
+	 * @return
+	 */
+	int insertReportData(List<TReport> list);
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

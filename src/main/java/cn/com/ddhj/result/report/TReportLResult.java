@@ -18,8 +18,22 @@ public class TReportLResult extends BaseResult {
 	 * 楼盘名称
 	 */
 	private String name;
+	/**
+	 * 楼盘描述
+	 */
+	private String detail;
+
 	private Integer repCount;
+
 	private List<TReport> repList;
+
+	public String getDetail() {
+		return detail;
+	}
+
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
 
 	public String getName() {
 		return name;

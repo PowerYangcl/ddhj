@@ -17,14 +17,24 @@
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 		<result column="pic" property="pic" jdbcType="VARCHAR" />
 		<result column="image" property="image" jdbcType="VARCHAR" />
+		<result column="level_code" property="levelCode" jdbcType="VARCHAR" />
 		<result column="level_name" property="levelName" jdbcType="VARCHAR" />
 		<result column="address" property="address" jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, uuid, code, report_code,
 		pay_price,pay_code,invoice_title, status,
-		create_user, create_time,
+		create_user,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
 		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
 		update_time
 	</sql>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
@@ -104,7 +114,8 @@
 		SELECT
 		o.`code` AS `code`,
 		o.pay_price AS pay_price,
-		o.pay_code as pay_code,
+		o.pay_code as
+		pay_code,
 		o.`status` AS
 		`status`,
 		r.title,
@@ -114,12 +125,15 @@
 		rl.`name` AS level_name,
 		lp.addressFull AS address
 		FROM
-		t_order AS o
+		t_order AS
+		o
 		LEFT JOIN t_report AS r ON
 		o.report_code = r.`code`
-		LEFT JOIN t_landed_property AS lp ON
+		LEFT JOIN
+		t_landed_property AS lp ON
 		r.houses_code = lp.`code`
-		LEFT JOIN t_report_level AS rl ON
+		LEFT JOIN
+		t_report_level AS rl ON
 		r.level_code = rl.`code`
 		<where>
 			<if test="status != null">
@@ -144,5 +158,38 @@
 				o.`status` = #{status,jdbcType=INTEGER}
 			</if>
 		</where>
+	</select>
+	<!-- 查询用户最新购买记录，用于评价使用 2016-10-10 zhy -->
+	<select id="findOrderByComment" parameterType="cn.com.ddhj.model.TOrder"
+		resultMap="BaseResultMap">
+		SELECT
+		o.`code`,
+		r.`code` AS report_code,
+		rl.`code` AS
+		level_code,
+		rl.`name` AS level_name,
+		DATE_FORMAT(
+		o.create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time
+		FROM
+		t_order AS o
+		LEFT JOIN t_report AS r ON
+		o.report_code =
+		r.`code`
+		LEFT
+		JOIN
+		t_report_level AS rl ON r.level_code =
+		rl.`code`
+		WHERE
+		r.houses_code = #{housesCode,jdbcType=VARCHAR}
+		AND
+		o.create_user =
+		#{createUser,jdbcType=VARCHAR}
+		ORDER BY
+		o.create_time
+		DESC
+		LIMIT 1
 	</select>
 </mapper>
