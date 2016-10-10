@@ -93,10 +93,15 @@ public class ApiController {
 			String city = obj.getString("city");
 			return estateEnvService.apiEnvScore(position, city);
 		} else if ("1033".equals(api.getApiTarget())) { // 楼盘列表|检索该经纬度附近10Km内的楼盘信息
+			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			String page = obj.getString("page");
-			return estateEnvService.apiEstateList(position, city, page);
+			JSONObject result_= estateEnvService.apiEstateList(position, city, page);
+			long end = System.currentTimeMillis();
+			
+			System.out.println("接口耗时：" +  (end -start)/1000 + " 秒"); 
+			return result_;
 		}else if ("1025".equals(api.getApiTarget())) { // 地区环境接口 
 			String position = obj.getString("position");
 			String city = obj.getString("city");

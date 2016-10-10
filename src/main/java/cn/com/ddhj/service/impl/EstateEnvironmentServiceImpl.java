@@ -20,7 +20,9 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.dto.CityAqi;
 import cn.com.ddhj.dto.CityAqiData;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
+import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.estateInfo.EData;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.IEstateEnvironmentService;
@@ -61,6 +63,8 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	@Resource
 	private IWeatherAreaSupportService wasService;
 	
+	@Resource
+	private TReportMapper reportMapper;
 	
 	
 	/**
@@ -163,6 +167,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			return result;
 		}
 		try {
+			JSONObject weather = cityAirService.getWeatherInfo(city);   // TODO 耗时接口
 			String greeningRate = "1";  // 如下条件不满足则用默认值
 			String volumeRate = "0.4";	   // 如下条件不满足则用默认值
 			JSONObject estate = this.estateList(position, "1" , "1"); // 获取楼盘信息
@@ -203,7 +208,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				result.put("AQIList", this.initAqiList(aqi.getList()));  
 			}
 			
-			JSONObject weather = cityAirService.getWeatherInfo(city);
 			
 			List<EnvInfo> envList = new ArrayList<>();
 			EnvInfo air = new EnvInfo();
@@ -256,9 +260,9 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	 * @descriptions 楼盘列表|检索该经纬度附近10Km内的楼盘信息|1033
 	 * 								 城市名称|北京，上海，广州，深圳
 	 *
-	 * @param position|经纬度逗号分隔
+	 * @param position|经纬度逗号分隔，纬度在前经度在后
 	 * @param city |当前城市名称 如：北京，注意不是北京市
-	 * @param page | 当前第几页，每页数据20条
+	 * @param page | 当前第几页，每页数据10条
 	 * @return
 	 * @date 2016年10月4日 下午5:30:13
 	 * @author Yangcl 
@@ -266,7 +270,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	 */ 
 	public JSONObject apiEstateList(String position , String city , String page){
 		JSONObject result = new JSONObject();
-		if(StringUtils.isAnyBlank(position , city , page)){
+		if(StringUtils.isAnyBlank(position , page)){
 			result.put("resultCode", -1); 
 			result.put("resultMessage", "参数不得为空"); 
 			return result;
@@ -276,33 +280,56 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		String lat = arr[0];
 		String lng = arr[1];
 		
-		JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");
+		JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");     // TODO 耗时接口  
 		if(addr.getString("code").equals("1")){
-			result.put("currname", addr.getString("address"));
-			JSONObject eListInfo = this.estateList(position, page); // 请求聚合接口，获取周边地产信息
+			result.put("currname", addr.getString("address")); // 当前位置信息
+			
+			JSONObject eListInfo = this.estateList(position, page); // 经纬度周边地产信息
 			if(eListInfo.getString("code").equals("1")){
 				List<EData> list = JSONArray.parseArray(eListInfo.getString("list") , EData.class); // 获取地产信息列表
-				if(list != null && list.size() > 0){       
-					List<Estate> projectList = new ArrayList<>();
+				if(list != null && list.size() > 0){  
+					List<String> titles = new ArrayList<>();
 					for(int i = 0 ; i < list.size() ; i ++){
-						EData e = list.get(i);
-						String position_ = e.getLat() + "," + e.getLng();
-						JSONObject info = this.apiEnvScore(position_ , city);
-						if(info.getString("resultCode").equals("0")){
-							String score = info.getString("score");
-							String level = info.getString("level");
-							String number = "";
-							List<TLandedProperty> lp = lrMapper.findCodeByTitle(e.getTitle());
-							if(lp != null && lp.size() > 0){
-								number = lp.get(0).getCode();
-							}
-							String img = "";
-							if(e.getImages() != null && e.getImages().size() > 0){
-								img = e.getImages().get(0);
-							}
-							String distance = this.getDistance(lat, lng, e.getLat(), e.getLng());
-							projectList.add(new Estate(e.getTitle() , position_, level, score , number , img , distance + "Km以内")); 
+						titles.add(list.get(i).getTitle() );
+					}
+					List<TLandedProperty> lpList = lrMapper.findCodeByTitle(titles); // 楼盘编号|楼盘名称
+					List<String> lpcodes = new ArrayList<>();
+					for(TLandedProperty p : lpList){
+						if(p.getCity().equals(city)){
+							lpcodes.add(p.getCode());
 						}
+					}
+					List<TReport> rList  = reportMapper.findPriceByCode(lpcodes);
+					
+					List<Estate> projectList = new ArrayList<>();
+					// 开始组建数据
+					for(EData e : list){
+						String position_ = e.getLat() + "," + e.getLng();
+						String distance = this.getDistance(lat, lng, e.getLat(), e.getLng());
+						String lpcode = "";
+						String price = "￥200";
+						if(lpList != null && lpList.size() > 0){
+							for(TLandedProperty p : lpList){
+								String lpname = p.getTitle();
+								if(e.getTitle().equals(lpname)){
+									lpcode = p.getCode();
+									if(rList != null && rList.size() > 0){
+										for(TReport r : rList){
+											if(r.getHousesCode().equals(lpcode)){
+												price = String.valueOf(r.getPrice());
+												break;
+											}
+										}
+									}
+									break;
+								}
+							}
+						}
+						String img = "";
+						if(e.getImages() != null && e.getImages().size() > 0){
+							img = e.getImages().get(0);
+						}
+						projectList.add(new Estate(e.getTitle() , distance , e.getAddressFull() , price , lpcode, position_, img) );		
 					}
 					if(projectList.size() != 0){
 						result.put("resultCode", 0);
@@ -529,47 +556,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	}
 	
 	
-	// 收录此代码
-	/**
-	 * @descriptions 重组日期
-	 *
-	 * @param date 2014-05-08
-	 * @date 2016年10月4日 下午10:43:34
-	 * @author Yangcl 
-	 * @version 1.0.0.1
-	 */
-	public String showWeekday2(String date) {
-		String[] arr = date.split("-");
-		Calendar temp = Calendar.getInstance();
-		temp.set(Integer.valueOf(arr[0]) , Integer.valueOf(arr[1]) - 1, Integer.valueOf(arr[2]));
-		int x = temp.get(Calendar.DAY_OF_WEEK);
-		String str = "";
-		switch (x){
-			case Calendar.SUNDAY:
-				str = "星期日";
-				break;
-			case Calendar.MONDAY:
-				str = "星期一";
-				break;
-			case Calendar.TUESDAY:
-				str = "星期二";
-				break;
-			case Calendar.WEDNESDAY:
-				str = "星期三";
-				break;
-			case Calendar.THURSDAY:
-				str = "星期四";
-				break;
-			case Calendar.FRIDAY:
-				str = "星期五";
-				break;
-			case Calendar.SATURDAY:
-				str = "星期六";
-				break; 
-		}
-		
-		return str;
-	}
+	
 
 }
 
@@ -645,23 +632,23 @@ class EnvInfo{
  */
 class Estate{
 	private String name;
-	private String position;
-	private String level;
-	private String score;
-	private String number; // 楼盘在数据库里的编号
-	
-	private String img;
 	private String distance;
+	private String address;
+	private String price; // 报告最低价格
+	private String number; // 楼盘在数据库里的编号
+	private String position;
+	private String img;
 	
-	public Estate(String name, String position, String level, String score , String number , String img , String distance) {
+	public Estate(String name, String distance, String address, String price, String number, String position, String img) {
 		this.name = name;
-		this.position = position;
-		this.level = level;
-		this.score = score;
+		this.distance = distance;
+		this.address = address;
+		this.price = price;
 		this.number = number;
+		this.position = position;
 		this.img = img;
-		this.distance = distance; 
 	}
+	
 	
 	public String getName() {
 		return name;
@@ -669,23 +656,23 @@ class Estate{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getPosition() {
-		return position;
+	public String getDistance() {
+		return distance;
 	}
-	public void setPosition(String position) {
-		this.position = position;
+	public void setDistance(String distance) {
+		this.distance = distance;
 	}
-	public String getLevel() {
-		return level;
+	public String getAddress() {
+		return address;
 	}
-	public void setLevel(String level) {
-		this.level = level;
+	public void setAddress(String address) {
+		this.address = address;
 	}
-	public String getScore() {
-		return score;
+	public String getPrice() {
+		return price;
 	}
-	public void setScore(String score) {
-		this.score = score;
+	public void setPrice(String price) {
+		this.price = price;
 	}
 	public String getNumber() {
 		return number;
@@ -693,11 +680,124 @@ class Estate{
 	public void setNumber(String number) {
 		this.number = number;
 	}
+	public String getPosition() {
+		return position;
+	}
+	public void setPosition(String position) {
+		this.position = position;
+	}
+	public String getImg() {
+		return img;
+	}
+	public void setImg(String img) {
+		this.img = img;
+	}
 }
 
 
 
-
+/**
+ 	public JSONObject apiEstateList1033(String position , String city , String page){
+		JSONObject result = new JSONObject();
+		if(StringUtils.isAnyBlank(position , city , page)){
+			result.put("resultCode", -1); 
+			result.put("resultMessage", "参数不得为空"); 
+			return result;
+		}
+		
+		String[] arr = position.split(",");
+		String lat = arr[0];
+		String lng = arr[1];
+		
+		JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");     // TODO 耗时接口  
+		if(addr.getString("code").equals("1")){
+			result.put("currname", addr.getString("address"));
+			JSONObject eListInfo = this.estateList(position, page); // 请求聚合接口，获取周边地产信息
+			if(eListInfo.getString("code").equals("1")){
+				List<EData> list = JSONArray.parseArray(eListInfo.getString("list") , EData.class); // 获取地产信息列表
+				if(list != null && list.size() > 0){       
+					List<Estate> projectList = new ArrayList<>();
+					for(int i = 0 ; i < list.size() ; i ++){
+						EData e = list.get(i);
+						String position_ = e.getLat() + "," + e.getLng();
+						JSONObject info = this.apiEnvScore(position_ , city);
+						if(info.getString("resultCode").equals("0")){
+							String score = info.getString("score");
+							String level = info.getString("level");
+							String number = "";
+							List<TLandedProperty> lp = lrMapper.findCodeByTitle(e.getTitle());
+							if(lp != null && lp.size() > 0){
+								number = lp.get(0).getCode();
+							}
+							String img = "";
+							if(e.getImages() != null && e.getImages().size() > 0){
+								img = e.getImages().get(0);
+							}
+							String distance = this.getDistance(lat, lng, e.getLat(), e.getLng());
+							projectList.add(new Estate(e.getTitle() , position_, level, score , number , img , distance + "Km以内")); 
+						}
+					}
+					if(projectList.size() != 0){
+						result.put("resultCode", 0);
+						result.put("resultMessage", "SUCCESS");
+						result.put("projectlist", projectList); 
+					}
+				}else{
+					result.put("resultCode", -1);
+					result.put("resultMessage", "周围10Km没有地产信息");
+				}
+			}else{
+				result.put("resultCode", -1);
+				result.put("resultMessage", "检索周边地产信息失败" + eListInfo.getString("msg"));
+			}
+		}else{
+			result.put("resultCode", -1);
+			result.put("resultMessage", "经纬度地址解析失败，无法获取当前地理位置信息");
+		}
+		
+		System.out.println(result);  
+		return  result; 
+	}
+	
+	
+	// 收录此代码 
+ 	重组日期
+	public String showWeekday2(String date) {
+		String[] arr = date.split("-");
+		Calendar temp = Calendar.getInstance();
+		temp.set(Integer.valueOf(arr[0]) , Integer.valueOf(arr[1]) - 1, Integer.valueOf(arr[2]));
+		int x = temp.get(Calendar.DAY_OF_WEEK);
+		String str = "";
+		switch (x){
+			case Calendar.SUNDAY:
+				str = "星期日";
+				break;
+			case Calendar.MONDAY:
+				str = "星期一";
+				break;
+			case Calendar.TUESDAY:
+				str = "星期二";
+				break;
+			case Calendar.WEDNESDAY:
+				str = "星期三";
+				break;
+			case Calendar.THURSDAY:
+				str = "星期四";
+				break;
+			case Calendar.FRIDAY:
+				str = "星期五";
+				break;
+			case Calendar.SATURDAY:
+				str = "星期六";
+				break; 
+		}
+		
+		return str;
+	}
+	
+	
+	
+ */
 
 
 

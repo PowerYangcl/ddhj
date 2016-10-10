@@ -37,7 +37,7 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, BaseD
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */
-	public List<TLandedProperty>  findCodeByTitle(String name); 
+	public List<TLandedProperty>  findCodeByTitle(List<String> titles); 
 	
 	
 	public List<EData> findLandedPropertyAll(LandLatLngDto dto);

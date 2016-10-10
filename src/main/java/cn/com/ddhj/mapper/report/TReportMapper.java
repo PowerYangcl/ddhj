@@ -35,4 +35,38 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * @return
 	 */
 	List<TReport> findReportByHousesCode(String housesCode);
+	
+	// 根据楼盘code取报告的最低价格  
+	public List<TReport> findPriceByCode(List<String> lpcode);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

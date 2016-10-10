@@ -331,15 +331,20 @@
 	</update>
 	
 	
-	<!-- 根据楼盘名称寻找楼盘在数据库里的编号 - Yangcl -->
-	<select id="findCodeByTitle" resultMap="BaseResultMap" parameterType="java.lang.String">
+	<!-- 根据楼盘名称寻找楼盘在数据库里的编号 - Yangcl --> 
+	<select id="findCodeByTitle" parameterType="java.util.List" resultMap="BaseResultMap">
 		select
 			*
 		from 
 			t_landed_property
 		where 
-			title = #{name}
+			title in 
+		<foreach  item="item" index="index" collection="list"  open="(" close=")" separator="," >
+		          #{item}
+		</foreach>  
 	</select>
+	
+	
 	
 	<resultMap id="ResultMap" type="cn.com.ddhj.result.estateInfo.EData"> </resultMap>
 	<select id="findLandedPropertyAll" parameterType="cn.com.ddhj.dto.landedProperty.LandLatLngDto" resultMap="ResultMap">
