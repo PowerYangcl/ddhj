@@ -12,9 +12,7 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.helper.WebHelper;
-import cn.com.ddhj.mapper.TUserLoginMapper;
 import cn.com.ddhj.model.TLpComment;
-import cn.com.ddhj.model.TUserLogin;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
 import cn.com.ddhj.service.ITLpCommentService;
@@ -25,8 +23,6 @@ public class TLpCommentTest extends BaseTest {
 
 	@Autowired
 	private ITLpCommentService service;
-	@Autowired
-	private TUserLoginMapper loginMapper;
 
 	@Test
 	public void insert() {
