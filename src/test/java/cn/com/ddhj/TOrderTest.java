@@ -1,6 +1,7 @@
 package cn.com.ddhj;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,18 +55,16 @@ public class TOrderTest extends BaseTest {
 		service.updateByCode(entity);
 	}
 
-	@Test
 	public void orderAffirm() {
 		String codes = "R161006100001";
 		OrderAffirmResult result = service.orderAffirm(codes);
 		System.out.println(JSONObject.toJSON(result));
 	}
 
+	@Test
 	public void payTest() {
-		double pay = 0;
-		for (int i = 0; i < 5; i++) {
-			pay += BigDecimal.TEN.doubleValue();
-		}
-		System.out.println(pay);
+		double goodPercent = BigDecimal.valueOf(12).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
+				.doubleValue();
+		System.out.println(goodPercent);
 	}
 }

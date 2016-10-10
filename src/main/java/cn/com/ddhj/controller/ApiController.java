@@ -12,11 +12,15 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.TUserDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TUser;
+import cn.com.ddhj.result.lp.TLpCommentData;
+import cn.com.ddhj.result.lp.TLpCommentTopData;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.TOrderResult;
@@ -25,6 +29,7 @@ import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
+import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.ITUserService;
 import cn.com.ddhj.service.report.ITReportService;
@@ -40,6 +45,8 @@ public class ApiController {
 	private IEstateEnvironmentService estateEnvService;
 	@Autowired
 	private ITOrderService orderService;
+	@Autowired
+	private ITLpCommentService lpcService;
 
 	@RequestMapping("api")
 	@ResponseBody
@@ -85,10 +92,10 @@ public class ApiController {
 			String city = obj.getString("city");
 			String page = obj.getString("page");
 			return estateEnvService.apiEstateList(position, city, page);
-		}else if ("1025".equals(api.getApiTarget())) { // 地区环境接口 
+		} else if ("1025".equals(api.getApiTarget())) { // 地区环境接口
 			String position = obj.getString("position");
 			String city = obj.getString("city");
-			return estateEnvService.apiAreaEnv(position, city); 
+			return estateEnvService.apiAreaEnv(position, city);
 		}
 		// 订单相关
 		else if ("order_add".equals(api.getApiTarget())) {
@@ -105,6 +112,24 @@ public class ApiController {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_affirm".equals(api.getApiTarget())) {
 			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"));
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 楼盘评价
+		else if ("lpc_add".equals(api.getApiTarget())) {
+			TLpComment lpc = obj.toJavaObject(TLpComment.class);
+			BaseResult result = lpcService.insertSelective(lpc);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 楼盘最新5条评价
+		else if ("lpc_top".equals(api.getApiTarget())) {
+			TLpCommentDto dto = obj.toJavaObject(TLpCommentDto.class);
+			TLpCommentTopData result = lpcService.findDataTop5(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 楼盘评价列表
+		else if ("lpc_data".equals(api.getApiTarget())) {
+			TLpCommentDto dto = obj.toJavaObject(TLpCommentDto.class);
+			TLpCommentData result = lpcService.findData(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();
