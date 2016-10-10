@@ -101,7 +101,7 @@ public class ApiController {
 			String city = obj.getString("city");
 			JSONObject result_ = estateEnvService.apiEnvScore(position, city);
 			long end = System.currentTimeMillis();
-			System.out.println("接口耗时：" +  (end -start) + " 毫秒"); 
+			System.out.println("1032号接口总共耗时：" +  (end -start) + " 毫秒"); 
 			return result_;
 		} else if ("1033".equals(api.getApiTarget())) { // 楼盘列表|检索该经纬度附近10Km内的楼盘信息
 			long start = System.currentTimeMillis();
@@ -111,12 +111,16 @@ public class ApiController {
 			JSONObject result_= estateEnvService.apiEstateList(position, city, page);
 			long end = System.currentTimeMillis();
 			
-			System.out.println("接口耗时：" +  (end -start)/1000 + " 秒"); 
+			System.out.println("1033号接口总共耗时：" +   +  (end -start) + " 毫秒"); 
 			return result_;
 		} else if ("1025".equals(api.getApiTarget())) { // 地区环境接口
+			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
-			return estateEnvService.apiAreaEnv(position, city);
+			JSONObject result_= estateEnvService.apiAreaEnv(position, city);
+			long end = System.currentTimeMillis();
+			System.out.println("1025号接口总共耗时：" +   +  (end -start) + " 毫秒"); 
+			return result_;
 		}
 		// 订单相关
 		else if ("order_add".equals(api.getApiTarget())) {
