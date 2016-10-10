@@ -79,6 +79,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (lp != null) {
 				// 查询环境报告的楼盘名称
 				result.setName(lp.getTitle());
+				result.setDetail(lp.getOverview());
 				int raidus = 10 * 1000;
 				if (dto.getRaidus() != null) {
 					raidus = dto.getRaidus() * 1000;

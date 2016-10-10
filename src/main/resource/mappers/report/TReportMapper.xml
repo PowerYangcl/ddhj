@@ -227,7 +227,6 @@
 		r.image,
 		r.rang,
 		r.create_time,
-		lp.overview AS detail,
 		lp.title AS `name`,
 		lp.addressFull AS address,
 		r.price,
@@ -300,22 +299,24 @@
 		WHERE
 		r.houses_code = 'LP161004101471';
 	</select>
-	
-	
-	<select id="findPriceByCode" parameterType="java.util.List" resultMap="BaseResultMap">
+
+
+	<select id="findPriceByCode" parameterType="java.util.List"
+		resultMap="BaseResultMap">
 		select
-			*
-		from 
-			t_report
-		where 
-			level_code = 'RL161006100001'
-		and 
-			houses_code in 
-		<foreach  item="item" index="index" collection="list"  open="(" close=")" separator="," >
-		          #{item}
-		</foreach>  
+		*
+		from
+		t_report
+		where
+		level_code = 'RL161006100001'
+		and
+		houses_code in
+		<foreach item="item" index="index" collection="list" open="("
+			close=")" separator=",">
+			#{item}
+		</foreach>
 	</select>
-	
+
 </mapper>
 
 
