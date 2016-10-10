@@ -36,6 +36,7 @@ public class TReportTest extends BaseTest {
 	@Autowired
 	private TLandedPropertyMapper lpMapper;
 
+	@Test
 	public void page() {
 		TReportDto dto = new TReportDto();
 		// String position = "39.9091529846191,116.244064331055";
@@ -75,7 +76,6 @@ public class TReportTest extends BaseTest {
 		System.out.println(JSONObject.toJSON(result3));
 	}
 
-	@Test
 	public void batchInsert() {
 		System.out.println("start:" + DateUtil.getSysDateTime());
 		List<TLandedProperty> list = lpMapper.findTLandedPropertyAll();

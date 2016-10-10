@@ -227,7 +227,7 @@
 		r.image,
 		r.rang,
 		r.create_time,
-		lp.detail AS detail,
+		lp.overview AS detail,
 		lp.title AS `name`,
 		lp.addressFull AS address,
 		r.price,
