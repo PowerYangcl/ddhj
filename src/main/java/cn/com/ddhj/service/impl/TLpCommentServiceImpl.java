@@ -140,12 +140,13 @@ public class TLpCommentServiceImpl extends BaseServiceImpl<TLpComment, TLpCommen
 				}
 				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 				entity.setCode(WebHelper.getInstance().getUniqueCode("LPC"));
+				entity.setCreateUser(user.getUserCode());
 				entity.setCreateTime(DateUtil.getSysDateTime());
-				entity.setUpdateUser(entity.getCreateUser());
+				entity.setUpdateUser(user.getUserCode());
 				entity.setUpdateTime(entity.getCreateTime());
 				int flag = mapper.insertSelective(entity);
 				if (flag > 0) {
-					result.setResultCode(-1);
+					result.setResultCode(0);
 					result.setResultMessage("添加评论成功");
 				} else {
 					result.setResultCode(-1);
