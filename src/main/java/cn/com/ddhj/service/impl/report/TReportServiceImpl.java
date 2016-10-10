@@ -64,110 +64,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 	/**
 	 * 
-	 * 方法: createPDF <br>
-	 * 描述: TODO
-	 * 
-	 * @param array
-	 * @return
-	 * @see cn.com.ddhj.service.report.ITReportService#createPDF(com.alibaba.fastjson.JSONArray)
-	 */
-	@Override
-	public PDFReportResult createPDF(String code, String housesCode, String path) {
-		PDFReportResult result = new PDFReportResult();
-		try {
-			File file = new File(path);
-			if (!file.exists()) {
-				file.mkdirs();
-			}
-			String filePath = "report/" + code + ".pdf";
-			path = path + "/" + filePath;
-			// 根据code获取地产楼盘信息
-			TLandedProperty lp = lpMapper.selectByCode(housesCode);
-			List<TReportTemplate> templateList = templateMapper.findReportTemplateAll();
-			List<TReportEnvironmentLevel> levelList = levelMapper.findTReportEnvironmentLevelAll();
-			// 获取绿地率等级
-			int afforestLevel = 1;
-			// if (lp.getGreeningRate() != null &&
-			// !"".equals(lp.getGreeningRate())
-			// && !StringUtils.isEmpty(lp.getGreeningRate())) {
-			// Double afforest =
-			// Double.valueOf(lp.getGreeningRate().substring(0,
-			// lp.getGreeningRate().indexOf("%")));
-			// if (afforest > 25 && afforest < 30) {
-			// afforestLevel = 2;
-			// } else if (afforest < 25) {
-			// afforestLevel = 3;
-			// }
-			// }
-			// 获取容积率等级
-			int volumeLevel = 1;
-			if (lp.getVolumeRate() != null && !"".equals(lp.getVolumeRate())) {
-				try {
-					Double volume = Double.valueOf(lp.getVolumeRate());
-					if (volume > 3 && volume < 5) {
-						volumeLevel = 2;
-					} else if (volume > 5) {
-						volumeLevel = 3;
-					}
-				} catch (Exception e) {
-					volumeLevel = 1;
-				}
-			}
-			// 空气质量等级
-			Integer airLevel = 1;
-			// if (lp.getCity() != null && !"".equals(lp.getCity())) {
-			// airLevel = cityAirService.getAQILevel(lp.getCity());
-			// }
-			// 水质量等级
-			Integer waterLevel = 1;// waterQualityService.getWaterLevel("北京密云古北口");
-			// 垃圾设施等级
-			Integer rubbishLevel = 1;
-			if (StringUtils.isEmpty(lp.getCity()) && StringUtils.isEmpty(lp.getLat())
-					&& StringUtils.isEmpty(lp.getLng())) {
-				rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
-			}
-			if (templateList != null && templateList.size() > 0) {
-				JSONArray array = new JSONArray();
-				for (int i = 0; i < templateList.size(); i++) {
-					TReportTemplate model = templateList.get(i);
-					JSONObject obj = new JSONObject();
-					obj.put("title", model.getName());
-					obj.put("content", model.getContent());
-					if ("afforest".equals(model.getType())) {
-						obj.put("level", getLevelContent(model.getType(), afforestLevel, levelList));
-					} else if ("volume".equals(model.getType())) {
-						obj.put("level", getLevelContent(model.getType(), volumeLevel, levelList));
-					} else if ("air".equals(model.getType())) {
-						obj.put("level", getLevelContent(model.getType(), airLevel, levelList));
-					} else if ("water".equals(model.getType())) {
-						obj.put("level", getLevelContent(model.getType(), waterLevel, levelList));
-					} else if ("rubbish".equals(model.getType())) {
-						obj.put("level", getLevelContent(model.getType(), rubbishLevel, levelList));
-					} else {
-						obj.put("level", getLevelContent(model.getType(), 1, levelList));
-					}
-					array.add(obj);
-				}
-				PdfUtil.instance().createPDF(array, path);
-				result.setResultCode(0);
-				result.setResultMessage("");
-				result.setPath(filePath);
-			} else {
-				result.setResultCode(-1);
-				result.setResultMessage("创建报告失败");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			result.setResultCode(-1);
-			result.setResultMessage("创建报告失败");
-		}
-		return result;
-	}
-
-	/**
-	 * 
 	 * 方法: getReportData <br>
-	 * 描述: TODO
 	 * 
 	 * @param dto
 	 * @return
@@ -220,7 +117,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	/**
 	 * 
 	 * 方法: insert <br>
-	 * 描述: TODO
 	 * 
 	 * @param entity
 	 * @return
@@ -230,7 +126,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult insert(TReport entity, String path) {
 		BaseResult result = new BaseResult();
 		String code = WebHelper.getInstance().getUniqueCode("R");
-		PDFReportResult pdfResult = this.createPDF(code, entity.getHousesCode(), path);
+		PDFReportResult pdfResult = createPDF(code, entity.getHousesCode(), path);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -284,7 +180,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	/**
 	 * 
 	 * 方法: getTReport <br>
-	 * 描述: TODO
 	 * 
 	 * @param code
 	 * @return
@@ -314,7 +209,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	/**
 	 * 
 	 * 方法: insertReportData <br>
-	 * 描述: TODO
 	 * 
 	 * @param list
 	 * @return
@@ -324,6 +218,13 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult insertReportData(List<TReport> list) {
 		BaseResult result = new BaseResult();
 		if (list != null && list.size() > 0) {
+			// 生成pdf环境报告
+			for (int i = 0; i < list.size(); i++) {
+				PDFReportResult pdfResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/");
+				if (pdfResult.getResultCode() == 0) {
+					list.get(i).setPath(pdfResult.getPath());
+				}
+			}
 			boolean flag = false;
 			if (list.size() <= 10000) {
 				mapper.insertReportData(list);
@@ -377,4 +278,135 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return content;
 	}
 
+	/**
+	 * 
+	 * 方法: createPDF <br>
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public PDFReportResult createPDF(String code, String housesCode, String path) {
+		PDFReportResult result = new PDFReportResult();
+		try {
+			File file = new File(path);
+			if (!file.exists()) {
+				file.mkdirs();
+			}
+			String filePath = "report/" + code + ".pdf";
+			path = path + "/" + filePath;
+			// 根据code获取地产楼盘信息
+			TLandedProperty lp = lpMapper.selectByCode(housesCode);
+			List<TReportTemplate> templateList = templateMapper.findReportTemplateAll();
+			List<TReportEnvironmentLevel> levelList = levelMapper.findTReportEnvironmentLevelAll();
+			// 获取绿地率等级
+			int afforestLevel = 1;
+			if (lp.getGreeningRate() != null && !"".equals(lp.getGreeningRate())
+					&& !StringUtils.isEmpty(lp.getGreeningRate())) {
+				Double afforest = Double.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
+				if (afforest > 25 && afforest < 30) {
+					afforestLevel = 2;
+				} else if (afforest < 25) {
+					afforestLevel = 3;
+				}
+			}
+			// 获取容积率等级
+			int volumeLevel = 1;
+			if (lp.getVolumeRate() != null && !"".equals(lp.getVolumeRate())) {
+				try {
+					Double volume = Double.valueOf(lp.getVolumeRate());
+					if (volume > 3 && volume < 5) {
+						volumeLevel = 2;
+					} else if (volume > 5) {
+						volumeLevel = 3;
+					}
+				} catch (Exception e) {
+					volumeLevel = 1;
+				}
+			}
+			// 空气质量等级
+			Integer airLevel = 1;
+			// 水质量等级
+			Integer waterLevel = 1;
+			JSONArray cityAirLevel = this.getCityAirLevel();
+			if (cityAirLevel != null && cityAirLevel.size() > 0) {
+				for (int i = 0; i < cityAirLevel.size(); i++) {
+					if (StringUtils.isNotBlank(lp.getCity())) {
+						JSONObject level = cityAirLevel.getJSONObject(i).getJSONObject(lp.getCity());
+						airLevel = level.getInteger("air");
+						waterLevel = level.getInteger("water");
+					}
+				}
+			}
+			// 垃圾设施等级
+			Integer rubbishLevel = 1;
+			if (StringUtils.isEmpty(lp.getCity()) && StringUtils.isEmpty(lp.getLat())
+					&& StringUtils.isEmpty(lp.getLng())) {
+				rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
+			}
+			if (templateList != null && templateList.size() > 0) {
+				JSONArray array = new JSONArray();
+				for (int i = 0; i < templateList.size(); i++) {
+					TReportTemplate model = templateList.get(i);
+					JSONObject obj = new JSONObject();
+					obj.put("title", model.getName());
+					obj.put("content", model.getContent());
+					if ("afforest".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), afforestLevel, levelList));
+					} else if ("volume".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), volumeLevel, levelList));
+					} else if ("air".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), airLevel, levelList));
+					} else if ("water".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), waterLevel, levelList));
+					} else if ("rubbish".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), rubbishLevel, levelList));
+					} else {
+						obj.put("level", getLevelContent(model.getType(), 1, levelList));
+					}
+					array.add(obj);
+				}
+				PdfUtil.instance().createPDF(array, path);
+				result.setResultCode(0);
+				result.setResultMessage("");
+				result.setPath(filePath);
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("创建报告失败");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setResultCode(-1);
+			result.setResultMessage("创建报告失败");
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: getCityAirLevel <br>
+	 * 描述: 查询楼盘城市列表的空气质量和水质量等级 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月10日 上午10:03:34
+	 * 
+	 * @return
+	 */
+	private JSONArray getCityAirLevel() {
+		JSONArray array = new JSONArray();
+		List<String> citys = lpMapper.findTLandedPropertyCity();
+		if (citys != null && citys.size() > 0) {
+			for (int i = 0; i < citys.size(); i++) {
+				if (StringUtils.isNotBlank(citys.get(i))) {
+					int air = cityAirService.getAQILevel(citys.get(i));
+					int water = waterQualityService.getWaterLevel("北京密云古北口");
+					JSONObject obj = new JSONObject();
+					obj.put("air", air);
+					obj.put("water", water);
+					JSONObject cityLevel = new JSONObject();
+					cityLevel.put(citys.get(i), obj.toJSONString());
+					array.add(cityLevel);
+				}
+			}
+		}
+		return array;
+	}
 }

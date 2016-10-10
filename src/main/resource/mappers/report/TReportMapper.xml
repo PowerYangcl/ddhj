@@ -227,13 +227,15 @@
 		r.image,
 		r.rang,
 		r.create_time,
+		lp.detail AS detail,
 		lp.title AS `name`,
 		lp.addressFull AS address,
 		r.price,
 		r.path
 		FROM
 		t_report AS r
-		LEFT JOIN t_landed_property AS lp ON r.houses_code =
+		LEFT JOIN t_landed_property AS lp ON
+		r.houses_code =
 		lp.`code`
 		<where>
 			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND

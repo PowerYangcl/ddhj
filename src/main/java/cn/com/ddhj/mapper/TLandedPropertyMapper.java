@@ -48,4 +48,15 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, BaseD
 	 */
 	List<TLandedProperty> findTLandedPropertyAll();
 
+	/**
+	 * 
+	 * 方法: findTLandedPropertyCity <br>
+	 * 描述: 获取楼盘城市列表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月10日 上午10:02:30
+	 * 
+	 * @return
+	 */
+	List<String> findTLandedPropertyCity();
+
 }

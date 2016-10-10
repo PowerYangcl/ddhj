@@ -2,9 +2,7 @@ package cn.com.ddhj;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -18,14 +16,11 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.report.TReportDto;
-import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
-import cn.com.ddhj.result.report.PDFReportResult;
 import cn.com.ddhj.result.report.TReportSelResult;
-import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.DateUtil;
 
@@ -40,12 +35,6 @@ public class TReportTest extends BaseTest {
 
 	@Autowired
 	private TLandedPropertyMapper lpMapper;
-	@Autowired
-	private ICityAirService airService;
-
-	public void createPDF() {
-		service.createPDF(WebHelper.getInstance().getUniqueCode("R"), "LP161003100031", "E:/");
-	}
 
 	public void page() {
 		TReportDto dto = new TReportDto();
@@ -103,8 +92,6 @@ public class TReportTest extends BaseTest {
 			entity.setPic("");
 			entity.setImage("");
 			entity.setRang(10);
-			PDFReportResult r = service.createPDF(entity.getCode(), lp.getCode(), "E:/");
-			entity.setPath(r.getPath());
 			entity.setPrice(BigDecimal.TEN);
 			entity.setDetail(lp.getTitle() + "-环境报告说明-普通");
 			entity.setCreateUser("system");
@@ -122,8 +109,6 @@ public class TReportTest extends BaseTest {
 			entity2.setPic("");
 			entity2.setImage("");
 			entity2.setRang(10);
-			PDFReportResult r2 = service.createPDF(entity2.getCode(), lp.getCode(), "E:/");
-			entity2.setPath(r2.getPath());
 			entity2.setPrice(BigDecimal.TEN);
 			entity2.setDetail(lp.getTitle() + "-环境报告说明-高级");
 			entity2.setCreateUser("system");
@@ -141,8 +126,6 @@ public class TReportTest extends BaseTest {
 			entity3.setPic("");
 			entity3.setImage("");
 			entity3.setRang(10);
-			PDFReportResult r3 = service.createPDF(entity3.getCode(), lp.getCode(), "E:/");
-			entity3.setPath(r3.getPath());
 			entity3.setPrice(BigDecimal.TEN);
 			entity3.setDetail(lp.getTitle() + "-环境报告说明-专业");
 			entity3.setCreateUser("system");
