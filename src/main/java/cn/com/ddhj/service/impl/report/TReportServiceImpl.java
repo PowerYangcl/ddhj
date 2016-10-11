@@ -397,7 +397,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			for (int i = 0; i < citys.size(); i++) {
 				if (StringUtils.isNotBlank(citys.get(i))) {
 					int air = cityAirService.getAQILevel(citys.get(i));
-					int water = waterQualityService.getWaterLevel("北京密云古北口");
+					int water = waterQualityService.getWaterLevel(citys.get(i));
 					JSONObject obj = new JSONObject();
 					obj.put("air", air);
 					obj.put("water", water);
