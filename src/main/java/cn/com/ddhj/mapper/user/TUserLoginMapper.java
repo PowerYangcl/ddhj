@@ -1,7 +1,8 @@
-package cn.com.ddhj.mapper;
+package cn.com.ddhj.mapper.user;
 
 import cn.com.ddhj.dto.BaseDto;
-import cn.com.ddhj.model.TUserLogin;
+import cn.com.ddhj.mapper.BaseMapper;
+import cn.com.ddhj.model.user.TUserLogin;
 
 /**
  * 

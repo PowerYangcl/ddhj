@@ -1,10 +1,11 @@
-package cn.com.ddhj.service;
+package cn.com.ddhj.service.user;
 
 import cn.com.ddhj.base.BaseResult;
-import cn.com.ddhj.dto.TUserDto;
-import cn.com.ddhj.model.TUser;
+import cn.com.ddhj.dto.user.TUserDto;
+import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
+import cn.com.ddhj.service.IBaseService;
 
 /**
  * 
@@ -50,4 +51,28 @@ public interface ITUserService extends IBaseService<TUser, TUserDto> {
 	 * @return
 	 */
 	BaseResult logOut(String uid);
+
+	/**
+	 * 
+	 * 方法: updateByCode <br>
+	 * 描述: 编辑现有对象 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月1日 上午11:05:48
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	BaseResult updateByCode(TUser entity, String target, String userToken);
+
+	/**
+	 * 
+	 * 方法: loginBySecurityCode <br>
+	 * 描述: 用户手机验证码登录 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月11日 下午2:18:57
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	RegisterResult loginBySecurityCode(TUser entity);
 }

@@ -155,6 +155,30 @@ public class ApiController {
 			TLpCommentDto dto = obj.toJavaObject(TLpCommentDto.class);
 			TLpCommentData result = lpcService.findData(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 添加关注楼盘
+		else if ("lp_follow_add".equals(api.getApiTarget())) {
+			return null;
+		}
+		// 删除关注楼盘
+		else if ("lp_follow_del".equals(api.getApiTarget())) {
+			return null;
+		}
+		// 获取关注楼盘列表
+		else if ("lp_follow_data".equals(api.getApiTarget())) {
+			return null;
+		}
+		// 添加楼盘浏览记录
+		else if ("lp_visit_add".equals(api.getApiTarget())) {
+			return null;
+		}
+		// 删除楼盘浏览记录
+		else if ("lp_visit_del".equals(api.getApiTarget())) {
+			return null;
+		}
+		// 获取楼盘浏览记录
+		else if ("lp_visit_data".equals(api.getApiTarget())) {
+			return null;
 		} else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(-1);
