@@ -14,11 +14,11 @@ import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
-import cn.com.ddhj.dto.TUserDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
-import cn.com.ddhj.model.TUser;
+import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
 import cn.com.ddhj.result.order.OrderAddResult;
@@ -31,8 +31,8 @@ import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
-import cn.com.ddhj.service.ITUserService;
 import cn.com.ddhj.service.report.ITReportService;
+import cn.com.ddhj.service.user.ITUserService;
 
 @Controller
 public class ApiController {
@@ -74,6 +74,7 @@ public class ApiController {
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
+
 		// 修改密码
 		else if ("user_edit_pass".equals(api.getApiTarget())) {
 			String password = obj.getString("new_password");
@@ -104,6 +105,12 @@ public class ApiController {
 			TUser entity = new TUser();
 			entity.setNickName(nickName);
 			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 手机验证码登录
+		else if ("user_login_security".equals(api.getApiTarget())) {
+			TUser entity = obj.toJavaObject(TUser.class);
+			RegisterResult result = userService.loginBySecurityCode(entity);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 环境报告
@@ -163,6 +170,30 @@ public class ApiController {
 			TLpCommentDto dto = obj.toJavaObject(TLpCommentDto.class);
 			TLpCommentData result = lpcService.findData(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 添加关注楼盘
+		else if ("lp_follow_add".equals(api.getApiTarget())) {
+			return null;
+		}
+		// 删除关注楼盘
+		else if ("lp_follow_del".equals(api.getApiTarget())) {
+			return null;
+		}
+		// 获取关注楼盘列表
+		else if ("lp_follow_data".equals(api.getApiTarget())) {
+			return null;
+		}
+		// 添加楼盘浏览记录
+		else if ("lp_visit_add".equals(api.getApiTarget())) {
+			return null;
+		}
+		// 删除楼盘浏览记录
+		else if ("lp_visit_del".equals(api.getApiTarget())) {
+			return null;
+		}
+		// 获取楼盘浏览记录
+		else if ("lp_visit_data".equals(api.getApiTarget())) {
+			return null;
 		} else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(-1);

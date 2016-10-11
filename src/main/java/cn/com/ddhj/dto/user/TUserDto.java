@@ -1,4 +1,6 @@
-package cn.com.ddhj.dto;
+package cn.com.ddhj.dto.user;
+
+import cn.com.ddhj.dto.BaseDto;
 
 public class TUserDto extends BaseDto {
 

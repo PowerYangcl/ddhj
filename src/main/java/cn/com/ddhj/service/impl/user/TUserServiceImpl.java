@@ -1,4 +1,4 @@
-package cn.com.ddhj.service.impl;
+package cn.com.ddhj.service.impl.user;
 
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -9,15 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.ddhj.base.BaseResult;
-import cn.com.ddhj.dto.TUserDto;
+import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.helper.WebHelper;
-import cn.com.ddhj.mapper.TUserLoginMapper;
-import cn.com.ddhj.mapper.TUserMapper;
-import cn.com.ddhj.model.TUser;
-import cn.com.ddhj.model.TUserLogin;
+import cn.com.ddhj.mapper.user.TUserLoginMapper;
+import cn.com.ddhj.mapper.user.TUserMapper;
+import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
-import cn.com.ddhj.service.ITUserService;
+import cn.com.ddhj.service.impl.BaseServiceImpl;
+import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.MD5Util;
 
@@ -42,7 +43,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 	 * 
 	 * @param dto
 	 * @return
-	 * @see cn.com.ddhj.service.ITUserService#login(cn.com.ddhj.dto.TUserDto)
+	 * @see cn.com.ddhj.service.user.ITUserService#login(cn.com.ddhj.dto.user.TUserDto)
 	 */
 	@Override
 	public LoginResult login(TUserDto dto) {
@@ -132,7 +133,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 	 * 
 	 * @param uid
 	 * @return
-	 * @see cn.com.ddhj.service.ITUserService#logOut(java.lang.String)
+	 * @see cn.com.ddhj.service.user.ITUserService#logOut(java.lang.String)
 	 */
 	@Override
 	public BaseResult logOut(String uid) {
@@ -261,6 +262,76 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 				result.setResultCode(-1);
 				result.setResultMessage("用户尚未注册");
 			}
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: loginBySecurityCode <br>
+	 * 
+	 * @param entity
+	 * @return
+	 * @see cn.com.ddhj.service.user.ITUserService#loginBySecurityCode(cn.com.ddhj.model.user.TUser)
+	 */
+	@Override
+	public RegisterResult loginBySecurityCode(TUser entity) {
+		RegisterResult result = new RegisterResult();
+		// 根据手机号查询用户是否存在
+		if (StringUtils.isNoneBlank(entity.getPhone())) {
+			TUser user = mapper.findUserByPhone(entity.getPhone());
+			if (user != null) {
+				TUser loginU = new TUser();
+				loginU.setUuid(user.getUuid());
+				loginU.setIsLogin(0);
+				int flag = mapper.userLoginAndLogOut(loginU);
+				if (flag >= 0) {
+					// 添加登录信息到用户登录表
+					TUserLogin login = new TUserLogin();
+					login.setUuid(UUID.randomUUID().toString().replace("-", ""));
+					login.setUserToken(entity.getUuid());
+					login.setCreateUser(user.getUserCode());
+					login.setCreateTime(DateUtil.getSysDateTime());
+					loginMapper.insertSelective(login);
+					result.setResultCode(0);
+					result.setUser(user);
+					result.setResultMessage("登录成功");
+					result.setUserToken(login.getUuid());
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("用户登录失败");
+				}
+			} else {
+				String userCode = WebHelper.getInstance().getUniqueCode("U");
+				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+				entity.setPassword(MD5Util.md5Hex(entity.getPassword()));
+				entity.setUserCode(userCode);
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				entity.setCreateUser(userCode);
+				entity.setUpdateUser(userCode);
+				entity.setUpdateTime(DateUtil.getSysDateTime());
+				int flag = mapper.insertSelective(entity);
+				if (flag > 0) {
+					// 添加登录信息到用户登录表
+					TUserLogin login = new TUserLogin();
+					login.setUuid(UUID.randomUUID().toString().replace("-", ""));
+					login.setUserToken(entity.getUuid());
+					login.setCreateUser(entity.getUserCode());
+					login.setCreateTime(DateUtil.getSysDateTime());
+					loginMapper.insertSelective(login);
+					// end
+					result.setResultCode(0);
+					result.setUser(entity);
+					result.setResultMessage("登录成功");
+					result.setUserToken(login.getUuid());
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("登录失败");
+				}
+			}
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("手机号不能为空");
 		}
 		return result;
 	}

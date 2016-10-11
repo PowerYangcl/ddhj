@@ -30,6 +30,7 @@
 		<result column="bus" property="bus" jdbcType="LONGVARCHAR" />
 		<result column="images" property="images" jdbcType="LONGVARCHAR" />
 		<result column="overview" property="overview" jdbcType="LONGVARCHAR" />
+		<result column="r_price" property="rPrice" jdbcType="DECIMAL" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, uuid, code, title, total, city, completion,
@@ -337,7 +338,8 @@
 	</select>
 	<!-- 查询楼盘数据中的所有城市 -->
 	<select id="findTLandedPropertyCity" resultType="java.lang.String">
-		select DISTINCT city from t_landed_property
+		select DISTINCT
+		city from t_landed_property
 	</select>
 
 	<!-- 根据楼盘名称寻找楼盘在数据库里的编号 - Yangcl -->
@@ -351,26 +353,48 @@
 		`title` = #{name ,
 		jdbcType=INTEGER}
 	</select>
-
-
-
-
-
+	<!-- 获取楼盘信息 针对 用户关注楼盘和楼盘浏览记录 2016-10-11 zhy -->
+	<select id="findLpForUser" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
+		resultMap="BaseResultMap">
+		SELECT
+		lp.`code`,
+		lp.title,
+		lp.addressFull,
+		lp.lat,
+		lp.lng,
+		(
+		SELECT
+		min(r.price)
+		FROM
+		t_report AS r
+		WHERE
+		r.houses_code = lp.`code`
+		) r_price
+		FROM
+		t_landed_property AS lp
+		<where>
+			lp.`code` in(
+			<foreach collection="codes" item="item" index="index"
+				separator=",">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+			)
+		</where>
+		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="findLpForUserCount" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
+		resultType="java.lang.Integer">
+		SELECT
+		count(1)
+		FROM
+		t_landed_property AS lp
+		<where>
+			lp.`code` in(
+			<foreach collection="codes" item="item" index="index"
+				separator=",">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+			)
+		</where>
+	</select>
 </mapper>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

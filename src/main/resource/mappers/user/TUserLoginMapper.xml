@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.com.ddhj.mapper.TUserLoginMapper">
-	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TUserLogin">
+<mapper namespace="cn.com.ddhj.mapper.user.TUserLoginMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.user.TUserLogin">
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
 		<result column="user_token" property="userToken" jdbcType="VARCHAR" />
@@ -15,7 +15,7 @@
 		) AS
 		create_time
 	</sql>
-	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TUserLogin">
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.user.TUserLogin">
 		insert into t_user_login
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			id,

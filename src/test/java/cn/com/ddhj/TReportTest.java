@@ -36,7 +36,6 @@ public class TReportTest extends BaseTest {
 	@Autowired
 	private TLandedPropertyMapper lpMapper;
 
-	@Test
 	public void page() {
 		TReportDto dto = new TReportDto();
 		// String position = "39.9091529846191,116.244064331055";
@@ -151,4 +150,5 @@ public class TReportTest extends BaseTest {
 		list.add("R161006100001");
 		System.out.println(mapper.findRreportByChart(list));
 	}
+	
 }

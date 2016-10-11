@@ -11,11 +11,11 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseResult;
-import cn.com.ddhj.dto.TUserDto;
-import cn.com.ddhj.model.TUser;
+import cn.com.ddhj.dto.user.TUserDto;
+import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
-import cn.com.ddhj.service.ITUserService;
+import cn.com.ddhj.service.user.ITUserService;
 
 @Controller
 @RequestMapping("user/")
