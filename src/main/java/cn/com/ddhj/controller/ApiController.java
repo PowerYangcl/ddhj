@@ -132,6 +132,9 @@ public class ApiController {
 		else if ("user_login_security".equals(api.getApiTarget())) {
 			TUser entity = obj.toJavaObject(TUser.class);
 			RegisterResult result = userService.loginBySecurityCode(entity);
+			if (result.getResultCode() == 0) {
+				session.setAttribute(result.getUserToken(), entity);
+			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 环境报告
