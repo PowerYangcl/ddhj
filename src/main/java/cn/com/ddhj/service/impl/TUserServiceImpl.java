@@ -1,6 +1,8 @@
 package cn.com.ddhj.service.impl;
 
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,13 +220,20 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					 * 修改邮箱
 					 */
 					if (StringUtils.isNotBlank(entity.geteMail())) {
-						int flag = mapper.updateByCode(entity);
-						if (flag >= 0) {
-							result.setResultCode(0);
-							result.setResultMessage("修改电子邮箱成功");
+						Pattern emailPattern = Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
+						Matcher matcher = emailPattern.matcher(entity.geteMail());
+						if (matcher.find()) {
+							int flag = mapper.updateByCode(entity);
+							if (flag >= 0) {
+								result.setResultCode(0);
+								result.setResultMessage("修改电子邮箱成功");
+							} else {
+								result.setResultCode(-1);
+								result.setResultMessage("修改电子邮箱失败");
+							}
 						} else {
 							result.setResultCode(-1);
-							result.setResultMessage("修改电子邮箱失败");
+							result.setResultMessage("请填写正确邮箱格式");
 						}
 					} else {
 						result.setResultCode(-1);
