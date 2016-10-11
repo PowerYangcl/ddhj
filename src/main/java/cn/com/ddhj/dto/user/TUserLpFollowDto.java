@@ -1,5 +1,7 @@
 package cn.com.ddhj.dto.user;
 
+import java.util.List;
+
 import cn.com.ddhj.dto.BaseDto;
 
 /**
@@ -13,11 +15,21 @@ public class TUserLpFollowDto extends BaseDto {
 
 	private String userCode;
 
+	private List<String> codes;
+	
 	private String idList;
 
 	private String lat;
 
 	private String lng;
+	
+	public List<String> getCodes() {
+		return codes;
+	}
+
+	public void setCodes(List<String> codes) {
+		this.codes = codes;
+	}
 
 	public String getIdList() {
 		return idList;

@@ -25,7 +25,7 @@ public interface TUserLpFollowMapper extends BaseMapper<TUserLpFollow, TUserLpFo
 	 * @param list
 	 * @return
 	 */
-	int deleteByLpCode(List<String> list);
+	int deleteByLpCode(TUserLpFollowDto dto);
 
 	/**
 	 * 
@@ -50,4 +50,16 @@ public interface TUserLpFollowMapper extends BaseMapper<TUserLpFollow, TUserLpFo
 	 * @return
 	 */
 	List<String> findLpCodeAll(String userCode);
+
+	/**
+	 * 
+	 * 方法: findFollowIsExists <br>
+	 * 描述: 查询关注是否已存在 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月11日 下午11:15:26
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	TUserLpFollow findFollowIsExists(TUserLpFollow entity);
 }
