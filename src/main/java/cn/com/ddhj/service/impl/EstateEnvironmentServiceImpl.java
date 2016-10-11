@@ -319,7 +319,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEstateList(String position , String city , String page){
+	public JSONObject apiEstateList(String position , String city , String page , String count){
 		JSONObject result = new JSONObject();
 		if(StringUtils.isAnyBlank(position , page)){
 			result.put("resultCode", -1); 
@@ -335,7 +335,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		if(addr.getString("code").equals("1")){
 			result.put("currname", addr.getString("address")); // 当前位置信息
 			
-			JSONObject eListInfo = this.estateList(position, page); // 经纬度周边地产信息
+			JSONObject eListInfo = this.estateList(position, page , count); // 经纬度周边地产信息
 			if(eListInfo.getString("code").equals("1")){
 				List<EData> list = JSONArray.parseArray(eListInfo.getString("list") , EData.class); // 获取地产信息列表
 				if(list != null && list.size() > 0){  
@@ -404,15 +404,15 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		return  result; 
 	}
 	
-	private JSONObject estateList(String position , String page){
-		return  this.estateList(position, page , "10000");  
+	private JSONObject estateList(String position , String page , String count){
+		return  this.estateList(position, page , count , "2000");  
 	}
 	
-	private JSONObject estateList(String position , String page , String radius){
+	private JSONObject estateList(String position , String page , String count , String radius){
 		String[] arr = position.split(",");
 		String lat = arr[0];
 		String lng = arr[1]; 
-		return  estateService.estateInfoList(lng, lat, page , radius); 
+		return  estateService.estateInfoList(lng, lat, page , count ,radius); 
 	}
 	
 	/**

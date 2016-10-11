@@ -41,7 +41,7 @@ public class TPaymentServiceImpl extends BaseServiceImpl<TPayment, TPaymentMappe
 				entity.setUpdateTime(DateUtil.getSysDateTime());
 				mapper.insertSelective(entity);
 				result.setResultCode(1);
-				result.setResultMessage("创建订单成功");
+				result.setResultMessage("记录支付成功");
 			}
 		} else {
 			result.setResultCode(-1);

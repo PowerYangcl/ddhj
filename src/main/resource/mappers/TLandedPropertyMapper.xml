@@ -357,7 +357,7 @@
 			AND
 			(lp.lng BETWEEN #{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
 		</where>
-		limit #{page , jdbcType=INTEGER} , 10 
+		limit #{page , jdbcType=INTEGER} , #{count , jdbcType=INTEGER}
 	</select>
 	
 		<!-- 获取所有楼盘信息 2016-10-09 zhy -->

@@ -40,6 +40,7 @@ import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.ITUserService;
+import cn.com.ddhj.service.impl.TPaymentServiceImpl;
 import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
 import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
 import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
@@ -59,7 +60,11 @@ public class ApiController {
 	private ITOrderService orderService;
 	@Autowired
 	private ITLpCommentService lpcService;
-
+	
+    @Autowired
+    private TPaymentServiceImpl paymentService;
+    
+    
 	@RequestMapping("api")
 	@ResponseBody
 	public JSONObject api(BaseAPI api, HttpSession session, HttpServletRequest request) {
@@ -108,7 +113,8 @@ public class ApiController {
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			String page = obj.getString("page");
-			JSONObject result_ = estateEnvService.apiEstateList(position, city, page);
+			String count = obj.getString("count");
+			JSONObject result_ = estateEnvService.apiEstateList(position, city, page , count);
 			long end = System.currentTimeMillis(); 
 			System.out.println("1033号接口总共耗时：" +   +  (end -start) + " 毫秒");  
 			return result_;
@@ -196,6 +202,11 @@ public class ApiController {
 			order.setUpdateUser("paygate");
 			order.setUpdateTime(DateUtil.getSysDateTime());
 			orderService.updateByCode(order);
+			
+			// TODO 支付成功则插入日志记录：paymentService     TPayment
+		} else {
+			// TODO 支付失败则插入日志记录：paymentService
+			
 		}
 
 		StringBuilder build = new StringBuilder();
