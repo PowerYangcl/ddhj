@@ -140,6 +140,7 @@
 		u.nick_name AS nick_name,
 		u.head_pic AS
 		head_pic,
+		c.`level` AS `level`,
 		c.content AS content,
 		c.order_code AS
 		order_code,
@@ -174,6 +175,7 @@
 		u.nick_name AS nick_name,
 		u.head_pic AS
 		head_pic,
+		c.`level` AS `level`,
 		c.content AS content,
 		c.order_code AS
 		order_code,

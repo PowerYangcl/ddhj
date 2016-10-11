@@ -74,6 +74,38 @@ public class ApiController {
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
+		// 修改密码
+		else if ("user_edit_pass".equals(api.getApiTarget())) {
+			String password = obj.getString("new_password");
+			TUser entity = new TUser();
+			entity.setPassword(password);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 修改头像
+		else if ("user_edit_pic".equals(api.getApiTarget())) {
+			String headPic = obj.getString("headPic");
+			TUser entity = new TUser();
+			entity.setHeadPic(headPic);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 修改邮箱
+		else if ("user_edit_email".equals(api.getApiTarget())) {
+			String eMail = obj.getString("email");
+			TUser entity = new TUser();
+			entity.seteMail(eMail);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 修改昵称
+		else if ("user_edit_nickname".equals(api.getApiTarget())) {
+			String nickName = obj.getString("nick_name");
+			TUser entity = new TUser();
+			entity.setNickName(nickName);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		// 环境报告
 		else if ("report_data".equals(api.getApiTarget())) {
 			TReportDto dto = obj.toJavaObject(TReportDto.class);

@@ -50,4 +50,16 @@ public interface ITUserService extends IBaseService<TUser, TUserDto> {
 	 * @return
 	 */
 	BaseResult logOut(String uid);
+
+	/**
+	 * 
+	 * 方法: updateByCode <br>
+	 * 描述: 编辑现有对象 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月1日 上午11:05:48
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	BaseResult updateByCode(TUser entity, String target,String userToken);
 }

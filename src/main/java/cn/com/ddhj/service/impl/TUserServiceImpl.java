@@ -2,6 +2,7 @@ package cn.com.ddhj.service.impl;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ import cn.com.ddhj.util.MD5Util;
 /**
  * 
  * 类: TUserServiceImpl <br>
- * 描述: TODO <br>
+ * 描述: 注册用户业务处理接口实现类 <br>
  * 作者: zhy<br>
  * 时间: 2016年10月2日 上午11:35:46
  */
@@ -36,7 +37,6 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 	/**
 	 * 
 	 * 方法: login <br>
-	 * 描述: TODO
 	 * 
 	 * @param dto
 	 * @return
@@ -127,7 +127,6 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 	/**
 	 * 
 	 * 方法: logOut <br>
-	 * 描述: TODO
 	 * 
 	 * @param uid
 	 * @return
@@ -155,6 +154,105 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			result.setResultMessage("用户登出失败");
 		}
 
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: updateByCode <br>
+	 * 
+	 * @param entity
+	 * @return
+	 * @see cn.com.ddhj.service.impl.BaseServiceImpl#updateByCode(cn.com.ddhj.model.BaseModel)
+	 */
+	@Override
+	public BaseResult updateByCode(TUser entity, String target, String userToken) {
+		BaseResult result = new BaseResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if (login == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户未登录");
+		} else {
+			TUser user = mapper.findTUserByUuid(login.getUserToken());
+			if (user != null) {
+				entity.setUserCode(user.getUserCode());
+				entity.setUpdateUser(user.getUserCode());
+				entity.setUpdateTime(DateUtil.getSysDateTime());
+				if (StringUtils.equals(target, "user_edit_pass")) {
+					/**
+					 * 修改密码
+					 */
+					if (StringUtils.isNotBlank(entity.getPassword())) {
+						entity.setPassword(MD5Util.md5Hex(entity.getPassword()));
+						int flag = mapper.updateByCode(entity);
+						if (flag >= 0) {
+							result.setResultCode(0);
+							result.setResultMessage("修改密码成功");
+						} else {
+							result.setResultCode(-1);
+							result.setResultMessage("修改密码失败");
+						}
+					} else {
+						result.setResultCode(-1);
+						result.setResultMessage("修改密码，密码不能为空");
+					}
+				} else if (StringUtils.equals(target, "user_edit_pic")) {
+					/**
+					 * 修改头像
+					 */
+					if (StringUtils.isNotBlank(entity.getHeadPic())) {
+						int flag = mapper.updateByCode(entity);
+						if (flag >= 0) {
+							result.setResultCode(0);
+							result.setResultMessage("修改用户头像成功");
+						} else {
+							result.setResultCode(-1);
+							result.setResultMessage("修改用户头像失败");
+						}
+					} else {
+						result.setResultCode(-1);
+						result.setResultMessage("头像地址为空");
+					}
+				} else if (StringUtils.equals(target, "user_edit_email")) {
+					/**
+					 * 修改邮箱
+					 */
+					if (StringUtils.isNotBlank(entity.geteMail())) {
+						int flag = mapper.updateByCode(entity);
+						if (flag >= 0) {
+							result.setResultCode(0);
+							result.setResultMessage("修改电子邮箱成功");
+						} else {
+							result.setResultCode(-1);
+							result.setResultMessage("修改电子邮箱失败");
+						}
+					} else {
+						result.setResultCode(-1);
+						result.setResultMessage("电子邮箱不能为空");
+					}
+				} else if (StringUtils.equals(target, "user_edit_nickname")) {
+					/**
+					 * 修改昵称
+					 */
+					if (StringUtils.isNotBlank(entity.getNickName())) {
+						int flag = mapper.updateByCode(entity);
+						if (flag >= 0) {
+							result.setResultCode(0);
+							result.setResultMessage("修改用户昵称成功");
+						} else {
+							result.setResultCode(-1);
+							result.setResultMessage("修改用户昵称失败");
+						}
+					} else {
+						result.setResultCode(-1);
+						result.setResultMessage("昵称不能为空");
+					}
+				}
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("用户尚未注册");
+			}
+		}
 		return result;
 	}
 

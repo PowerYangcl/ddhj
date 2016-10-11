@@ -97,7 +97,7 @@
 		update t_user
 		<set>
 			<if test="password != null">
-				password = #{password,jdbcType=VARCHAR},
+				`password` = #{password,jdbcType=VARCHAR},
 			</if>
 			<if test="nickName != null">
 				nick_name = #{nickName,jdbcType=VARCHAR},
@@ -113,7 +113,8 @@
 			</if>
 			update_user = #{updateUser,jdbcType=VARCHAR},
 			update_time =
-			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'))
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</set>
 		where user_code = #{userCode,jdbcType=VARCHAR}
 	</update>
