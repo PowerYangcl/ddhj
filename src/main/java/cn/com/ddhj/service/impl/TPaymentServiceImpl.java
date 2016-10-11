@@ -6,27 +6,25 @@ import org.springframework.stereotype.Service;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.PageResult;
 import cn.com.ddhj.dto.TPaymentDto;
-import cn.com.ddhj.helper.WebHelper;
-import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.mapper.TPaymentMapper;
-import cn.com.ddhj.mapper.TUserLoginMapper;
-import cn.com.ddhj.mapper.TUserMapper;
+import cn.com.ddhj.mapper.user.TUserLoginMapper;
+import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.TPayment;
-import cn.com.ddhj.model.TUser;
-import cn.com.ddhj.model.TUserLogin;
-import cn.com.ddhj.result.order.OrderAddResult;
+import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.service.IPaymentService;
 import cn.com.ddhj.util.DateUtil;
 
 @Service
-public class TPaymentServiceImpl extends BaseServiceImpl<TPayment, TPaymentMapper, TPaymentDto> implements IPaymentService {
+public class TPaymentServiceImpl extends BaseServiceImpl<TPayment, TPaymentMapper, TPaymentDto>
+		implements IPaymentService {
 	@Autowired
 	private TPaymentMapper mapper;
 	@Autowired
 	private TUserLoginMapper loginMapper;
 	@Autowired
-	private TUserMapper userMapper;	
-	
+	private TUserMapper userMapper;
+
 	@Override
 	public BaseResult insertSelective(TPayment entity, String userToken) {
 		BaseResult result = new BaseResult();

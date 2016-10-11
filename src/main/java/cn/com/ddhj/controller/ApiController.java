@@ -22,6 +22,8 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.user.TUserDto;
+import cn.com.ddhj.dto.user.TUserLpFollowDto;
+import cn.com.ddhj.dto.user.TUserLpVisitDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
@@ -34,11 +36,15 @@ import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
+import cn.com.ddhj.result.tuser.FollowResult;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
+import cn.com.ddhj.result.tuser.VisitResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
+import cn.com.ddhj.service.user.ITUserLpFollowService;
+import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
 import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
@@ -59,6 +65,10 @@ public class ApiController {
 	private ITOrderService orderService;
 	@Autowired
 	private ITLpCommentService lpcService;
+	@Autowired
+	private ITUserLpFollowService ufService;
+	@Autowired
+	private ITUserLpVisitService uvService;
 
 	@RequestMapping("api")
 	@ResponseBody
@@ -100,27 +110,27 @@ public class ApiController {
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			JSONObject result_ = estateEnvService.apiEnvScore(position, city);
-			long end = System.currentTimeMillis(); 
-			System.out.println("1032号接口总共耗时：" +  (end -start) + " 毫秒");  
+			long end = System.currentTimeMillis();
+			System.out.println("1032号接口总共耗时：" + (end - start) + " 毫秒");
 			return result_;
 		} else if ("1033".equals(api.getApiTarget())) { // 楼盘列表|检索该经纬度附近10Km内的楼盘信息
 			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			String page = obj.getString("page");
-			
+
 			String count = obj.getString("count");
-			JSONObject result_ = estateEnvService.apiEstateList(position, city, page , count);
-			long end = System.currentTimeMillis(); 
-			System.out.println("1033号接口总共耗时：" +   +  (end -start) + " 毫秒");  
+			JSONObject result_ = estateEnvService.apiEstateList(position, city, page, count);
+			long end = System.currentTimeMillis();
+			System.out.println("1033号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;
 		} else if ("1025".equals(api.getApiTarget())) { // 地区环境接口
 			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
-			JSONObject result_= estateEnvService.apiAreaEnv(position, city);
+			JSONObject result_ = estateEnvService.apiAreaEnv(position, city);
 			long end = System.currentTimeMillis();
-			System.out.println("1025号接口总共耗时：" +   +  (end -start) + " 毫秒"); 
+			System.out.println("1025号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;
 		}
 		// 订单相关
@@ -160,27 +170,39 @@ public class ApiController {
 		}
 		// 添加关注楼盘
 		else if ("lp_follow_add".equals(api.getApiTarget())) {
-			return null;
+			String code = obj.getString("lpCode");
+			BaseResult result = ufService.insert(code, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 删除关注楼盘
 		else if ("lp_follow_del".equals(api.getApiTarget())) {
-			return null;
+			TUserLpFollowDto dto = obj.toJavaObject(TUserLpFollowDto.class);
+			BaseResult result = ufService.delFollow(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 获取关注楼盘列表
 		else if ("lp_follow_data".equals(api.getApiTarget())) {
-			return null;
+			TUserLpFollowDto dto = obj.toJavaObject(TUserLpFollowDto.class);
+			FollowResult result = ufService.findFollowLpData(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 添加楼盘浏览记录
 		else if ("lp_visit_add".equals(api.getApiTarget())) {
-			return null;
+			String code = obj.getString("lpCode");
+			BaseResult result = uvService.insert(code, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 删除楼盘浏览记录
 		else if ("lp_visit_del".equals(api.getApiTarget())) {
-			return null;
+			TUserLpVisitDto dto = obj.toJavaObject(TUserLpVisitDto.class);
+			BaseResult result = uvService.delVisit(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 获取楼盘浏览记录
 		else if ("lp_visit_data".equals(api.getApiTarget())) {
-			return null;
+			TUserLpVisitDto dto = obj.toJavaObject(TUserLpVisitDto.class);
+			VisitResult result = uvService.findVisitLpData(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(-1);
@@ -222,11 +244,11 @@ public class ApiController {
 			order.setUpdateUser("paygate");
 			order.setUpdateTime(DateUtil.getSysDateTime());
 			orderService.updateByCode(order);
-			
-			// TODO 支付成功则插入日志记录：paymentService     TPayment
+
+			// TODO 支付成功则插入日志记录：paymentService TPayment
 		} else {
 			// TODO 支付失败则插入日志记录：paymentService
-			
+
 		}
 
 		StringBuilder build = new StringBuilder();
