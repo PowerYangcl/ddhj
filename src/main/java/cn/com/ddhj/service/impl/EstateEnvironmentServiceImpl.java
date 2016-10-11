@@ -271,7 +271,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			EnvInfo wea = new EnvInfo();
 			wea.setName("天气");
 			wea.setMemo(weather.getString("info"));
-			wea.setLevel(weather.getString("quality")); 
+			wea.setLevel(weather.getString("wind")); 
 			envList.add(wea);
 			// 数据模糊，暂时写死
 			EnvInfo gar = new EnvInfo();
@@ -287,7 +287,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			EnvInfo noise = new EnvInfo();
 			noise.setName("噪音");
 			noise.setMemo("2Km以外"); 
-			noise.setLevel("较少"); 
+			noise.setLevel("I类/优");  
 			envList.add(noise);
 			result.put("detailList", envList);  // 环境明细
 			
