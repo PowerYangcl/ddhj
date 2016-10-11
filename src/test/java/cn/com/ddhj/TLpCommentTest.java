@@ -24,7 +24,6 @@ public class TLpCommentTest extends BaseTest {
 	@Autowired
 	private ITLpCommentService service;
 
-	@Test
 	public void insert() {
 		// for (int i = 0; i < 99; i++) {
 		// TLpComment entity = new TLpComment();
@@ -48,6 +47,7 @@ public class TLpCommentTest extends BaseTest {
 		System.out.println(JSONObject.toJSON(result));
 	}
 
+	@Test
 	public void top5() {
 		TLpCommentDto dto = new TLpCommentDto();
 		dto.setLpCode("LP161004101471");

@@ -1,4 +1,6 @@
-package cn.com.ddhj.model;
+package cn.com.ddhj.model.user;
+
+import cn.com.ddhj.model.BaseModel;
 
 /**
  * 

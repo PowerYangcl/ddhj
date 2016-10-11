@@ -1,5 +1,7 @@
 package cn.com.ddhj.model;
 
+import java.math.BigDecimal;
+
 /**
  * 
  * 类: TLandedProperty <br>
@@ -48,6 +50,32 @@ public class TLandedProperty extends BaseModel {
 	private String images;
 
 	private String overview;
+
+	/**
+	 * 报告最小价格
+	 */
+	private BigDecimal rPrice;
+
+	/**
+	 * 与用户当前位置的距离
+	 */
+	private Integer distance;
+
+	public Integer getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Integer distance) {
+		this.distance = distance;
+	}
+
+	public BigDecimal getrPrice() {
+		return rPrice;
+	}
+
+	public void setrPrice(BigDecimal rPrice) {
+		this.rPrice = rPrice;
+	}
 
 	public String getCode() {
 		return code;

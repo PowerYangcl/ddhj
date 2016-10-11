@@ -408,10 +408,12 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		return  this.estateList(position, page , count , "2000");  
 	}
 	
+	
 	private JSONObject estateList(String position , String page , String count , String radius){
 		String[] arr = position.split(",");
 		String lat = arr[0];
 		String lng = arr[1]; 
+		
 		return  estateService.estateInfoList(lng, lat, page , count ,radius); 
 	}
 	

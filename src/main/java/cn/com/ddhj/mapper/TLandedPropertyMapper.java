@@ -2,7 +2,7 @@ package cn.com.ddhj.mapper;
 
 import java.util.List;
 
-import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.landedProperty.LandLatLngDto;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.result.estateInfo.EData;
@@ -14,7 +14,7 @@ import cn.com.ddhj.result.estateInfo.EData;
  * 作者: zhy<br>
  * 时间: 2016年10月3日 下午5:20:21
  */
-public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, BaseDto> {
+public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, TLandedPropertyDto> {
 
 	/**
 	 * 
@@ -27,18 +27,18 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, BaseD
 	 * @return
 	 */
 	int batchInsertTLandedProperty(List<TLandedProperty> list);
-	
+
 	/**
 	 * @descriptions 根据楼盘名称寻找楼盘在数据库里的编号
 	 *
 	 * @param name
 	 * @return
 	 * @date 2016年10月6日 下午4:44:17
-	 * @author Yangcl 
+	 * @author Yangcl
 	 * @version 1.0.0.1
 	 */
-	public List<TLandedProperty>  findCodeByTitle(List<String> titles); 
-	
+	public List<TLandedProperty> findCodeByTitle(List<String> titles);
+
 	public List<EData> findLandedPropertyAll(LandLatLngDto dto);
 
 	/**
@@ -62,17 +62,28 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, BaseD
 	 * @return
 	 */
 	List<String> findTLandedPropertyCity();
+
+	/**
+	 * 
+	 * 方法: findLpForUser <br>
+	 * 描述: 获取楼盘信息 针对 用户关注楼盘和楼盘浏览记录 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月11日 下午4:27:12
+	 * 
+	 * @param list
+	 * @return
+	 */
+	List<TLandedProperty> findLpForUser(TLandedPropertyDto dto);
+
+	/**
+	 * 
+	 * 方法: findLpForUserCount <br>
+	 * 描述: 获取楼盘信息 针对 用户关注楼盘和楼盘浏览记录总数 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月11日 下午4:27:32
+	 * 
+	 * @param list
+	 * @return
+	 */
+	int findLpForUserCount(TLandedPropertyDto dto);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

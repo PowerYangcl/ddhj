@@ -1,7 +1,7 @@
 package cn.com.ddhj.result.tuser;
 
 import cn.com.ddhj.base.BaseResult;
-import cn.com.ddhj.model.TUser;
+import cn.com.ddhj.model.user.TUser;
 
 /**
  * 
