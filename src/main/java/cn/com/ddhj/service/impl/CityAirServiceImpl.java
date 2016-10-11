@@ -1,6 +1,8 @@
 package cn.com.ddhj.service.impl;
 
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -275,13 +277,6 @@ public class CityAirServiceImpl implements ICityAirService {
 		return level;
 	}
 
-	public static void main(String[] args) {
-		CityAqi  e = new CityAirServiceImpl().getCityAqi("北京");
-		
-		JSONObject o = new CityAirServiceImpl().getWeatherInfo("北京");
-		
-		System.out.println(e.getEntity().getAQI()); 
-	}
 	
 	/**
 	 * @descriptions 返回当前时间的Aqi数据以及历史7天的Aqi数据
@@ -302,11 +297,17 @@ public class CityAirServiceImpl implements ICityAirService {
 			JSONArray array = new JSONArray();
 			JSONObject weeks = JSONObject.parseObject(result.getJSONObject(0).getString("lastTwoWeeks"));
 			if (weeks != null) {
-				for (int i = 1; i <= 7; i++) {
+				for (int i = 23 ; i <= 28 ; i++) {
 					JSONObject obj = weeks.getJSONObject(i + "");
 					array.add(obj);
 				}
 				List<CityAqiData> list = JSONObject.parseArray(array.toJSONString() , CityAqiData.class);
+				CityAqiData cad = new CityAqiData();
+				cad.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+				cad.setCity(data.getCity());
+				cad.setAQI(data.getAQI());
+				cad.setQuality(data.getQuality()); 
+				list.add(cad);
 				e.setList(list); 
 			}
 		} 
