@@ -108,7 +108,9 @@ public class ApiController {
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			String page = obj.getString("page");
-			JSONObject result_ = estateEnvService.apiEstateList(position, city, page);
+			
+			String count = obj.getString("count");
+			JSONObject result_ = estateEnvService.apiEstateList(position, city, page , count);
 			long end = System.currentTimeMillis(); 
 			System.out.println("1033号接口总共耗时：" +   +  (end -start) + " 毫秒");  
 			return result_;
@@ -220,6 +222,11 @@ public class ApiController {
 			order.setUpdateUser("paygate");
 			order.setUpdateTime(DateUtil.getSysDateTime());
 			orderService.updateByCode(order);
+			
+			// TODO 支付成功则插入日志记录：paymentService     TPayment
+		} else {
+			// TODO 支付失败则插入日志记录：paymentService
+			
 		}
 
 		StringBuilder build = new StringBuilder();

@@ -34,12 +34,14 @@ public interface IEstateInfoService {
 	 *
 	 * @param lng 经度
 	 * @param lat 纬度
+	 * @param page 当前第几页
+	 * @param count 当前页面显示条数
 	 * @return
 	 * @date 2016年10月4日 下午6:14:15
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject estateInfoList(String lng , String lat , String page , String radius);
+	public JSONObject estateInfoList(String lng , String lat , String page , String count , String radius);
 	
 } 
 
