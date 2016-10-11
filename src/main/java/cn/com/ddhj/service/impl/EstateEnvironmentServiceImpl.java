@@ -184,7 +184,7 @@ System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫�
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEnvScore(String position , String city){
+	public JSONObject apiEnvScore(String position , String city , String radius){
 		JSONObject result = new JSONObject();
 		if(StringUtils.isAnyBlank(position , city)){
 			result.put("resultCode", -1); 
@@ -227,7 +227,7 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 			
 			String greeningRate = "1";  // 如下条件不满足则用默认值
 			String volumeRate = "0.4";	   // 如下条件不满足则用默认值
-			JSONObject estate = this.estateList(position, "1" , "1"); // 获取楼盘信息
+			JSONObject estate = this.estateList(position, "1" , "1" , radius); // 获取楼盘信息
 			if(estate.getString("code").equals("1")) {
 				List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
 				try {
@@ -319,7 +319,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEstateList(String position , String city , String page , String count){
+	public JSONObject apiEstateList(String position , String city , String page , String count , String radius){
 		JSONObject result = new JSONObject();
 		if(StringUtils.isAnyBlank(position , page)){
 			result.put("resultCode", -1); 
@@ -335,7 +335,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		if(addr.getString("code").equals("1")){
 			result.put("currname", addr.getString("address")); // 当前位置信息
 			
-			JSONObject eListInfo = this.estateList(position, page , count); // 经纬度周边地产信息
+			JSONObject eListInfo = this.estateList(position, page , count , radius); // 经纬度周边地产信息
 			if(eListInfo.getString("code").equals("1")){
 				List<EData> list = JSONArray.parseArray(eListInfo.getString("list") , EData.class); // 获取地产信息列表
 				if(list != null && list.size() > 0){  
