@@ -88,10 +88,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			result.setResultCode(-1);
 			result.setResultMessage("用户密码不能为空");
 		} else {
-			TUserDto dto = new TUserDto();
-			dto.setPhone(entity.getPhone());
-			dto.setPassword(MD5Util.md5Hex(entity.getPassword()));
-			TUser user = mapper.findTUser(dto);
+			TUser user = mapper.findUserByPhone(entity.getPhone());
 			if (user == null) {
 				String userCode = WebHelper.getInstance().getUniqueCode("U");
 				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
