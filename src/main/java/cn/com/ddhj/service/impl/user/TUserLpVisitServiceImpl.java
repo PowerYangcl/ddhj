@@ -53,7 +53,10 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 			if (StringUtils.isNotBlank(dto.getIdList())) {
 				String[] codes = dto.getIdList().split(",");
 				List<String> list = Arrays.asList(codes);
-				int flag = mapper.deleteByLpCode(list);
+				TUserLpVisitDto dto2 = new TUserLpVisitDto();
+				dto2.setCodes(list);
+				dto2.setUserCode(user.getUserCode());
+				int flag = mapper.deleteByLpCode(dto2);
 				if (flag >= 0) {
 					result.setResultCode(0);
 					result.setResultMessage("删除成功");
@@ -88,14 +91,20 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 			entity.setLpCode(lpCode);
 			entity.setUserCode(user.getUserCode());
 			entity.setCreateTime(DateUtil.getSysDateTime());
-			int flag = mapper.insertSelective(entity);
-			if (flag > 0) {
-				result.setResultCode(0);
-				result.setResultMessage("添加浏览记录成功");
+			if (mapper.findVisitIsExists(entity) == null) {
+				int flag = mapper.insertSelective(entity);
+				if (flag > 0) {
+					result.setResultCode(0);
+					result.setResultMessage("添加浏览记录成功");
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("添加浏览记录失败");
+				}
 			} else {
 				result.setResultCode(-1);
-				result.setResultMessage("添加浏览记录失败");
+				result.setResultMessage("浏览记录已存在");
 			}
+
 		} else {
 			result.setResultCode(-1);
 			result.setResultMessage("用户未登录");
@@ -129,10 +138,10 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 						result.setList(list);
 						result.setTotal(lpMapper.findLpForUserCount(lpDto));
 						result.setResultCode(0);
-						result.setResultMessage("获取关注楼盘列表成功");
+						result.setResultMessage("获取浏览记录成功");
 					} else {
 						result.setResultCode(-1);
-						result.setResultMessage("暂无关注楼盘");
+						result.setResultMessage("暂无浏览记录");
 					}
 				} else {
 					result.setResultCode(-1);

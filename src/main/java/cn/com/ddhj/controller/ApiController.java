@@ -96,6 +96,47 @@ public class ApiController {
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
+		// 修改密码
+		else if ("user_edit_pass".equals(api.getApiTarget())) {
+			String password = obj.getString("new_password");
+			TUser entity = new TUser();
+			entity.setPassword(password);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 修改头像
+		else if ("user_edit_pic".equals(api.getApiTarget())) {
+			String headPic = obj.getString("headPic");
+			TUser entity = new TUser();
+			entity.setHeadPic(headPic);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 修改邮箱
+		else if ("user_edit_email".equals(api.getApiTarget())) {
+			String eMail = obj.getString("email");
+			TUser entity = new TUser();
+			entity.seteMail(eMail);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 修改昵称
+		else if ("user_edit_nickname".equals(api.getApiTarget())) {
+			String nickName = obj.getString("nick_name");
+			TUser entity = new TUser();
+			entity.setNickName(nickName);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 手机验证码登录
+		else if ("user_login_security".equals(api.getApiTarget())) {
+			TUser entity = obj.toJavaObject(TUser.class);
+			RegisterResult result = userService.loginBySecurityCode(entity);
+			if (result.getResultCode() == 0) {
+				session.setAttribute(result.getUserToken(), entity);
+			}
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		// 环境报告
 		else if ("report_data".equals(api.getApiTarget())) {
 			TReportDto dto = obj.toJavaObject(TReportDto.class);
@@ -109,7 +150,8 @@ public class ApiController {
 			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
-			JSONObject result_ = estateEnvService.apiEnvScore(position, city);
+			String radius = obj.getString("radius");
+			JSONObject result_ = estateEnvService.apiEnvScore(position, city , radius);
 			long end = System.currentTimeMillis();
 			System.out.println("1032号接口总共耗时：" + (end - start) + " 毫秒");
 			return result_;
@@ -118,9 +160,9 @@ public class ApiController {
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			String page = obj.getString("page");
-
+			String radius = obj.getString("radius");
 			String count = obj.getString("count");
-			JSONObject result_ = estateEnvService.apiEstateList(position, city, page, count);
+			JSONObject result_ = estateEnvService.apiEstateList(position, city, page, count , radius);
 			long end = System.currentTimeMillis();
 			System.out.println("1033号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;

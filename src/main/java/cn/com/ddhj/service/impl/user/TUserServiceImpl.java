@@ -289,7 +289,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					// 添加登录信息到用户登录表
 					TUserLogin login = new TUserLogin();
 					login.setUuid(UUID.randomUUID().toString().replace("-", ""));
-					login.setUserToken(entity.getUuid());
+					login.setUserToken(user.getUuid());
 					login.setCreateUser(user.getUserCode());
 					login.setCreateTime(DateUtil.getSysDateTime());
 					loginMapper.insertSelective(login);

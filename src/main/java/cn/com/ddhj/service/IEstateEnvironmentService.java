@@ -30,7 +30,7 @@ public interface IEstateEnvironmentService {
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEnvScore(String position , String city);
+	public JSONObject apiEnvScore(String position , String city , String radius);
 	
 	
 	
@@ -46,7 +46,7 @@ public interface IEstateEnvironmentService {
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEstateList(String position , String city , String page , String count);
+	public JSONObject apiEstateList(String position , String city , String page , String count , String radius);
 	
 }
 

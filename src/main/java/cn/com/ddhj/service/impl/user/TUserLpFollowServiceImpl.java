@@ -61,7 +61,10 @@ public class TUserLpFollowServiceImpl extends BaseServiceImpl<TUserLpFollow, TUs
 			if (StringUtils.isNotBlank(dto.getIdList())) {
 				String[] codes = dto.getIdList().split(",");
 				List<String> list = Arrays.asList(codes);
-				int flag = mapper.deleteByLpCode(list);
+				TUserLpFollowDto dto2 = new TUserLpFollowDto();
+				dto2.setCodes(list);
+				dto2.setUserCode(user.getUserCode());
+				int flag = mapper.deleteByLpCode(dto2);
 				if (flag >= 0) {
 					result.setResultCode(0);
 					result.setResultMessage("删除成功");
@@ -106,13 +109,18 @@ public class TUserLpFollowServiceImpl extends BaseServiceImpl<TUserLpFollow, TUs
 			entity.setLpCode(lpCode);
 			entity.setUserCode(user.getUserCode());
 			entity.setCreateTime(DateUtil.getSysDateTime());
-			int flag = mapper.insertSelective(entity);
-			if (flag > 0) {
-				result.setResultCode(0);
-				result.setResultMessage("楼盘关注成功");
+			if (mapper.findFollowIsExists(entity) == null) {
+				int flag = mapper.insertSelective(entity);
+				if (flag > 0) {
+					result.setResultCode(0);
+					result.setResultMessage("楼盘关注成功");
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("楼盘关注失败");
+				}
 			} else {
 				result.setResultCode(-1);
-				result.setResultMessage("楼盘关注失败");
+				result.setResultMessage("楼盘关注已存在");
 			}
 		} else {
 			result.setResultCode(-1);

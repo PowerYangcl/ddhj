@@ -14,16 +14,17 @@
 		) AS
 		create_time
 	</sql>
-	<delete id="deleteByLpCode" parameterType="list">
+	<delete id="deleteByLpCode" parameterType="cn.com.ddhj.dto.user.TUserLpVisitDto">
 		delete from
 		t_user_lp_visit
 		where lp_code in
 		(
-		<foreach collection="list" item="item" index="index"
+		<foreach collection="codes" item="item" index="index"
 			separator=",">
 			#{item,jdbcType=VARCHAR}
 		</foreach>
 		)
+		AND user_code = #{userCode,jdbcType=VARCHAR}
 	</delete>
 	<delete id="deleteByUserCode" parameterType="java.lang.String">
 		delete from
@@ -47,7 +48,19 @@
 	<select id="findLpCodeAll" parameterType="cn.com.ddhj.dto.user.TUserLpVisitDto"
 		resultType="java.lang.String">
 		select lp_code from
-		t_user_lp_follow where user_code =
+		t_user_lp_visit where user_code =
 		#{userCode,jdbcType=VARCHAR}
+	</select>
+	<!-- 查询浏览记录是否已存在 2016-10-11 zhy -->
+	<select id="findVisitIsExists" parameterType="cn.com.ddhj.model.user.TUserLpFollow"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_user_lp_visit
+		<where>
+			user_code = #{userCode,jdbcType=VARCHAR}
+			AND lp_code =
+			#{lpCode,jdbcType=VARCHAR}
+		</where>
 	</select>
 </mapper>

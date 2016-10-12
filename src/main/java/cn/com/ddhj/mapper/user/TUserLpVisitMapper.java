@@ -25,7 +25,7 @@ public interface TUserLpVisitMapper extends BaseMapper<TUserLpVisit, TUserLpVisi
 	 * @param list
 	 * @return
 	 */
-	int deleteByLpCode(List<String> list);
+	int deleteByLpCode(TUserLpVisitDto dto);
 
 	/**
 	 * 
@@ -50,4 +50,16 @@ public interface TUserLpVisitMapper extends BaseMapper<TUserLpVisit, TUserLpVisi
 	 * @return
 	 */
 	List<String> findLpCodeAll(String userCode);
+
+	/**
+	 * 
+	 * 方法: findVisitIsExists <br>
+	 * 描述: 查询浏览记录是否已存在 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月11日 下午11:16:53
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	TUserLpVisit findVisitIsExists(TUserLpVisit entity);
 }
