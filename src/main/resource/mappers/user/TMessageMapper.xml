@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.user.TMessageMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.user.TMessage">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="type_name" property="typeName" jdbcType="VARCHAR" />
+		<result column="type_code" property="typeCode" jdbcType="VARCHAR" />
+		<result column="is_read" property="isRead" jdbcType="INTEGER" />
+		<result column="received_user" property="receivedUser"
+			jdbcType="VARCHAR" />
+		<result column="outer_code" property="outerCode" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="content" property="content" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, code, type_code, is_read,
+		received_user,outer_code,
+		create_user,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
+		update_time,content
+	</sql>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_message
+		where `code` = #{code,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByCode" parameterType="java.lang.Integer">
+		delete from t_message
+		where `code` = #{code,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.user.TMessage">
+		insert into t_message
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			`code`,
+			<if test="typeCode != null">
+				type_code,
+			</if>
+			<if test="isRead != null">
+				is_read,
+			</if>
+			received_user,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			content,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			<if test="typeCode != null">
+				#{typeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="isRead != null">
+				#{isRead,jdbcType=INTEGER},
+			</if>
+			#{receivedUser,jdbcType=VARCHAR},
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{content,jdbcType=LONGVARCHAR},
+		</trim>
+	</insert>
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.user.TMessage">
+		update t_message
+		<set>
+			<if test="typeCode != null">
+				type_code = #{typeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="isRead != null">
+				is_read = #{isRead,jdbcType=INTEGER},
+			</if>
+			<if test="receivedUser != null">
+				received_user = #{receivedUser,jdbcType=VARCHAR},
+			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time =
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			<if test="content != null">
+				content = #{content,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where `code` = #{code,jdbcType=VARCHAR}
+	</update>
+	<!-- 查询消息列表 -->
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.user.TMessageDto"
+		resultMap="BaseResultMap">
+		SELECT
+		m.`code`,
+		m.content,
+		DATE_FORMAT(
+		m.create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		m.is_read,
+		c.`code` as
+		type_code,
+		c.`name` as
+		type_name,
+		outer_code
+		FROM
+		t_message AS m
+		LEFT JOIN
+		sys_define_code AS c ON
+		m.type_code = c.`code`
+		<where>
+			m.received_user = #{receivedUser,jdbcType=VARCHAR}
+			<if test="isRead != null">
+				and m.is_read = #{isRead,jdbcType=INTEGER}
+			</if>
+		</where>
+		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="findEntityAllCount" parameterType="cn.com.ddhj.dto.user.TMessageDto"
+		resultType="java.lang.Integer">
+		select
+		count(1)
+		from t_message AS m LEFT JOIN sys_define_code
+		AS c ON
+		m.type_code =
+		c.`code`
+		<where>
+			m.received_user = #{receivedUser,jdbcType=VARCHAR}
+			<if test="isRead != null">
+				and m.is_read = #{isRead,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+</mapper>

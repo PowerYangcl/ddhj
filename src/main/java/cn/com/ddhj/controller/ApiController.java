@@ -21,6 +21,7 @@ import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
+import cn.com.ddhj.dto.user.TMessageDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
@@ -33,16 +34,21 @@ import cn.com.ddhj.result.lp.TLpCommentTopData;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
+import cn.com.ddhj.result.order.OrderTotal;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.result.tuser.FollowResult;
 import cn.com.ddhj.result.tuser.LoginResult;
+import cn.com.ddhj.result.tuser.MessageData;
+import cn.com.ddhj.result.tuser.MessageSelResult;
+import cn.com.ddhj.result.tuser.MessageTotal;
 import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.result.tuser.VisitResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
+import cn.com.ddhj.service.user.ITMessageService;
 import cn.com.ddhj.service.user.ITUserLpFollowService;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.service.user.ITUserService;
@@ -69,6 +75,8 @@ public class ApiController {
 	private ITUserLpFollowService ufService;
 	@Autowired
 	private ITUserLpVisitService uvService;
+	@Autowired
+	private ITMessageService messageService;
 
 	@RequestMapping("api")
 	@ResponseBody
@@ -151,7 +159,7 @@ public class ApiController {
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			String radius = obj.getString("radius");
-			JSONObject result_ = estateEnvService.apiEnvScore(position, city , radius);
+			JSONObject result_ = estateEnvService.apiEnvScore(position, city, radius);
 			long end = System.currentTimeMillis();
 			System.out.println("1032号接口总共耗时：" + (end - start) + " 毫秒");
 			return result_;
@@ -162,7 +170,7 @@ public class ApiController {
 			String page = obj.getString("page");
 			String radius = obj.getString("radius");
 			String count = obj.getString("count");
-			JSONObject result_ = estateEnvService.apiEstateList(position, city, page, count , radius);
+			JSONObject result_ = estateEnvService.apiEstateList(position, city, page, count, radius);
 			long end = System.currentTimeMillis();
 			System.out.println("1033号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;
@@ -182,7 +190,7 @@ public class ApiController {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_data".equals(api.getApiTarget())) {
 			TOrderDto dto = obj.toJavaObject(TOrderDto.class);
-			TOrderResult result = orderService.findEntityToPage(dto, request);
+			TOrderResult result = orderService.findEntityToPage(dto, api.getUserToken(), request);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_edit".equals(api.getApiTarget())) {
 			TOrder entity = obj.toJavaObject(TOrder.class);
@@ -190,6 +198,12 @@ public class ApiController {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_affirm".equals(api.getApiTarget())) {
 			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"));
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 订单数量
+		else if ("order_total".equals(api.getApiTarget())) {
+			Integer status = obj.getInteger("status");
+			OrderTotal result = orderService.getOrderTotal(status, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 楼盘评价
@@ -244,6 +258,24 @@ public class ApiController {
 		else if ("lp_visit_data".equals(api.getApiTarget())) {
 			TUserLpVisitDto dto = obj.toJavaObject(TUserLpVisitDto.class);
 			VisitResult result = uvService.findVisitLpData(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 消息数量
+		else if ("message_total".equals(api.getApiTarget())) {
+			Integer isRead = obj.getInteger("is_read");
+			MessageTotal result = messageService.findEntityTotal(isRead, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 消息列表
+		else if ("message_data".equals(api.getApiTarget())) {
+			TMessageDto dto = obj.toJavaObject(TMessageDto.class);
+			MessageData result = messageService.findEntityToPage(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 消息详情
+		else if ("message_sel".equals(api.getApiTarget())) {
+			String code = obj.getString("code");
+			MessageSelResult result = messageService.selectByCode(code, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();

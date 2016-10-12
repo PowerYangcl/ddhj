@@ -26,6 +26,7 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
+import cn.com.ddhj.result.order.OrderTotal;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.impl.orderpay.OrderPayProcess;
@@ -52,29 +53,42 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	private TReportMapper reportMapper;
 
 	@Override
-	public TOrderResult findEntityToPage(TOrderDto dto, HttpServletRequest request) {
+	public TOrderResult findEntityToPage(TOrderDto dto, String userToken, HttpServletRequest request) {
 		TOrderResult result = new TOrderResult();
-		dto.setStart(dto.getPageIndex() * dto.getPageSize());
-		List<TOrder> list = mapper.findEntityAll(dto);
-		int total = mapper.findEntityAllCount(dto);
-		if (list != null && list.size() > 0) {
-			if (request != null) {
-				String path = request.getContextPath();
-				String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-						+ path + "/";
-				for (int i = 0; i < list.size(); i++) {
-					TOrder order = list.get(i);
-					order.setPath(basePath + order.getPath());
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if (login != null) {
+			TUser user = userMapper.findTUserByUuid(login.getUserToken());
+			if (user != null) {
+				dto.setStart(dto.getPageIndex() * dto.getPageSize());
+				dto.setCreateUser(user.getUserCode());
+				List<TOrder> list = mapper.findEntityAll(dto);
+				int total = mapper.findEntityAllCount(dto);
+				if (list != null && list.size() > 0) {
+					if (request != null) {
+						String path = request.getContextPath();
+						String basePath = request.getScheme() + "://" + request.getServerName() + ":"
+								+ request.getServerPort() + path + "/";
+						for (int i = 0; i < list.size(); i++) {
+							TOrder order = list.get(i);
+							order.setPath(basePath + order.getPath());
+						}
+					}
+					result.setResultCode(0);
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("获取数据为空");
+					list = new ArrayList<TOrder>();
 				}
+				result.setRepList(list);
+				result.setRepCount(total);
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("用户不存在");
 			}
-			result.setResultCode(0);
 		} else {
 			result.setResultCode(-1);
-			result.setResultMessage("获取数据为空");
-			list = new ArrayList<TOrder>();
+			result.setResultMessage("用户未登录");
 		}
-		result.setRepList(list);
-		result.setRepCount(total);
 		return result;
 	}
 
@@ -92,7 +106,6 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	/**
 	 * 
 	 * 方法: insertSelective <br>
-	 * 描述: TODO
 	 * 
 	 * @param entity
 	 * @param userToken
@@ -132,7 +145,6 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	/**
 	 * 
 	 * 方法: updateByCode <br>
-	 * 描述: TODO
 	 * 
 	 * @param entity
 	 * @param userToken
@@ -166,7 +178,6 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	/**
 	 * 
 	 * 方法: orderAffirm <br>
-	 * 描述: TODO
 	 * 
 	 * @param codes
 	 * @return
@@ -247,6 +258,39 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			payResult.setErrorMsg(errorMsg);
 			return payResult;
 		}
+	}
+
+	/**
+	 * 
+	 * 方法: getOrderTotal <br>
+	 * 
+	 * @param status
+	 * @param userToken
+	 * @return
+	 * @see cn.com.ddhj.service.ITOrderService#getOrderTotal(java.lang.Integer,
+	 *      java.lang.String)
+	 */
+	@Override
+	public OrderTotal getOrderTotal(Integer status, String userToken) {
+		OrderTotal result = new OrderTotal();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if (login != null) {
+			TUser user = userMapper.findTUserByUuid(login.getUserToken());
+			if (user != null) {
+				TOrderDto dto = new TOrderDto();
+				dto.setStatus(status);
+				dto.setCreateUser(user.getUserCode());
+				int total = mapper.findEntityAllCount(dto);
+				result.setTotal(total);
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("用户不存在");
+			}
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("用户未登录");
+		}
+		return null;
 	}
 
 }

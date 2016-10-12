@@ -8,6 +8,7 @@ import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
+import cn.com.ddhj.result.order.OrderTotal;
 import cn.com.ddhj.result.order.TOrderResult;
 
 /**
@@ -52,10 +53,11 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @return
 	 * @see cn.com.ddhj.service.IBaseService#findEntityToPage(cn.com.ddhj.dto.BaseDto)
 	 */
-	TOrderResult findEntityToPage(TOrderDto dto, HttpServletRequest request);
-	
+	TOrderResult findEntityToPage(TOrderDto dto, String userToken, HttpServletRequest request);
+
 	/**
 	 * 按定单编号查询定单
+	 * 
 	 * @param orderCode
 	 * @return
 	 */
@@ -72,10 +74,24 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @return
 	 */
 	OrderAffirmResult orderAffirm(String codes);
-	
+
 	/**
 	 * 订单支付
+	 * 
 	 * @return
 	 */
 	OrderPayResult orderPay(String openID, String orderCode, String payType, String returnUrl);
+
+	/**
+	 * 
+	 * 方法: getOrderTotal <br>
+	 * 描述: 根据订单状态查询订单数量 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月12日 下午1:39:46
+	 * 
+	 * @param status
+	 * @param userToken
+	 * @return
+	 */
+	OrderTotal getOrderTotal(Integer status, String userToken);
 }
