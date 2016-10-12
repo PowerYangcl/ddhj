@@ -404,7 +404,18 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		TLandedProperty lp = lpMapper.selectByCode(lpCode);
 		if (lp != null) {
 			// 如果楼盘不为空
-			result.setLevelList(mapper.findReportByHousesCode(lpCode));
+			List<TReport> list = mapper.findReportByHousesCode(lpCode);
+			List<TReport> reports = new ArrayList<TReport>();
+			if (this.getLpCodes().contains(lpCode)) {
+				for (TReport r : list) {
+					if ("RL161006100001".equals(r.getLevelCode())) {
+						reports.add(r);
+					}
+				}
+			} else {
+				reports = mapper.findReportByHousesCode(lpCode);
+			}
+			result.setLevelList(reports);
 			result.setAddress(lp.getAddressFull());
 			result.setDetail(lp.getOverview());
 			result.setImage(lp.getImages());
