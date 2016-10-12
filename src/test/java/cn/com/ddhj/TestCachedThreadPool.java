@@ -11,35 +11,39 @@ import java.util.concurrent.Future;
   
 public class TestCachedThreadPool{   
 	
-	public static void main(String[] args) throws InterruptedException, ExecutionException{   
+	public static void main(String[] args){   
 		long start = System.currentTimeMillis();
-		
+			
 		ExecutorService executor = Executors.newCachedThreadPool();   
-  
-        Future<String> aqi = executor.submit(new AqiRunable());
-        Future<String> wea = executor.submit(new WeatherRunnable());
-        Future<String> funk = executor.submit(new FunkRunnable());
-        Future<String> bitch = executor.submit(new BiterRunnable());
-        executor.shutdown();  
-        for(int i = 0 ; i < 10 ; i ++){
-        	System.out.println("i = " + i);
-        }
-        
-        System.out.println("\n\n等待程序处理完成... \n" ); 
-        
-        System.out.println(wea.get());  // 耗时 11 秒
-        System.out.println(bitch.get());  // 耗时 12 秒
-        System.out.println(funk.get());  // 耗时 14 秒
-        System.out.println(aqi.get());  // 耗时 19 秒
-        long end = System.currentTimeMillis();
-        System.out.println("耗时：" + (end - start) + " 毫秒\n"); 
-        
-        
-        for(int k = 0 ; k < 10 ; k ++){
-        	System.out.println("k = " + k); 
-        }
-         
-    }   
+	  
+	    Future<String> aqi = executor.submit(new AqiRunable());
+	    Future<String> wea = executor.submit(new WeatherRunnable());
+	    Future<String> funk = executor.submit(new FunkRunnable());
+	    Future<String> biter = executor.submit(new BiterRunnable());
+	    executor.shutdown();  
+	    for(int i = 0 ; i < 5 ; i ++){
+	    	System.out.println("i = " + i);
+	    }
+	        
+	    System.out.println("\n\n等待程序处理完成... \n" ); 
+	    
+	    try {
+			System.out.println(wea.get()); 	// 耗时 11 秒
+			System.out.println(biter.get());   // 耗时 12 秒
+		    System.out.println(aqi.get());  		// 耗时 19 秒
+		    System.out.println(funk.get());    // 耗时 14 秒
+		} catch (InterruptedException | ExecutionException e) {
+		} 
+	    
+	    long end = System.currentTimeMillis();
+	    System.out.println("耗时：" + (end - start) + " 毫秒\n"); 
+	    
+	    
+	    for(int k = 0 ; k < 5 ; k ++){
+	    	System.out.println("k = " + k); 
+	    }
+	     
+	}   
 	
 }   
   
@@ -78,7 +82,7 @@ class BiterRunnable implements Callable<String>{
     	String tname = Thread.currentThread().getName();
     	System.out.println("BiterRunnable 线程call()方法被调用 - " + tname);   
     	Thread.sleep(12000); 
-        return "BitchRunnable 线程返回结果 - 处理 12 秒";
+        return "BiterRunnable 线程返回结果 - 处理 12 秒";
     }   
 } 
 
