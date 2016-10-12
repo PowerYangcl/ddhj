@@ -1,5 +1,6 @@
 package cn.com.ddhj;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,39 +64,39 @@ public class CityAirTest extends BaseTest {
 		System.out.println(mapper.findLandedPropertyAll(dto));
 	}
 	
+	public static void main(String[] args) {
+		baiduEstateList();
+	}
 	
-	@Test
-	public void baiduEstateList(){
-//		http://api.map.baidu.com/place/v2/search?q=饭店&region=北京&output=json&ak={您的密钥}
+	public static void baiduEstateList(){
 		String ak= "mwtIbCVKxq5l7TMLCpNrCnoOxGnWlotK";
 		String url = "http://api.map.baidu.com/place/v2/search";
-		JSONObject result = new JSONObject();
 		
-		Map<String, String> param = new HashMap<String, String>();
-		param.put("ak", ak);					 
-		param.put("q", "楼盘");					 
-		param.put("region", "北京");				 
-//		param.put("page", String.valueOf(page)); 				 
-		param.put("output", "json");		 
-		 
-		String responseJson = PureNetUtil.get(url , param);
-		if (responseJson != null && !"".equals(responseJson)) {
-//			EstateResult cr = JSON.parseObject(responseJson, EstateResult.class); 
-//			if(cr.getResultcode().equals("200")){
-//				result.put("code" , "1");
-//				result.put("msg" , "SUCCESS");
-//				result.put("list" , cr.getResult()); 
-//			}else{
-//				result.put("code" , "0");
-//				result.put("msg" , cr.getReason() + "|请联系后台开发人员调试");
-//			}
+		List<Estate> elist = new ArrayList<Estate>();
+		for(int i = 0 ; i < 30 ; i ++){
+			Map<String, String> param = new HashMap<String, String>();
+			param.put("ak", ak);					 
+			param.put("q", "楼盘,小区,住宅,商品楼");					 
+			param.put("region", "北京");				  		 
+			param.put("output", "json");		 
+			param.put("page_size", "20");
+			param.put("page_num", String.valueOf(i)); 
+			String responseJson = PureNetUtil.get(url , param);
+			JSONObject response = JSONObject.parseObject(responseJson);
 			
-		}else{
-			result.put("code" , "0");
-			result.put("msg" , "聚合接口响应数据为空");
+			if(!response.getString("total").equals("400")){
+				break;
+			}
+			
+			List<Estate> arr = JSONArray.parseArray(response.getString("results"), Estate.class);
+			elist.addAll(arr);
+			
+			System.out.println("i = " + i +"    " +responseJson); 
 		}
 		
-		System.out.println(responseJson); 
+		System.out.println(elist.size()); 
+		System.out.println(elist.size()); 
+		
 	}
 	
 	
@@ -103,8 +104,76 @@ public class CityAirTest extends BaseTest {
 }
 
 
+class Estate{
+    private String name;
+    private Location location;
+    private String address;
+    private String streetId;
+    private String telephone;
+    private int detail;
+    private String uid;
+    
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Location getLocation() {
+		return location;
+	}
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getStreetId() {
+		return streetId;
+	}
+	public void setStreetId(String streetId) {
+		this.streetId = streetId;
+	}
+	public String getTelephone() {
+		return telephone;
+	}
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
+	public int getDetail() {
+		return detail;
+	}
+	public void setDetail(int detail) {
+		this.detail = detail;
+	}
+	public String getUid() {
+		return uid;
+	}
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+}
 
-
+class Location {
+    private double lat;
+    private double lng;
+    
+    public void setLat(double lat) {
+         this.lat = lat;
+     }
+     public double getLat() {
+         return lat;
+     }
+    public void setLng(double lng) {
+         this.lng = lng;
+     }
+     public double getLng() {
+         return lng;
+     }
+}
 
 
 
