@@ -10,7 +10,6 @@ import cn.com.ddhj.service.ILongitudeLatitudeService;
  * @description: 但启动一个线程去调用位置信息 
  * 
  * @author Yangcl
- * @home https://github.com/PowerYangcl
  * @date 2016年10月10日 下午3:11:52 
  * @version 1.0.0
  */
