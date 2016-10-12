@@ -1,10 +1,11 @@
 package cn.com.ddhj.service.report;
 
+import java.util.List;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.report.TReport;
-import cn.com.ddhj.result.report.PDFReportResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.IBaseService;
@@ -17,18 +18,6 @@ import cn.com.ddhj.service.IBaseService;
  * 时间: 2016年10月2日 下午11:38:09
  */
 public interface ITReportService extends IBaseService<TReport, BaseDto> {
-
-	/**
-	 * 
-	 * 方法: createPDF <br>
-	 * 描述: 创建pdf报告 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月3日 下午1:56:13
-	 * 
-	 * @param array
-	 * @return
-	 */
-	PDFReportResult createPDF(String code, String housesCode, String path);
 
 	/**
 	 * 
@@ -78,4 +67,27 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @return
 	 */
 	TReportSelResult getTReport(String code);
+
+	/**
+	 * 
+	 * 方法: insertReportData <br>
+	 * 描述: 批量生成环境报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月9日 下午6:48:59
+	 * 
+	 * @param list
+	 * @return
+	 */
+	BaseResult insertReportData(List<TReport> list);
+	
+	/**
+	 * 
+	 * 方法: getTReportByLp <br>
+	 * 描述: 根据楼盘编码查询环境报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月12日 下午5:32:44
+	 * @param lpCode
+	 * @return
+	 */
+	TReportSelResult getTReportByLp(String lpCode);
 }

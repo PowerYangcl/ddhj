@@ -1,7 +1,8 @@
-package cn.com.ddhj.mapper;
+package cn.com.ddhj.mapper.user;
 
-import cn.com.ddhj.dto.TUserDto;
-import cn.com.ddhj.model.TUser;
+import cn.com.ddhj.dto.user.TUserDto;
+import cn.com.ddhj.mapper.BaseMapper;
+import cn.com.ddhj.model.user.TUser;
 
 /**
  * 
@@ -47,4 +48,16 @@ public interface TUserMapper extends BaseMapper<TUser, TUserDto> {
 	 * @return
 	 */
 	TUser findTUserByUuid(String uuid);
+
+	/**
+	 * 
+	 * 方法: findUserByPhone <br>
+	 * 描述: 根据手机号查询用户 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月11日 下午2:14:24
+	 * 
+	 * @param phone
+	 * @return
+	 */
+	TUser findUserByPhone(String phone);
 }

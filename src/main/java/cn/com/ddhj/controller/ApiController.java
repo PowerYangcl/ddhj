@@ -19,22 +19,43 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
-import cn.com.ddhj.dto.TUserDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.dto.user.TMessageDto;
+import cn.com.ddhj.dto.user.TUserDto;
+import cn.com.ddhj.dto.user.TUserLpFollowDto;
+import cn.com.ddhj.dto.user.TUserLpVisitDto;
+import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
-import cn.com.ddhj.model.TUser;
+import cn.com.ddhj.model.TPayment;
+import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.result.CityResult;
+import cn.com.ddhj.result.lp.TLpCommentData;
+import cn.com.ddhj.result.lp.TLpCommentTopData;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
+import cn.com.ddhj.result.order.OrderTotal;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
+import cn.com.ddhj.result.tuser.FollowResult;
 import cn.com.ddhj.result.tuser.LoginResult;
+import cn.com.ddhj.result.tuser.MessageData;
+import cn.com.ddhj.result.tuser.MessageSelResult;
+import cn.com.ddhj.result.tuser.MessageTotal;
 import cn.com.ddhj.result.tuser.RegisterResult;
+import cn.com.ddhj.result.tuser.VisitResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
+import cn.com.ddhj.service.ITCityService;
+import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
-import cn.com.ddhj.service.ITUserService;
+import cn.com.ddhj.service.impl.TPaymentServiceImpl;
+import cn.com.ddhj.service.user.ITMessageService;
+import cn.com.ddhj.service.user.ITUserLpFollowService;
+import cn.com.ddhj.service.user.ITUserLpVisitService;
+import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
 import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
 import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
@@ -52,6 +73,18 @@ public class ApiController {
 	private IEstateEnvironmentService estateEnvService;
 	@Autowired
 	private ITOrderService orderService;
+	@Autowired
+	private ITLpCommentService lpcService;
+	@Autowired
+	private ITUserLpFollowService ufService;
+	@Autowired
+	private ITUserLpVisitService uvService;
+	@Autowired
+	private ITMessageService messageService;
+	@Autowired
+	private ITCityService cityService;
+	@Autowired
+	private TPaymentServiceImpl paymentService;
 
 	@RequestMapping("api")
 	@ResponseBody
@@ -79,6 +112,47 @@ public class ApiController {
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
+		// 修改密码
+		else if ("user_edit_pass".equals(api.getApiTarget())) {
+			String password = obj.getString("new_password");
+			TUser entity = new TUser();
+			entity.setPassword(password);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 修改头像
+		else if ("user_edit_pic".equals(api.getApiTarget())) {
+			String headPic = obj.getString("headPic");
+			TUser entity = new TUser();
+			entity.setHeadPic(headPic);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 修改邮箱
+		else if ("user_edit_email".equals(api.getApiTarget())) {
+			String eMail = obj.getString("email");
+			TUser entity = new TUser();
+			entity.seteMail(eMail);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 修改昵称
+		else if ("user_edit_nickname".equals(api.getApiTarget())) {
+			String nickName = obj.getString("nick_name");
+			TUser entity = new TUser();
+			entity.setNickName(nickName);
+			BaseResult result = userService.updateByCode(entity, api.getApiTarget(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 手机验证码登录
+		else if ("user_login_security".equals(api.getApiTarget())) {
+			TUser entity = obj.toJavaObject(TUser.class);
+			RegisterResult result = userService.loginBySecurityCode(entity);
+			if (result.getResultCode() == 0) {
+				session.setAttribute(result.getUserToken(), entity);
+			}
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		// 环境报告
 		else if ("report_data".equals(api.getApiTarget())) {
 			TReportDto dto = obj.toJavaObject(TReportDto.class);
@@ -88,19 +162,40 @@ public class ApiController {
 			String code = obj.getString("code");
 			TReportSelResult result = reportService.getTReport(code);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//根据楼盘编码查询楼盘环境报告
+		else if("report_lp".equals(api.getApiTarget())){
+			String lpCode = obj.getString("lpCode");
+			TReportSelResult result = reportService.getTReportByLp(lpCode);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("1032".equals(api.getApiTarget())) { // 环境综合评分接口
+			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
-			return estateEnvService.apiEnvScore(position, city);
+			String radius = obj.getString("radius");
+			JSONObject result_ = estateEnvService.apiEnvScore(position, city, radius);
+			long end = System.currentTimeMillis();
+			System.out.println("1032号接口总共耗时：" + (end - start) + " 毫秒");
+			return result_;
 		} else if ("1033".equals(api.getApiTarget())) { // 楼盘列表|检索该经纬度附近10Km内的楼盘信息
+			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			String page = obj.getString("page");
-			return estateEnvService.apiEstateList(position, city, page);
-		}else if ("1025".equals(api.getApiTarget())) { // 地区环境接口 
+			String radius = obj.getString("radius");
+			String count = obj.getString("count");
+			JSONObject result_ = estateEnvService.apiEstateList(position, city, page, count, radius);
+			long end = System.currentTimeMillis();
+			System.out.println("1033号接口总共耗时：" + +(end - start) + " 毫秒");
+			return result_;
+		} else if ("1025".equals(api.getApiTarget())) { // 地区环境接口
+			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
-			return estateEnvService.apiAreaEnv(position, city); 
+			JSONObject result_ = estateEnvService.apiAreaEnv(position, city);
+			long end = System.currentTimeMillis();
+			System.out.println("1025号接口总共耗时：" + +(end - start) + " 毫秒");
+			return result_;
 		}
 		// 订单相关
 		else if ("order_add".equals(api.getApiTarget())) {
@@ -109,7 +204,7 @@ public class ApiController {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_data".equals(api.getApiTarget())) {
 			TOrderDto dto = obj.toJavaObject(TOrderDto.class);
-			TOrderResult result = orderService.findEntityToPage(dto, request);
+			TOrderResult result = orderService.findEntityToPage(dto, api.getUserToken(), request);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_edit".equals(api.getApiTarget())) {
 			TOrder entity = obj.toJavaObject(TOrder.class);
@@ -118,6 +213,89 @@ public class ApiController {
 		} else if ("order_affirm".equals(api.getApiTarget())) {
 			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 订单数量
+		else if ("order_total".equals(api.getApiTarget())) {
+			Integer status = obj.getInteger("status");
+			OrderTotal result = orderService.getOrderTotal(status, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 楼盘评价
+		else if ("lpc_add".equals(api.getApiTarget())) {
+			TLpComment lpc = obj.toJavaObject(TLpComment.class);
+			BaseResult result = lpcService.insertSelective(lpc, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 楼盘最新5条评价
+		else if ("lpc_top".equals(api.getApiTarget())) {
+			TLpCommentDto dto = obj.toJavaObject(TLpCommentDto.class);
+			TLpCommentTopData result = lpcService.findDataTop5(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 楼盘评价列表
+		else if ("lpc_data".equals(api.getApiTarget())) {
+			TLpCommentDto dto = obj.toJavaObject(TLpCommentDto.class);
+			TLpCommentData result = lpcService.findData(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 添加关注楼盘
+		else if ("lp_follow_add".equals(api.getApiTarget())) {
+			String code = obj.getString("lpCode");
+			BaseResult result = ufService.insert(code, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 删除关注楼盘
+		else if ("lp_follow_del".equals(api.getApiTarget())) {
+			TUserLpFollowDto dto = obj.toJavaObject(TUserLpFollowDto.class);
+			BaseResult result = ufService.delFollow(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 获取关注楼盘列表
+		else if ("lp_follow_data".equals(api.getApiTarget())) {
+			TUserLpFollowDto dto = obj.toJavaObject(TUserLpFollowDto.class);
+			FollowResult result = ufService.findFollowLpData(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 添加楼盘浏览记录
+		else if ("lp_visit_add".equals(api.getApiTarget())) {
+			String code = obj.getString("lpCode");
+			BaseResult result = uvService.insert(code, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 删除楼盘浏览记录
+		else if ("lp_visit_del".equals(api.getApiTarget())) {
+			TUserLpVisitDto dto = obj.toJavaObject(TUserLpVisitDto.class);
+			BaseResult result = uvService.delVisit(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 获取楼盘浏览记录
+		else if ("lp_visit_data".equals(api.getApiTarget())) {
+			TUserLpVisitDto dto = obj.toJavaObject(TUserLpVisitDto.class);
+			VisitResult result = uvService.findVisitLpData(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 消息数量
+		else if ("message_total".equals(api.getApiTarget())) {
+			Integer isRead = obj.getInteger("is_read");
+			MessageTotal result = messageService.findEntityTotal(isRead, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 消息列表
+		else if ("message_data".equals(api.getApiTarget())) {
+			TMessageDto dto = obj.toJavaObject(TMessageDto.class);
+			MessageData result = messageService.findEntityToPage(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 消息详情
+		else if ("message_sel".equals(api.getApiTarget())) {
+			String code = obj.getString("code");
+			MessageSelResult result = messageService.selectByCode(code, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 热门城市列表
+		else if ("hot_city".equals(api.getApiTarget())) {
+			CityResult result = cityService.findHotCity();
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(-1);
@@ -125,48 +303,79 @@ public class ApiController {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 	}
-	
+
 	@RequestMapping("webPay/{orderCode}/{payType}")
 	public String webPay(@PathVariable("orderCode") String orderCode, @PathVariable("payType") String payType,
 			HttpServletRequest request, HttpServletResponse response) {
 		String openID = request.getParameter("openID");
 		String returnUrl = request.getParameter("returnUrl");
 		OrderPayResult result = orderService.orderPay(openID, orderCode, payType, returnUrl);
-		if(StringUtils.isEmpty(result.getErrorMsg())) {
+		if (StringUtils.isEmpty(result.getErrorMsg())) {
 			return result.getRedirectUrl();
 		} else {
 			return JSONObject.toJSONString(result);
 		}
 	}
-	
+
 	@RequestMapping("payNotify")
 	@ResponseBody
 	public String payNotify(HttpServletRequest request, HttpServletResponse response) {
 		Enumeration<String> names = request.getParameterNames();
-		Map<String,String> notifyParam = new HashMap<String, String>();
+		Map<String, String> notifyParam = new HashMap<String, String>();
 		String name;
-		while(names.hasMoreElements()){
+		while (names.hasMoreElements()) {
 			name = names.nextElement();
 			notifyParam.put(name, StringUtils.trimToEmpty(request.getParameter(name)));
 		}
-		
+
 		PayGateNotifyPayProcess.PaymentResult result = PayServiceSupport.payGateNotify(notifyParam);
-		
-		if(result.getResultCode() == PaymentResult.SUCCESS) {
+
+		TPayment entity = new TPayment();
+		if (result.getResultCode() == PaymentResult.SUCCESS) {
 			TOrder order = new TOrder();
 			order.setCode(result.notify.bigOrderCode);
 			order.setStatus(1);
 			order.setUpdateUser("paygate");
 			order.setUpdateTime(DateUtil.getSysDateTime());
 			orderService.updateByCode(order);
+
+			// TODO 支付成功则插入日志记录：paymentService TPayment
+			entity.setOrderCode(order.getCode()); 
+			
+			
+		} else {
+			// TODO 支付失败则插入日志记录：paymentService
+
 		}
-		
+		paymentService.insertSelective(entity, "userToken"); 
+
 		StringBuilder build = new StringBuilder();
-		build.append("<result>1</result><reURL>"+result.reURL+"</reURL>");
-		if(result.getResultCode() != PaymentResult.SUCCESS){
+		build.append("<result>1</result><reURL>" + result.reURL + "</reURL>");
+		if (result.getResultCode() != PaymentResult.SUCCESS) {
 			build.append("<msg>").append(result.getResultMessage()).append("</msg>");
 		}
 		return build.toString();
 	}
-	
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

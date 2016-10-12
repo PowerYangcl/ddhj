@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.model.TLandedProperty;
@@ -28,8 +28,8 @@ import cn.com.ddhj.util.PureNetUtil;
  * 时间: 2016年10月3日 下午5:31:35
  */
 @Service
-public class TLandedPropertyServiceImpl extends BaseServiceImpl<TLandedProperty, TLandedPropertyMapper, BaseDto>
-		implements ITLandedPropertyService {
+public class TLandedPropertyServiceImpl extends
+		BaseServiceImpl<TLandedProperty, TLandedPropertyMapper, TLandedPropertyDto> implements ITLandedPropertyService {
 
 	@Autowired
 	private TLandedPropertyMapper mapper;
@@ -42,14 +42,14 @@ public class TLandedPropertyServiceImpl extends BaseServiceImpl<TLandedProperty,
 	 * @see cn.com.ddhj.service.ITLandedPropertyService#insertDataFromAPI()
 	 */
 	@Override
-	public void insertDataFromAPI() {
+	public void insertDataFromAPI(String cityName) {
 		int page = 1;
 		boolean flag = true;
 		while (flag) {
 			String key = "f74ac8fbf0d992b02420a03387ed8341";
 			String url = "http://v.juhe.cn/estate/query";
 			Map<String, String> param = new HashMap<String, String>();
-			param.put("city", "北京");
+			param.put("city", cityName);
 			param.put("q", "");
 			param.put("key", key);
 			param.put("page", String.valueOf(page));

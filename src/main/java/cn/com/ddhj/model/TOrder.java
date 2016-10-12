@@ -33,9 +33,29 @@ public class TOrder extends BaseModel {
 
 	private String path;
 
+	private String housesCode;
+
+	private String levelCode;
+
 	private String levelName;
 
 	private String address;
+
+	public String getHousesCode() {
+		return housesCode;
+	}
+
+	public void setHousesCode(String housesCode) {
+		this.housesCode = housesCode;
+	}
+
+	public String getLevelCode() {
+		return levelCode;
+	}
+
+	public void setLevelCode(String levelCode) {
+		this.levelCode = levelCode;
+	}
 
 	public String getDetail() {
 		return detail;

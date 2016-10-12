@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TLpCommentMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TLpComment">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="lp_code" property="lpCode" jdbcType="VARCHAR" />
+		<result column="level" property="level" jdbcType="INTEGER" />
+		<result column="order_code" property="orderCode" jdbcType="VARCHAR" />
+		<result column="order_time" property="orderTime" jdbcType="VARCHAR" />
+		<result column="r_code" property="rCode" jdbcType="VARCHAR" />
+		<result column="rl_code" property="rlCode" jdbcType="VARCHAR" />
+		<result column="rl_name" property="rlName" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="content" property="content" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, code, lp_code,
+		level,order_code,r_code,rl_code,rl_name,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		order_time,content,
+		create_user,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
+		update_time
+	</sql>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_lp_comment
+		where `code` = #{code,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from t_lp_comment
+		where `code` = #{code,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TLpComment">
+		insert into t_lp_comment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			code,
+			lp_code,
+			<if test="level != null">
+				level,
+			</if>
+			<if test="orderCode != null">
+				order_code,
+			</if>
+			<if test="orderTime != null">
+				order_time,
+			</if>
+			<if test="rCode != null">
+				r_code,
+			</if>
+			<if test="rlCode != null">
+				rl_code,
+			</if>
+			<if test="rlName != null">
+				rl_name,
+			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			content
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			#{lpCode,jdbcType=VARCHAR},
+			<if test="level != null">
+				#{level,jdbcType=INTEGER},
+			</if>
+			<if test="orderCode != null">
+				#{orderCode,jdbcType=VARCHAR},
+			</if>
+			<if test="orderTime != null">
+				STR_TO_DATE(
+				#{orderTime,jdbcType=VARCHAR},'%Y-%m-%d
+				%H:%i:%s'),
+			</if>
+			<if test="rCode != null">
+				#{rCode,jdbcType=VARCHAR},
+			</if>
+			<if test="rlCode != null">
+				#{rlCode,jdbcType=VARCHAR},
+			</if>
+			<if test="rlName != null">
+				#{rlName,jdbcType=VARCHAR},
+			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{content,jdbcType=LONGVARCHAR}
+		</trim>
+	</insert>
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TLpComment">
+		update t_lp_comment
+		<set>
+			<if test="level != null">
+				level = #{level,jdbcType=INTEGER},
+			</if>
+			<if test="orderCode != null">
+				order_code = #{orderCode,jdbcType=VARCHAR},
+			</if>
+			<if test="orderTime != null">
+				order_time = STR_TO_DATE(
+				#{orderTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			</if>
+			content = #{content,jdbcType=LONGVARCHAR},
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+		</set>
+		where `code` = #{code,jdbcType=VARCHAR}
+	</update>
+	<select id="findDataTop5" resultMap="BaseResultMap"
+		parameterType="cn.com.ddhj.dto.TLpCommentDto">
+		SELECT
+		u.phone AS phone,
+		u.nick_name AS nick_name,
+		u.head_pic AS
+		head_pic,
+		c.`level` AS `level`,
+		c.content AS content,
+		c.order_code AS
+		order_code,
+		c.order_time
+		AS order_time,
+		c.r_code AS r_code,
+		c.rl_code AS
+		rl_code,
+		rl.`name` AS
+		rl_name
+		FROM
+		t_lp_comment AS c
+		LEFT JOIN t_user AS u
+		ON c.create_user =
+		u.user_code
+		LEFT JOIN t_report_level AS rl ON
+		c.rl_code = rl.`code`
+		<where>
+			c.`lp_code` = #{lpCode,jdbcType=VARCHAR}
+			<if test="level != null">
+				and c.`level` = #{level,jdbcType=INTEGER}
+			</if>
+		</where>
+		ORDER BY
+		c.create_time DESC
+		LIMIT 5
+	</select>
+	<select id="findEntityAll" resultMap="BaseResultMap"
+		parameterType="cn.com.ddhj.dto.TLpCommentDto">
+		SELECT
+		u.phone AS phone,
+		u.nick_name AS nick_name,
+		u.head_pic AS
+		head_pic,
+		c.`level` AS `level`,
+		c.content AS content,
+		c.order_code AS
+		order_code,
+		c.order_time
+		AS order_time,
+		c.r_code AS r_code,
+		c.rl_code AS
+		rl_code,
+		rl.`name` AS
+		rl_name
+		FROM
+		t_lp_comment AS c
+		LEFT JOIN t_user AS u
+		ON c.create_user =
+		u.user_code
+		LEFT JOIN t_report_level AS rl ON
+		c.rl_code = rl.`code`
+		<where>
+			c.`lp_code` = #{lpCode,jdbcType=VARCHAR}
+			<if test="level != null">
+				and c.`level` = #{level,jdbcType=INTEGER}
+			</if>
+		</where>
+		ORDER BY
+		c.create_time DESC
+		limit
+		#{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="findEntityAllCount" resultType="java.lang.Integer">
+		SELECT count(1) FROM
+		t_lp_comment AS c
+		LEFT JOIN t_user AS u
+		ON
+		c.create_user =
+		u.user_code
+		LEFT JOIN t_report_level AS rl ON
+		c.rl_code =
+		rl.`code`
+		<where>
+			c.`lp_code` = #{lpCode,jdbcType=VARCHAR}
+			<if test="level != null">
+				and c.`level` = #{level,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+</mapper>

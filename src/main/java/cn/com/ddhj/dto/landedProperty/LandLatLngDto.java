@@ -10,8 +10,16 @@ public class LandLatLngDto {
 	private String maxLat;
 	private String maxLng;
 	private Integer page;
+	private Integer count ;
 	
 	
+	
+	public Integer getCount() {
+		return count;
+	}
+	public void setCount(Integer count) {
+		this.count = count;
+	}
 	public Integer getPage() {
 		return page;
 	}

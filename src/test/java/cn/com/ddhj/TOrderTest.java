@@ -1,6 +1,7 @@
 package cn.com.ddhj;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +43,7 @@ public class TOrderTest extends BaseTest {
 		TOrderDto dto = new TOrderDto();
 		dto.setPageIndex(0);
 		dto.setPageSize(10);
-		TOrderResult data = service.findEntityToPage(dto, null);
+		TOrderResult data = service.findEntityToPage(dto, "6a397b4cd42f4d62b3c5c43143d94714", null);
 		System.out.println(JSONObject.toJSON(data));
 
 	}
@@ -61,11 +62,10 @@ public class TOrderTest extends BaseTest {
 		System.out.println(JSONObject.toJSON(result));
 	}
 
+	@Test
 	public void payTest() {
-		double pay = 0;
-		for (int i = 0; i < 5; i++) {
-			pay += BigDecimal.TEN.doubleValue();
-		}
-		System.out.println(pay);
+		double goodPercent = BigDecimal.valueOf(12).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
+				.doubleValue();
+		System.out.println(goodPercent);
 	}
 }

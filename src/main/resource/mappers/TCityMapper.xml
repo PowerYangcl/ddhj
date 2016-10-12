@@ -132,4 +132,10 @@
 		</set>
 		where city_code = #{cityCode,jdbcType=VARCHAR}
 	</update>
+	<!-- 查询热门城市 2016-10-12 zhy -->
+	<select id="findHotCity" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_city where is_hot=1
+	</select>
 </mapper>

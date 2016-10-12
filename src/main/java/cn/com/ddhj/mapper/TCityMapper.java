@@ -50,4 +50,15 @@ public interface TCityMapper extends BaseMapper<TCity, TCityDto> {
 	 */
 	int updateByName(TCity city);
 
+	/**
+	 * 
+	 * 方法: findHotCity <br>
+	 * 描述: 查询所有热门城市 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月12日 下午1:52:19
+	 * 
+	 * @return
+	 */
+	List<TCity> findHotCity();
+
 }

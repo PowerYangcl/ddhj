@@ -329,33 +329,112 @@
 		</set>
 		where `code` = #{code,jdbcType=INTEGER}
 	</update>
-	
-	
+
+
 	<!-- 根据楼盘名称寻找楼盘在数据库里的编号 - Yangcl -->
-	<select id="findCodeByTitle" resultMap="BaseResultMap" parameterType="java.lang.String">
+	<select id="findCodeByTitle" parameterType="java.util.List"
+		resultMap="BaseResultMap">
 		select
-			*
-		from 
-			t_landed_property
-		where 
-			title = #{name}
+		*
+		from
+		t_landed_property
+		where
+		title in
+		<foreach item="item" index="index" collection="list" open="("
+			close=")" separator=",">
+			#{item}
+		</foreach>
 	</select>
-	
-	<resultMap id="ResultMap" type="cn.com.ddhj.result.estateInfo.EData"> </resultMap>
-	<select id="findLandedPropertyAll" parameterType="cn.com.ddhj.dto.landedProperty.LandLatLngDto" resultMap="ResultMap">
+
+
+
+	<resultMap id="ResultMap" type="cn.com.ddhj.result.estateInfo.EData">
+	</resultMap>
+	<select id="findLandedPropertyAll" parameterType="cn.com.ddhj.dto.landedProperty.LandLatLngDto"
+		resultMap="ResultMap">
 		SELECT
-			*
+		*
 		FROM
-			t_landed_property AS lp 
+		t_landed_property AS lp
 		<where>
-			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND #{maxLat,jdbcType=VARCHAR})
+			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND
+			#{maxLat,jdbcType=VARCHAR})
 			AND
-			(lp.lng BETWEEN #{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
+			(lp.lng BETWEEN
+			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
 		</where>
-		limit #{page , jdbcType=INTEGER} , 10 
+		limit #{page , jdbcType=INTEGER} , #{count , jdbcType=INTEGER}
 	</select>
-	
-	
+
+	<!-- 获取所有楼盘信息 2016-10-09 zhy -->
+	<select id="findTLandedPropertyAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_landed_property
+	</select>
+	<!-- 查询楼盘数据中的所有城市 -->
+	<select id="findTLandedPropertyCity" resultType="java.lang.String">
+		select DISTINCT
+		city from t_landed_property
+	</select>
+	<!-- 获取楼盘信息 针对 用户关注楼盘和楼盘浏览记录 2016-10-11 zhy -->
+	<select id="findLpForUser" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
+		resultMap="BaseResultMap">
+		SELECT
+		lp.`code`,
+		lp.title,
+		lp.addressFull,
+		lp.lat,
+		lp.lng,
+		(
+		SELECT
+		min(r.price)
+		FROM
+		t_report AS r
+		WHERE
+		r.houses_code = lp.`code`
+		) r_price
+		FROM
+		t_landed_property AS lp
+		<where>
+			lp.`code` in(
+			<foreach collection="codes" item="item" index="index"
+				separator=",">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+			)
+		</where>
+		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="findLpForUserCount" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
+		resultType="java.lang.Integer">
+		SELECT
+		count(1)
+		FROM
+		t_landed_property AS lp
+		<where>
+			lp.`code` in(
+			<foreach collection="codes" item="item" index="index"
+				separator=",">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+			)
+		</where>
+	</select>
+	<select id="findLpAllByCoord" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
+		resultMap="BaseResultMap">
+		SELECT
+		*
+		FROM
+		t_landed_property AS lp
+		<where>
+			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND
+			#{maxLat,jdbcType=VARCHAR})
+			AND
+			(lp.lng BETWEEN
+			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
+		</where>
+	</select>
 </mapper>
 
 

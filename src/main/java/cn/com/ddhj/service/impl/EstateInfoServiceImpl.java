@@ -116,7 +116,7 @@ public class EstateInfoServiceImpl implements IEstateInfoService{
 	}
 
 	
-	public JSONObject estateInfoList(String lng, String lat  , String page , String radius) {
+	public JSONObject estateInfoList(String lng, String lat  , String page , String count ,String radius) {
 		double[] around = CommonUtil.getAround(Double.valueOf(lat), Double.valueOf(lng), Integer.valueOf(radius)); 
 		LandLatLngDto dto = new LandLatLngDto(); 
 		dto.setPage(Integer.valueOf(page));
@@ -124,6 +124,7 @@ public class EstateInfoServiceImpl implements IEstateInfoService{
 		dto.setMinLng(String.valueOf(around[1]));
 		dto.setMaxLat(String.valueOf(around[2]));
 		dto.setMaxLng(String.valueOf(around[3]));
+		dto.setCount(Integer.valueOf(count)); 
 		
 		List<EData> list = lpMapper.findLandedPropertyAll(dto);
 		JSONObject result = new JSONObject();

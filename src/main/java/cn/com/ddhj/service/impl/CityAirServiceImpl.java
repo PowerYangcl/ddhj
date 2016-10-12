@@ -1,6 +1,8 @@
 package cn.com.ddhj.service.impl;
 
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -276,7 +278,6 @@ public class CityAirServiceImpl implements ICityAirService {
 	}
 
 	
-	
 	/**
 	 * @descriptions 返回当前时间的Aqi数据以及历史7天的Aqi数据
 	 *
@@ -296,11 +297,17 @@ public class CityAirServiceImpl implements ICityAirService {
 			JSONArray array = new JSONArray();
 			JSONObject weeks = JSONObject.parseObject(result.getJSONObject(0).getString("lastTwoWeeks"));
 			if (weeks != null) {
-				for (int i = 1; i <= 7; i++) {
+				for (int i = 23 ; i <= 28 ; i++) {
 					JSONObject obj = weeks.getJSONObject(i + "");
 					array.add(obj);
 				}
 				List<CityAqiData> list = JSONObject.parseArray(array.toJSONString() , CityAqiData.class);
+				CityAqiData cad = new CityAqiData();
+				cad.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+				cad.setCity(data.getCity());
+				cad.setAQI(data.getAQI());
+				cad.setQuality(data.getQuality()); 
+				list.add(cad);
 				e.setList(list); 
 			}
 		} 
@@ -365,14 +372,19 @@ public class CityAirServiceImpl implements ICityAirService {
 			JSONObject realtime = JSONObject.parseObject(data.getString("realtime"));
 			// {"img":"3","temperature":"14","humidity":"92","info":"阵雨"}
 			JSONObject weather = JSONObject.parseObject(realtime.getString("weather"));
+			JSONObject wind = JSONObject.parseObject(realtime.getString("wind"));
 			JSONObject pm25 = JSONObject.parseObject(data.getString("pm25"));
 			// {"des":"可正常活动。","curPm":"39","pm25":"27","level":1,"pm10":"55","quality":"优"}
 			JSONObject pm25_ = JSONObject.parseObject(pm25.getString("pm25"));
 			String info = weather.getString("info");
+			String wind_ = wind.getString("direct") + "/" + wind.getString("power");
 			String quality = pm25_.getString("quality");
 			String des = pm25_.getString("des");
 			if(StringUtils.isBlank(info)){
 				info = "天气还行";
+			}
+			if(StringUtils.isBlank(wind_)){
+				wind_ = "西北风/2级";
 			}
 			if(StringUtils.isBlank(quality)){
 				quality = "优";
@@ -382,7 +394,8 @@ public class CityAirServiceImpl implements ICityAirService {
 			}
 			
 			res.put("info", info);					// 阵雨
-			res.put("quality", quality);	    // 优
+			res.put("wind", wind_);  // 东南风/2级
+			res.put("quality", quality);	    // 优|轻度污染
 			res.put("des", des);					// 可正常活动。
 			return res;
 		}
