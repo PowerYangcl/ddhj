@@ -76,12 +76,13 @@ public class CityAirTest extends BaseTest {
 		for(int i = 0 ; i < 30 ; i ++){
 			Map<String, String> param = new HashMap<String, String>();
 			param.put("ak", ak);					 
-			param.put("q", "楼盘,小区,住宅,商品楼");					 
+			param.put("q", "楼盘");					 
 			param.put("region", "北京");				  		 
 			param.put("output", "json");		 
 			param.put("page_size", "20");
 			param.put("page_num", String.valueOf(i)); 
-			String responseJson = PureNetUtil.get(url , param);
+			param.put("tag", "房地产,住宅区");
+			String responseJson = PureNetUtil.get(url , param);  // ,写字楼,住宅区,宿舍
 			JSONObject response = JSONObject.parseObject(responseJson);
 			
 			if(!response.getString("total").equals("400")){
