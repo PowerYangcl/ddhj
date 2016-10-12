@@ -21,12 +21,13 @@ import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
+import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
-import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.TPayment;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
@@ -43,13 +44,14 @@ import cn.com.ddhj.result.tuser.VisitResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
-import cn.com.ddhj.service.user.ITUserLpFollowService;
-import cn.com.ddhj.service.user.ITUserLpVisitService;
-import cn.com.ddhj.service.user.ITUserService;
+import cn.com.ddhj.service.impl.TPaymentServiceImpl;
 import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
 import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
 import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
 import cn.com.ddhj.service.report.ITReportService;
+import cn.com.ddhj.service.user.ITUserLpFollowService;
+import cn.com.ddhj.service.user.ITUserLpVisitService;
+import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.util.DateUtil;
 
 @Controller
@@ -69,6 +71,8 @@ public class ApiController {
 	private ITUserLpFollowService ufService;
 	@Autowired
 	private ITUserLpVisitService uvService;
+	@Autowired
+	private TPaymentServiceImpl paymentService;
 
 	@RequestMapping("api")
 	@ResponseBody
@@ -279,6 +283,7 @@ public class ApiController {
 
 		PayGateNotifyPayProcess.PaymentResult result = PayServiceSupport.payGateNotify(notifyParam);
 
+		TPayment entity = new TPayment();
 		if (result.getResultCode() == PaymentResult.SUCCESS) {
 			TOrder order = new TOrder();
 			order.setCode(result.notify.bigOrderCode);
@@ -288,10 +293,14 @@ public class ApiController {
 			orderService.updateByCode(order);
 
 			// TODO 支付成功则插入日志记录：paymentService TPayment
+			entity.setOrderCode(order.getCode()); 
+			
+			
 		} else {
 			// TODO 支付失败则插入日志记录：paymentService
 
 		}
+		paymentService.insertSelective(entity, "userToken"); 
 
 		StringBuilder build = new StringBuilder();
 		build.append("<result>1</result><reURL>" + result.reURL + "</reURL>");
@@ -302,3 +311,24 @@ public class ApiController {
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
