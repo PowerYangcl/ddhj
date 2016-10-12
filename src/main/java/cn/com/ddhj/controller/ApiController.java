@@ -21,13 +21,14 @@ import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
+import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.dto.user.TMessageDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
-import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.TPayment;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.result.lp.TLpCommentData;
@@ -50,6 +51,7 @@ import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITCityService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
+import cn.com.ddhj.service.impl.TPaymentServiceImpl;
 import cn.com.ddhj.service.user.ITMessageService;
 import cn.com.ddhj.service.user.ITUserLpFollowService;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
@@ -81,6 +83,8 @@ public class ApiController {
 	private ITMessageService messageService;
 	@Autowired
 	private ITCityService cityService;
+	@Autowired
+	private TPaymentServiceImpl paymentService;
 
 	@RequestMapping("api")
 	@ResponseBody
@@ -326,6 +330,7 @@ public class ApiController {
 
 		PayGateNotifyPayProcess.PaymentResult result = PayServiceSupport.payGateNotify(notifyParam);
 
+		TPayment entity = new TPayment();
 		if (result.getResultCode() == PaymentResult.SUCCESS) {
 			TOrder order = new TOrder();
 			order.setCode(result.notify.bigOrderCode);
@@ -335,10 +340,14 @@ public class ApiController {
 			orderService.updateByCode(order);
 
 			// TODO 支付成功则插入日志记录：paymentService TPayment
+			entity.setOrderCode(order.getCode()); 
+			
+			
 		} else {
 			// TODO 支付失败则插入日志记录：paymentService
 
 		}
+		paymentService.insertSelective(entity, "userToken"); 
 
 		StringBuilder build = new StringBuilder();
 		build.append("<result>1</result><reURL>" + result.reURL + "</reURL>");
@@ -349,3 +358,24 @@ public class ApiController {
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

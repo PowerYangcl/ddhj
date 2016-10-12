@@ -4,17 +4,17 @@ import java.math.BigDecimal;
 
 public class TPayment extends BaseModel {
 	private String orderCode;
-	private String mid;
-	private BigDecimal amount;
-	private String ymd;
-	private String moneyType;
-	private String dealtime;
-	private String succmark;
-	private String cause;
-	private String memo1;
-	private String memo2;
-	private String signstr;
-	private String paygate;
+	private String mid;  // 支付网关分配的商户编号
+	private BigDecimal amount;   // 订单总金额
+	private String ymd;  // 订单产生时间
+	private String moneyType; // 支付币种
+	private String dealtime;  // 支付时间
+	private String succmark;  // 交易成功标识
+	private String cause;  // 失败原因
+	private String memo1;  // 商户参数一
+	private String memo2;  // 商户参数二
+	private String signstr;  // 签名
+	private String paygate;  // 支付网关
 
 	public String getOrderCode() {
 		return orderCode;
