@@ -4,6 +4,7 @@ import java.util.List;
 
 import cn.com.ddhj.dto.TCityDto;
 import cn.com.ddhj.model.TCity;
+import cn.com.ddhj.result.CityResult;
 
 /**
  * 
@@ -50,4 +51,14 @@ public interface ITCityService extends IBaseService<TCity, TCityDto> {
 	 */
 	int updateByName(TCity city);
 
+	/**
+	 * 
+	 * 方法: findHotCity <br>
+	 * 描述: 查询热门城市列表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月12日 下午1:55:03
+	 * 
+	 * @return
+	 */
+	CityResult findHotCity();
 }

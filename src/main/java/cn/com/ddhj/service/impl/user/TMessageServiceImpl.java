@@ -54,6 +54,7 @@ public class TMessageServiceImpl extends BaseServiceImpl<TMessage, TMessageMappe
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
 				dto.setStart(dto.getPageIndex() * dto.getPageSize());
+				dto.setReceivedUser(user.getUserCode());
 				List<TMessage> list = mapper.findEntityAll(dto);
 				int total = mapper.findEntityAllCount(dto);
 				if (list != null && list.size() > 0) {
@@ -158,6 +159,11 @@ public class TMessageServiceImpl extends BaseServiceImpl<TMessage, TMessageMappe
 				result.setOuterCode(message.getOuterCode());
 				result.setTime(message.getCreateTime());
 				result.setType(message.getTypeName());
+				result.setResultCode(0);
+				result.setResultMessage("查询消息成功");
+				message.setIsRead(1);
+				message.setCode(code);
+				mapper.updateByCode(message);
 			} else {
 				result.setResultCode(-1);
 				result.setResultMessage("用户不存在");

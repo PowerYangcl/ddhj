@@ -93,13 +93,13 @@
 			<if test="receivedUser != null">
 				received_user = #{receivedUser,jdbcType=VARCHAR},
 			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=LONGVARCHAR},
+			</if>
 			update_user = #{updateUser,jdbcType=VARCHAR},
 			update_time =
 			STR_TO_DATE(
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
-			<if test="content != null">
-				content = #{content,jdbcType=LONGVARCHAR},
-			</if>
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>

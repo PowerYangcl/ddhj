@@ -29,6 +29,7 @@ import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
 import cn.com.ddhj.result.order.OrderAddResult;
@@ -46,6 +47,7 @@ import cn.com.ddhj.result.tuser.MessageTotal;
 import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.result.tuser.VisitResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
+import cn.com.ddhj.service.ITCityService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.user.ITMessageService;
@@ -77,6 +79,8 @@ public class ApiController {
 	private ITUserLpVisitService uvService;
 	@Autowired
 	private ITMessageService messageService;
+	@Autowired
+	private ITCityService cityService;
 
 	@RequestMapping("api")
 	@ResponseBody
@@ -153,6 +157,12 @@ public class ApiController {
 		} else if ("report_sel".equals(api.getApiTarget())) {
 			String code = obj.getString("code");
 			TReportSelResult result = reportService.getTReport(code);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//根据楼盘编码查询楼盘环境报告
+		else if("report_lp".equals(api.getApiTarget())){
+			String lpCode = obj.getString("lpCode");
+			TReportSelResult result = reportService.getTReportByLp(lpCode);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("1032".equals(api.getApiTarget())) { // 环境综合评分接口
 			long start = System.currentTimeMillis();
@@ -276,6 +286,11 @@ public class ApiController {
 		else if ("message_sel".equals(api.getApiTarget())) {
 			String code = obj.getString("code");
 			MessageSelResult result = messageService.selectByCode(code, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 热门城市列表
+		else if ("hot_city".equals(api.getApiTarget())) {
+			CityResult result = cityService.findHotCity();
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();

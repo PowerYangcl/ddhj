@@ -290,7 +290,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			result.setResultCode(-1);
 			result.setResultMessage("用户未登录");
 		}
-		return null;
+		return result;
 	}
 
 }

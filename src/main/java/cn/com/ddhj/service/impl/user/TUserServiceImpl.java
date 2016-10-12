@@ -48,28 +48,33 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 	@Override
 	public LoginResult login(TUserDto dto) {
 		LoginResult result = new LoginResult();
-		dto.setPassword(MD5Util.md5Hex(dto.getPassword()));
-		TUser user = mapper.findTUser(dto);
+		TUser user = mapper.findUserByPhone(dto.getPhone());
 		if (user != null) {
-			TUser entity = new TUser();
-			entity.setUuid(user.getUuid());
-			entity.setIsLogin(0);
-			int flag = mapper.userLoginAndLogOut(entity);
-			if (flag >= 0) {
-				// 添加登录信息到用户登录表
-				TUserLogin login = new TUserLogin();
-				login.setUuid(UUID.randomUUID().toString().replace("-", ""));
-				login.setUserToken(entity.getUuid());
-				login.setCreateUser(user.getUserCode());
-				login.setCreateTime(DateUtil.getSysDateTime());
-				loginMapper.insertSelective(login);
-				result.setResultCode(0);
-				result.setUser(user);
-				result.setResultMessage("登录成功");
-				result.setUserToken(login.getUuid());
+			String password = MD5Util.md5Hex(dto.getPassword());
+			if (StringUtils.equals(password, user.getPassword())) {
+				TUser entity = new TUser();
+				entity.setUuid(user.getUuid());
+				entity.setIsLogin(0);
+				int flag = mapper.userLoginAndLogOut(entity);
+				if (flag >= 0) {
+					// 添加登录信息到用户登录表
+					TUserLogin login = new TUserLogin();
+					login.setUuid(UUID.randomUUID().toString().replace("-", ""));
+					login.setUserToken(entity.getUuid());
+					login.setCreateUser(user.getUserCode());
+					login.setCreateTime(DateUtil.getSysDateTime());
+					loginMapper.insertSelective(login);
+					result.setResultCode(0);
+					result.setUser(user);
+					result.setResultMessage("登录成功");
+					result.setUserToken(login.getUuid());
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("用户登录失败");
+				}
 			} else {
 				result.setResultCode(-1);
-				result.setResultMessage("用户登录失败");
+				result.setResultMessage("用户密码错误");
 			}
 		} else {
 			result.setResultCode(-1);

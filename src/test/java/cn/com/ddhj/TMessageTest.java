@@ -27,9 +27,10 @@ public class TMessageTest extends BaseTest {
 	public void insert() {
 		TMessage entity = new TMessage();
 		entity.setCode(WebHelper.getInstance().getUniqueCode("M"));
-		entity.setContent("系统消息：测试测试法卡斯加的咖啡开始就分手了看到飞机开始的附件是发动机看电视就发生的纠纷的");
+		entity.setContent("活动消息：是大家看法是开放式空间方式打开了房间速度快放假快乐圣诞节疯狂数据库的附件三季度");
 		entity.setCreateUser("system");
-		entity.setReceivedUser("U161012100003");
+		entity.setReceivedUser("U161005100035");
+		entity.setTypeCode("DC161012100003");
 		service.insertSelective(entity);
 	}
 

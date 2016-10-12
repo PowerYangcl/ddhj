@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
@@ -191,7 +192,22 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		TReportSelResult result = new TReportSelResult();
 		TReport report = mapper.selectByCode(code);
 		if (report != null) {
-			result.setLevelList(mapper.findReportByHousesCode(report.getHousesCode()));
+			List<String> housesCodes = this.getLpCodes();
+			List<TReport> list = new ArrayList<TReport>();
+			/**
+			 * 如果楼盘编码不在限制楼盘列表中，获取所有报告，如果存在，只获取普通的环境报告
+			 */
+			if (housesCodes.contains(report.getHousesCode())) {
+				List<TReport> reports = mapper.findReportByHousesCode(report.getHousesCode());
+				for (TReport r : reports) {
+					if ("RL161006100001".equals(r.getLevelCode())) {
+						list.add(r);
+					}
+				}
+			} else {
+				list = mapper.findReportByHousesCode(report.getHousesCode());
+			}
+			result.setLevelList(list);
 			result.setAddress(report.getAddress());
 			result.setDetail(report.getDetail());
 			result.setImage(report.getImage());
@@ -382,6 +398,27 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return result;
 	}
 
+	@Override
+	public TReportSelResult getTReportByLp(String lpCode) {
+		TReportSelResult result = new TReportSelResult();
+		TLandedProperty lp = lpMapper.selectByCode(lpCode);
+		if (lp != null) {
+			// 如果楼盘不为空
+			result.setLevelList(mapper.findReportByHousesCode(lpCode));
+			result.setAddress(lp.getAddressFull());
+			result.setDetail(lp.getOverview());
+			result.setImage(lp.getImages());
+			result.setPic(lp.getImages());
+			result.setName(lp.getTitle());
+			result.setResultCode(0);
+			result.setResultMessage("查询报告成功");
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("楼盘数据不存在");
+		}
+		return result;
+	}
+
 	/**
 	 * 
 	 * 方法: getCityAirLevel <br>
@@ -410,4 +447,31 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		}
 		return array;
 	}
+
+	/**
+	 * 
+	 * 方法: getLpCodes <br>
+	 * 描述: 获取限制的楼盘编码 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月12日 下午3:06:25
+	 * 
+	 * @return
+	 */
+	private List<String> getLpCodes() {
+		List<String> codes = new ArrayList<String>();
+		double[] r = CommonUtil.getAround(39.9659730000, 116.3325020000, 10 * 1000);
+		TLandedPropertyDto dto = new TLandedPropertyDto();
+		dto.setMinLat(r[0]);
+		dto.setMinLng(r[1]);
+		dto.setMaxLat(r[2]);
+		dto.setMaxLng(r[3]);
+		List<TLandedProperty> list = lpMapper.findLpAllByCoord(dto);
+		if (list != null && list.size() > 0) {
+			for (TLandedProperty lp : list) {
+				codes.add(lp.getCode());
+			}
+		}
+		return codes;
+	}
+
 }

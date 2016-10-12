@@ -43,7 +43,7 @@ public class TOrderTest extends BaseTest {
 		TOrderDto dto = new TOrderDto();
 		dto.setPageIndex(0);
 		dto.setPageSize(10);
-		TOrderResult data = service.findEntityToPage(dto, null);
+		TOrderResult data = service.findEntityToPage(dto, "6a397b4cd42f4d62b3c5c43143d94714", null);
 		System.out.println(JSONObject.toJSON(data));
 
 	}

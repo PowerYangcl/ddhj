@@ -86,4 +86,15 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, TLand
 	 * @return
 	 */
 	int findLpForUserCount(TLandedPropertyDto dto);
+
+	/**
+	 * 
+	 * 方法: findLpAllByCoord <br>
+	 * 描述: 根据坐标查询指定范围内的所有楼盘数据 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月12日 下午2:43:15
+	 * 
+	 * @return
+	 */
+	List<TLandedProperty> findLpAllByCoord(TLandedPropertyDto dto);
 }
