@@ -421,6 +421,20 @@
 			)
 		</where>
 	</select>
+	<select id="findLpAllByCoord" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
+		resultMap="BaseResultMap">
+		SELECT
+		*
+		FROM
+		t_landed_property AS lp
+		<where>
+			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND
+			#{maxLat,jdbcType=VARCHAR})
+			AND
+			(lp.lng BETWEEN
+			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
+		</where>
+	</select>
 </mapper>
 
 

@@ -79,4 +79,15 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @return
 	 */
 	BaseResult insertReportData(List<TReport> list);
+	
+	/**
+	 * 
+	 * 方法: getTReportByLp <br>
+	 * 描述: 根据楼盘编码查询环境报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月12日 下午5:32:44
+	 * @param lpCode
+	 * @return
+	 */
+	TReportSelResult getTReportByLp(String lpCode);
 }

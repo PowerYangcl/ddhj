@@ -292,8 +292,13 @@
 		resultMap="BaseResultMap">
 		SELECT
 		rl.`name` as level_name,
+		r.level_code as level_code,
 		r.`code`,
-		r.detail
+		r.detail,
+		r.pic,
+		r.image,
+		r.price,
+		r.path
 		FROM
 		t_report AS r
 		LEFT

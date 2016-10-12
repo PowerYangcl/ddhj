@@ -16,6 +16,7 @@ import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.service.ITLandedPropertyService;
+import cn.com.ddhj.util.CommonUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring/spring.xml", "classpath:spring/spring-mybatis.xml" })
@@ -40,7 +41,6 @@ public class TLandedPropertyTest extends BaseTest {
 		System.out.println(afforest);
 	}
 
-	@Test
 	public void getDataForUser() {
 		List<String> list = new ArrayList<String>();
 		list.add("LP161004101471");
@@ -51,5 +51,21 @@ public class TLandedPropertyTest extends BaseTest {
 		List<TLandedProperty> lp = mapper.findLpForUser(dto);
 		System.out.println(lp.size());
 		System.out.println(mapper.findLpForUserCount(dto));
+	}
+
+	@Test
+	public void findLP() {
+		double[] r = CommonUtil.getAround(39.9659730000, 116.3325020000, 10 * 1000);
+		TLandedPropertyDto dto = new TLandedPropertyDto();
+		dto.setMinLat(r[0]);
+		dto.setMinLng(r[1]);
+		dto.setMaxLat(r[2]);
+		dto.setMaxLng(r[3]);
+		List<TLandedProperty> list = mapper.findLpAllByCoord(dto);
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < list.size(); i++) {
+			sb.append("'").append(list.get(i).getCode()).append("',");
+		}
+		System.out.println(sb.toString());
 	}
 }

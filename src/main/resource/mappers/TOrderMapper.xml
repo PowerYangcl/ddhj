@@ -50,7 +50,7 @@
 		<include refid="Base_Column_List" />
 		from t_order
 		where `code` = #{code,jdbcType=VARCHAR}
-	</select>	
+	</select>
 	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from t_order
 		where `code` = #{code,jdbcType=VARCHAR}
@@ -136,8 +136,9 @@
 		t_report_level AS rl ON
 		r.level_code = rl.`code`
 		<where>
+			o.create_user = #{createUser,jdbcType=VARCHAR}
 			<if test="status != null">
-				o.`status` = #{status,jdbcType=INTEGER}
+				AND o.`status` = #{status,jdbcType=INTEGER}
 			</if>
 		</where>
 		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
@@ -154,8 +155,9 @@
 		LEFT JOIN t_report_level AS rl ON
 		r.level_code = rl.`code`
 		<where>
+			o.create_user = #{createUser,jdbcType=VARCHAR}
 			<if test="status != null">
-				o.`status` = #{status,jdbcType=INTEGER}
+				AND o.`status` = #{status,jdbcType=INTEGER}
 			</if>
 		</where>
 	</select>

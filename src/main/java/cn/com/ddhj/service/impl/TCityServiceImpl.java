@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import cn.com.ddhj.dto.TCityDto;
 import cn.com.ddhj.mapper.TCityMapper;
 import cn.com.ddhj.model.TCity;
+import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.service.ITCityService;
 
 /**
@@ -26,7 +27,6 @@ public class TCityServiceImpl extends BaseServiceImpl<TCity, TCityMapper, TCityD
 	/**
 	 * 
 	 * 方法: batchInsertCity <br>
-	 * 描述: TODO
 	 * 
 	 * @param list
 	 * @return
@@ -40,7 +40,6 @@ public class TCityServiceImpl extends BaseServiceImpl<TCity, TCityMapper, TCityD
 	/**
 	 * 
 	 * 方法: findCityByName <br>
-	 * 描述: TODO
 	 * 
 	 * @param city
 	 * @return
@@ -54,7 +53,6 @@ public class TCityServiceImpl extends BaseServiceImpl<TCity, TCityMapper, TCityD
 	/**
 	 * 
 	 * 方法: updateByName <br>
-	 * 描述: TODO
 	 * 
 	 * @param city
 	 * @return
@@ -63,6 +61,28 @@ public class TCityServiceImpl extends BaseServiceImpl<TCity, TCityMapper, TCityD
 	@Override
 	public int updateByName(TCity city) {
 		return mapper.updateByName(city);
+	}
+
+	/**
+	 * 
+	 * 方法: findHotCity <br>
+	 * 
+	 * @return
+	 * @see cn.com.ddhj.service.ITCityService#findHotCity()
+	 */
+	@Override
+	public CityResult findHotCity() {
+		CityResult result = new CityResult();
+		List<TCity> list = mapper.findHotCity();
+		if (list != null && list.size() > 0) {
+			result.setList(list);
+			result.setResultCode(0);
+			result.setResultMessage("查询热门城市成功");
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("查询热门城市失败");
+		}
+		return result;
 	}
 
 }
