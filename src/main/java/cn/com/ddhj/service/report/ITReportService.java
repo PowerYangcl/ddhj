@@ -89,5 +89,5 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @param lpCode
 	 * @return
 	 */
-	TReportSelResult getTReportByLp(String lpCode);
+	TReportSelResult getTReportByLp(String lpCode,String userTocken);
 }

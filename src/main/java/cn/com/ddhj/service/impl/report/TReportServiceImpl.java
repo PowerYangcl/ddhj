@@ -21,10 +21,16 @@ import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.report.TReportTemplateMapper;
+import cn.com.ddhj.mapper.user.TUserLoginMapper;
+import cn.com.ddhj.mapper.user.TUserLpFollowMapper;
+import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 import cn.com.ddhj.model.report.TReportTemplate;
+import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserLogin;
+import cn.com.ddhj.model.user.TUserLpFollow;
 import cn.com.ddhj.result.report.PDFReportResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
@@ -62,6 +68,12 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private IWaterQualityService waterQualityService;
 	@Autowired
 	private ITRubbishRecyclingService rubbishService;
+	@Autowired
+	private TUserLpFollowMapper followMapper;
+	@Autowired
+	private TUserLoginMapper loginMapper;
+	@Autowired
+	private TUserMapper userMapper;
 
 	/**
 	 * 
@@ -399,7 +411,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	}
 
 	@Override
-	public TReportSelResult getTReportByLp(String lpCode) {
+	public TReportSelResult getTReportByLp(String lpCode, String userTocken) {
 		TReportSelResult result = new TReportSelResult();
 		TLandedProperty lp = lpMapper.selectByCode(lpCode);
 		if (lp != null) {
@@ -415,6 +427,25 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			} else {
 				reports = mapper.findReportByHousesCode(lpCode);
 			}
+
+			// 如果userTocken不为空，查询楼盘是否已关注
+			int isFollow = 0;
+			if (StringUtils.isNotBlank(userTocken)) {
+				TUserLogin login = loginMapper.findLoginByUuid(userTocken);
+				if (login != null) {
+					TUser user = userMapper.findTUserByUuid(login.getUserToken());
+					if (user != null) {
+						TUserLpFollow dto = new TUserLpFollow();
+						dto.setLpCode(lpCode);
+						dto.setUserCode(user.getUserCode());
+						TUserLpFollow follow = followMapper.findFollowIsExists(dto);
+						if (follow != null) {
+							isFollow = 1;
+						}
+					}
+				}
+			}
+			result.setIsFollow(isFollow);
 			result.setLevelList(reports);
 			result.setAddress(lp.getAddressFull());
 			result.setDetail(lp.getOverview());

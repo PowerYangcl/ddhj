@@ -176,7 +176,7 @@ public class ApiController extends BaseClass {
 		//根据楼盘编码查询楼盘环境报告
 		else if("report_lp".equals(api.getApiTarget())){
 			String lpCode = obj.getString("lpCode");
-			TReportSelResult result = reportService.getTReportByLp(lpCode);
+			TReportSelResult result = reportService.getTReportByLp(lpCode,api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("1032".equals(api.getApiTarget())) { // 环境综合评分接口
 			long start = System.currentTimeMillis();

@@ -21,8 +21,17 @@ public class TReportSelResult extends BaseResult {
 	private String image;
 	private String detail;
 	private String address;
+	private Integer isFollow;
 	private BigDecimal price;
 	private List<TReport> levelList;
+
+	public Integer getIsFollow() {
+		return isFollow;
+	}
+
+	public void setIsFollow(Integer isFollow) {
+		this.isFollow = isFollow;
+	}
 
 	public String getCode() {
 		return code;
