@@ -33,8 +33,8 @@
 			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</trim>
 	</insert>
-	<select id="findLoginByUuid" parameterType="java.lang.String"
-		resultMap="BaseResultMap">
+	
+	<select id="findLoginByUuid" parameterType="java.lang.String" resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from t_user_login
@@ -42,8 +42,34 @@
 		order by
 		create_time desc limit 1
 	</select>
+	
 	<delete id="deletByUuid" parameterType="java.lang.String">
 		delete from t_user_login
 		where uuid=#{uuid,jdbcType=VARCHAR}
 	</delete>
+	
+	
+	<select id="findTokenByOrderCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+			u.*
+		from 
+			t_user_login u left join t_order o on u.create_user = o.create_user
+		where 
+			o.code = #{code , jdbcType=VARCHAR} 
+	</select>
+	
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -28,23 +28,34 @@ public class TPaymentServiceImpl extends BaseServiceImpl<TPayment, TPaymentMappe
 	@Override
 	public BaseResult insertSelective(TPayment entity, String userToken) {
 		BaseResult result = new BaseResult();
-		TUserLogin login = loginMapper.findLoginByUuid(userToken);
-		if (login != null) {
-			TUser user = userMapper.findTUserByUuid(login.getUserToken());
-			if (user != null) {
-				entity.setDealtime(DateUtil.getSysDateTime());
-				entity.setCreateUser(user.getUserCode());
-				entity.setCreateTime(DateUtil.getSysDateTime());
-				entity.setUpdateUser(user.getUserCode());
-				entity.setUpdateTime(DateUtil.getSysDateTime());
-				mapper.insertSelective(entity);
-				result.setResultCode(1);
-				result.setResultMessage("记录支付成功");
-			}
-		} else {
+		
+		TPayment p = mapper.selectByOrderCode(entity.getOrderCode());
+		if(p != null ){
+			result.setResultCode(-1);
+			result.setResultMessage("订单已支付"); 
+			return result;
+		}
+		
+		TUser user = userMapper.findTUserByUuid(userToken);
+		if (user != null) {
+			entity.setDealtime(DateUtil.getSysDateTime());
+			entity.setCreateUser(user.getUserCode());
+			entity.setCreateTime(DateUtil.getSysDateTime());
+			entity.setUpdateUser(user.getUserCode());
+			entity.setUpdateTime(DateUtil.getSysDateTime());
+			mapper.payInsertSelective(entity);
+			result.setResultCode(1);
+			result.setResultMessage("记录支付成功");
+		}else {
 			result.setResultCode(-1);
 			result.setResultMessage("无效用户");
 		}
+//		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+//		if (login != null) {
+//		} else {
+//			result.setResultCode(-1);
+//			result.setResultMessage("无效用户");
+//		}
 		return result;
 	}
 

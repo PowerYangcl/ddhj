@@ -1,8 +1,11 @@
 package cn.com.ddhj.controller;
 
+import java.math.BigDecimal;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.com.ddhj.annotation.Inject;
 import cn.com.ddhj.base.BaseAPI;
+import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
@@ -26,10 +31,13 @@ import cn.com.ddhj.dto.user.TMessageDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
+import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TPayment;
 import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
@@ -63,7 +71,7 @@ import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.DateUtil;
 
 @Controller
-public class ApiController {
+public class ApiController extends BaseClass {
 	@Autowired
 	private ITReportService reportService;
 	@Autowired
@@ -85,6 +93,8 @@ public class ApiController {
 	private ITCityService cityService;
 	@Autowired
 	private TPaymentServiceImpl paymentService;
+	@Inject
+	private TUserLoginMapper userLoginMapper;
 
 	@RequestMapping("api")
 	@ResponseBody
@@ -327,10 +337,17 @@ public class ApiController {
 			name = names.nextElement();
 			notifyParam.put(name, StringUtils.trimToEmpty(request.getParameter(name)));
 		}
+		String orderCode = notifyParam.get("c_order"); 
+		List<TUserLogin> listss = userLoginMapper.findTokenByOrderCode(orderCode);
+		String useruuid = "";
+		if(listss != null && listss.size() > 0){
+			useruuid = listss.get(0).getUserToken();
+		}
 
 		PayGateNotifyPayProcess.PaymentResult result = PayServiceSupport.payGateNotify(notifyParam);
 
 		TPayment entity = new TPayment();
+		entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 		if (result.getResultCode() == PaymentResult.SUCCESS) {
 			TOrder order = new TOrder();
 			order.setCode(result.notify.bigOrderCode);
@@ -341,13 +358,25 @@ public class ApiController {
 
 			// TODO 支付成功则插入日志记录：paymentService TPayment
 			entity.setOrderCode(order.getCode()); 
+			entity.setMid(notifyParam.get("c_mid"));
+			entity.setAmount(BigDecimal.valueOf(Double.valueOf(notifyParam.get("c_orderamount"))));
+			entity.setYmd(notifyParam.get("c_ymd"));
+			entity.setMoneyType("人民币");
+			entity.setDealtime(notifyParam.get("dealtime"));
+			entity.setSuccmark("success");
+			entity.setMemo1(notifyParam.get("bankorderid")); // 
+			entity.setMemo2(notifyParam.get("c_transnum")); // 
+			entity.setSignstr(notifyParam.get("c_signstr"));
+			entity.setPaygate(notifyParam.get("c_paygate"));
 			
 			
 		} else {
 			// TODO 支付失败则插入日志记录：paymentService
-
+			entity.setOrderCode(result.notify.bigOrderCode); 
+			entity.setSuccmark("false");
+			entity.setCause("支付宝调用失败");  
 		}
-		paymentService.insertSelective(entity, "userToken"); 
+		paymentService.insertSelective(entity, useruuid); 
 
 		StringBuilder build = new StringBuilder();
 		build.append("<result>1</result><reURL>" + result.reURL + "</reURL>");

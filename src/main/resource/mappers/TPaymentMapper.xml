@@ -103,4 +103,141 @@
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</trim>
 	</insert>
+	
+	<insert id="payInsertSelective" parameterType="cn.com.ddhj.model.TPayment" >
+    insert into t_payment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="uuid != null" >
+        uuid,
+      </if>
+      <if test="orderCode != null" >
+        order_code,
+      </if>
+      <if test="mid != null" >
+        mid,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="ymd != null" >
+        ymd,
+      </if>
+      <if test="moneyType != null" >
+        money_type,
+      </if>
+      <if test="dealtime != null" >
+        dealtime,
+      </if>
+      <if test="succmark != null" >
+        succmark,
+      </if>
+      <if test="cause != null" >
+        cause,
+      </if>
+      <if test="memo1 != null" >
+        memo1,
+      </if>
+      <if test="memo2 != null" >
+        memo2,
+      </if>
+      <if test="signstr != null" >
+        signstr,
+      </if>
+      <if test="paygate != null" >
+        paygate,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="uuid != null" >
+        #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderCode != null" >
+        #{orderCode,jdbcType=VARCHAR},
+      </if>
+      <if test="mid != null" >
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="ymd != null" >
+        #{ymd,jdbcType=VARCHAR},
+      </if>
+      <if test="moneyType != null" >
+        #{moneyType,jdbcType=VARCHAR},
+      </if>
+      <if test="dealtime != null" >
+        #{dealtime,jdbcType=VARCHAR},
+      </if>
+      <if test="succmark != null" >
+        #{succmark,jdbcType=VARCHAR},
+      </if>
+      <if test="cause != null" >
+        #{cause,jdbcType=VARCHAR},
+      </if>
+      <if test="memo1 != null" >
+        #{memo1,jdbcType=VARCHAR},
+      </if>
+      <if test="memo2 != null" >
+        #{memo2,jdbcType=VARCHAR},
+      </if>
+      <if test="signstr != null" >
+        #{signstr,jdbcType=VARCHAR},
+      </if>
+      <if test="paygate != null" >
+        #{paygate,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+   <select id="selectByOrderCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			*
+		from 
+			t_payment
+		where 
+			`order_code` = #{orderCode , jdbcType=VARCHAR}
+		limit 1
+	</select>
+	
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
