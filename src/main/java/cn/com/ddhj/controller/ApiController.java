@@ -31,7 +31,7 @@ import cn.com.ddhj.dto.user.TMessageDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
-import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.dto.user.TUserStepDto;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
@@ -54,6 +54,7 @@ import cn.com.ddhj.result.tuser.MessageData;
 import cn.com.ddhj.result.tuser.MessageSelResult;
 import cn.com.ddhj.result.tuser.MessageTotal;
 import cn.com.ddhj.result.tuser.RegisterResult;
+import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.result.tuser.VisitResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITCityService;
@@ -64,6 +65,7 @@ import cn.com.ddhj.service.user.ITMessageService;
 import cn.com.ddhj.service.user.ITUserLpFollowService;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.service.user.ITUserService;
+import cn.com.ddhj.service.user.ITUserStepService;
 import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
 import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
 import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
@@ -93,6 +95,8 @@ public class ApiController extends BaseClass {
 	private ITCityService cityService;
 	@Autowired
 	private TPaymentServiceImpl paymentService;
+	@Autowired
+	private ITUserStepService stepService;
 	@Inject
 	private TUserLoginMapper userLoginMapper;
 
@@ -173,10 +177,10 @@ public class ApiController extends BaseClass {
 			TReportSelResult result = reportService.getTReport(code);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//根据楼盘编码查询楼盘环境报告
-		else if("report_lp".equals(api.getApiTarget())){
+		// 根据楼盘编码查询楼盘环境报告
+		else if ("report_lp".equals(api.getApiTarget())) {
 			String lpCode = obj.getString("lpCode");
-			TReportSelResult result = reportService.getTReportByLp(lpCode,api.getUserToken());
+			TReportSelResult result = reportService.getTReportByLp(lpCode, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("1032".equals(api.getApiTarget())) { // 环境综合评分接口
 			long start = System.currentTimeMillis();
@@ -306,6 +310,16 @@ public class ApiController extends BaseClass {
 		else if ("hot_city".equals(api.getApiTarget())) {
 			CityResult result = cityService.findHotCity();
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 获取计步数据
+		else if ("step_data".equals(api.getApiTarget())) {
+			UserStepResult result = stepService.findUserStepData(obj.getString("equipmentCode"));
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 批量导入计步数据
+		else if ("step_sync".equals(api.getApiTarget())) {
+			BaseResult result = stepService.batchInstart(api.getApiInput(), api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(-1);
@@ -337,10 +351,10 @@ public class ApiController extends BaseClass {
 			name = names.nextElement();
 			notifyParam.put(name, StringUtils.trimToEmpty(request.getParameter(name)));
 		}
-		String orderCode = notifyParam.get("c_order"); 
+		String orderCode = notifyParam.get("c_order");
 		List<TUserLogin> listss = userLoginMapper.findTokenByOrderCode(orderCode);
 		String useruuid = "";
-		if(listss != null && listss.size() > 0){
+		if (listss != null && listss.size() > 0) {
 			useruuid = listss.get(0).getUserToken();
 		}
 
@@ -357,26 +371,25 @@ public class ApiController extends BaseClass {
 			orderService.updateByCode(order);
 
 			// TODO 支付成功则插入日志记录：paymentService TPayment
-			entity.setOrderCode(order.getCode()); 
+			entity.setOrderCode(order.getCode());
 			entity.setMid(notifyParam.get("c_mid"));
 			entity.setAmount(BigDecimal.valueOf(Double.valueOf(notifyParam.get("c_orderamount"))));
 			entity.setYmd(notifyParam.get("c_ymd"));
 			entity.setMoneyType("人民币");
 			entity.setDealtime(notifyParam.get("dealtime"));
 			entity.setSuccmark("success");
-			entity.setMemo1(notifyParam.get("bankorderid")); // 
-			entity.setMemo2(notifyParam.get("c_transnum")); // 
+			entity.setMemo1(notifyParam.get("bankorderid")); //
+			entity.setMemo2(notifyParam.get("c_transnum")); //
 			entity.setSignstr(notifyParam.get("c_signstr"));
 			entity.setPaygate(notifyParam.get("c_paygate"));
-			
-			
+
 		} else {
 			// TODO 支付失败则插入日志记录：paymentService
-			entity.setOrderCode(result.notify.bigOrderCode); 
+			entity.setOrderCode(result.notify.bigOrderCode);
 			entity.setSuccmark("false");
-			entity.setCause("支付宝调用失败");  
+			entity.setCause("支付宝调用失败");
 		}
-		paymentService.insertSelective(entity, useruuid); 
+		paymentService.insertSelective(entity, useruuid);
 
 		StringBuilder build = new StringBuilder();
 		build.append("<result>1</result><reURL>" + result.reURL + "</reURL>");
@@ -387,24 +400,3 @@ public class ApiController extends BaseClass {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
