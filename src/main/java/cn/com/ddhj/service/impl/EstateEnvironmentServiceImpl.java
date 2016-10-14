@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 import javax.annotation.Resource;
 
@@ -23,6 +22,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.dto.CityAqi;
 import cn.com.ddhj.dto.CityAqiData;
+import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
@@ -69,6 +69,9 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	
 	@Resource
 	private TReportMapper reportMapper;
+	
+	@Resource
+	private ITAreaNoiseMapper noiseMapper;
 	
 	
 	/**
@@ -205,6 +208,13 @@ long start = System.currentTimeMillis();
 	        taqi.setCity(city); 
 	        Future<CityAqi> aqiFuture = executor.submit(taqi);
 	        
+	        Task1032Noise noi = new Task1032Noise();
+	        noi.setCity(city);
+	        noi.setNoiseMapper(noiseMapper);
+	        noi.setPosition(position);
+	        Future<String> noiFuture = executor.submit(noi);
+	        
+	        
 	        JSONObject weather = weaTask.get();
 	        CityAqi aqi = aqiFuture.get();
 	        executor.shutdown();
@@ -286,8 +296,8 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			envList.add(water);
 			EnvInfo noise = new EnvInfo();
 			noise.setName("噪音");
-			noise.setMemo("2Km以外"); 
-			noise.setLevel("I类/优");  
+			noise.setMemo(noiFuture.get().split("@")[1]);  
+			noise.setLevel(noiFuture.get().split("@")[0]);  
 			envList.add(noise);
 			result.put("detailList", envList);  // 环境明细
 			
@@ -301,7 +311,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.put("resultCode", -1); 
-			result.put("resultMessage", "系统内部错误"); 
+			result.put("resultMessage", "系统内部错误");   
 			return  result;
 		}
 	}

@@ -24,10 +24,22 @@
 		<jackson.version>1.9.13</jackson.version>
 		<fastjson.version>1.2.16</fastjson.version>
 		<junit.version>4.12</junit.version>
+		<poi.version>3.8</poi.version>
 	</properties>
 
 	<dependencies>
 		<!-- spring -->
+				
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>

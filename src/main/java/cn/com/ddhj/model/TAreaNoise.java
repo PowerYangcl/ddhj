@@ -14,6 +14,8 @@ public class TAreaNoise {
     private Double lng;
 
     private String address;
+    
+    private String level;
 
     public Integer getZid() {
         return zid;
@@ -70,4 +72,13 @@ public class TAreaNoise {
     public void setAddress(String address) {
         this.address = address == null ? null : address.trim();
     }
+
+	public String getLevel() {
+		return level;
+	}
+
+	public void setLevel(String level) {
+		this.level = level;
+	}
+    
 }
