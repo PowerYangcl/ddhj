@@ -47,7 +47,7 @@ public class Task1032Noise implements Callable<String> {
 				if(e.getLevel().equals("III类")){
 					level = e.getLevel() + "@55/65";
 				}else if(e.getLevel().equals("0类")){
-					level = e.getLevel() + "@40/50";;
+					level = e.getLevel() + "@40/50";
 				}
 			}
 		}
