@@ -141,6 +141,7 @@
 				AND o.`status` = #{status,jdbcType=INTEGER}
 			</if>
 		</where>
+		order by update_time desc 
 		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
 	<select id="findEntityAllCount" parameterType="cn.com.ddhj.dto.TOrderDto"
