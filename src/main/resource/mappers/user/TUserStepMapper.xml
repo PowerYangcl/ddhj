@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.user.TUserStepMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.user.TUserStep">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="equipment_code" property="equipmentCode"
+			jdbcType="VARCHAR" />
+		<result column="step" property="step" jdbcType="INTEGER" />
+		<result column="create_date" property="createDate" jdbcType="VARCHAR" />
+		<result column="is_binding" property="isBinding" jdbcType="INTEGER" />
+		<result column="user_code" property="userCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, equipment_code,step, DATE_FORMAT(
+		create_date,
+		'%Y-%m-%d'
+		) AS
+		create_date, is_binding,
+		user_code
+	</sql>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.user.TUserStep">
+		insert into t_user_step
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			equipment_code,
+			step,
+			create_date,
+			<if test="isBinding != null">
+				is_binding,
+			</if>
+			<if test="userCode != null">
+				user_code,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{equipmentCode,jdbcType=VARCHAR},
+			#{step,jdbcType=INTEGER},
+			#{createDate,jdbcType=TIMESTAMP},
+			<if test="isBinding != null">
+				#{isBinding,jdbcType=INTEGER},
+			</if>
+			<if test="userCode != null">
+				#{userCode,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<!-- 根据设备码修改绑定状态的用户编码 -->
+	<update id="updateByEquipmentCode" parameterType="cn.com.ddhj.model.user.TUserStep">
+		update t_user_step
+		<set>
+			is_binding = #{isBinding,jdbcType=INTEGER},
+			user_code =
+			#{userCode,jdbcType=VARCHAR},
+		</set>
+		where equipment_code = #{equipmentCode,jdbcType=VARCHAR}
+	</update>
+	<!-- 批量同步计步数据 -->
+	<insert id="batchInstart" parameterType="list">
+		insert into t_user_step
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			equipment_code,
+			step,
+			create_date,
+			is_binding,
+			user_code,
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix=" (" suffix=")" suffixOverrides=",">
+				#{item.uuid,jdbcType=VARCHAR},
+				#{item.equipmentCode,jdbcType=VARCHAR},
+				#{item.step,jdbcType=INTEGER},
+				#{item.createDate,jdbcType=TIMESTAMP},
+				#{item.isBinding,jdbcType=INTEGER},
+				#{item.userCode,jdbcType=VARCHAR},
+			</trim>
+		</foreach>
+	</insert>
+	<!-- 根据设备编码和日期查询同步信息 -->
+	<select id="findUserStepData" resultMap="BaseResultMap"
+		parameterType="cn.com.ddhj.dto.user.TUserStepDto">
+		select
+		step,
+		DATE_FORMAT(
+		create_date,
+		'%Y-%m-%d'
+		) AS
+		create_date
+		from t_user_step
+		<where>
+			equipment_code = #{equipmentCode,jdbcType=VARCHAR}
+			AND
+			create_date
+			BETWEEN
+			STR_TO_DATE(#{startDate,jdbcType=VARCHAR},'%Y-%m-%d')
+			AND
+			STR_TO_DATE(#{endDate,jdbcType=VARCHAR},'%Y-%m-%d')
+		</where>
+	</select>
+</mapper>

@@ -51,4 +51,26 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 */
 	int insertReportData(List<TReport> list);
 
+	/**
+	 * 
+	 * 方法: findLevel <br>
+	 * 描述: 根据报告编码查询等级名称 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月15日 下午5:27:50
+	 * 
+	 * @param code
+	 * @return
+	 */
+	String findLevel(String code);
+
+	/**
+	 * 
+	 * 方法: findTReportAll <br>
+	 * 描述: 获取报告编码 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月15日 下午6:14:40
+	 * 
+	 * @return
+	 */
+	List<TReport> findTReportAll();
 }
