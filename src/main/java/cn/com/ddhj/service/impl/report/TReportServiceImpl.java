@@ -17,6 +17,7 @@ import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
@@ -24,6 +25,7 @@ import cn.com.ddhj.mapper.report.TReportTemplateMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserLpFollowMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
+import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
@@ -73,6 +75,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TUserLoginMapper loginMapper;
 	@Autowired
 	private TUserMapper userMapper;
+	@Autowired
+	private ITAreaNoiseMapper noiseMapper;
 
 	/**
 	 * 
@@ -388,6 +392,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					&& StringUtils.isEmpty(lp.getLng())) {
 				rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
 			}
+			// 噪音等级
+			int nosieLevel = getNoiseLevel(lp);
 			if (templateList != null && templateList.size() > 0) {
 				JSONArray array = new JSONArray();
 				for (int i = 0; i < templateList.size(); i++) {
@@ -405,6 +411,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						obj.put("level", getLevelContent(model.getType(), waterLevel, levelList));
 					} else if ("rubbish".equals(model.getType())) {
 						obj.put("level", getLevelContent(model.getType(), rubbishLevel, levelList));
+					} else if ("".equals(model.getType())) {
+						obj.put("noise", getLevelContent(model.getType(), nosieLevel, levelList));
 					} else {
 						obj.put("level", getLevelContent(model.getType(), 1, levelList));
 					}
@@ -505,8 +513,65 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				}
 			}
 		}
-		System.out.println(array.toJSONString());
 		return array;
+	}
+
+	/**
+	 * 
+	 * 方法: getNoiseLevel <br>
+	 * 描述: 获取楼盘的噪音等级 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月15日 下午9:23:44
+	 * 
+	 * @param lp
+	 * @return
+	 */
+	private Integer getNoiseLevel(TLandedProperty lp) {
+		int level = 0;
+		if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
+			Double lat = Double.valueOf(lp.getLat());
+			Double lng = Double.valueOf(lp.getLng());
+			Double nlat = null; // 北纬
+			Double slat = null; // 南纬
+			Double elng = null; // 东经
+			Double wlng = null; // 西经
+			List<TAreaNoise> list = noiseMapper.selectByArea(lp.getCity());
+			List<TAreaNoise> areaList = new ArrayList<>();
+			for (TAreaNoise e : list) {
+				if (e.getFlag() == 2) {
+					if (e.getName().equals("WN")) { // 坐标西北点
+						nlat = e.getLat();
+						wlng = e.getLng();
+					} else if (e.getName().equals("ES")) {// 坐标东南点
+						elng = e.getLng();
+						slat = e.getLat();
+					}
+				} else {
+					areaList.add(e);
+				}
+			}
+			for (TAreaNoise e : areaList) {
+				Double distance = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
+				if (distance < 2000) {
+					if (e.getLevel().equals("III类")) {
+						level = 3;
+					} else if (e.getLevel().equals("0类")) {
+						level = 1;
+					}
+				}
+			}
+			if (level == 0) {
+				if ((slat < lat && lat < nlat) && (wlng < lng && lng < elng)) { // 五环里
+					level = 2;
+				} else { // 北京：五环外 |上海：外环外 |广州：外环外|天津：外环外|深圳：关外全部划为I类标准
+					level = 1;
+				}
+			}
+		} else {
+			level = 1;
+		}
+
+		return level;
 	}
 
 	/**
