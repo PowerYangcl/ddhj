@@ -376,7 +376,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						JSONObject level = cityAirLevel.getJSONObject(i);
 
 						if (StringUtils.equals(lp.getCity(), level.getString("city"))) {
-							System.out.println(level.getString("level"));
 							airLevel = level.getJSONObject("level").getInteger("air");
 							waterLevel = level.getJSONObject("level").getInteger("water");
 						}
@@ -506,6 +505,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				}
 			}
 		}
+		System.out.println(array.toJSONString());
 		return array;
 	}
 
