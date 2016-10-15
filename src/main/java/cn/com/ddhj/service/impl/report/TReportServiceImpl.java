@@ -139,7 +139,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult insert(TReport entity, String path) {
 		BaseResult result = new BaseResult();
 		String code = WebHelper.getInstance().getUniqueCode("R");
-		PDFReportResult pdfResult = createPDF(code, entity.getHousesCode(), path);
+		PDFReportResult pdfResult = createPDF(code, entity.getHousesCode(), path, null);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -167,7 +167,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Override
 	public BaseResult updateByCode(TReport entity, String path) {
 		BaseResult result = new BaseResult();
-		PDFReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path);
+		PDFReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path, null);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -248,7 +248,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (list != null && list.size() > 0) {
 			// 生成pdf环境报告
 			for (int i = 0; i < list.size(); i++) {
-				PDFReportResult pdfResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/");
+				PDFReportResult pdfResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/", null);
 				if (pdfResult.getResultCode() == 0) {
 					list.get(i).setPath(pdfResult.getPath());
 				}
@@ -309,7 +309,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	/**
 	 * 
 	 * 方法: createPDF <br>
-	 * 描述: TODO
 	 * 
 	 * @param code
 	 * @param housesCode
@@ -319,7 +318,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 *      java.lang.String, java.lang.String)
 	 */
 	@Override
-	public PDFReportResult createPDF(String code, String housesCode, String path) {
+	public PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir) {
 		PDFReportResult result = new PDFReportResult();
 		try {
 			File file = new File(path);
@@ -366,11 +365,16 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			// 水质量等级
 			Integer waterLevel = 1;
 			if (StringUtils.isNotBlank(lp.getCity())) {
-				JSONArray cityAirLevel = this.getCityAirLevel();
+				JSONArray cityAirLevel = null;
+				if (cityAir != null && cityAir.size() > 0) {
+					cityAirLevel = cityAir;
+				} else {
+					cityAirLevel = this.getCityAirLevel();
+				}
 				if (cityAirLevel != null && cityAirLevel.size() > 0) {
 					for (int i = 0; i < cityAirLevel.size(); i++) {
 						JSONObject level = cityAirLevel.getJSONObject(i);
-						
+
 						if (StringUtils.equals(lp.getCity(), level.getString("city"))) {
 							System.out.println(level.getString("level"));
 							airLevel = level.getJSONObject("level").getInteger("air");
@@ -530,5 +534,4 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		}
 		return codes;
 	}
-
 }

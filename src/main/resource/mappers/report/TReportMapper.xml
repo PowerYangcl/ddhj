@@ -335,4 +335,7 @@
 		WHERE
 		r.`code` = #{code,jdbcType=VARCHAR}
 	</select>
+	<select id="findTReportAll" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> from t_report
+	</select>
 </mapper>

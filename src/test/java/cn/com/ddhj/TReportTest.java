@@ -1,13 +1,10 @@
 package cn.com.ddhj;
 
-import java.awt.Color;
-import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.swing.text.AttributeSet.ColorAttribute;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,15 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfWriter;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
@@ -163,8 +153,16 @@ public class TReportTest extends BaseTest {
 		System.out.println(mapper.findRreportByChart(list));
 	}
 
-	@Test
 	public void createPdf() {
-		service.createPDF("R161009100010", "LP161004101471","d://");
+		service.createPDF("R161009100010", "LP161004101471", "d://",null);
+	}
+
+	@Test
+	public void init() {
+		List<TReport> list = mapper.findTReportAll();
+		JSONArray array = JSONArray.parseArray("[{\"level\":{\"water\":1,\"air\":5},\"city\":\"北京\"},{\"level\":{\"water\":1,\"air\":4},\"city\":\"天津\"}]");
+		for (TReport r : list) {
+			service.createPDF(r.getCode(), r.getHousesCode(), "d://",array);
+		}
 	}
 }

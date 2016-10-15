@@ -2,6 +2,8 @@ package cn.com.ddhj.service.report;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSONArray;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.report.TReportDto;
@@ -105,5 +107,5 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @param path
 	 * @return
 	 */
-	PDFReportResult createPDF(String code, String housesCode, String path);
+	PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir);
 }
