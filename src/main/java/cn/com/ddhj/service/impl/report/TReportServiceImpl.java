@@ -57,7 +57,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TReportMapper mapper;
 	@Autowired
 	private TReportTemplateMapper templateMapper;
-
 	@Autowired
 	private TReportEnvironmentLevelMapper levelMapper;
 	@Autowired
@@ -310,10 +309,16 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	/**
 	 * 
 	 * 方法: createPDF <br>
+	 * 描述: TODO
 	 * 
-	 * @param array
+	 * @param code
+	 * @param housesCode
+	 * @param path
 	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#createPDF(java.lang.String,
+	 *      java.lang.String, java.lang.String)
 	 */
+	@Override
 	public PDFReportResult createPDF(String code, String housesCode, String path) {
 		PDFReportResult result = new PDFReportResult();
 		try {
@@ -329,13 +334,17 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			List<TReportEnvironmentLevel> levelList = levelMapper.findTReportEnvironmentLevelAll();
 			// 获取绿地率等级
 			int afforestLevel = 1;
-			if (lp.getGreeningRate() != null && !"".equals(lp.getGreeningRate())
-					&& !StringUtils.isEmpty(lp.getGreeningRate())) {
-				Double afforest = Double.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
-				if (afforest > 25 && afforest < 30) {
-					afforestLevel = 2;
-				} else if (afforest < 25) {
-					afforestLevel = 3;
+			if (StringUtils.isNotBlank(lp.getGreeningRate())) {
+				try {
+					Double afforest = Double
+							.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
+					if (afforest > 25 && afforest < 30) {
+						afforestLevel = 2;
+					} else if (afforest < 25) {
+						afforestLevel = 3;
+					}
+				} catch (Exception e) {
+					afforestLevel = 1;
 				}
 			}
 			// 获取容积率等级
@@ -356,13 +365,17 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			Integer airLevel = 1;
 			// 水质量等级
 			Integer waterLevel = 1;
-			JSONArray cityAirLevel = this.getCityAirLevel();
-			if (cityAirLevel != null && cityAirLevel.size() > 0) {
-				for (int i = 0; i < cityAirLevel.size(); i++) {
-					if (StringUtils.isNotBlank(lp.getCity())) {
-						JSONObject level = cityAirLevel.getJSONObject(i).getJSONObject(lp.getCity());
-						airLevel = level.getInteger("air");
-						waterLevel = level.getInteger("water");
+			if (StringUtils.isNotBlank(lp.getCity())) {
+				JSONArray cityAirLevel = this.getCityAirLevel();
+				if (cityAirLevel != null && cityAirLevel.size() > 0) {
+					for (int i = 0; i < cityAirLevel.size(); i++) {
+						JSONObject level = cityAirLevel.getJSONObject(i);
+						
+						if (StringUtils.equals(lp.getCity(), level.getString("city"))) {
+							System.out.println(level.getString("level"));
+							airLevel = level.getJSONObject("level").getInteger("air");
+							waterLevel = level.getJSONObject("level").getInteger("water");
+						}
 					}
 				}
 			}
@@ -394,7 +407,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					}
 					array.add(obj);
 				}
-				PdfUtil.instance().createPDF(array, path);
+				String levelName = mapper.findLevel(code);
+				PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path);
 				result.setResultCode(0);
 				result.setResultMessage("");
 				result.setPath(filePath);
@@ -482,7 +496,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					obj.put("air", air);
 					obj.put("water", water);
 					JSONObject cityLevel = new JSONObject();
-					cityLevel.put(citys.get(i), obj.toJSONString());
+					cityLevel.put("city", citys.get(i));
+					cityLevel.put("level", obj);
 					array.add(cityLevel);
 				}
 			}
