@@ -18,7 +18,7 @@ public interface ITUserStepService extends IBaseService<TUserStep, TUserStepDto>
 	 * @param list
 	 * @return
 	 */
-	BaseResult batchInstart(String data, String userTocken);
+	BaseResult batchInsert(String data);
 
 	/**
 	 * 

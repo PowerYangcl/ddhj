@@ -316,7 +316,7 @@ public class ApiController extends BaseClass {
 		}
 		// 批量导入计步数据
 		else if ("step_sync".equals(api.getApiTarget())) {
-			BaseResult result = stepService.batchInstart(api.getApiInput(), api.getUserToken());
+			BaseResult result = stepService.batchInsert(api.getApiInput());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else {
 			BaseResult result = new BaseResult();
