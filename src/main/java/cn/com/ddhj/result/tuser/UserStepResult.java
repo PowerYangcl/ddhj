@@ -1,6 +1,7 @@
 package cn.com.ddhj.result.tuser;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.model.user.TUserStep;
@@ -22,7 +23,7 @@ public class UserStepResult extends BaseResult {
 	/**
 	 * 年统计
 	 */
-	private List<TUserStep> year;
+	private List<Map<String, Integer>> year;
 
 	public String getEquipmentCode() {
 		return equipmentCode;
@@ -48,11 +49,11 @@ public class UserStepResult extends BaseResult {
 		this.month = month;
 	}
 
-	public List<TUserStep> getYear() {
+	public List<Map<String, Integer>> getYear() {
 		return year;
 	}
 
-	public void setYear(List<TUserStep> year) {
+	public void setYear(List<Map<String, Integer>> year) {
 		this.year = year;
 	}
 
