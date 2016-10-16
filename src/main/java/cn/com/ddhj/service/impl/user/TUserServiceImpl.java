@@ -13,8 +13,10 @@ import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
+import cn.com.ddhj.mapper.user.TUserStepMapper;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
+import cn.com.ddhj.model.user.TUserStep;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
@@ -36,6 +38,8 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 	private TUserMapper mapper;
 	@Autowired
 	private TUserLoginMapper loginMapper;
+	@Autowired
+	private TUserStepMapper stepMapper;
 
 	/**
 	 * 
@@ -64,6 +68,14 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					login.setCreateUser(user.getUserCode());
 					login.setCreateTime(DateUtil.getSysDateTime());
 					loginMapper.insertSelective(login);
+					// 根据设备号同步计步数据
+					if (StringUtils.isNoneBlank(dto.getEquipmentCode())) {
+						TUserStep step = new TUserStep();
+						step.setEquipmentCode(dto.getEquipmentCode());
+						step.setUserCode(user.getUserCode());
+						step.setIsBinding(1);
+						stepMapper.updateByEquipmentCode(step);
+					}
 					result.setResultCode(0);
 					result.setUser(user);
 					result.setResultMessage("登录成功");

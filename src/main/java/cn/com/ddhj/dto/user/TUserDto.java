@@ -34,6 +34,19 @@ public class TUserDto extends BaseDto {
 	 */
 	private String eMail;
 
+	/**
+	 * 设备识别码
+	 */
+	private String equipmentCode;
+
+	public String getEquipmentCode() {
+		return equipmentCode;
+	}
+
+	public void setEquipmentCode(String equipmentCode) {
+		this.equipmentCode = equipmentCode;
+	}
+
 	public String getUserCode() {
 		return userCode;
 	}

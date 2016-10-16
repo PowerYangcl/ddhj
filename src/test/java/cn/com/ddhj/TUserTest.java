@@ -27,6 +27,7 @@ public class TUserTest extends BaseTest {
 	@Autowired
 	private TUserMapper mapper;
 
+	@Test
 	public void register() {
 		TUser entity = new TUser();
 		entity.setPhone("13655422211");
@@ -49,7 +50,6 @@ public class TUserTest extends BaseTest {
 		System.out.println(JSONObject.toJSON(result));
 	}
 	
-	@Test
 	public void findTUserByUuid(){
 		String uuid = "8c91581b84fd4e69bbf28363aa38b11a";
 		System.out.println(mapper.findTUserByUuid(uuid));
