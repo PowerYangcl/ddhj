@@ -30,6 +30,7 @@ import cn.com.ddhj.result.order.OrderTotal;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.impl.orderpay.OrderPayProcess;
+import cn.com.ddhj.service.impl.orderpay.PaymentChannel;
 import cn.com.ddhj.service.impl.orderpay.prepare.PayGatePreparePayProcess;
 import cn.com.ddhj.util.DateUtil;
 
@@ -235,14 +236,24 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		PayGatePreparePayProcess.PaymentResult result = null;
 		if ("PT161007100002".equals(payType)) {
 			// 支付宝支付
-			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl);
+			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl, PaymentChannel.WAP);
 		} else if ("PT161007100001".equals(payType)) {
 			// 微信支付
 			if (StringUtils.isNotBlank(openID)) {
-				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl);
+				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl, PaymentChannel.JSAPI);
 			} else {
 				errorMsg = "openID is Empty!";
 			}
+		} else if ("PT161007100003".equals(payType)) {
+			if (StringUtils.isNotBlank(openID)) {
+				// app内调h5微信方式支付
+				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl, PaymentChannel.APP);
+			} else {
+				errorMsg = "openID is Empty!";
+			}
+		} else if ("PT161007100004".equals(payType)) {
+			// app内调h5支付宝方式支付
+			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl, PaymentChannel.APP);
 		} else {
 			errorMsg = "PayType Not Implemented!";
 		}
