@@ -78,7 +78,7 @@ public abstract class PreparePayProcess<I extends PreparePayProcess.PaymentInput
 			return result;
 		}
 		
-		if(order.getPayPrice().compareTo(new BigDecimal(0.0)) <= 0) {
+		if(order.getPayPrice() == null || order.getPayPrice().compareTo(new BigDecimal(0.0)) <= 0) {
 			result.setResultCode(0);
 			result.setResultMessage("订单支付金额小于等于0.0");
 			return result;

@@ -360,7 +360,11 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 							lpcodes.add(p.getCode());
 						}
 					}
-					List<TReport> rList  = reportMapper.findPriceByCode(lpcodes);
+					List<TReport> rList = null;
+					if(null != lpcodes && !lpcodes.isEmpty()) {
+						rList = reportMapper.findPriceByCode(lpcodes);
+					}
+					
 					
 					List<Estate> projectList = new ArrayList<>();
 					// 开始组建数据

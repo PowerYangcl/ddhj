@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.service.impl.orderpay.PaymentChannel;
+import cn.com.ddhj.service.impl.orderpay.config.PayGateConfig;
 import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
 import cn.com.ddhj.service.impl.orderpay.utils.PayGateUtils;
 
@@ -33,6 +34,7 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 		TOrder order = orderMapper.selectByCode(bigOrderCode);
 
 		Map<String,String> param = createPayGateParam(input);
+		
 		param.put("c_mid", XmasPayConfig.getPayGateMid());
 		param.put("c_order", bigOrderCode);
 		//modify XXX
@@ -93,12 +95,30 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 			// 记录请求支付网关的返回结果日志
 			logMap.put("flag_success", result.getResultCode()+"");
 			logMap.put("create_time", DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
-			payService.saveXmasPayLog(logMap);
+			//payService.saveXmasPayLog(logMap);
 			
 			if(result.getResultCode() != PaymentResult.SUCCESS){
 				return result;
 			}
 		}else{
+			if ("PT161007100003".equals(input.payType)) {
+				param.put("c_paygate", PayGateConfig.getPayGateVal(PayGateConfig.Type.WECHAT_APP)+"");
+				param.remove("c_signstr");
+				param.put("c_signstr", PayGateUtils.createSign(param, XmasPayConfig.getPayGatePass()));
+			} else if ("PT161007100004".equals(input.payType)) {
+				param.put("c_paygate", PayGateConfig.getPayGateVal(PayGateConfig.Type.ALIPAY_APP)+"");
+				param.remove("c_signstr");
+				param.put("c_signstr", PayGateUtils.createSign(param, XmasPayConfig.getPayGatePass()));
+			}
+			
+//			&c_paygate_account=653
+//					&c_paygate_type=4
+//					c_memo2=15210383700%7
+//					c_name=15210383700
+//			param.put("c_paygate_account", param.get("c_paygate").toString());
+//			param.put("c_paygate_type", "4");
+//			param.put("c_name", "15313168722");
+//			param.put("c_memo2", "15313168722");
 			result.payUrl = PayGateUtils.createPayGateUrl(param, XmasPayConfig.getPayGateURL());
 		}
 		
@@ -137,6 +157,8 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 		public String memo1;
 		// 扩展参数二
 		public String memo2;
+		
+		public String payType;
 	}
 	
 	/**

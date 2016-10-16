@@ -236,24 +236,19 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		PayGatePreparePayProcess.PaymentResult result = null;
 		if ("PT161007100002".equals(payType)) {
 			// 支付宝支付
-			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl, PaymentChannel.WAP);
+			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl, payType);
 		} else if ("PT161007100001".equals(payType)) {
 			// 微信支付
 			if (StringUtils.isNotBlank(openID)) {
-				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl, PaymentChannel.JSAPI);
+				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl, payType);
 			} else {
 				errorMsg = "openID is Empty!";
 			}
 		} else if ("PT161007100003".equals(payType)) {
-			if (StringUtils.isNotBlank(openID)) {
-				// app内调h5微信方式支付
-				result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl, PaymentChannel.APP);
-			} else {
-				errorMsg = "openID is Empty!";
-			}
+			result = new OrderPayProcess().wechatJSAPIPrepare(orderCode, openID, returnUrl, payType);
 		} else if ("PT161007100004".equals(payType)) {
 			// app内调h5支付宝方式支付
-			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl, PaymentChannel.APP);
+			result = new OrderPayProcess().aliPayH5Prepare(orderCode, returnUrl, payType);
 		} else {
 			errorMsg = "PayType Not Implemented!";
 		}
