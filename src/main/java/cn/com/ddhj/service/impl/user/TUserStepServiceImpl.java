@@ -14,11 +14,9 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserStepDto;
-import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.mapper.user.TUserStepMapper;
 import cn.com.ddhj.model.user.TUser;
-import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserStep;
 import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
@@ -39,8 +37,6 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	@Autowired
 	private TUserStepMapper mapper;
 	@Autowired
-	private TUserLoginMapper loginMapper;
-	@Autowired
 	private TUserMapper userMapper;
 
 	/**
@@ -55,23 +51,20 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	 *      java.lang.String)
 	 */
 	@Override
-	public BaseResult batchInstart(String data, String userTocken) {
+	public BaseResult batchInsert(String data) {
 		int isBinding = 0;
 		String userCode = "";
-		TUserLogin login = loginMapper.findLoginByUuid(userTocken);
-		if (login != null) {
-			TUser user = userMapper.findTUserByUuid(login.getUserToken());
-			if (user != null) {
-				isBinding = 1;
-				userCode = user.getUserCode();
-			}
-		}
 		BaseResult result = new BaseResult();
 		if (StringUtils.isNotBlank(data)) {
 			JSONObject step = JSONObject.parseObject(data);
 			if (step != null) {
+				TUser user = userMapper.findUserByPhone(step.getString("phone"));
+				if (user != null) {
+					isBinding = 1;
+					userCode = user.getUserCode();
+				}
 				String equipmentCode = step.getString("equipmentCode");
-				JSONArray array = step.getJSONArray("time");
+				JSONArray array = JSONArray.parseArray(step.getString("data"));
 				if (array != null && array.size() > 0) {
 					List<TUserStep> list = new ArrayList<TUserStep>();
 					for (int i = 0; i < array.size(); i++) {
@@ -94,7 +87,6 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						result.setResultMessage("批量同步计步数据错误");
 					}
 				}
-
 			} else {
 				result.setResultCode(-1);
 				result.setResultMessage("请确认数据是否为json");

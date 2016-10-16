@@ -96,8 +96,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			String[] arr = position.split(",");
 			String lat = arr[0];
 			String lng = arr[1];
-//			JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");
-//			JSONObject obj = wasService.getWeatherWithPosition(lng, lat);
 long start = System.currentTimeMillis();
 			ExecutorService executor = Executors.newCachedThreadPool();
 			Task1025Position pos = new Task1025Position();
@@ -195,7 +193,6 @@ System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫�
 			return result;
 		}
 		try {
-//			JSONObject weather = cityAirService.getWeatherInfo(city);   // TODO 耗时接口
 long start = System.currentTimeMillis();
 			ExecutorService executor = Executors.newCachedThreadPool();
 			Task1032Weather twea = new Task1032Weather();
@@ -208,11 +205,11 @@ long start = System.currentTimeMillis();
 	        taqi.setCity(city); 
 	        Future<CityAqi> aqiFuture = executor.submit(taqi);
 	        
-//	        Task1032Noise noi = new Task1032Noise();
-//	        noi.setCity(city);
-//	        noi.setNoiseMapper(noiseMapper);
-//	        noi.setPosition(position);
-//	        Future<String> noiFuture = executor.submit(noi);
+	        Task1032Noise noi = new Task1032Noise();
+	        noi.setCity(city);
+	        noi.setNoiseMapper(noiseMapper);
+	        noi.setPosition(position);
+	        Future<String> noiFuture = executor.submit(noi);
 	        
 	        
 	        JSONObject weather = weaTask.get();
@@ -222,7 +219,6 @@ long end = System.currentTimeMillis();
 System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
 	        
 	        
-//	        CityAqi aqi = cityAirService.getCityAqi(city);
 	        String hourAqi = "80";
 			String dayAqi = "";
 			if(aqi.getEntity() != null) {
@@ -296,8 +292,8 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			envList.add(water);
 			EnvInfo noise = new EnvInfo();
 			noise.setName("噪音");
-//			noise.setMemo(noiFuture.get().split("@")[1]);  
-//			noise.setLevel(noiFuture.get().split("@")[0]);  
+			noise.setMemo(noiFuture.get().split("@")[1]);  
+			noise.setLevel(noiFuture.get().split("@")[0]);  
 			envList.add(noise);
 			result.put("detailList", envList);  // 环境明细
 			
