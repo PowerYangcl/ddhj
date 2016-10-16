@@ -208,11 +208,11 @@ long start = System.currentTimeMillis();
 	        taqi.setCity(city); 
 	        Future<CityAqi> aqiFuture = executor.submit(taqi);
 	        
-	        Task1032Noise noi = new Task1032Noise();
-	        noi.setCity(city);
-	        noi.setNoiseMapper(noiseMapper);
-	        noi.setPosition(position);
-	        Future<String> noiFuture = executor.submit(noi);
+//	        Task1032Noise noi = new Task1032Noise();
+//	        noi.setCity(city);
+//	        noi.setNoiseMapper(noiseMapper);
+//	        noi.setPosition(position);
+//	        Future<String> noiFuture = executor.submit(noi);
 	        
 	        
 	        JSONObject weather = weaTask.get();
@@ -296,8 +296,8 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			envList.add(water);
 			EnvInfo noise = new EnvInfo();
 			noise.setName("噪音");
-			noise.setMemo(noiFuture.get().split("@")[1]);  
-			noise.setLevel(noiFuture.get().split("@")[0]);  
+//			noise.setMemo(noiFuture.get().split("@")[1]);  
+//			noise.setLevel(noiFuture.get().split("@")[0]);  
 			envList.add(noise);
 			result.put("detailList", envList);  // 环境明细
 			
@@ -306,7 +306,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			
 			result.put("resultCode", 0); 
 			result.put("resultMessage", "SUCCESS"); 
-//			System.out.println("1032接口：" + result); 
+			System.out.println("1032接口：" + result); 
 			return  result;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -410,7 +410,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			result.put("resultMessage", "经纬度地址解析失败，无法获取当前地理位置信息");
 		}
 		
-//		System.out.println(result);  
+		System.out.println("1033接口：" + result);  
 		return  result; 
 	}
 	

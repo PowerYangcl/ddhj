@@ -2,6 +2,9 @@ package cn.com.ddhj;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +12,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.model.TAreaNoise;
+import cn.com.ddhj.service.IEstateInfoService;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,13 +38,22 @@ public class TAreaNoiseTest extends BaseTest {
 
 	@Autowired
 	private ITAreaNoiseMapper noiseMapper;
-
+	@Resource
+	private IEstateInfoService estateService; 
+	
 	@Test
 	public void insert() {
-		List<TAreaNoise> list = this.readExcel("D:/g.xlsx");
-		for(TAreaNoise e : list){
-			noiseMapper.insertSelective(e);
-		}
+//		List<TAreaNoise> list = this.readExcel("D:/g.xlsx");
+//		for(TAreaNoise e : list){
+//			noiseMapper.insertSelective(e);
+//		}
+		String lat1 = "39.754462"; 
+		String lng1 = "116.767682";   
+		JSONObject object = estateService.estateInfoList(lng1, lat1, "1" , "10" ,"10000");  
+		 
+		 
+		List<TAreaNoise> list = noiseMapper.selectByArea("北京");
+		System.out.println(JSONObject.toJSONString(list)); 
 	}
 	
 	public static void main(String[] args) {
@@ -47,6 +61,9 @@ public class TAreaNoiseTest extends BaseTest {
 		Double lng1 = 116.767682;  
 		Double lat2 = 39.774501 ; 
 		Double lng2 = 116.353456; 
+		
+		
+		
 		
 		String dist = getDistance(lat1, lng1, lat2, lng2) ;
 		
