@@ -215,6 +215,19 @@ long start = System.currentTimeMillis();
 	        noi.setPosition(position);
 	        Future<String> noiFuture = executor.submit(noi);
 	        
+	        Task1032Rubbish rub = new Task1032Rubbish();
+	        rub.setCity(city);
+	        rub.setPosition(position);
+	        rub.setMapper(rubbishMapper);
+	        Future<EnvInfo> rubFuture = executor.submit(rub);
+	        
+	        Task1032Estate est = new Task1032Estate();
+	        est.setPosition(position);
+	        est.setRadius(radius);
+	        est.setEstateService(estateService);
+	        Future<List<EnvInfo>> estFuture = executor.submit(est);
+	        
+	        
 	        
 	        JSONObject weather = weaTask.get();
 	        CityAqi aqi = aqiFuture.get();
@@ -278,29 +291,59 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 				air.setLevel(aqi.getEntity().getQuality()); 
 			}
 			envList.add(air);
-			EnvInfo wea = new EnvInfo();
-			wea.setName("天气");
-			wea.setMemo(weather.getString("info"));
-			wea.setLevel(weather.getString("wind")); 
-			envList.add(wea);
-			// 数据模糊，暂时写死
+//			EnvInfo wea = new EnvInfo();              // 根据新需求，此处不要了 
+//			wea.setName("天气");
+//			wea.setMemo(weather.getString("info"));
+//			wea.setLevel(weather.getString("wind")); 
+//			envList.add(wea);
+			
+			// 污染源
 			EnvInfo gar = new EnvInfo();
-			gar.setName("垃圾");
-			gar.setMemo("2Km以外");
-			gar.setLevel("较远"); 
+			if(rubFuture.get() != null){
+				gar = rubFuture.get(); 
+			}else{
+				gar.setName("污染源");
+				gar.setMemo("5Km以外");
+				gar.setLevel("较远"); 
+			}
 			envList.add(gar);
+			
 			EnvInfo water = new EnvInfo();
 			water.setName("水质");
 			water.setMemo("色度低"); 
 			water.setLevel("优良");  
 			envList.add(water);
+			
 			EnvInfo noise = new EnvInfo();
 			noise.setName("噪音");
 			noise.setMemo(noiFuture.get().split("@")[1]);  
 			noise.setLevel(noiFuture.get().split("@")[0]);  
 			envList.add(noise);
-			result.put("detailList", envList);  // 环境明细
 			
+			// 新版需求
+			EnvInfo land = new EnvInfo();    // 土壤
+			land.setName("土壤");
+			land.setMemo("无污染");
+			land.setLevel("优"); 
+			EnvInfo radiation  = new EnvInfo();    // 辐射
+			radiation.setName("辐射");
+			radiation.setMemo("无");
+			radiation.setLevel("优"); 
+			EnvInfo dang = new EnvInfo(); // 危险品
+			dang.setName("危险品");
+			dang.setMemo("无");
+			dang.setLevel("安全");  
+			envList.add(land);
+			envList.add(radiation);
+			envList.add(dang);
+			// 绿化率 和 容积率 (距离最近的楼盘)
+			envList.addAll(estFuture.get());
+			
+			
+			
+			
+			
+			result.put("detailList", envList);  // 环境明细
 			result.put("level", this.scoreLevel(score));  // 环境等级
 			result.put("tiptitle", weather.getString("des"));  // 提示标题
 			
