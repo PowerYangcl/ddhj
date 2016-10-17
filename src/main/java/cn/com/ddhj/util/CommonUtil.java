@@ -75,4 +75,56 @@ public class CommonUtil {
 		Double maxLng = longitude + radiusLng;
 		return new double[] { minLat, minLng, maxLat, maxLng };
 	}
+	
+	/**
+	 * @descriptions 根据两个位置的经纬度，来计算两地的距离（单位为米）
+	 *
+	 * @param lat1  用户纬度
+	 * @param lng1 用户经度
+	 * @param lat2 商家纬度
+	 * @param lng2 商家经度
+	 * @return
+	 * @date 2016年10月7日 下午10:25:46
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+    public static Integer getDistance(Double lat1, Double lng1, Double lat2, Double lng2) {
+    	double earthRadius = 6378.137; // 地球半径 
+        double radLat1 = rad(lat1);
+        double radLat2 = rad(lat2);
+        double difference = radLat1 - radLat2;
+        double mdifference = rad(lng1) - rad(lng2);
+        double distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(difference / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(mdifference / 2), 2)));
+        distance = distance * earthRadius;
+        distance = Math.round(distance * 10000) / 10000;
+        String distanceStr = distance+"";
+        distanceStr = distanceStr. substring(0, distanceStr.indexOf("."));
+        
+        return Integer.valueOf(distanceStr) * 1000;
+    }
+    
+    private static double rad(double d) { 
+        return d * Math.PI / 180.0; 
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

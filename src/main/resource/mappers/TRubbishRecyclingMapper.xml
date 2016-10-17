@@ -122,4 +122,32 @@
 		city = #{city,jdbcType=VARCHAR}
 		)
 	</select>
+	
+	
+	<select id="findListByCity" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+			*
+		from
+			t_rubbish_recycling 
+		where
+			city = #{city}
+	</select>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

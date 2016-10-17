@@ -24,6 +24,7 @@ import cn.com.ddhj.dto.CityAqi;
 import cn.com.ddhj.dto.CityAqiData;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
+import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
@@ -72,6 +73,9 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	
 	@Resource
 	private ITAreaNoiseMapper noiseMapper;
+	
+	@Resource
+	private TRubbishRecyclingMapper rubbishMapper;
 	
 	
 	/**
