@@ -41,8 +41,22 @@ public class Task1032Estate implements Callable<List<EnvInfo>> {
 			EData e = map.get(map.firstKey());
 			
 			if(e.getVolumeRate() != null){
-				Double v = Double.valueOf(e.getVolumeRate().substring(0, 2));
-				rj.setMemo(String.valueOf(v));
+				Double v = null;
+				String vol = e.getVolumeRate();
+				if(vol.length() > 2){
+					vol = vol.substring(0, 2);
+					try {
+						v = Double.valueOf(vol);
+					}catch (Exception e2) {
+						vol = "1.2";
+						v = 1.2;
+					}
+				}else{
+					vol = "1.2";
+					v = 1.2;
+				}
+				
+				rj.setMemo(vol);
 				if(v < 1){
 					rj.setLevel("低");
 				}else if( 1< v && v < 2){ 
