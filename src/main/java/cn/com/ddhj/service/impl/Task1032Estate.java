@@ -71,7 +71,11 @@ public class Task1032Estate implements Callable<List<EnvInfo>> {
 			
 			if(e.getGreeningRate() != null){
 				String g = e.getGreeningRate().split("（")[0];
-				lh.setMemo(g);
+				if(g.length() < 2){
+					lh.setMemo("25%");
+				}else{
+					lh.setMemo(g);
+				}
 				String l = e.getGreeningRate().split("绿化率")[1];
 				l = l.substring(0, l.length() -1);
 				lh.setLevel(l); 
