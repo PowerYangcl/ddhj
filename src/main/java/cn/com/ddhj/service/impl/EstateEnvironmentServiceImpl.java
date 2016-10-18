@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -493,8 +494,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		List<String> clist = new ArrayList<String>();
 		clist.add("北京");
 		clist.add("天津");
-//		clist.add("上海");
-//		clist.add("广州");
+
 		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
 		ExecutorService executor = Executors.newCachedThreadPool();
 		for(int i = 0 ; i < clist.size() ; i ++){
@@ -503,59 +503,51 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 	        taqi.setCity(clist.get(i));  
 	        futureList.add(executor.submit(taqi));
 		}
-		executor.shutdown();   
 		
-//	   for (Future<CityAqi> fs : futureList){   
-//               while(!fs.isDone());  
-//               		fs.get();
-//       }
-		
-		
-		List<Map<String , List<TLandedProperty>>> areaEstateList = new ArrayList<Map<String , List<TLandedProperty>>>();
+		Map<String , List<TLandedProperty>> map = new TreeMap<String , List<TLandedProperty>>();
 		for(String city : clist){  // 默认初始化
-			Map<String , List<TLandedProperty>> map = new HashMap<String , List<TLandedProperty>>();
 			List<TLandedProperty> elist = new ArrayList<TLandedProperty>();
 			map.put(city, elist);
-			areaEstateList.add(map);
 		}
 		List<TLandedProperty> estateList = lrMapper.selectAllEstateInfo();
 		for(TLandedProperty e : estateList){
-			for(int i = 0 ; i < areaEstateList.size() ; i ++){
-				if(areaEstateList.get(i).containsKey(e.getCity())){
-					areaEstateList.get(i).get(e.getCity()).add(e);
-				}
+			if(map.containsKey(e.getCity())){
+				map.get(e.getCity()).add(e);
 			}
 		}
 		
-		
+		List<TLandedProperty> nestateList = new ArrayList<>();
+		List<Future<List<TLandedProperty>>> tlpFutureList = new ArrayList<Future<List<TLandedProperty>>>();   
 		try {
-			for (Future<CityAqi> fs : futureList){   
+			for (Future<CityAqi> fs : futureList){  
+				CityAqi aqi = null;
 				while(!fs.isDone()){
-					CityAqi aqi = fs.get();
-					
+					aqi = fs.get();
 				}
-			}	
+				String hourAqi = "80";
+				String dayAqi = "";
+				if(aqi.getEntity() != null) {
+					hourAqi = aqi.getEntity().getAQI();
+					for(CityAqiData d : aqi.getList()){
+						dayAqi += d.getAQI() + ",";
+					}
+					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
+				}
+				// 按照city名称 分为N个线程，一共会启动N*20个线程 
+				if(map.containsKey(aqi.getName())){
+					List<TLandedProperty> tlpList = map.get(aqi.getName());
+					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList, hourAqi, dayAqi); 
+					tlpFutureList.add(executor.submit(tea));
+				}
+			}
+			// TODO 组合nestateList 然后批量更新数据库
+			
+			
 		} catch (InterruptedException | ExecutionException e1) {
 			e1.printStackTrace();
+		}finally{
+			executor.shutdown();  
 		}
-		
-        
-        
-//        CityAqi aqi = aqiFuture.get();
-//        executor.shutdown();
-//        
-//        String hourAqi = "80";
-//		String dayAqi = "";
-//		if(aqi.getEntity() != null) {
-//			hourAqi = aqi.getEntity().getAQI();
-//			for(CityAqiData d : aqi.getList()){
-//				dayAqi += d.getAQI() + ",";
-//			}
-//			dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
-//		}
-		
-		
-		
 	}
 	
 	
