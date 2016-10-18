@@ -3,6 +3,7 @@ package cn.com.ddhj.service.impl;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import cn.com.ddhj.mapper.TChemicalPlantMapper;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.model.TRubbishRecycling;
 import cn.com.ddhj.util.CommonUtil;
@@ -10,6 +11,8 @@ import cn.com.ddhj.util.CommonUtil;
 public class Task1032Rubbish implements Callable<EnvInfo> {
 
 	private TRubbishRecyclingMapper mapper;
+	
+	private TChemicalPlantMapper chemicalMapper; // TODO 这里的数据忘记加了，记得加上
 	
 	private String city;
 	
@@ -71,6 +74,13 @@ public class Task1032Rubbish implements Callable<EnvInfo> {
 	}
 	public void setPosition(String position) {
 		this.position = position;
+	}
+
+	public TChemicalPlantMapper getChemicalMapper() {
+		return chemicalMapper;
+	}
+	public void setChemicalMapper(TChemicalPlantMapper chemicalMapper) {
+		this.chemicalMapper = chemicalMapper;
 	}
 	
 }

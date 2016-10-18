@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.dto.CityAqi;
 import cn.com.ddhj.dto.CityAqiData;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
+import cn.com.ddhj.mapper.TChemicalPlantMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
@@ -75,7 +76,11 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	private ITAreaNoiseMapper noiseMapper;
 	
 	@Resource
-	private TRubbishRecyclingMapper rubbishMapper;
+	private TRubbishRecyclingMapper rubbishMapper; // 污染源-垃圾站|焚化厂等
+	
+	@Resource
+	private TChemicalPlantMapper chemicalMapper; // 污染源-化工厂
+	
 	
 	
 	/**
@@ -219,6 +224,7 @@ long start = System.currentTimeMillis();
 	        rub.setCity(city);
 	        rub.setPosition(position);
 	        rub.setMapper(rubbishMapper);
+	        rub.setChemicalMapper(chemicalMapper); 
 	        Future<EnvInfo> rubFuture = executor.submit(rub);
 	        
 	        Task1032Estate est = new Task1032Estate();
@@ -437,7 +443,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 						if(e.getImages() != null && e.getImages().size() > 0){
 							img = e.getImages().get(0);
 						}
-						projectList.add(new Estate(e.getTitle() , distance , e.getAddressFull() , price , lpcode, position_, img) );		
+						projectList.add(new Estate(e.getTitle() , distance , e.getAddressFull() , price , lpcode, position_, img , e.getScore()) );		
 					}
 					if(projectList.size() != 0){
 						result.put("resultCode", 0);
@@ -473,6 +479,80 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		
 		return  estateService.estateInfoList(lng, lat, page , count ,radius); 
 	}
+	
+	
+	/**
+	 * @description:  手动刷新楼盘评分 | 接口号 2048 
+	 * 
+	 * @author Yangcl 
+	 * @date 2016年10月18日 下午4:29:29 
+	 * @version 1.0.0.1
+	 */
+	public void resyncEstateScore(){
+		List<String> clist = new ArrayList<String>();
+		clist.add("北京");
+		clist.add("天津");
+//		clist.add("上海");
+//		clist.add("广州");
+		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
+		ExecutorService executor = Executors.newCachedThreadPool();
+		for(int i = 0 ; i < clist.size() ; i ++){
+			Task1032Aqi taqi = new Task1032Aqi();
+	        taqi.setCityAirService(cityAirService);
+	        taqi.setCity(clist.get(i));  
+	        futureList.add(executor.submit(taqi));
+		}
+		executor.shutdown();   
+		
+//	   for (Future<CityAqi> fs : futureList){   
+//               while(!fs.isDone());  
+//               		fs.get();
+//       }
+		
+		
+		List<Map<String , List<TLandedProperty>>> areaEstateList = new ArrayList<Map<String , List<TLandedProperty>>>();
+		for(String city : clist){  // 默认初始化
+			Map<String , List<TLandedProperty>> map = new HashMap<String , List<TLandedProperty>>();
+			List<TLandedProperty> elist = new ArrayList<TLandedProperty>();
+			map.put(city, elist);
+			areaEstateList.add(map);
+		}
+		List<TLandedProperty> estateList = lrMapper.selectAllEstateInfo();
+		for(TLandedProperty e : estateList){
+			for(Map<String , List<TLandedProperty>> map :areaEstateList){
+				if(map.containsKey(e.getCity())){
+					map.get(e.getCity()).add(e);
+				}
+			}
+		}
+		
+		
+		
+		
+		
+        
+        
+//        CityAqi aqi = aqiFuture.get();
+//        executor.shutdown();
+//        
+//        String hourAqi = "80";
+//		String dayAqi = "";
+//		if(aqi.getEntity() != null) {
+//			hourAqi = aqi.getEntity().getAQI();
+//			for(CityAqiData d : aqi.getList()){
+//				dayAqi += d.getAQI() + ",";
+//			}
+//			dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
+//		}
+		
+		
+		
+	}
+	
+	
+	
+	
+	
 	
 	/**
 	 * @descriptions 根据两个位置的经纬度，来计算两地的距离（单位为KM）
@@ -748,8 +828,9 @@ class Estate{
 	private String number; // 楼盘在数据库里的编号
 	private String position;
 	private String img;
+	private Integer score;
 	
-	public Estate(String name, String distance, String address, String price, String number, String position, String img) {
+	public Estate(String name, String distance, String address, String price, String number, String position, String img ,Integer score) {
 		this.name = name;
 		this.distance = distance;
 		this.address = address;
@@ -757,6 +838,7 @@ class Estate{
 		this.number = number;
 		this.position = position;
 		this.img = img;
+		this.score = score;
 	}
 	
 	
@@ -802,6 +884,13 @@ class Estate{
 	public void setImg(String img) {
 		this.img = img;
 	}
+	public Integer getScore() {
+		return score;
+	}
+	public void setScore(Integer score) {
+		this.score = score;
+	}
+	
 }
 
 

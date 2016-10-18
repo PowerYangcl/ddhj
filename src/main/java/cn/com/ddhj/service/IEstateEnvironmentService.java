@@ -48,6 +48,15 @@ public interface IEstateEnvironmentService {
 	 */ 
 	public JSONObject apiEstateList(String position , String city , String page , String count , String radius);
 	
+	
+	/**
+	 * @description: 手动刷新楼盘评分 | 接口号 2048
+	 * 
+	 * @author Yangcl 
+	 * @date 2016年10月18日 下午4:22:47 
+	 * @version 1.0.0.1
+	 */
+	public void resyncEstateScore();
 }
 
 

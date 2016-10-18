@@ -289,6 +289,7 @@ public class CityAirServiceImpl implements ICityAirService {
 	 */
 	public CityAqi getCityAqi(String cityName) {
 		CityAqi e = new CityAqi();
+		e.setName(cityName); 
 		JSONObject air = getCityAir(cityName);
 		if (air != null && air.getInteger("resultcode") == 200) {
 			JSONArray result = JSONArray.parseArray(air.getString("result"));

@@ -8,6 +8,7 @@
 		<result column="title" property="title" jdbcType="VARCHAR" />
 		<result column="total" property="total" jdbcType="VARCHAR" />
 		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="score" property="score" jdbcType="INTEGER" />
 		<result column="completion" property="completion" jdbcType="VARCHAR" />
 		<result column="propertyType" property="propertyType" jdbcType="VARCHAR" />
 		<result column="propertyCompany" property="propertyCompany"
@@ -434,6 +435,14 @@
 			(lp.lng BETWEEN
 			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
 		</where>
+	</select>
+	
+	<!-- 取出全部地产信息 - Yangcl-->
+	<select id="selectAllEstateInfo" resultMap="BaseResultMap">
+		select
+			*
+		from 
+			t_landed_property 
 	</select>
 </mapper>
 

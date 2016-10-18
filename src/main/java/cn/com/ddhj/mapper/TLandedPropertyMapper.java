@@ -97,4 +97,34 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, TLand
 	 * @return
 	 */
 	List<TLandedProperty> findLpAllByCoord(TLandedPropertyDto dto);
+	
+	/**
+	 * @description: 取出全部地产信息
+	 * 
+	 * @return
+	 * @author Yangcl 
+	 * @date 2016年10月18日 下午5:15:13 
+	 * @version 1.0.0.1
+	 */
+	List<TLandedProperty> selectAllEstateInfo();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
