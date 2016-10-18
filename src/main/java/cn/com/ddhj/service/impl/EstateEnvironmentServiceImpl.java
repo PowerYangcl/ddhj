@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -519,16 +520,24 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		}
 		List<TLandedProperty> estateList = lrMapper.selectAllEstateInfo();
 		for(TLandedProperty e : estateList){
-			for(Map<String , List<TLandedProperty>> map :areaEstateList){
-				if(map.containsKey(e.getCity())){
-					map.get(e.getCity()).add(e);
+			for(int i = 0 ; i < areaEstateList.size() ; i ++){
+				if(areaEstateList.get(i).containsKey(e.getCity())){
+					areaEstateList.get(i).get(e.getCity()).add(e);
 				}
 			}
 		}
 		
 		
-		
-		
+		try {
+			for (Future<CityAqi> fs : futureList){   
+				while(!fs.isDone()){
+					CityAqi aqi = fs.get();
+					
+				}
+			}	
+		} catch (InterruptedException | ExecutionException e1) {
+			e1.printStackTrace();
+		}
 		
         
         
