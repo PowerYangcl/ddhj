@@ -538,7 +538,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 				// 按照city名称 分为N个线程，一共会启动N*20个线程 
 				if(map.containsKey(aqi.getName())){
 					List<TLandedProperty> tlpList = map.get(aqi.getName());
-					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList.subList(0, 10), hourAqi, dayAqi);  
+					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList, hourAqi, dayAqi);  
 					tlpFutureList.add(executor.submit(tea));
 				}
 			}
