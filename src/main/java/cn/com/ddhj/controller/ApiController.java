@@ -209,6 +209,12 @@ public class ApiController extends BaseClass {
 			long end = System.currentTimeMillis();
 			System.out.println("1025号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;
+		}else if ("2048".equals(api.getApiTarget())) { // 地区环境接口
+			long start = System.currentTimeMillis(); 
+			estateEnvService.resyncEstateScore();
+			long end = System.currentTimeMillis();
+			System.out.println("2048号接口总共耗时：" + +(end - start) + " 毫秒");
+			return null;
 		}
 		// 订单相关
 		else if ("order_add".equals(api.getApiTarget())) {

@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,6 +41,7 @@ public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
 	}
 
 	public List<TLandedProperty> call() throws Exception {
+		Thread.currentThread().setName(this.list.get(0).getCity() + "二级线程已经启动 - 99999999999999999"); 
 		int size = 20; // 单组list大小
 		int count = list.size() / size; // TreeMap 的分组数       10008/20 = 500 余 8 
 		int count_ = list.size() - count * size; // 余数 
@@ -46,7 +50,7 @@ public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
 			map.put(i , list.subList(i*size , size*(i+1)));
 		}
 		if(count_ != 0){
-			map.put(count, list.subList(count, list.size())); 
+			map.put(count, list.subList(count*size, list.size())); 
 		}
 		
 		List<TLandedProperty> list_ = new ArrayList<TLandedProperty>(); 
@@ -59,17 +63,32 @@ public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
 			}
 			for(Future<TLandedProperty> fut : futList){
 				while(!fut.isDone()){
-					list_.add(fut.get());
 				}
+				list_.add(fut.get()); 
 			}
 		}
+		
+		System.out.println(list_.get(0).getCity() + " = " + list_.size()); 
 		
 		return list_; 
 	}
 
 }
 
-
+//while(!fut.isDone()){
+//TLandedProperty tlp = null;
+//try {
+//	tlp = fut.get(100, TimeUnit.MILLISECONDS);
+//} catch (InterruptedException e) {
+//} catch (ExecutionException e) {
+//} catch (TimeoutException e) {
+//	System.out.println("Time is out"); 
+//    fut.cancel(true);
+//}
+//if(tlp != null){
+//	list_.add(tlp);
+//}
+//}
 
 
 
