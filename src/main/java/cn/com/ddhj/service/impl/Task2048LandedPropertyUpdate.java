@@ -30,7 +30,13 @@ public class Task2048LandedPropertyUpdate implements Callable<Integer> {
 
 
 	public Integer call() throws Exception {
-		Integer flag = this.getLrMapper().batchUpdateScore(this.getList());
+		Integer flag = 0;
+		try {
+			flag = this.getLrMapper().batchUpdateScore(this.getList());
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace(); 
+		}
 		return flag; 
 	}
 	
