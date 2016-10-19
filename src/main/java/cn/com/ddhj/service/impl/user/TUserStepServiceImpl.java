@@ -89,6 +89,9 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						result.setResultCode(-1);
 						result.setResultMessage("批量同步计步数据错误");
 					}
+				}else{
+					result.setResultCode(-1);
+					result.setResultMessage("同步计步数据为空");
 				}
 			} else {
 				result.setResultCode(-1);
