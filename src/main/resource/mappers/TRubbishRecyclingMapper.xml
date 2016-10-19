@@ -4,6 +4,7 @@
 	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TRubbishRecycling">
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="flag" property="flag" jdbcType="INTEGER" />
 		<result column="name" property="name" jdbcType="VARCHAR" />
 		<result column="address" property="address" jdbcType="VARCHAR" />
 		<result column="lat" property="lat" jdbcType="VARCHAR" />
@@ -30,6 +31,9 @@
 			<if test="city != null">
 				city,
 			</if>
+			<if test="flag != null">
+				flag,
+			</if>
 			<if test="name != null">
 				name,
 			</if>
@@ -46,6 +50,9 @@
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="city != null">
 				#{city,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				#{flag , jdbcType=INTEGER},
 			</if>
 			<if test="name != null">
 				#{name,jdbcType=VARCHAR},
@@ -122,4 +129,32 @@
 		city = #{city,jdbcType=VARCHAR}
 		)
 	</select>
+	
+	
+	<select id="findListByCity" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+			*
+		from
+			t_rubbish_recycling 
+		where
+			city = #{city}
+	</select>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

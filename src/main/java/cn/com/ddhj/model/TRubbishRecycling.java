@@ -10,6 +10,8 @@ package cn.com.ddhj.model;
 public class TRubbishRecycling extends BaseModel {
 
 	private String city;
+	
+	private Integer flag;
 
 	private String name;
 
@@ -25,6 +27,14 @@ public class TRubbishRecycling extends BaseModel {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+	
+	public Integer getFlag() {
+		return flag;
+	}
+
+	public void setFlag(Integer flag) {
+		this.flag = flag;
 	}
 
 	public String getName() {

@@ -16,6 +16,8 @@ public class TLandedProperty extends BaseModel {
 	private String title;
 
 	private String total;
+	
+	private Double score;
 
 	private String city;
 
@@ -235,6 +237,14 @@ public class TLandedProperty extends BaseModel {
 
 	public void setAddressFull(String addressFull) {
 		this.addressFull = addressFull;
+	}
+
+	public Double getScore() {
+		return score;
+	}
+
+	public void setScore(Double score) {
+		this.score = score;
 	}
 
 }

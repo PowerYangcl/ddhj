@@ -22,11 +22,12 @@ public class OrderPayProcess {
 	 * @param bigOrderCode 待支付大订单号
 	 * @return
 	 */
-	public AlipayPreparePayProcess.PaymentResult aliPayH5Prepare(String bigOrderCode, String returnUrl){
+	public AlipayPreparePayProcess.PaymentResult aliPayH5Prepare(String bigOrderCode, String returnUrl, String payType){
 		AlipayPreparePayProcess.PaymentInput input = new AlipayPreparePayProcess.PaymentInput();
 		input.bigOrderCode = bigOrderCode;
 		input.payChannel = PaymentChannel.WAP;
 		input.reurl = returnUrl;
+		input.payType = payType;
 		return PayServiceFactory.getInstance().getAlipayPreparePayProcess().process(input);
 	}
 	
@@ -46,12 +47,13 @@ public class OrderPayProcess {
 	 * @param bigOrderCode 待支付大订单号
 	 * @return
 	 */
-	public WechatPreparePayProcess.PaymentResult wechatJSAPIPrepare(String bigOrderCode, String openID, String returnUrl){
+	public WechatPreparePayProcess.PaymentResult wechatJSAPIPrepare(String bigOrderCode, String openID, String returnUrl, String payType){
 		WechatPreparePayProcess.PaymentInput input = new WechatPreparePayProcess.PaymentInput();
 		input.bigOrderCode = bigOrderCode;
 		input.openid = openID;
 		input.payChannel = PaymentChannel.JSAPI;
 		input.reurl = returnUrl;
+		input.payType = payType;
 		return PayServiceFactory.getInstance().getWechatPreparePayProcess().process(input);
 	}
 	

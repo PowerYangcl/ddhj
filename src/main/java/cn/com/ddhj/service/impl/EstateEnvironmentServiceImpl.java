@@ -7,10 +7,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 import javax.annotation.Resource;
 
@@ -23,7 +24,10 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.dto.CityAqi;
 import cn.com.ddhj.dto.CityAqiData;
+import cn.com.ddhj.mapper.ITAreaNoiseMapper;
+import cn.com.ddhj.mapper.TChemicalPlantMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
+import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
@@ -70,6 +74,16 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	@Resource
 	private TReportMapper reportMapper;
 	
+	@Resource
+	private ITAreaNoiseMapper noiseMapper;
+	
+	@Resource
+	private TRubbishRecyclingMapper rubbishMapper; // 污染源-垃圾站|焚化厂等
+	
+	@Resource
+	private TChemicalPlantMapper chemicalMapper; // 污染源-化工厂
+	
+	
 	
 	/**
 	 * @descriptions 地区环境接口|1025
@@ -93,8 +107,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			String[] arr = position.split(",");
 			String lat = arr[0];
 			String lng = arr[1];
-//			JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");
-//			JSONObject obj = wasService.getWeatherWithPosition(lng, lat);
 long start = System.currentTimeMillis();
 			ExecutorService executor = Executors.newCachedThreadPool();
 			Task1025Position pos = new Task1025Position();
@@ -192,7 +204,6 @@ System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫�
 			return result;
 		}
 		try {
-//			JSONObject weather = cityAirService.getWeatherInfo(city);   // TODO 耗时接口
 long start = System.currentTimeMillis();
 			ExecutorService executor = Executors.newCachedThreadPool();
 			Task1032Weather twea = new Task1032Weather();
@@ -205,6 +216,27 @@ long start = System.currentTimeMillis();
 	        taqi.setCity(city); 
 	        Future<CityAqi> aqiFuture = executor.submit(taqi);
 	        
+	        Task1032Noise noi = new Task1032Noise();
+	        noi.setCity(city);
+	        noi.setNoiseMapper(noiseMapper);
+	        noi.setPosition(position);
+	        Future<String> noiFuture = executor.submit(noi);
+	        
+	        Task1032Rubbish rub = new Task1032Rubbish();
+	        rub.setCity(city);
+	        rub.setPosition(position);
+	        rub.setMapper(rubbishMapper);
+	        rub.setChemicalMapper(chemicalMapper); 
+	        Future<EnvInfo> rubFuture = executor.submit(rub);
+	        
+	        Task1032Estate est = new Task1032Estate();
+	        est.setPosition(position);
+	        est.setRadius(radius);
+	        est.setEstateService(estateService);
+	        Future<List<EnvInfo>> estFuture = executor.submit(est);
+	        
+	        
+	        
 	        JSONObject weather = weaTask.get();
 	        CityAqi aqi = aqiFuture.get();
 	        executor.shutdown();
@@ -212,7 +244,6 @@ long end = System.currentTimeMillis();
 System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
 	        
 	        
-//	        CityAqi aqi = cityAirService.getCityAqi(city);
 	        String hourAqi = "80";
 			String dayAqi = "";
 			if(aqi.getEntity() != null) {
@@ -235,7 +266,7 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 						EData e = estateList.get(0);               // 因为精度是1米 所以只有一条记录，且就是这个楼盘
 						result.put("name", e.getTitle()); // 位置名称
 						if(StringUtils.isNoneBlank(e.getGreeningRate())){
-							if(Integer.valueOf(e.getGreeningRate().split("%")[0])/100 < 0.5){   // 潜在的异常点
+							if(Double.valueOf(e.getGreeningRate().split("%")[0])/100 < 0.5){   // 潜在的异常点
 								greeningRate = "0.5"; //教授接口返回HTTP Status 500 - 绿化率指数l只能是0.5或1|真坑爹
 							}
 						}
@@ -268,40 +299,70 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 				air.setLevel(aqi.getEntity().getQuality()); 
 			}
 			envList.add(air);
-			EnvInfo wea = new EnvInfo();
-			wea.setName("天气");
-			wea.setMemo(weather.getString("info"));
-			wea.setLevel(weather.getString("wind")); 
-			envList.add(wea);
-			// 数据模糊，暂时写死
+//			EnvInfo wea = new EnvInfo();              // 根据新需求，此处不要了 
+//			wea.setName("天气");
+//			wea.setMemo(weather.getString("info"));
+//			wea.setLevel(weather.getString("wind")); 
+//			envList.add(wea);
+			
+			// 污染源
 			EnvInfo gar = new EnvInfo();
-			gar.setName("垃圾");
-			gar.setMemo("2Km以外");
-			gar.setLevel("较远"); 
+			if(rubFuture.get() != null){
+				gar = rubFuture.get(); 
+			}else{
+				gar.setName("污染源");
+				gar.setMemo("5Km以外");
+				gar.setLevel("较远"); 
+			}
 			envList.add(gar);
+			
 			EnvInfo water = new EnvInfo();
 			water.setName("水质");
 			water.setMemo("色度低"); 
 			water.setLevel("优良");  
 			envList.add(water);
+			
 			EnvInfo noise = new EnvInfo();
 			noise.setName("噪音");
-			noise.setMemo("2Km以外"); 
-			noise.setLevel("I类/优");  
+			noise.setMemo(noiFuture.get().split("@")[1]);  
+			noise.setLevel(noiFuture.get().split("@")[0]);  
 			envList.add(noise);
-			result.put("detailList", envList);  // 环境明细
 			
+			// 新版需求
+			EnvInfo land = new EnvInfo();    // 土壤
+			land.setName("土壤");
+			land.setMemo("无污染");
+			land.setLevel("优"); 
+			EnvInfo radiation  = new EnvInfo();    // 辐射
+			radiation.setName("辐射");
+			radiation.setMemo("无");
+			radiation.setLevel("优"); 
+			EnvInfo dang = new EnvInfo(); // 危险品
+			dang.setName("危险品");
+			dang.setMemo("无");
+			dang.setLevel("安全");  
+			envList.add(land);
+			envList.add(radiation);
+			envList.add(dang);
+			// 绿化率 和 容积率 (距离最近的楼盘)
+			envList.addAll(estFuture.get());
+			
+			
+			
+			
+			
+			result.put("detailList", envList);  // 环境明细
 			result.put("level", this.scoreLevel(score));  // 环境等级
 			result.put("tiptitle", weather.getString("des"));  // 提示标题
 			
 			result.put("resultCode", 0); 
 			result.put("resultMessage", "SUCCESS"); 
-//			System.out.println("1032接口：" + result); 
+			System.out.println("1032接口：" + result); 
 			return  result;
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.put("resultCode", -1); 
-			result.put("resultMessage", "系统内部错误"); 
+			result.put("resultMessage", "系统内部错误");   
 			return  result;
 		}
 	}
@@ -350,7 +411,11 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 							lpcodes.add(p.getCode());
 						}
 					}
-					List<TReport> rList  = reportMapper.findPriceByCode(lpcodes);
+					List<TReport> rList = null;
+					if(null != lpcodes && !lpcodes.isEmpty()) {
+						rList = reportMapper.findPriceByCode(lpcodes);
+					}
+					
 					
 					List<Estate> projectList = new ArrayList<>();
 					// 开始组建数据
@@ -380,7 +445,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 						if(e.getImages() != null && e.getImages().size() > 0){
 							img = e.getImages().get(0);
 						}
-						projectList.add(new Estate(e.getTitle() , distance , e.getAddressFull() , price , lpcode, position_, img) );		
+						projectList.add(new Estate(e.getTitle() , distance , e.getAddressFull() , price , lpcode, position_, img , e.getScore()) );		
 					}
 					if(projectList.size() != 0){
 						result.put("resultCode", 0);
@@ -400,7 +465,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			result.put("resultMessage", "经纬度地址解析失败，无法获取当前地理位置信息");
 		}
 		
-//		System.out.println(result);  
+		System.out.println("1033接口：" + result);  
 		return  result; 
 	}
 	
@@ -416,6 +481,97 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		
 		return  estateService.estateInfoList(lng, lat, page , count ,radius); 
 	}
+	
+	
+	/**
+	 * @description:  手动刷新楼盘评分 | 接口号 2048 
+	 * 
+	 * @author Yangcl 
+	 * @date 2016年10月18日 下午4:29:29 
+	 * @version 1.0.0.1
+	 */
+	public void resyncEstateScore(){
+		List<String> clist = new ArrayList<String>();
+		clist.add("北京");
+		clist.add("天津");
+		
+long start = System.currentTimeMillis(); 
+		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
+		ExecutorService executor = Executors.newCachedThreadPool();
+		for(int i = 0 ; i < clist.size() ; i ++){
+			Task1032Aqi taqi = new Task1032Aqi();
+	        taqi.setCityAirService(cityAirService);
+	        taqi.setCity(clist.get(i));  
+	        futureList.add(executor.submit(taqi));
+		}
+long end = System.currentTimeMillis();
+System.out.println("启动aqi多线程总共耗时：" + +(end - start) + " 毫秒");		
+
+		Map<String , List<TLandedProperty>> map = new TreeMap<String , List<TLandedProperty>>();
+		for(String city : clist){  // 默认初始化
+			List<TLandedProperty> elist = new ArrayList<TLandedProperty>();
+			map.put(city, elist);
+		}
+		List<TLandedProperty> estateList = lrMapper.selectAllEstateInfo();
+		for(TLandedProperty e : estateList){
+			if(map.containsKey(e.getCity())){
+				map.get(e.getCity()).add(e);
+			}
+		}
+		
+		List<TLandedProperty> nestateList = new ArrayList<>();
+		List<Future<List<TLandedProperty>>> tlpFutureList = new ArrayList<Future<List<TLandedProperty>>>();   
+		try {
+			for (Future<CityAqi> fs : futureList){  
+				CityAqi aqi = null;
+				while(!fs.isDone()){
+					System.out.println("等待中");
+					Thread.sleep(100); 
+				}
+				aqi = fs.get();
+				String hourAqi = "80";
+				String dayAqi = "";
+				if(aqi.getEntity() != null) {
+					hourAqi = aqi.getEntity().getAQI();
+					for(CityAqiData d : aqi.getList()){
+						dayAqi += d.getAQI() + ",";
+					}
+					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
+				}
+				// 按照city名称 分为N个线程，一共会启动N*20个线程 
+				if(map.containsKey(aqi.getName())){
+					List<TLandedProperty> tlpList = map.get(aqi.getName());
+					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList, hourAqi, dayAqi);  
+					tlpFutureList.add(executor.submit(tea));
+				}
+			}
+			
+			
+			// TODO 组合nestateList 然后批量更新数据库
+			for(Future<List<TLandedProperty>> fut : tlpFutureList){
+				while(!fut.isDone()){
+					Thread.sleep(1000); 
+				}
+				nestateList.addAll(fut.get());
+			}
+
+			System.out.println("总数量为：" + nestateList.size()); 
+			
+			for(TLandedProperty e :nestateList){
+				System.out.println(e.getCity() + " - " + e.getTitle() + " - " + e.getScore()); 
+			}
+			
+		} catch (InterruptedException | ExecutionException e1) {
+			e1.printStackTrace();
+		}finally{
+			executor.shutdown();  
+		}
+	}
+	
+	
+	
+	
+	
 	
 	/**
 	 * @descriptions 根据两个位置的经纬度，来计算两地的距离（单位为KM）
@@ -691,8 +847,9 @@ class Estate{
 	private String number; // 楼盘在数据库里的编号
 	private String position;
 	private String img;
+	private Integer score;
 	
-	public Estate(String name, String distance, String address, String price, String number, String position, String img) {
+	public Estate(String name, String distance, String address, String price, String number, String position, String img ,Integer score) {
 		this.name = name;
 		this.distance = distance;
 		this.address = address;
@@ -700,6 +857,7 @@ class Estate{
 		this.number = number;
 		this.position = position;
 		this.img = img;
+		this.score = score;
 	}
 	
 	
@@ -745,6 +903,13 @@ class Estate{
 	public void setImg(String img) {
 		this.img = img;
 	}
+	public Integer getScore() {
+		return score;
+	}
+	public void setScore(Integer score) {
+		this.score = score;
+	}
+	
 }
 
 

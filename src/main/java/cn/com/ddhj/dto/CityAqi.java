@@ -3,6 +3,7 @@ package cn.com.ddhj.dto;
 import java.util.List;
 
 public class CityAqi {
+	private String name; // city name
 
 	private CityAqiData entity;
 	
@@ -19,6 +20,12 @@ public class CityAqi {
 	}
 	public void setList(List<CityAqiData> list) {
 		this.list = list;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

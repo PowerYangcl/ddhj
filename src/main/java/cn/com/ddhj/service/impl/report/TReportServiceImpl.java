@@ -17,14 +17,22 @@ import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.report.TReportTemplateMapper;
+import cn.com.ddhj.mapper.user.TUserLoginMapper;
+import cn.com.ddhj.mapper.user.TUserLpFollowMapper;
+import cn.com.ddhj.mapper.user.TUserMapper;
+import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 import cn.com.ddhj.model.report.TReportTemplate;
+import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserLogin;
+import cn.com.ddhj.model.user.TUserLpFollow;
 import cn.com.ddhj.result.report.PDFReportResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
@@ -51,7 +59,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TReportMapper mapper;
 	@Autowired
 	private TReportTemplateMapper templateMapper;
-
 	@Autowired
 	private TReportEnvironmentLevelMapper levelMapper;
 	@Autowired
@@ -62,6 +69,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private IWaterQualityService waterQualityService;
 	@Autowired
 	private ITRubbishRecyclingService rubbishService;
+	@Autowired
+	private TUserLpFollowMapper followMapper;
+	@Autowired
+	private TUserLoginMapper loginMapper;
+	@Autowired
+	private TUserMapper userMapper;
+	@Autowired
+	private ITAreaNoiseMapper noiseMapper;
 
 	/**
 	 * 
@@ -128,7 +143,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult insert(TReport entity, String path) {
 		BaseResult result = new BaseResult();
 		String code = WebHelper.getInstance().getUniqueCode("R");
-		PDFReportResult pdfResult = createPDF(code, entity.getHousesCode(), path);
+		PDFReportResult pdfResult = createPDF(code, entity.getHousesCode(), path, null);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -156,7 +171,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Override
 	public BaseResult updateByCode(TReport entity, String path) {
 		BaseResult result = new BaseResult();
-		PDFReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path);
+		PDFReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path, null);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -237,7 +252,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (list != null && list.size() > 0) {
 			// 生成pdf环境报告
 			for (int i = 0; i < list.size(); i++) {
-				PDFReportResult pdfResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/");
+				PDFReportResult pdfResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/", null);
 				if (pdfResult.getResultCode() == 0) {
 					list.get(i).setPath(pdfResult.getPath());
 				}
@@ -299,10 +314,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * 
 	 * 方法: createPDF <br>
 	 * 
-	 * @param array
+	 * @param code
+	 * @param housesCode
+	 * @param path
 	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#createPDF(java.lang.String,
+	 *      java.lang.String, java.lang.String)
 	 */
-	public PDFReportResult createPDF(String code, String housesCode, String path) {
+	@Override
+	public PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir) {
 		PDFReportResult result = new PDFReportResult();
 		try {
 			File file = new File(path);
@@ -317,13 +337,17 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			List<TReportEnvironmentLevel> levelList = levelMapper.findTReportEnvironmentLevelAll();
 			// 获取绿地率等级
 			int afforestLevel = 1;
-			if (lp.getGreeningRate() != null && !"".equals(lp.getGreeningRate())
-					&& !StringUtils.isEmpty(lp.getGreeningRate())) {
-				Double afforest = Double.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
-				if (afforest > 25 && afforest < 30) {
-					afforestLevel = 2;
-				} else if (afforest < 25) {
-					afforestLevel = 3;
+			if (StringUtils.isNotBlank(lp.getGreeningRate())) {
+				try {
+					Double afforest = Double
+							.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
+					if (afforest > 25 && afforest < 30) {
+						afforestLevel = 2;
+					} else if (afforest < 25) {
+						afforestLevel = 3;
+					}
+				} catch (Exception e) {
+					afforestLevel = 1;
 				}
 			}
 			// 获取容积率等级
@@ -344,13 +368,21 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			Integer airLevel = 1;
 			// 水质量等级
 			Integer waterLevel = 1;
-			JSONArray cityAirLevel = this.getCityAirLevel();
-			if (cityAirLevel != null && cityAirLevel.size() > 0) {
-				for (int i = 0; i < cityAirLevel.size(); i++) {
-					if (StringUtils.isNotBlank(lp.getCity())) {
-						JSONObject level = cityAirLevel.getJSONObject(i).getJSONObject(lp.getCity());
-						airLevel = level.getInteger("air");
-						waterLevel = level.getInteger("water");
+			if (StringUtils.isNotBlank(lp.getCity())) {
+				JSONArray cityAirLevel = null;
+				if (cityAir != null && cityAir.size() > 0) {
+					cityAirLevel = cityAir;
+				} else {
+					cityAirLevel = this.getCityAirLevel();
+				}
+				if (cityAirLevel != null && cityAirLevel.size() > 0) {
+					for (int i = 0; i < cityAirLevel.size(); i++) {
+						JSONObject level = cityAirLevel.getJSONObject(i);
+
+						if (StringUtils.equals(lp.getCity(), level.getString("city"))) {
+							airLevel = level.getJSONObject("level").getInteger("air");
+							waterLevel = level.getJSONObject("level").getInteger("water");
+						}
 					}
 				}
 			}
@@ -360,6 +392,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					&& StringUtils.isEmpty(lp.getLng())) {
 				rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
 			}
+			// 噪音等级
+			int nosieLevel = getNoiseLevel(lp);
 			if (templateList != null && templateList.size() > 0) {
 				JSONArray array = new JSONArray();
 				for (int i = 0; i < templateList.size(); i++) {
@@ -377,12 +411,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						obj.put("level", getLevelContent(model.getType(), waterLevel, levelList));
 					} else if ("rubbish".equals(model.getType())) {
 						obj.put("level", getLevelContent(model.getType(), rubbishLevel, levelList));
+					} else if ("".equals(model.getType())) {
+						obj.put("noise", getLevelContent(model.getType(), nosieLevel, levelList));
 					} else {
 						obj.put("level", getLevelContent(model.getType(), 1, levelList));
 					}
 					array.add(obj);
 				}
-				PdfUtil.instance().createPDF(array, path);
+				String levelName = mapper.findLevel(code);
+				PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path);
 				result.setResultCode(0);
 				result.setResultMessage("");
 				result.setPath(filePath);
@@ -399,7 +436,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	}
 
 	@Override
-	public TReportSelResult getTReportByLp(String lpCode) {
+	public TReportSelResult getTReportByLp(String lpCode, String userTocken) {
 		TReportSelResult result = new TReportSelResult();
 		TLandedProperty lp = lpMapper.selectByCode(lpCode);
 		if (lp != null) {
@@ -415,6 +452,25 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			} else {
 				reports = mapper.findReportByHousesCode(lpCode);
 			}
+
+			// 如果userTocken不为空，查询楼盘是否已关注
+			int isFollow = 0;
+			if (StringUtils.isNotBlank(userTocken)) {
+				TUserLogin login = loginMapper.findLoginByUuid(userTocken);
+				if (login != null) {
+					TUser user = userMapper.findTUserByUuid(login.getUserToken());
+					if (user != null) {
+						TUserLpFollow dto = new TUserLpFollow();
+						dto.setLpCode(lpCode);
+						dto.setUserCode(user.getUserCode());
+						TUserLpFollow follow = followMapper.findFollowIsExists(dto);
+						if (follow != null) {
+							isFollow = 1;
+						}
+					}
+				}
+			}
+			result.setIsFollow(isFollow);
 			result.setLevelList(reports);
 			result.setAddress(lp.getAddressFull());
 			result.setDetail(lp.getOverview());
@@ -451,12 +507,71 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					obj.put("air", air);
 					obj.put("water", water);
 					JSONObject cityLevel = new JSONObject();
-					cityLevel.put(citys.get(i), obj.toJSONString());
+					cityLevel.put("city", citys.get(i));
+					cityLevel.put("level", obj);
 					array.add(cityLevel);
 				}
 			}
 		}
 		return array;
+	}
+
+	/**
+	 * 
+	 * 方法: getNoiseLevel <br>
+	 * 描述: 获取楼盘的噪音等级 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月15日 下午9:23:44
+	 * 
+	 * @param lp
+	 * @return
+	 */
+	private Integer getNoiseLevel(TLandedProperty lp) {
+		int level = 0;
+		if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
+			Double lat = Double.valueOf(lp.getLat());
+			Double lng = Double.valueOf(lp.getLng());
+			Double nlat = null; // 北纬
+			Double slat = null; // 南纬
+			Double elng = null; // 东经
+			Double wlng = null; // 西经
+			List<TAreaNoise> list = noiseMapper.selectByArea(lp.getCity());
+			List<TAreaNoise> areaList = new ArrayList<>();
+			for (TAreaNoise e : list) {
+				if (e.getFlag() == 2) {
+					if (e.getName().equals("WN")) { // 坐标西北点
+						nlat = e.getLat();
+						wlng = e.getLng();
+					} else if (e.getName().equals("ES")) {// 坐标东南点
+						elng = e.getLng();
+						slat = e.getLat();
+					}
+				} else {
+					areaList.add(e);
+				}
+			}
+			for (TAreaNoise e : areaList) {
+				Double distance = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
+				if (distance < 2000) {
+					if (e.getLevel().equals("III类")) {
+						level = 3;
+					} else if (e.getLevel().equals("0类")) {
+						level = 1;
+					}
+				}
+			}
+			if (level == 0) {
+				if ((slat < lat && lat < nlat) && (wlng < lng && lng < elng)) { // 五环里
+					level = 2;
+				} else { // 北京：五环外 |上海：外环外 |广州：外环外|天津：外环外|深圳：关外全部划为I类标准
+					level = 1;
+				}
+			}
+		} else {
+			level = 1;
+		}
+
+		return level;
 	}
 
 	/**
@@ -484,5 +599,4 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		}
 		return codes;
 	}
-
 }

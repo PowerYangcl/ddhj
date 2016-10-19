@@ -1,5 +1,7 @@
 package cn.com.ddhj.mapper.user;
 
+import java.util.List;
+
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.user.TUserLogin;
@@ -36,4 +38,24 @@ public interface TUserLoginMapper extends BaseMapper<TUserLogin, BaseDto> {
 	 * @return
 	 */
 	int deletByUuid(String uuid);
+	
+	/**
+	 * 
+	 * 方法: findTokenByUser <br>
+	 * 描述: 根据createUser查询登录信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月5日 下午10:20:13
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	List<TUserLogin> findTokenByOrderCode(String code);
 }
+
+
+
+
+
+
+
+

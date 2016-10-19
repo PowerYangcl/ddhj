@@ -289,6 +289,7 @@ public class CityAirServiceImpl implements ICityAirService {
 	 */
 	public CityAqi getCityAqi(String cityName) {
 		CityAqi e = new CityAqi();
+		e.setName(cityName); 
 		JSONObject air = getCityAir(cityName);
 		if (air != null && air.getInteger("resultcode") == 200) {
 			JSONArray result = JSONArray.parseArray(air.getString("result"));
@@ -297,13 +298,21 @@ public class CityAirServiceImpl implements ICityAirService {
 			JSONArray array = new JSONArray();
 			JSONObject weeks = JSONObject.parseObject(result.getJSONObject(0).getString("lastTwoWeeks"));
 			if (weeks != null) {
-				for (int i = 23 ; i <= 28 ; i++) {
+				String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+				int m = 23;
+				int n = 28;
+				// 聚合接口会返回错误数据。
+				if(weeks.getJSONObject("28") != null && weeks.getJSONObject("28").getString("date").equals(today)){
+					m --;
+					n --;
+				}
+				for (int i = m ; i <= n ; i++) {
 					JSONObject obj = weeks.getJSONObject(i + "");
 					array.add(obj);
 				}
 				List<CityAqiData> list = JSONObject.parseArray(array.toJSONString() , CityAqiData.class);
 				CityAqiData cad = new CityAqiData();
-				cad.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+				cad.setDate(today);
 				cad.setCity(data.getCity());
 				cad.setAQI(data.getAQI());
 				cad.setQuality(data.getQuality()); 

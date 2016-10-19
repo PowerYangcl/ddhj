@@ -65,7 +65,9 @@ public class PayGateUtils {
 		List<String> paramList = new ArrayList<String>();
 		for(Entry<String, String> entry : entryList){
 			try {
-				paramList.add(entry.getKey()+"="+URLEncoder.encode(entry.getValue(), "UTF-8"));
+				if(StringUtils.isNotBlank(entry.getValue())) {
+					paramList.add(entry.getKey()+"="+URLEncoder.encode(entry.getValue(), "UTF-8"));
+				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}

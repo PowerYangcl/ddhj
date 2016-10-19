@@ -2,10 +2,13 @@ package cn.com.ddhj.service.report;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSONArray;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.report.TReport;
+import cn.com.ddhj.result.report.PDFReportResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.IBaseService;
@@ -79,15 +82,30 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @return
 	 */
 	BaseResult insertReportData(List<TReport> list);
-	
+
 	/**
 	 * 
 	 * 方法: getTReportByLp <br>
 	 * 描述: 根据楼盘编码查询环境报告 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月12日 下午5:32:44
+	 * 
 	 * @param lpCode
 	 * @return
 	 */
-	TReportSelResult getTReportByLp(String lpCode);
+	TReportSelResult getTReportByLp(String lpCode, String userTocken);
+
+	/**
+	 * 
+	 * 方法: createPDF <br>
+	 * 描述: 生成pdf环境报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月15日 下午5:30:37
+	 * 
+	 * @param code
+	 * @param housesCode
+	 * @param path
+	 * @return
+	 */
+	PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir);
 }
