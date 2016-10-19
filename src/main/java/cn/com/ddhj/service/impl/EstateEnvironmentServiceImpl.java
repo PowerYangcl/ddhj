@@ -495,7 +495,6 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		clist.add("北京");
 		clist.add("天津");
 		
-long start = System.currentTimeMillis(); 
 		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
 		ExecutorService executor = Executors.newCachedThreadPool();
 		for(int i = 0 ; i < clist.size() ; i ++){
@@ -504,8 +503,6 @@ long start = System.currentTimeMillis();
 	        taqi.setCity(clist.get(i));  
 	        futureList.add(executor.submit(taqi));
 		}
-long end = System.currentTimeMillis();
-System.out.println("启动aqi多线程总共耗时：" + +(end - start) + " 毫秒");		
 
 		Map<String , List<TLandedProperty>> map = new TreeMap<String , List<TLandedProperty>>();
 		for(String city : clist){  // 默认初始化
@@ -541,25 +538,34 @@ System.out.println("启动aqi多线程总共耗时：" + +(end - start) + " 毫�
 				// 按照city名称 分为N个线程，一共会启动N*20个线程 
 				if(map.containsKey(aqi.getName())){
 					List<TLandedProperty> tlpList = map.get(aqi.getName());
-					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList, hourAqi, dayAqi);  
+					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList.subList(0, 10), hourAqi, dayAqi);  
 					tlpFutureList.add(executor.submit(tea));
 				}
 			}
 			
-			
-			// TODO 组合nestateList 然后批量更新数据库
+			// 组合nestateList 然后批量更新数据库
 			for(Future<List<TLandedProperty>> fut : tlpFutureList){
 				while(!fut.isDone()){
 					Thread.sleep(1000); 
 				}
 				nestateList.addAll(fut.get());
 			}
-
-			System.out.println("总数量为：" + nestateList.size()); 
 			
-			for(TLandedProperty e :nestateList){
-				System.out.println(e.getCity() + " - " + e.getTitle() + " - " + e.getScore()); 
+			int size = 5000; // 单组list大小
+			int count = nestateList.size() / size; // TreeMap 的分组数       10008/20 = 500 余 8 
+			int count_ = nestateList.size() - count * size; // 余数 
+			Map<Integer , List<TLandedProperty>> mapgroup = new TreeMap<Integer , List<TLandedProperty>>();
+			for(int i = 0 ; i < count ; i ++){
+				mapgroup.put(i , nestateList.subList(i*size , size*(i+1)));
 			}
+			if(count_ != 0){
+				mapgroup.put(count, nestateList.subList(count*size, nestateList.size())); 
+			}
+			for (Map.Entry<Integer, List<TLandedProperty>> entry : mapgroup.entrySet()) {
+				Task2048LandedPropertyUpdate lpu = new Task2048LandedPropertyUpdate(entry.getValue(), lrMapper);
+				executor.submit(lpu);
+			}
+			
 			
 		} catch (InterruptedException | ExecutionException e1) {
 			e1.printStackTrace();
