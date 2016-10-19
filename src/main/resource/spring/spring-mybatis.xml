@@ -10,6 +10,14 @@ http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
 http://www.springframework.org/schema/aop
 http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
 
+	<bean id="wall-filter" class="com.alibaba.druid.wall.WallFilter">
+		<property name="config" ref="wall-config" />
+	</bean>
+
+	<bean id="wall-config" class="com.alibaba.druid.wall.WallConfig">
+		<property name="multiStatementAllow" value="true" />
+	</bean> 
+	    
 	<!-- 数据库连接池配置 -->
 	<bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
 		init-method="init" destroy-method="close">
@@ -51,7 +59,26 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
 		<!-- 属性类型是字符串，通过别名的方式配置扩展插件， 常用的插件有： 监控统计用的filter:stat 日志用的filter:log4j 
 			防御sql注入的filter:wall -->
 		<property name="filters" value="${db.filters}" />
+		
+		 <property name="proxyFilters">  
+            <list>  
+                <ref bean="wall-filter"/>  
+            </list>  
+        </property>  
 	</bean>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut"
 		scope="prototype">
 		<property name="patterns">
