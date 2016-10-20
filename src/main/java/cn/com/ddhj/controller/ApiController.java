@@ -1,6 +1,8 @@
 package cn.com.ddhj.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +68,7 @@ import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.service.user.ITUserStepService;
 import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
+import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
 import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
 import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
 import cn.com.ddhj.service.report.ITReportService;
@@ -209,6 +212,12 @@ public class ApiController extends BaseClass {
 			long end = System.currentTimeMillis();
 			System.out.println("1025号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;
+		}else if ("2048".equals(api.getApiTarget())) { // 地区环境接口
+			long start = System.currentTimeMillis(); 
+			estateEnvService.resyncEstateScore();
+			long end = System.currentTimeMillis();
+			System.out.println("2048号接口总共耗时：" + +(end - start) + " 毫秒");
+			return null;
 		}
 		// 订单相关
 		else if ("order_add".equals(api.getApiTarget())) {
@@ -335,7 +344,15 @@ public class ApiController extends BaseClass {
 		if (StringUtils.isEmpty(result.getErrorMsg())) {
 			return result.getRedirectUrl();
 		} else {
-			return JSONObject.toJSONString(result);
+			String errMsg = "";
+			try {
+				errMsg = URLEncoder.encode(result.getErrorMsg(), "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "redirect:" + XmasPayConfig.getPayGateDefaultReURL() + "?errorMsg=" + errMsg;
+			
 		}
 	}
 

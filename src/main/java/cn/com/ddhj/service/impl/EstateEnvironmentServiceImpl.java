@@ -266,7 +266,7 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 						EData e = estateList.get(0);               // 因为精度是1米 所以只有一条记录，且就是这个楼盘
 						result.put("name", e.getTitle()); // 位置名称
 						if(StringUtils.isNoneBlank(e.getGreeningRate())){
-							if(Integer.valueOf(e.getGreeningRate().split("%")[0])/100 < 0.5){   // 潜在的异常点
+							if(Double.valueOf(e.getGreeningRate().split("%")[0])/100 < 0.5){   // 潜在的异常点
 								greeningRate = "0.5"; //教授接口返回HTTP Status 500 - 绿化率指数l只能是0.5或1|真坑爹
 							}
 						}
@@ -494,7 +494,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		List<String> clist = new ArrayList<String>();
 		clist.add("北京");
 		clist.add("天津");
-
+		
 		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
 		ExecutorService executor = Executors.newCachedThreadPool();
 		for(int i = 0 ; i < clist.size() ; i ++){
@@ -503,7 +503,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 	        taqi.setCity(clist.get(i));  
 	        futureList.add(executor.submit(taqi));
 		}
-		
+
 		Map<String , List<TLandedProperty>> map = new TreeMap<String , List<TLandedProperty>>();
 		for(String city : clist){  // 默认初始化
 			List<TLandedProperty> elist = new ArrayList<TLandedProperty>();
@@ -522,8 +522,10 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			for (Future<CityAqi> fs : futureList){  
 				CityAqi aqi = null;
 				while(!fs.isDone()){
-					aqi = fs.get();
+					System.out.println("等待中");
+					Thread.sleep(100); 
 				}
+				aqi = fs.get();
 				String hourAqi = "80";
 				String dayAqi = "";
 				if(aqi.getEntity() != null) {
@@ -536,11 +538,33 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 				// 按照city名称 分为N个线程，一共会启动N*20个线程 
 				if(map.containsKey(aqi.getName())){
 					List<TLandedProperty> tlpList = map.get(aqi.getName());
-					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList, hourAqi, dayAqi); 
+					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList, hourAqi, dayAqi);  
 					tlpFutureList.add(executor.submit(tea));
 				}
 			}
-			// TODO 组合nestateList 然后批量更新数据库
+			
+			// 组合nestateList 然后批量更新数据库
+			for(Future<List<TLandedProperty>> fut : tlpFutureList){
+				while(!fut.isDone()){
+					Thread.sleep(1000); 
+				}
+				nestateList.addAll(fut.get());
+			}
+			
+			int size = 5000; // 单组list大小
+			int count = nestateList.size() / size; // TreeMap 的分组数       10008/20 = 500 余 8 
+			int count_ = nestateList.size() - count * size; // 余数 
+			Map<Integer , List<TLandedProperty>> mapgroup = new TreeMap<Integer , List<TLandedProperty>>();
+			for(int i = 0 ; i < count ; i ++){
+				mapgroup.put(i , nestateList.subList(i*size , size*(i+1)));
+			}
+			if(count_ != 0){
+				mapgroup.put(count, nestateList.subList(count*size, nestateList.size())); 
+			}
+			for (Map.Entry<Integer, List<TLandedProperty>> entry : mapgroup.entrySet()) {
+				Task2048LandedPropertyUpdate lpu = new Task2048LandedPropertyUpdate(entry.getValue(), lrMapper);
+				executor.submit(lpu);
+			}
 			
 			
 		} catch (InterruptedException | ExecutionException e1) {

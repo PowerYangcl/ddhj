@@ -107,6 +107,9 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, TLand
 	 * @version 1.0.0.1
 	 */
 	List<TLandedProperty> selectAllEstateInfo();
+	
+	
+	Integer batchUpdateScore(List<TLandedProperty> list);
 }
 
 

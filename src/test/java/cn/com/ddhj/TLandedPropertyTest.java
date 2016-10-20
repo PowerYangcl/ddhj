@@ -53,7 +53,6 @@ public class TLandedPropertyTest extends BaseTest {
 		System.out.println(mapper.findLpForUserCount(dto));
 	}
 
-	@Test
 	public void findLP() {
 		double[] r = CommonUtil.getAround(39.9659730000, 116.3325020000, 10 * 1000);
 		TLandedPropertyDto dto = new TLandedPropertyDto();
@@ -67,5 +66,17 @@ public class TLandedPropertyTest extends BaseTest {
 			sb.append("'").append(list.get(i).getCode()).append("',");
 		}
 		System.out.println(sb.toString());
+	}
+
+	@Test
+	public void batchUpdate() {
+		List<TLandedProperty> list = new ArrayList<TLandedProperty>();
+		for (int i = 1; i <= 10000; i++) {
+			TLandedProperty entity1 = new TLandedProperty();
+			entity1.setId(i);
+			entity1.setScore(1.2);
+			list.add(entity1);
+		}
+		mapper.batchUpdateScore(list);
 	}
 }

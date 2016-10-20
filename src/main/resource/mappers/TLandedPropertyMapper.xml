@@ -8,7 +8,7 @@
 		<result column="title" property="title" jdbcType="VARCHAR" />
 		<result column="total" property="total" jdbcType="VARCHAR" />
 		<result column="city" property="city" jdbcType="VARCHAR" />
-		<result column="score" property="score" jdbcType="INTEGER" />
+		<result column="score" property="score" jdbcType="DOUBLE"/>
 		<result column="completion" property="completion" jdbcType="VARCHAR" />
 		<result column="propertyType" property="propertyType" jdbcType="VARCHAR" />
 		<result column="propertyCompany" property="propertyCompany"
@@ -444,6 +444,17 @@
 		from 
 			t_landed_property 
 	</select>
+	
+	
+	<update id="batchUpdateScore" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+            update t_landed_property set score = #{item.score , jdbcType=DOUBLE}  where id = #{item.id , jdbcType=INTEGER} 
+     	</foreach>  
+	</update>
+	
+	
+	
+	
 </mapper>
 
 
