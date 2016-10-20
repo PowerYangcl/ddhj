@@ -2,6 +2,8 @@ package cn.com.ddhj.service.impl.user;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -78,9 +80,33 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						entity.setCreateDate(obj.getString("date"));
 						entity.setIsBinding(isBinding);
 						entity.setUserCode(userCode);
-						entity.setCreateDate(DateUtil.getSysDate());
 						list.add(entity);
 					}
+					Collections.sort(list, new Comparator<TUserStep>() {
+
+						@Override
+						public int compare(TUserStep s1, TUserStep s2) {
+							return s1.getCreateDate().compareTo(s2.getCreateDate());
+						}
+					});
+					// 获取开始日期和结束日期
+					String startDate = "";
+					String endDate = "";
+					for (int i = 0; i < list.size(); i++) {
+						if (i == 0) {
+							startDate = list.get(i).getCreateDate();
+						} else if (i == list.size() - 1) {
+							endDate = list.get(i).getCreateDate();
+						}
+
+					}
+					// 根据设备识别码和时间段删除原有数据
+					TUserStepDto dto = new TUserStepDto();
+					dto.setEquipmentCode(equipmentCode);
+					dto.setEndDate(endDate);
+					dto.setStartDate(startDate);
+					mapper.deletByEquipmentCode(dto);
+					// 批量添加数据到计步表
 					int flag = mapper.batchInstart(list);
 					if (flag > 0) {
 						result.setResultCode(0);
@@ -89,7 +115,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						result.setResultCode(-1);
 						result.setResultMessage("批量同步计步数据错误");
 					}
-				}else{
+				} else {
 					result.setResultCode(-1);
 					result.setResultMessage("同步计步数据为空");
 				}

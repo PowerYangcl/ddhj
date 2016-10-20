@@ -90,7 +90,8 @@
 		'%Y-%m-%d'
 		) AS
 		create_date
-		from t_user_step
+		from
+		t_user_step
 		<where>
 			equipment_code = #{equipmentCode,jdbcType=VARCHAR}
 			AND
@@ -101,4 +102,18 @@
 			STR_TO_DATE(#{endDate,jdbcType=VARCHAR},'%Y-%m-%d')
 		</where>
 	</select>
+	<!-- 根据设备号和时间段批量删除计步数据 -->
+	<delete id="deletByEquipmentCode" parameterType="cn.com.ddhj.dto.user.TUserStepDto">
+		delete
+		from t_user_step
+		<where>
+			equipment_code = #{equipmentCode,jdbcType=VARCHAR}
+			AND
+			create_date
+			BETWEEN
+			STR_TO_DATE(#{startDate,jdbcType=VARCHAR},'%Y-%m-%d')
+			AND
+			STR_TO_DATE(#{endDate,jdbcType=VARCHAR},'%Y-%m-%d')
+		</where>
+	</delete>
 </mapper>
