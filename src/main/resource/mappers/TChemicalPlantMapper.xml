@@ -81,4 +81,28 @@
 		</set>
 		where id = #{id,jdbcType=INTEGER}
 	</update>
+	
+	<select id="findListByCity" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			*
+		from 
+			t_chemical_plant
+		where 
+			city = #{city}
+	</select>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

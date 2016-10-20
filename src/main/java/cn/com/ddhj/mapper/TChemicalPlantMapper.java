@@ -1,5 +1,7 @@
 package cn.com.ddhj.mapper;
 
+import java.util.List;
+
 import cn.com.ddhj.dto.TChemicalPlantDto;
 import cn.com.ddhj.model.TChemicalPlant;
 
@@ -35,4 +37,26 @@ public interface TChemicalPlantMapper extends BaseMapper<TChemicalPlant, TChemic
 	 * @return
 	 */
 	TChemicalPlant getMinTChemicalPlant(TChemicalPlantDto dto);
+	
+	public List<TChemicalPlant> findListByCity(String city);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

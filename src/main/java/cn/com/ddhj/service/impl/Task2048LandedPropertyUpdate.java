@@ -1,18 +1,10 @@
 package cn.com.ddhj.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.model.TLandedProperty;
-import cn.com.ddhj.util.PureNetUtil;
 
 public class Task2048LandedPropertyUpdate implements Callable<Integer> {
 
@@ -27,14 +19,11 @@ public class Task2048LandedPropertyUpdate implements Callable<Integer> {
 	}
 
 
-
-
 	public Integer call() throws Exception {
 		Integer flag = 0;
 		try {
 			flag = this.getLrMapper().batchUpdateScore(this.getList());
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace(); 
 		}
 		return flag; 

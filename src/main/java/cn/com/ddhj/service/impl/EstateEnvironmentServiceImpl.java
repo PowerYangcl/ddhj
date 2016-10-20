@@ -3,10 +3,15 @@ package cn.com.ddhj.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -291,7 +296,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			}
 			
 			
-			List<EnvInfo> envList = new ArrayList<>();
+			List<EnvInfo> envList = new LinkedList<>();  
 			EnvInfo air = new EnvInfo();
 			air.setName("空气");
 			if(aqi.getEntity() != null){
@@ -299,11 +304,12 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 				air.setLevel(aqi.getEntity().getQuality()); 
 			}
 			envList.add(air);
-//			EnvInfo wea = new EnvInfo();              // 根据新需求，此处不要了 
-//			wea.setName("天气");
-//			wea.setMemo(weather.getString("info"));
-//			wea.setLevel(weather.getString("wind")); 
-//			envList.add(wea);
+			
+			EnvInfo noise = new EnvInfo();
+			noise.setName("噪音");
+			noise.setMemo(noiFuture.get().split("@")[1]);  
+			noise.setLevel(noiFuture.get().split("@")[0]);  
+			envList.add(noise);
 			
 			// 污染源
 			EnvInfo gar = new EnvInfo();
@@ -311,8 +317,8 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 				gar = rubFuture.get(); 
 			}else{
 				gar.setName("污染源");
-				gar.setMemo("5Km以外");
-				gar.setLevel("较远"); 
+				gar.setMemo("5Km以内");
+				gar.setLevel("无"); 
 			}
 			envList.add(gar);
 			
@@ -321,40 +327,35 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			water.setMemo("色度低"); 
 			water.setLevel("优良");  
 			envList.add(water);
-			
-			EnvInfo noise = new EnvInfo();
-			noise.setName("噪音");
-			noise.setMemo(noiFuture.get().split("@")[1]);  
-			noise.setLevel(noiFuture.get().split("@")[0]);  
-			envList.add(noise);
-			
 			// 新版需求
 			EnvInfo land = new EnvInfo();    // 土壤
 			land.setName("土壤");
 			land.setMemo("无污染");
 			land.setLevel("优"); 
-			EnvInfo radiation  = new EnvInfo();    // 辐射
-			radiation.setName("辐射");
-			radiation.setMemo("无");
-			radiation.setLevel("优"); 
+			
 			EnvInfo dang = new EnvInfo(); // 危险品
 			dang.setName("危险品");
 			dang.setMemo("无");
 			dang.setLevel("安全");  
+			
+			EnvInfo radiation  = new EnvInfo();    // 辐射
+			radiation.setName("辐射");
+			radiation.setMemo("无");
+			radiation.setLevel("优"); 
+			
+			
+			
+			
 			envList.add(land);
-			envList.add(radiation);
 			envList.add(dang);
+			envList.add(radiation);
 			// 绿化率 和 容积率 (距离最近的楼盘)
 			envList.addAll(estFuture.get());
-			
-			
-			
 			
 			
 			result.put("detailList", envList);  // 环境明细
 			result.put("level", this.scoreLevel(score));  // 环境等级
 			result.put("tiptitle", weather.getString("des"));  // 提示标题
-			
 			result.put("resultCode", 0); 
 			result.put("resultMessage", "SUCCESS"); 
 			System.out.println("1032接口：" + result); 
@@ -366,6 +367,9 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			return  result;
 		}
 	}
+	
+	
+	
 	
 	
 	/**
@@ -447,10 +451,16 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 						}
 						projectList.add(new Estate(e.getTitle() , distance , e.getAddressFull() , price , lpcode, position_, img , e.getScore()) );		
 					}
+
+					Collections.sort(projectList); 
+					Collections.reverse(projectList); 
+					for(Estate e : projectList){
+						System.out.println(e.getScore() + "|" + e.getDistance()); 
+					}
 					if(projectList.size() != 0){
 						result.put("resultCode", 0);
 						result.put("resultMessage", "SUCCESS");
-						result.put("projectlist", projectList); 
+						result.put("projectlist",  projectList); 
 					}
 				}else{
 					result.put("resultCode", -1);
@@ -469,9 +479,25 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		return  result; 
 	}
 	
-	private JSONObject estateList(String position , String page , String count){
-		return  this.estateList(position, page , count , "2000");  
+	@SuppressWarnings("unchecked")
+	public static void main(String[] args) {
+		List<Estate> plist = new ArrayList<>();
+		plist.add(new Estate("title" , "22" , "", "" , "", "", "" , 80.00) );
+		plist.add(new Estate("title" , "20" , "", "" , "", "", "" , 80.00) );
+		plist.add(new Estate("title" , "21" , "", "" , "", "", "" , 80.00) );
+		plist.add(new Estate("title" , "23" , "", "" , "", "", "" , 82.00) );
+		plist.add(new Estate("title" , "24" , "", "" , "", "", "" , 81.00) );
+		
+		Collections.sort(plist); 
+		Collections.reverse(plist); 
+		
+		List<Estate> list = new LinkedList<Estate>(); 
+		for(Estate e : plist){
+			System.out.println("L " + e.getScore() + "|" + e.getDistance()); 
+		}
+		
 	}
+	
 	
 	
 	private JSONObject estateList(String position , String page , String count , String radius){
@@ -605,6 +631,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
         double mdifference = rad(lng1) - rad(lng2);
         double distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(difference / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(mdifference / 2), 2)));
         distance = distance * earthRadius;
+        System.out.println(Math.round(distance * 10000) / 10 + " 米"); 
         distance = Math.round(distance * 10000) / 10000;
         String distanceStr = distance+"";
         distanceStr = distanceStr. substring(0, distanceStr.indexOf("."));
@@ -845,7 +872,7 @@ class EnvInfo{
  * @author Yangcl 
  * @version 1.0.1
  */
-class Estate{
+class Estate implements Comparable{
 	private String name;
 	private String distance;
 	private String address;
@@ -853,9 +880,9 @@ class Estate{
 	private String number; // 楼盘在数据库里的编号
 	private String position;
 	private String img;
-	private Integer score;
+	private Double score;
 	
-	public Estate(String name, String distance, String address, String price, String number, String position, String img ,Integer score) {
+	public Estate(String name, String distance, String address, String price, String number, String position, String img ,Double score) {
 		this.name = name;
 		this.distance = distance;
 		this.address = address;
@@ -865,7 +892,17 @@ class Estate{
 		this.img = img;
 		this.score = score;
 	}
-	
+
+	public int compareTo(Object o){
+		Estate estate = (Estate) o;
+		double score = estate.getScore();
+		if(!this.score.equals(score)){
+			return this.score.compareTo(score);
+		}else{
+			return estate.getDistance().compareTo(this.distance); 
+		}
+	}
+
 	
 	public String getName() {
 		return name;
@@ -909,13 +946,13 @@ class Estate{
 	public void setImg(String img) {
 		this.img = img;
 	}
-	public Integer getScore() {
+	public Double getScore() {
 		return score;
 	}
-	public void setScore(Integer score) {
+	public void setScore(Double score) {
 		this.score = score;
 	}
-	
+
 }
 
 

@@ -39,6 +39,26 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 					greeningRate = "0.5"; //教授接口返回HTTP Status 500 - 绿化率指数l只能是0.5或1|真坑爹
 				}
 			}
+			if (entity.getVolumeRate() != null) {
+				volumeRate = entity.getVolumeRate();
+				if (volumeRate.length() > 2) {
+					volumeRate = volumeRate.substring(0, 2);
+					if (StringUtils.isNumeric(volumeRate)) {
+						volumeRate = Double.valueOf(volumeRate) + "";
+						if (Double.valueOf(volumeRate) > 9) {
+							volumeRate = 8.9 + "";
+						}
+					}else{
+						System.out.println("错误的容积率数据 | 非数字：" + entity.getId());
+						volumeRate = "0.4";
+					}
+
+				}else{
+					System.out.println("错误的容积率数据 | 空：" + entity.getId());
+					volumeRate = "0.4";
+				}
+			}
+			
 			long start = System.currentTimeMillis(); 
 			score = this.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate);
 			long end = System.currentTimeMillis();

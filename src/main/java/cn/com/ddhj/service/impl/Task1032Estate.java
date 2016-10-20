@@ -39,7 +39,8 @@ public class Task1032Estate implements Callable<List<EnvInfo>> {
 				map.put(distance , e);
 			}
 			EData e = map.get(map.firstKey());
-			
+			rj.setMemo(e.getTitle());
+			lh.setMemo(e.getTitle()); 
 			if(e.getVolumeRate() != null){
 				Double v = null;
 				String vol = e.getVolumeRate();
@@ -56,38 +57,26 @@ public class Task1032Estate implements Callable<List<EnvInfo>> {
 					v = 1.2;
 				}
 				
-				rj.setMemo(vol);
-				if(v < 1){
-					rj.setLevel("低");
-				}else if( 1< v && v < 2){ 
-					rj.setLevel("适中");
-				}else{
-					rj.setLevel("高");
-				}
+				rj.setLevel(vol);
 			}else{
-				rj.setMemo("1.2");
-				rj.setLevel("适中");
+				rj.setLevel("1.2");
 			}
 			
 			if(e.getGreeningRate() != null){
 				String g = e.getGreeningRate().split("（")[0];
 				if(g.length() < 2){
-					lh.setMemo("25%");
+					lh.setLevel("25%");
 				}else{
-					lh.setMemo(g);
+					lh.setLevel(g);
 				}
 				String l = e.getGreeningRate().split("绿化率")[1];
 				l = l.substring(0, l.length() -1);
-				lh.setLevel(l); 
 			}else{
-				lh.setMemo("28%");
-				lh.setLevel("高");
+				lh.setLevel("28%");
 			}
 		}else{
-			rj.setMemo("1.2");
-			rj.setLevel("适中");     
-			lh.setMemo("28%");
-			lh.setLevel("高");;
+			rj.setLevel("1.2");
+			lh.setLevel("28%");
 		}
 		list.add(rj);
 		list.add(lh);

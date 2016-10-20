@@ -7,7 +7,7 @@ public class EData {
 	private String addressFull;  // 地址
 	private String total;	// 总住户
 	private String city;	// 城市 苏州
-	private Integer score;
+	private Double score;
 	private String completion;	// 竣工时间 2011-12
 	private String propertyType;		// 物业类型 别墅
 	private String propertyCompany;		// 物业公司 上都物业
@@ -139,10 +139,10 @@ public class EData {
 	public void setOverview(String overview) {
 		this.overview = overview;
 	}
-	public Integer getScore() {
+	public Double getScore() {
 		return score;
 	}
-	public void setScore(Integer score) {
+	public void setScore(Double score) {
 		this.score = score;
 	}
 	
