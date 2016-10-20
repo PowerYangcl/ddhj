@@ -51,4 +51,15 @@ public interface TUserStepMapper extends BaseMapper<TUserStep, TUserStepDto> {
 	 */
 	List<TUserStep> findUserStepData(TUserStepDto dto);
 
+	/**
+	 * 
+	 * 方法: deletByEquipmentCode <br>
+	 * 描述: 根据设备号和时间段批量删除计步数据 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月20日 上午10:48:09
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	int deletByEquipmentCode(TUserStepDto dto);
 }
