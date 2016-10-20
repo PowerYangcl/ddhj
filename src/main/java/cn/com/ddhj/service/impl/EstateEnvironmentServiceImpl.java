@@ -369,9 +369,6 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 	}
 	
 	
-	
-	
-	
 	/**
 	 * @descriptions 楼盘列表|检索该经纬度附近10Km内的楼盘信息|1033
 	 * 								 城市名称|北京，上海，广州，深圳
@@ -479,26 +476,6 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 		return  result; 
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static void main(String[] args) {
-		List<Estate> plist = new ArrayList<>();
-		plist.add(new Estate("title" , "22" , "", "" , "", "", "" , 80.00) );
-		plist.add(new Estate("title" , "20" , "", "" , "", "", "" , 80.00) );
-		plist.add(new Estate("title" , "21" , "", "" , "", "", "" , 80.00) );
-		plist.add(new Estate("title" , "23" , "", "" , "", "", "" , 82.00) );
-		plist.add(new Estate("title" , "24" , "", "" , "", "", "" , 81.00) );
-		
-		Collections.sort(plist); 
-		Collections.reverse(plist); 
-		
-		List<Estate> list = new LinkedList<Estate>(); 
-		for(Estate e : plist){
-			System.out.println("L " + e.getScore() + "|" + e.getDistance()); 
-		}
-		
-	}
-	
-	
 	
 	private JSONObject estateList(String position , String page , String count , String radius){
 		String[] arr = position.split(",");
@@ -564,7 +541,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 				// 按照city名称 分为N个线程，一共会启动N*20个线程 
 				if(map.containsKey(aqi.getName())){
 					List<TLandedProperty> tlpList = map.get(aqi.getName());
-					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList, hourAqi, dayAqi);  
+					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList , hourAqi, dayAqi);  
 					tlpFutureList.add(executor.submit(tea));
 				}
 			}
@@ -591,7 +568,6 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 				Task2048LandedPropertyUpdate lpu = new Task2048LandedPropertyUpdate(entry.getValue(), lrMapper);
 				executor.submit(lpu);
 			}
-			
 			
 		} catch (InterruptedException | ExecutionException e1) {
 			e1.printStackTrace();
@@ -893,7 +869,7 @@ class Estate implements Comparable{
 		this.score = score;
 	}
 
-	public int compareTo(Object o){
+	public int compareTo(Object o){  // 分数相同则以距离作为排序依据 
 		Estate estate = (Estate) o;
 		double score = estate.getScore();
 		if(!this.score.equals(score)){

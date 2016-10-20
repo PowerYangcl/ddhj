@@ -448,7 +448,12 @@
 	
 	<update id="batchUpdateScore" parameterType="java.util.List">
 		<foreach collection="list" item="item" index="index" open="" close="" separator=";">  
-            update t_landed_property set score = #{item.score , jdbcType=DOUBLE}  where id = #{item.id , jdbcType=INTEGER} 
+            update 
+            	t_landed_property 
+            set 
+            	score = #{item.score , jdbcType=DOUBLE},
+            	update_time = #{item.updateTime , jdbcType=VARCHAR} 
+           	where id = #{item.id , jdbcType=INTEGER} 
      	</foreach>  
 	</update>
 	

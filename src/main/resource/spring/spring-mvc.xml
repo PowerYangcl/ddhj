@@ -59,6 +59,30 @@
 			<value>4096</value>
 		</property>
 	</bean>
+	
+	<!-- Quartz -->
+    <bean name="quartzTest" class="cn.com.ddhj.service.impl.EstateEnvironmentServiceImpl" />
+    <bean id="quartzTestJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="quartzTest"></property>
+        <property name="targetMethod" value="resyncEstateScore"></property>
+        <property name="concurrent" value="false"></property><!-- 设定多个job不会并发运行 -->
+    </bean>
+	<!-- http://www.cnblogs.com/jianzhi/p/3384436.html -->
+    <bean id="quartzTestTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="quartzTestJob"/> 
+        <!-- 每天6点 -->
+        <property name="cronExpression" value="0 00 06 ? * *"></property>
+    </bean>
+    <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="quartzTestTrigger" />
+            </list>
+        </property>
+    </bean>
+	
+	
+	
 	<mvc:annotation-driven>
 		<!-- 处理responseBody 里面日期类型 -->
 		<mvc:message-converters>

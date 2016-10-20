@@ -1,6 +1,8 @@
 package cn.com.ddhj.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,8 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 			e.printStackTrace(); 
 		}
 		entity.setScore(Double.valueOf(score));
+		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		entity.setUpdateTime(sdf.format(new Date()));
 		
 		return entity; 
 	}
