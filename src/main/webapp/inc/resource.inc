@@ -14,11 +14,6 @@
 		pageContext.setAttribute("basePath", basePath);
 		pageContext.setAttribute("resources", resources);
 		
-		if(session.getAttribute("userInfo") == null){
-			String url = basePath + "login.jsp";
-			response.sendRedirect(url);
-			return;
-		}
 	%>
 	
 	

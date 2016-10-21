@@ -7,13 +7,13 @@ var login = {
      * 登录相关类
      */
     login:function(formId){
-        var url_ = 'login/login.do';
+        var url_ = 'sys/user/login.htm';
         var data_ = $('#' + formId).serializeArray();
         var object = JSON.parse(ajaxs.sendAjax('post' , url_ , data_));
-        if(object.status == 'success'){
-            window.location.href='login/index.do';
+        if(object.resultCode == 0){
+            window.location.href='lp/index.htm';
         }else{
-            alert(object.msg);
+            alert(object.resultMessage);
         }
     },
 

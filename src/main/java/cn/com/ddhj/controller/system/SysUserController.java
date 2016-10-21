@@ -1,9 +1,13 @@
 package cn.com.ddhj.controller.system;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.dto.system.SysUserDto;
 import cn.com.ddhj.result.system.SysUserLoginResult;
@@ -35,7 +39,12 @@ public class SysUserController {
 	 */
 	@RequestMapping("login")
 	@ResponseBody
-	public SysUserLoginResult login(SysUserDto dto) {
-		return service.login(dto);
+	public SysUserLoginResult login(SysUserDto dto, HttpSession session) {
+		SysUserLoginResult result = service.login(dto);
+		if (result.getResultCode() == 0) {
+			session.setAttribute(result.getUser().getUuid(), result.getUser());
+		}
+		System.out.println(JSONObject.toJSON(result));
+		return result;
 	}
 }

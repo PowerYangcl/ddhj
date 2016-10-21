@@ -6,14 +6,10 @@
                     <a href="#formsub222222" class="editor">一级菜单栏A</a>
                     <span class="arrow"></span>
                     <ul id="formsub222222">
-                        <li class="current">
-                        	<a href="">二级菜单栏A</a>   <!-- 必须添加 $ { basePath } -->
-                        </li>
-                        <li><a href="">二级菜单栏B</a></li>
-                        <li><a href="${basePath}kjt/query.do"  target="_blank">跨境通问题查询</a></li>
-                        <li><a href="${basePath}kjt/validate.do">跨境通临时问题维护</a></li>
-                        <li><a href="${basePath}seller/index.do">商户管理</a></li>
-                        <li><a href="${basePath}api/index.do">商户管理</a></li>
+                        <li class="current"><a href="${basePath}user/index.htm"  target="_blank">用户管理</a></li>
+                        <li><a href="${basePath}order/index.htm">订单管理</a></li>
+                        <li><a href="${basePath}lp/index.htm">楼盘管理</a></li>
+                        <li><a href="${basePath}report/index.htm">报告管理</a></li>
                     </ul>
                 </li>
 

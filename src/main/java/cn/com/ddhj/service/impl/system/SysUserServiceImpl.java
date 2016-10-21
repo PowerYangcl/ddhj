@@ -10,6 +10,7 @@ import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.result.system.SysUserLoginResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.system.ISysUserService;
+import cn.com.ddhj.util.MD5Util;
 
 /**
  * 
@@ -37,6 +38,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser, SysUserMapper, 
 	public SysUserLoginResult login(SysUserDto dto) {
 		SysUserLoginResult result = new SysUserLoginResult();
 		if (StringUtils.isNotBlank(dto.getUserName()) && StringUtils.isNotBlank(dto.getPassword())) {
+			dto.setPassword(MD5Util.md5Hex(dto.getPassword()));
 			SysUser user = mapper.findSysUserForLogin(dto);
 			if (user != null) {
 				result.setResultCode(0);

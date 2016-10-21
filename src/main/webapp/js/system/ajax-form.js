@@ -40,7 +40,7 @@ var aForm = {
      */
     init : function(){
         var formId = this.formId;
-        var obj = this.jsonObj.data;
+        var obj = this.jsonObj.page;
         var pageNum = obj.pageNum;
         var startRow = obj.startRow;
         var endRow = obj.endRow;
@@ -158,7 +158,9 @@ var aForm = {
 
     // 绘制表单
     drawForm : function(callback){
-        callback();
+        if(callback != null && (typeof callback=="function")){
+        	callback();
+        }
         eval("this.callName = callback;");
         return aForm;
     } ,

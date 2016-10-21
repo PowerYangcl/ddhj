@@ -4,6 +4,8 @@ import java.util.List;
 
 public class TLandedPropertyDto extends BaseDto {
 
+	private String city;
+	
 	private List<String> codes;
 
 	private Double minLat;
@@ -13,6 +15,16 @@ public class TLandedPropertyDto extends BaseDto {
 	private Double maxLat;
 
 	private Double maxLng;
+
+	
+	
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
 
 	public Double getMinLat() {
 		return minLat;

@@ -36,7 +36,7 @@
 	</select>
 
 	<!-- 根据用户名和密码查询用户 2016-10-21 zhy -->
-	<select id="findSysUserForLogin" parameterType="cn.com.ddhj.dto.SysUserDto" resultMap="BaseResultMap">
+	<select id="findSysUserForLogin" parameterType="cn.com.ddhj.dto.system.SysUserDto" resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from sys_user

@@ -8,7 +8,7 @@
 		<result column="title" property="title" jdbcType="VARCHAR" />
 		<result column="total" property="total" jdbcType="VARCHAR" />
 		<result column="city" property="city" jdbcType="VARCHAR" />
-		<result column="score" property="score" jdbcType="DOUBLE"/>
+		<result column="score" property="score" jdbcType="DOUBLE" />
 		<result column="completion" property="completion" jdbcType="VARCHAR" />
 		<result column="propertyType" property="propertyType" jdbcType="VARCHAR" />
 		<result column="propertyCompany" property="propertyCompany"
@@ -422,6 +422,19 @@
 			)
 		</where>
 	</select>
+	<!-- 管理后台查询楼盘列表 2016-10-21 zhy -->
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_landed_property
+		<where>
+			<if test="city != null and city != ''">
+				city = #{city,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by update_time desc
+	</select>
 	<select id="findLpAllByCoord" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
 		resultMap="BaseResultMap">
 		SELECT
@@ -436,30 +449,26 @@
 			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
 		</where>
 	</select>
-	
-	<!-- 取出全部地产信息 - Yangcl-->
+
+	<!-- 取出全部地产信息 - Yangcl -->
 	<select id="selectAllEstateInfo" resultMap="BaseResultMap">
 		select
-			*
-		from 
-			t_landed_property 
+		*
+		from
+		t_landed_property
 	</select>
-	
-	
 	<update id="batchUpdateScore" parameterType="java.util.List">
-		<foreach collection="list" item="item" index="index" open="" close="" separator=";">  
-            update 
-            	t_landed_property 
-            set 
-            	score = #{item.score , jdbcType=DOUBLE},
-            	update_time = #{item.updateTime , jdbcType=VARCHAR} 
-           	where id = #{item.id , jdbcType=INTEGER} 
-     	</foreach>  
+		<foreach collection="list" item="item" index="index" open=""
+			close="" separator=";">
+			update
+			t_landed_property
+			set
+			score = #{item.score ,
+			jdbcType=DOUBLE},
+			update_time = #{item.updateTime , jdbcType=VARCHAR}
+			where id = #{item.id , jdbcType=INTEGER}
+		</foreach>
 	</update>
-	
-	
-	
-	
 </mapper>
 
 
