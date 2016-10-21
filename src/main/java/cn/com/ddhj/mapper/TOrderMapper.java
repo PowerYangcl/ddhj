@@ -1,5 +1,8 @@
 package cn.com.ddhj.mapper;
 
+import java.util.List;
+import java.util.Map;
+
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.model.TOrder;
 
@@ -23,4 +26,15 @@ public interface TOrderMapper extends BaseMapper<TOrder, TOrderDto> {
 	 * @return
 	 */
 	TOrder findOrderByComment(TOrder order);
+	
+	/**
+	 * 
+	 * 方法: findOrderAll <br>
+	 * 描述: 查询所有订单 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月21日 下午9:57:17
+	 * @param dto
+	 * @return
+	 */
+	List<Map<String, String>> findOrderAll(TOrderDto dto);
 }

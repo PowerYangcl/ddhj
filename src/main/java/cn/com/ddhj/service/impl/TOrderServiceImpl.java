@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TOrderDto;
@@ -27,10 +31,10 @@ import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.OrderTotal;
+import cn.com.ddhj.result.order.SysOrderDataResult;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.impl.orderpay.OrderPayProcess;
-import cn.com.ddhj.service.impl.orderpay.PaymentChannel;
 import cn.com.ddhj.service.impl.orderpay.prepare.PayGatePreparePayProcess;
 import cn.com.ddhj.util.DateUtil;
 
@@ -299,4 +303,20 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		return result;
 	}
 
+	@Override
+	public SysOrderDataResult getOrderBySys(TOrderDto dto) {
+		SysOrderDataResult result = new SysOrderDataResult();
+		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
+		List<Map<String, String>> list = mapper.findOrderAll(dto);
+		if (list != null && list.size() > 0) {
+			result.setResultCode(0);
+		} else {
+			list = new ArrayList<Map<String, String>>();
+			result.setResultCode(-1);
+			result.setResultMessage("查询楼盘列表为空");
+		}
+		PageInfo<Map<String, String>> page = new PageInfo<Map<String, String>>(list);
+		result.setPage(page);
+		return result;
+	}
 }

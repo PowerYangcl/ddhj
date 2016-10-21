@@ -114,8 +114,6 @@ public class TLandedPropertyServiceImpl extends
 		}
 		PageInfo<TLandedProperty> page = new PageInfo<TLandedProperty>(list);
 		result.setPage(page);
-		
-		System.out.println(JSONObject.toJSON(result));;
 		return result;
 	}
 

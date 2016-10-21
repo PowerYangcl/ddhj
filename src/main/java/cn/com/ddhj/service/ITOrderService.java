@@ -9,6 +9,7 @@ import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.OrderTotal;
+import cn.com.ddhj.result.order.SysOrderDataResult;
 import cn.com.ddhj.result.order.TOrderResult;
 
 /**
@@ -94,4 +95,16 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @return
 	 */
 	OrderTotal getOrderTotal(Integer status, String userToken);
+
+	/**
+	 * 
+	 * 方法: getOrderBySys <br>
+	 * 描述: 后台管理查询订单列表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月21日 下午9:59:34
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	SysOrderDataResult getOrderBySys(TOrderDto dto);
 }
