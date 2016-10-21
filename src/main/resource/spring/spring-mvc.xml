@@ -60,23 +60,23 @@
 		</property>
 	</bean>
 	
-	<!-- Quartz -->
-    <bean name="quartzTest" class="cn.com.ddhj.service.impl.EstateEnvironmentServiceImpl" />
-    <bean id="quartzTestJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="quartzTest"></property>
+	<!-- Quartz http://www.cnblogs.com/jianzhi/p/3384436.html -->
+    <bean name="jobResyncEstateScore" class="cn.com.ddhj.service.impl.EstateEnvironmentServiceImpl" />
+    <bean id="quartzJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="jobResyncEstateScore"></property>
         <property name="targetMethod" value="resyncEstateScore"></property>
-        <property name="concurrent" value="false"></property><!-- 设定多个job不会并发运行 -->
+        <!-- 设定多个job不会并发运行 -->
+        <property name="concurrent" value="false"></property>
     </bean>
-	<!-- http://www.cnblogs.com/jianzhi/p/3384436.html -->
-    <bean id="quartzTestTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="quartzTestJob"/> 
-        <!-- 每天6点 -->
+    <bean id="quartzTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="quartzJob"/>
+        <!-- 每天6点运行一次 "0 00 06 ? * *"   | 每30秒运行一次 "30 * * * * ?" -->
         <property name="cronExpression" value="0 00 06 ? * *"></property>
     </bean>
     <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <ref bean="quartzTestTrigger" />
+                <ref bean="quartzTrigger" />
             </list>
         </property>
     </bean>
