@@ -313,7 +313,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		} else {
 			list = new ArrayList<Map<String, String>>();
 			result.setResultCode(-1);
-			result.setResultMessage("查询楼盘列表为空");
+			result.setResultMessage("查询订单列表为空");
 		}
 		PageInfo<Map<String, String>> page = new PageInfo<Map<String, String>>(list);
 		result.setPage(page);

@@ -4,7 +4,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>订单列表</title>
+<title>注册用户列表</title>
 <%@ include file="/inc/head.jsp"%>
 <script type="text/javascript" src="${js}/system/ajax-form.js"></script>
 <script type="text/javascript">
@@ -15,7 +15,7 @@
 	 */
 	$(function() {
 		var type_ = 'post';
-		var url_ = '${basePath}order/data.htm';
+		var url_ = '${basePath}user/data.htm';
 		var data_ = {"pageIndex":0,"pageSize":10};
 		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
 		aForm.launch(url_, 'table-form', obj).init().drawForm(loadTable);
@@ -45,13 +45,12 @@
 				var obj = list[i];
 				html +='<tr class="gradeX">';
 				html +='<td align="center"><span class="center"> <input type="checkbox"/> </span></td>';
-				html +='<td width="100px">'+obj.code+'</td>';
-				html +='<td>'+obj.payName+'</td>';
-				html +='<td>'+obj.payPrice+'</td>';
+				html +='<td width="100px">'+obj.userCode+'</td>';
 				html +='<td>'+obj.phone+'</td>';
-				html +='<td>'+obj.reportTile+'</td>';
-				html +='<td>'+obj.levelName+'</td>';
+				html +='<td>'+obj.nickName+'</td>';
+				html +='<td>'+obj.eMail+'</td>';
 				html +='<td>'+obj.createTime+'</td>';
+				html +='<td>'+obj.updateTime+'</td>';
 				html +='<td>';
 				html +='<a>编辑</a>  <a>删除</a>';
 				html +='</td>';
@@ -120,13 +119,12 @@
 					        <th class="head0 nosort">
 					            <input type="checkbox" id="checkedAll"/>
 					        </th>
-					        <th class="head0 nosort">订单编码</th>
-					        <th class="head1 nosort">支付类型</th>
-					        <th class="head0 nosort">支付金额</th>
+					        <th class="head0 nosort">用户编码</th>
 					        <th class="head1 nosort">手机号</th>
-					        <th class="head0 nosort">报告名称</th>
-					        <th class="head1 nosort">报告等级</th>
+					        <th class="head0 nosort">昵称</th>
+					        <th class="head1 nosort">电子邮箱</th>
 					        <th class="head0 nosort">创建时间</th>
+					        <th class="head1 nosort">修改时间</th>
 					        <th class="head1 " width="100px">操作</th>
 					    </tr>
 					</thead>

@@ -1,5 +1,7 @@
 package cn.com.ddhj.service.impl.user;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,6 +9,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserDto;
@@ -19,6 +24,7 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserStep;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
+import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.util.DateUtil;
@@ -347,6 +353,23 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			result.setResultCode(-1);
 			result.setResultMessage("手机号不能为空");
 		}
+		return result;
+	}
+
+	@Override
+	public UserDataResult getUserData(TUserDto dto) {
+		UserDataResult result = new UserDataResult();
+		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
+		List<TUser> list = mapper.findUserAll(dto);
+		if (list != null && list.size() > 0) {
+			result.setResultCode(0);
+		} else {
+			list = new ArrayList<TUser>();
+			result.setResultCode(-1);
+			result.setResultMessage("查询注册用户列表为空");
+		}
+		PageInfo<TUser> page = new PageInfo<TUser>(list);
+		result.setPage(page);
 		return result;
 	}
 

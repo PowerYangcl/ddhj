@@ -5,6 +5,7 @@ import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
+import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.IBaseService;
 
 /**
@@ -75,4 +76,16 @@ public interface ITUserService extends IBaseService<TUser, TUserDto> {
 	 * @return
 	 */
 	RegisterResult loginBySecurityCode(TUser entity);
+
+	/**
+	 * 
+	 * 方法: getUserData <br>
+	 * 描述: 获取所有注册用户信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月21日 下午10:36:45
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	UserDataResult getUserData(TUserDto dto);
 }

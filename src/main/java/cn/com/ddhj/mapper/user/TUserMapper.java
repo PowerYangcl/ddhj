@@ -1,5 +1,7 @@
 package cn.com.ddhj.mapper.user;
 
+import java.util.List;
+
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.user.TUser;
@@ -60,4 +62,16 @@ public interface TUserMapper extends BaseMapper<TUser, TUserDto> {
 	 * @return
 	 */
 	TUser findUserByPhone(String phone);
+
+	/**
+	 * 
+	 * 方法: findUserAll <br>
+	 * 描述: 查询所有注册用户 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月21日 下午10:35:24
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	List<TUser> findUserAll(TUserDto dto);
 }

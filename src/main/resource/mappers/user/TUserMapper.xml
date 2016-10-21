@@ -17,8 +17,8 @@
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, uuid, user_code, phone, password, nick_name, head_pic,
-		e_mail,
+		id, uuid, user_code, phone, password, IFNULL(nick_name,'') AS nick_name, head_pic,
+		IFNULL(e_mail,'') AS e_mail,
 		is_login, create_user,
 		DATE_FORMAT(
 		create_time,
@@ -152,5 +152,15 @@
 		<include refid="Base_Column_List" />
 		from t_user
 		where phone = #{phone,jdbcType=VARCHAR}
+	</select>
+	<select id="findUserAll" parameterType="cn.com.ddhj.dto.user.TUserDto" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_user
+		<where>
+			<if test="phone != null and phone != ''">
+				phone = #{phone,jdbcType=VARCHAR}
+			</if>
+		</where>
 	</select>
 </mapper>
