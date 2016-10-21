@@ -164,7 +164,7 @@ public class CityAirServiceImpl implements ICityAirService {
 	/**
 	 * 
 	 * 方法: getCityAir <br>
-	 * 描述: 获取城市空气质量数据 <br>
+	 * 描述: 获取城市空气质量数据 <br> | 分属：(PM2.5 )空气质量接口；聚合水质量接口右侧的接口
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月4日 下午8:00:21
 	 * 
