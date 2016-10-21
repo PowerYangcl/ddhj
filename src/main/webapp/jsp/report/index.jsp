@@ -4,7 +4,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>楼盘报告列表</title>
+<title>环境报告列表列表</title>
 <%@ include file="/inc/head.jsp"%>
 <script type="text/javascript" src="${js}/system/ajax-form.js"></script>
 <script type="text/javascript">
@@ -16,7 +16,7 @@
 	$(function() {
 		var type_ = 'post';
 		var url_ = '${basePath}report/data.htm';
-		var data_ = null;
+		var data_ = {"pageIndex":0,"pageSize":10};
 		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
 		aForm.launch(url_, 'table-form', obj).init().drawForm(loadTable);
 	});
@@ -37,43 +37,32 @@
 
 	// 画表格
 	function draw(obj) {
-		$('#ajax-tbody-1 tr').remove();
-		var html_ = '';
-		var list = obj.data.list;
+		$('#data tr').remove();
+		var html = '';
+		var list = obj.page.list;
 		if (list.length > 0) {
 			for (var i = 0; i < list.length; i++) {
-				html_ += '<tr id="tr-' + list[i].id + '" class="gradeX">'
-						+ '<td align="center"><span class="center"> <input type="checkbox"/> </span></td>'
-						+ '<td width="100px">'
-						+ list[i].id
-						+ '</td>'
-						+ '<td>'
-						+ list[i].userName
-						+ '</td>'
-						+ '<td>'
-						+ list[i].mobile
-						+ '</td>'
-						+ '<td class="center">'
-						+ list[i].idNumber
-						+ '</td>'
-						+ '<td class="center">'
-						+ list[i].email
-						+ '</td>'
-						+ '<td width="150px" align="center">'
-						+ '<a onclick="deleteOne(\''
-						+ list[i].id
-						+ '\')" title="删除"  style="cursor: pointer;">删除</a> | '
-						+ '<a href="${basePath}example/editInfoPage.do?id='
-						+ list[i].id
-						+ '" title="修改"  style="cursor: pointer;">修改</a> '
-						+ '</td></tr>'
+				var obj = list[i];
+				html +='<tr class="gradeX">';
+				html +='<td align="center"><span class="center"> <input type="checkbox"/> </span></td>';
+				html +='<td width="100px">'+obj.code+'</td>';
+				html +='<td>'+obj.title+'</td>';
+				html +='<td>'+obj.lpName+'</td>';
+				html +='<td>'+obj.levelName+'</td>';
+				html +='<td>'+obj.price+'</td>';
+				html +='<td>'+obj.createTime+'</td>';
+				html +='<td>'+obj.updateTime+'</td>';
+				html +='<td>';
+				html +='<a>编辑</a>  <a>删除</a>';
+				html +='</td>';
+				html +='</tr>';
 			}
 		} else {
-			html_ = '<tr><td colspan="11" style="text-align: center;">'
-					+ obj.msg + '</td></tr>';
+			html = '<tr><td colspan="11" style="text-align: center;">'
+					+ obj.resultMessage + '</td></tr>';
 		}
 
-		$('#ajax-tbody-1').append(html_);
+		$('#data').append(html);
 	}
 
 	function deleteOne(id_) {
@@ -95,7 +84,57 @@
 </script>
 
 </head>
-<body>
+<body class="withvernav">
 
+	<div class="bodywrapper">
+		<%@ include file="/inc/top.jsp"%>
+		<%@ include file="/inc/left.jsp"%>
+		<div class="centercontent tables">
+			<div id="contentwrapper" class="contentwrapper">
+				<div id="table-form" class="dataTables_wrapper" >
+					<!-- 查询条件 -->
+					<div class="contenttitle2">
+						<p style="margin: 0px">
+                            <label>城市名称：</label>
+                            <span class="field"><input id="city" type="text" name="city"  class="form-search"/></span>
+						</p>
+					</div>
+				</div>
+				<!-- 设置页面显示数据数量 -->
+				<div class="dataTables_length">
+					<label>
+						当前显示
+						<%-- TODO 注意：select-page-size 这个ID是写定的，如果没有这个显示条数，则默认显示10条 - Yangcl --%>
+						<select id="select-page-size" size="1" name="dyntable2_length" onchange="aForm.formPaging('1')">
+							<option value="10">10</option>
+							<option value="25" >25</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+						</select>
+						条记录
+					</label>
+				</div>
+				<table cellpadding="0" cellspacing="0" border="0" class="stdtable">
+					<thead>
+					    <tr>
+					        <th class="head0 nosort">
+					            <input type="checkbox" id="checkedAll"/>
+					        </th>
+					        <th class="head0 nosort">报告编码</th>
+					        <th class="head0 nosort">报告名称</th>
+					        <th class="head1 nosort">所属楼盘</th>
+					        <th class="head0 nosort">报告等级</th>
+					        <th class="head1 nosort">价格</th>
+					        <th class="head0 nosort">创建时间</th>
+					        <th class="head0 nosort">修改时间</th>
+					        <th class="head1 " width="100px">操作</th>
+					    </tr>
+					</thead>
+					<tbody id="data">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

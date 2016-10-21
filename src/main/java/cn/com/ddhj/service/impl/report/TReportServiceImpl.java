@@ -3,6 +3,7 @@ package cn.com.ddhj.service.impl.report;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
@@ -34,6 +37,7 @@ import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserLpFollow;
 import cn.com.ddhj.result.report.PDFReportResult;
+import cn.com.ddhj.result.report.TReportDataResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.ICityAirService;
@@ -483,6 +487,31 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			result.setResultCode(-1);
 			result.setResultMessage("楼盘数据不存在");
 		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: getPageData <br>
+	 * 
+	 * @param dto
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#getPageData(cn.com.ddhj.dto.report.TReportDto)
+	 */
+	@Override
+	public TReportDataResult getPageData(TReportDto dto) {
+		TReportDataResult result = new TReportDataResult();
+		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
+		List<Map<String, String>> list = mapper.findReportDataAll(dto);
+		if (list != null && list.size() > 0) {
+			result.setResultCode(0);
+		} else {
+			list = new ArrayList<Map<String, String>>();
+			result.setResultCode(-1);
+			result.setResultMessage("查询环境报告列表为空");
+		}
+		PageInfo<Map<String, String>> page = new PageInfo<Map<String, String>>(list);
+		result.setPage(page);
 		return result;
 	}
 

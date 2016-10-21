@@ -9,6 +9,7 @@ import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.report.PDFReportResult;
+import cn.com.ddhj.result.report.TReportDataResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.IBaseService;
@@ -108,4 +109,16 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @return
 	 */
 	PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir);
+
+	/**
+	 * 
+	 * 方法: getPageData <br>
+	 * 描述: 获取所有报告列表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月21日 下午11:52:57
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	TReportDataResult getPageData(TReportDto dto);
 }

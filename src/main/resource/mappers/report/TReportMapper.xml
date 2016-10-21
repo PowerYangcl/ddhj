@@ -336,6 +336,36 @@
 		r.`code` = #{code,jdbcType=VARCHAR}
 	</select>
 	<select id="findTReportAll" resultMap="BaseResultMap">
-		select <include refid="Base_Column_List" /> from t_report
+		select
+		<include refid="Base_Column_List" />
+		from t_report
+	</select>
+	<select id="findReportDataAll" resultType="Map"
+		parameterType="cn.com.ddhj.dto.report.TReportDto">
+		SELECT
+		r.`code`,
+		r.title,
+		lp.title AS lpName,
+		rl.`name` AS levelName,
+		r.price,
+		DATE_FORMAT(
+		r.create_time,
+		'%Y-%m-%d %H:%i:%s'
+		) AS
+		createTime,
+		DATE_FORMAT(
+		r.update_time,
+		'%Y-%m-%d %H:%i:%s'
+		) AS
+		updateTime
+		FROM
+		t_report AS r
+		LEFT JOIN
+		t_landed_property
+		AS lp ON r.houses_code =
+		lp.`code`
+		LEFT JOIN
+		t_report_level AS rl ON
+		r.level_code = rl.`code`
 	</select>
 </mapper>

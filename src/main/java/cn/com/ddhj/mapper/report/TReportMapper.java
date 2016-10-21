@@ -1,8 +1,10 @@
 package cn.com.ddhj.mapper.report;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.report.TReport;
 
@@ -73,4 +75,15 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * @return
 	 */
 	List<TReport> findTReportAll();
+	
+	/**
+	 * 
+	 * 方法: findReportDataAll <br>
+	 * 描述: 获取所有环境报告数据 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月21日 下午11:31:44
+	 * @param dto
+	 * @return
+	 */
+	List<Map<String, String>> findReportDataAll(TReportDto dto);
 }

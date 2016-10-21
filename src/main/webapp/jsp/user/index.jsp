@@ -58,7 +58,7 @@
 			}
 		} else {
 			html = '<tr><td colspan="11" style="text-align: center;">'
-					+ obj.msg + '</td></tr>';
+					+ obj.resultMessage + '</td></tr>';
 		}
 
 		$('#data').append(html);
