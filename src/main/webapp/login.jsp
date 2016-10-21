@@ -30,7 +30,7 @@
     	<div class="loginboxinner">
         	
             <div class="logo">
-            	<h1 class="logo">$<span>惠家有</span>$</h1>
+            	<h1 class="logo"><span>点点环境</span></h1>
 				<span class="slogan">后台管理系统</span>
             </div>
             
@@ -54,12 +54,12 @@
             <form id="form-login">
                 <div class="username">
                 	<div class="usernameinner">
-                    	<input type="text" name="userName" id="username" maxlength="20" value="a"/>
+                    	<input type="text" name="userName" id="username" maxlength="20" value="admin"/>
                     </div>
                 </div>
                 <div class="password">
                 	<div class="passwordinner">
-                    	<input type="password" name="password" id="password" maxlength="20" value="a"/>
+                    	<input type="password" name="password" id="password" maxlength="20" value="admin"/>
                     </div>
                 </div>
                 <input type="button" class="button-login" value="登录" onclick="login.login('form-login')"/>

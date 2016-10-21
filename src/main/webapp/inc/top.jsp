@@ -1,17 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 		<div class="topheader">
             <div class="left">
-                <h1 class="logo"><a id="menu-open-close" style="cursor:pointer;" >Plus.</a><span>springMatrix</span></h1>
-                <span class="slogan">惠家有矩阵后台管理系统</span>
+                <h1 class="logo"><a id="menu-open-close" style="cursor:pointer;" >Ddhj.</a><span>manageSystem</span></h1>
+                <span class="slogan">点点环境后台管理系统</span>
                 <br clear="all" />
 
             </div><!--left-->
 
             <div class="right">
-                <!--用户消息提示 可以隐藏 弹层包括class='noticontent'的元素 general.js 进行添加-->
-                <!--<div class="notification">-->
-                    <!--<a class="count" href="ajax/notifications.html"><span>9</span></a>-->
-                <!--</div>-->
                 <!--用户摘要信息-->
                 <div class="userinfo">
                     <img src="${img}/thumbs/avatar.png" alt="" />
