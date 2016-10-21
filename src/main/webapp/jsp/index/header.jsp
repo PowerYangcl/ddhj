@@ -19,35 +19,40 @@
 <script type="text/javascript" src="assets/jquery/1.12.2/jquery-1.12.2.min.js"></script>
 <script type="text/javascript" src="assets/commons/js/mricode.pagination.js"></script>
 <script type="text/javascript" src="assets/bootstrap/3.3.5/js/bootstrap.js"></script>
-<title>文件上传下载测试</title>
-<script type="text/javascript">
-function createPDF(){
-	var codeVal = "LP161003100031";
-	$.ajax({
-		url : "report/createpdf.htm",
-		type : "POST",
-		data : {
-			code:codeVal
-		},
-		success : function(data) {
-			data = JSON.parse(data);
-			if (data.resultCode == 0) {
-				alert("创建pdf成功,文件地址:"+data.path);
-				$("#downFile").attr("href",'<%=basePath %>'+data.path);
-			} else {
-				alert("创建pdf失败");
-			}
-		},
-		error : function(data) {
-			alert("创建pdf失败");
-		}
-	});
+<script type="text/javascript" src="assets/commons/js/metisMenu.js"></script>
+<script type="text/javascript" src="assets/commons/js/usepublic.js"></script>
+<script type="text/javascript" src="assets/commons/js/commons.js"></script>
+<style type="text/css">
+.table td{
+	text-align: center;
 }
+</style>
+<script type="text/javascript">
+	//公共每页显示条数
+	var PAGE_SIZE = 10;
 </script>
 </head>
 <body>
-	<h1>报告上传下载</h1>
-	<a href="javascript:void(0)" onclick="createPDF();">创建pdf报告</a>
-	<a id="downFile" href="javascript:void(0)">下载</a>
-</body>
-</html>
+<div id="wrapper">
+	<!-- 标题logo -->
+	<nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+			<a class="navbar-brand" href="index.html">PMC</a>
+		</div>
+	</nav>
+	<!-- 左侧菜单栏 -->
+	<nav class="navbar-default navbar-side" role="navigation">
+		<div class="sidebar-collapse">
+			<ul class="nav" id="main-menu">
+			</ul>
+		</div>
+	</nav>
+</div>
+<div id="page-wrapper">
+	<div id="page-inner">
