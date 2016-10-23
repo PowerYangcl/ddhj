@@ -153,14 +153,36 @@
 		from t_user
 		where phone = #{phone,jdbcType=VARCHAR}
 	</select>
+	
+	
 	<select id="findUserAll" parameterType="cn.com.ddhj.dto.user.TUserDto" resultMap="BaseResultMap">
 		select
-		<include refid="Base_Column_List" />
+			*
 		from t_user
 		<where>
+			<if test="userCode != null and userCode != ''">
+				user_code = #{userCode,jdbcType=VARCHAR}
+			</if>
 			<if test="phone != null and phone != ''">
 				phone = #{phone,jdbcType=VARCHAR}
 			</if>
-		</where>
+			<if test="nickName != null and nickName != ''">
+				nick_name like CONCAT('%' , '${nickName}' , '%' ) 
+			</if>
+		</where> 
 	</select>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

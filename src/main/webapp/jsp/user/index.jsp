@@ -4,9 +4,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>注册用户列表</title>
+<title>用户列表</title>
 <%@ include file="/inc/head.jsp"%>
 <script type="text/javascript" src="${js}/system/ajax-form.js"></script>
+ <script src="${js}/blockUI/jquery.blockUI.js" type="text/javascript"></script>
 <script type="text/javascript">
 	/**
 	 * Ajax 页面分页示例
@@ -29,7 +30,11 @@
 		}
 		// 这种情况是响应上一页或下一页的触发事件
 		var type_ = 'post';
-		var data_ = null;
+		var data_ = {
+			userCode: $("#user-code").val(),
+			phone : $("#phone").val(),
+			nickName : $("#nick-name").val()
+		}
 		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
 		aForm.launch(url_, 'table-form', obj).init();
 		draw(obj);
@@ -52,7 +57,7 @@
 				html +='<td>'+obj.createTime+'</td>';
 				html +='<td>'+obj.updateTime+'</td>';
 				html +='<td>';
-				html +='<a>编辑</a>  <a>删除</a>';
+				html +='<a onclick="openDialogPage(\'' + obj.uuid + '\')" style="cursor: pointer;" >编辑</a>  <a>删除</a>';
 				html +='</td>';
 				html +='</tr>';
 			}
@@ -62,6 +67,10 @@
 		}
 
 		$('#data').append(html);
+	}
+
+	function searchUser(){
+		aForm.formPaging(0);
 	}
 
 	function deleteOne(id_) {
@@ -80,6 +89,44 @@
 			}
 		}
 	}
+
+	/**
+	 * @描述: 关闭BlockUI弹框
+	 * @作者: Yangcl
+	 * @时间: 2016-08-19 : 15-20-56
+	 */
+	function closeDialog(){
+		$.unblockUI();
+	}
+
+	/**
+	 * @描述: 打开dialog insert BlockUI弹框
+	 * @作者: Yangcl
+	 * @时间: 2016-08-19 : 15-20-56
+	 */
+	function openDialogPage(uuid){
+		var type_ = 'post';
+		var url_ = '${basePath}example/ajaxPageData.do';
+		var data_ = {uuid:uuid};
+//		var obj = JSON.parse(ajaxs.sendAjax(type_ , url_ , data_));
+
+		$.blockUI({
+			showOverlay:true ,
+			css:  {
+				cursor:'auto',
+				left:($(window).width() - $("#dialog-page-div").width())/2 + 'px',
+				width:$("#dialog-page-div").width()+'px',
+				top:($(window).height()-$("#dialog-page-div").height())/2 + 'px',
+				position:'fixed', //居中
+				border: '3px solid #FB9337'  // 边界
+			},
+			message: $('#dialog-page-div'),
+			fadeIn: 500,//淡入时间
+			fadeOut: 1000  //淡出时间
+		});
+	}
+
+
 </script>
 
 </head>
@@ -94,8 +141,22 @@
 					<!-- 查询条件 -->
 					<div class="contenttitle2">
 						<p style="margin: 0px">
-                            <label>城市名称：</label>
-                            <span class="field"><input id="city" type="text" name="city"  class="form-search"/></span>
+							<label>用户编码：</label>
+							<span class="field">
+								<input id="user-code" type="text" name="userCode"  class="form-search"/>
+							</span>
+
+							<label>手机号：</label>
+							<span class="field">
+								<input id="phone" type="text" name="phone"  class="form-search"/>
+							</span>
+
+							<label>昵称：</label>
+							<span class="field">
+								<input id="nick-name" type="text" name="nickName"  class="form-search"/>
+							</span>
+
+							<a onclick="searchUser()" style="cursor: pointer;">【搜索】</a>
 						</p>
 					</div>
 				</div>
@@ -136,3 +197,59 @@
 	</div>
 </body>
 </html>
+
+
+
+
+<%-- 编辑 --%>
+<div id="dialog-page-div" class="dialog-page-div" style="display: none;width: 600px;height: 600px">
+    <p class="dialog-title">
+        <a href="#" onclick="closeDialog()" class="dialog-close"></a>
+        修改用户信息
+    </p>
+
+    <div id="dialog-content-wrapper" class="contentwrapper">
+        <div id="dialog-table-form" class="dataTables_wrapper" >
+            <%-- 以下内容根据你自己的业务需要进行修改--%>
+            <table id="dialog-table" cellpadding="0" cellspacing="0" border="0">
+                <tbody id="dialog-ajax-tbody">
+                	<%-- 等待填充 --%>
+					<tr >
+						<td width="100px">用户编号</td>
+						<td><input id="aaaa" value="U161007100001"/></td>
+					</tr>
+					<tr >
+						<td width="100px">手机号</td>
+						<td><input id="aaab" value="U161007100001"/></td>
+					</tr>
+					<tr >
+						<td width="100px">用户昵称</td>
+						<td><input id="aaab" value="U161007100001"/></td>
+					</tr>
+					<tr >
+						<td width="100px">用户密码</td>
+						<td><input id="aaab" value="U161007100001"/></td>
+					</tr>
+					<tr >
+						<td width="100px">邮箱</td>
+						<td><input id="aaab" value="U161007100001"/></td>
+					</tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+

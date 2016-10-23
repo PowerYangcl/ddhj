@@ -150,7 +150,7 @@ var aForm = {
         if(isNaN(s)){
             s = 10;
         }
-        pn = pn-1;
+//        pn = pn-1;
         var actions = url + '?pageIndex=' + pn +'&pageSize=' + s;
         if(this.callName != null && (typeof this.callName=="function")){
             this.callName(actions);
