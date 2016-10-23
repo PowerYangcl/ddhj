@@ -75,15 +75,28 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * @return
 	 */
 	List<TReport> findTReportAll();
-	
+
 	/**
 	 * 
 	 * 方法: findReportDataAll <br>
 	 * 描述: 获取所有环境报告数据 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月21日 下午11:31:44
+	 * 
 	 * @param dto
 	 * @return
 	 */
 	List<Map<String, String>> findReportDataAll(TReportDto dto);
+
+	/**
+	 * 
+	 * 方法: findReportByLpCodeAndLevelCode <br>
+	 * 描述: 根据楼盘编码和等级编码查询报告是否存在 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月22日 下午8:34:25
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	TReport findReportByLpCodeAndLevelCode(TReportDto dto);
 }

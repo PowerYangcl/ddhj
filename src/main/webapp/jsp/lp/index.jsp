@@ -34,6 +34,21 @@
 		aForm.launch(url_, 'table-form', obj).init();
 		draw(obj);
 	}
+	
+	function createReport(val){
+		alert(val);
+		var url_ = '${basePath}report/create.htm';
+		var type_ = 'post';
+		var data_ = {"lpCode":val,"levelCode":"RL161006100001"};
+		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
+		if(obj.resultCode == 0){
+			alert(obj.resultMessage);
+		}else if(obj.resultCode == 1){
+			if(confirm("楼盘没有报告是否生成？")){
+				window.open("${basePath}report/add.htm","_self")
+			}
+		}
+	}
 
 	// 画表格
 	function draw(obj) {
@@ -43,22 +58,25 @@
 		if (list.length > 0) {
 			for (var i = 0; i < list.length; i++) {
 				var obj = list[i];
-				html +='<tr class="gradeX">';
-				html +='<td align="center"><span class="center"> <input type="checkbox"/> </span></td>';
-				html +='<td width="100px">'+obj.code+'</td>';
-				html +='<td>'+obj.title+'</td>';
-				html +='<td>'+obj.propertyType+'</td>';
-				html +='<td>'+obj.city+'</td>';
-				html +='<td>'+obj.addressFull+'</td>';
-				html +='<td>'+obj.completion+'</td>';
-				html +='<td>';
-				html +='<a>编辑</a>  <a>删除</a>';
-				html +='</td>';
-				html +='</tr>';
+				html +="<tr class=\"gradeX\">";
+				html +="<td align=\"center\"><span class=\"center\"> <input type=\"checkbox\"/> </span></td>";
+				html +="<td width=\"100px\">"+obj.code+"</td>";
+				html +="<td>"+obj.title+"</td>";
+				html +="<td>"+obj.propertyType+"</td>";
+				html +="<td>"+obj.city+"</td>";
+				html +="<td>"+obj.addressFull+"</td>";
+				html +="<td>"+obj.completion+"</td>";
+				html +="<td>";
+				html +="<a href=\"javascript:void(0)\" onclick=\"createReport('"+obj.code+"')\">生成</a>";
+				html +="</td>";
+				html +="<td>";
+				html +="<a href=\"editindex.htm?code="+obj.code+"\">编辑</a>  <a>删除</a>";
+				html +="</td>";
+				html +="</tr>";
 			}
 		} else {
-			html = '<tr><td colspan="11" style="text-align: center;">'
-					+ obj.msg + '</td></tr>';
+			html = "<tr><td colspan=\"9\" style=\"text-align: center;\">"
+					+ obj.msg + "</td></tr>";
 		}
 
 		$('#data').append(html);
@@ -97,6 +115,9 @@
                             <label>城市名称：</label>
                             <span class="field"><input id="city" type="text" name="city"  class="form-search"/></span>
 						</p>
+						<p>
+							<a href="addindex.htm">添加</a>
+						</p>
 					</div>
 				</div>
 				<!-- 设置页面显示数据数量 -->
@@ -125,7 +146,8 @@
 					        <th class="head1 nosort">所在城市</th>
 					        <th class="head0 nosort">详细地址</th>
 					        <th class="head1 nosort">完成时间</th>
-					        <th class="head0 " width="100px">操作</th>
+					        <th class="head0 nosort">生成报告</th>
+					        <th class="head1 " width="100px">操作</th>
 					    </tr>
 					</thead>
 					<tbody id="data">

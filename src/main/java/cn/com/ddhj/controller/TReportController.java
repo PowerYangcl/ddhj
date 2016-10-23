@@ -1,6 +1,7 @@
 package cn.com.ddhj.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,9 +10,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.report.TReportDto;
-import cn.com.ddhj.model.report.TReport;
+import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.result.report.TReportDataResult;
-import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.report.ITReportService;
 
 @Controller
@@ -44,53 +44,21 @@ public class TReportController {
 
 	/**
 	 * 
-	 * 方法: insertReport <br>
-	 * 描述: 添加新的环境报告 <br>
+	 * 方法: createPDF <br>
+	 * 描述: 根据楼盘编码更新报告 <br>
 	 * 作者: zhy<br>
-	 * 时间: 2016年10月4日 下午9:43:41
+	 * 时间: 2016年10月22日 下午8:54:30
 	 * 
-	 * @param entity
+	 * @param dto
 	 * @param request
+	 * @param session
 	 * @return
 	 */
-	@RequestMapping("add")
+	@RequestMapping("create")
 	@ResponseBody
-	public BaseResult insertReport(TReport entity, HttpServletRequest request) {
-		String filePath = request.getSession().getServletContext().getRealPath("");
-		return service.insert(entity, filePath);
-	}
-
-	/**
-	 * 
-	 * 方法: updateReport <br>
-	 * 描述: 编辑现有的环境报告 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月4日 下午9:43:57
-	 * 
-	 * @param entity
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping("edit")
-	@ResponseBody
-	public BaseResult updateReport(TReport entity, HttpServletRequest request) {
-		String filePath = request.getSession().getServletContext().getRealPath("");
-		return service.updateByCode(entity, filePath);
-	}
-
-	/**
-	 * 
-	 * 方法: getTReport <br>
-	 * 描述: 根据编码查询环境报告 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月4日 下午10:12:31
-	 * 
-	 * @param code
-	 * @return
-	 */
-	@RequestMapping("selbycode")
-	@ResponseBody
-	public TReportSelResult getTReport(String code) {
-		return service.getTReport(code);
+	public BaseResult createPDF(TReportDto dto, HttpServletRequest request, HttpSession session) {
+		SysUser user = (SysUser) session.getAttribute("user");
+		String path = request.getSession().getServletContext().getRealPath("");
+		return service.createReport(dto, path, user);
 	}
 }

@@ -368,4 +368,15 @@
 		t_report_level AS rl ON
 		r.level_code = rl.`code`
 	</select>
+	<!-- 根据楼盘编码和等级编码查询报告是否存在 2016-10-22 zhy -->
+	<select id="findReportByLpCodeAndLevelCode" parameterType="cn.com.ddhj.dto.report.TReportDto" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_report
+		<where>
+			houses_code = #{lpCode,jdbcType=VARCHAR}
+			AND
+			level_code = #{levelCode,jdbcType=VARCHAR}
+		</where>
+	</select>
 </mapper>

@@ -33,6 +33,7 @@ import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 import cn.com.ddhj.model.report.TReportTemplate;
+import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserLpFollow;
@@ -314,18 +315,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return content;
 	}
 
-	/**
-	 * 
-	 * 方法: createPDF <br>
-	 * 
-	 * @param code
-	 * @param housesCode
-	 * @param path
-	 * @return
-	 * @see cn.com.ddhj.service.report.ITReportService#createPDF(java.lang.String,
-	 *      java.lang.String, java.lang.String)
-	 */
-	@Override
 	public PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir) {
 		PDFReportResult result = new PDFReportResult();
 		try {
@@ -425,7 +414,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				String levelName = mapper.findLevel(code);
 				PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path);
 				result.setResultCode(0);
-				result.setResultMessage("");
+				result.setResultMessage("创建报告成功");
 				result.setPath(filePath);
 			} else {
 				result.setResultCode(-1);
@@ -627,5 +616,33 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 		}
 		return codes;
+	}
+
+	/**
+	 * 
+	 * 方法: createReport <br>
+	 * 
+	 * @param dto
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#createReport(cn.com.ddhj.dto.report.TReportDto)
+	 */
+	@Override
+	public BaseResult createReport(TReportDto dto, String path, SysUser user) {
+		BaseResult result = new BaseResult();
+		// 查询报告是否已存在,获取报告的
+		TReport report = mapper.findReportByLpCodeAndLevelCode(dto);
+		if (report != null) {
+			// 如果存在，根据等级生成新的环境报告
+			PDFReportResult createResult = createPDF(report.getCode(), dto.getLpCode(), path, null);
+			result.setResultCode(createResult.getResultCode());
+			result.setResultMessage(createResult.getResultMessage());
+			report.setUpdateTime(DateUtil.getSysDateTime());
+			report.setUpdateUser(user != null ? user.getCode() : "system");
+			mapper.updateByCode(report);
+		} else {
+			result.setResultCode(1);
+			result.setResultMessage("报告未创建");
+		}
+		return result;
 	}
 }
