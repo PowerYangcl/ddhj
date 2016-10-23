@@ -2,6 +2,8 @@ package cn.com.ddhj.mapper.user;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.user.TUser;
@@ -74,4 +76,25 @@ public interface TUserMapper extends BaseMapper<TUser, TUserDto> {
 	 * @return
 	 */
 	List<TUser> findUserAll(TUserDto dto);
+	
+	
+	public TUser getUserInfo(String uuid); 
+	
+	public Integer updateUserInfo(TUserDto dto);
+
+	public Integer  deleteOne(Integer id); 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

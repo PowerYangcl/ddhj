@@ -29,7 +29,12 @@
 		}
 		// 这种情况是响应上一页或下一页的触发事件
 		var type_ = 'post';
-		var data_ = null;
+		var data_ = {
+			code: $("#code").val(),
+			phone: $("#phone").val(),
+			reportTitle: $("#report-title").val(),
+			level: $("#level").val()
+		}
 		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
 		aForm.launch(url_, 'table-form', obj).init();
 		draw(obj);
@@ -46,6 +51,15 @@
 				html +='<tr class="gradeX">';
 				html +='<td align="center"><span class="center"> <input type="checkbox"/> </span></td>';
 				html +='<td width="100px">'+obj.code+'</td>';
+				if(obj.status == '0'){
+					html +='<td width="100px">未支付</td>';
+				}else if(obj.status == '1'){
+					html +='<td width="100px"> 已支付未下载</td>';
+				}else if(obj.status == '2'){
+					html +='<td width="100px">已支付已下载</td>';
+				}else{
+					html +='<td width="100px"> 已取消</td>';
+				}
 				html +='<td>'+obj.payName+'</td>';
 				html +='<td>'+obj.payPrice+'</td>';
 				html +='<td>'+obj.phone+'</td>';
@@ -53,13 +67,12 @@
 				html +='<td>'+obj.levelName+'</td>';
 				html +='<td>'+obj.createTime+'</td>';
 				html +='<td>';
-				html +='<a>编辑</a>  <a>删除</a>';
+				html +='<a onclick="deleteOne(\'' + obj.id + '\')" style="cursor: pointer;" >删除</a>';
 				html +='</td>';
 				html +='</tr>';
 			}
 		} else {
-			html = '<tr><td colspan="11" style="text-align: center;">'
-					+ obj.resultMessage + '</td></tr>';
+			html = '<tr><td colspan="11" style="text-align: center;">' +  obj.resultMessage + '</td></tr>';
 		}
 
 		$('#data').append(html);
@@ -68,19 +81,26 @@
 	function deleteOne(id_) {
 		if (confirm('您确定要删除这条记录吗？')) {
 			var type_ = 'post';
-			var url_ = '${basePath}example/deleteOne.do';
+			var url_ = '${basePath}order/deleteOne.htm';
 			var data_ = {
 				id : id_
 			};
 			var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
-			if (obj.status == 'success') {
+			if (obj.code == '1') {
 				alert(obj.msg);
-				$("#tr-" + id_).remove();
+				var pageIndex = $(".paginate_active").html();
+				aForm.formPaging(pageIndex);
 			} else {
 				alert(obj.msg);
 			}
 		}
 	}
+
+	function searchReport(){
+		aForm.formPaging(0);
+	}
+
+
 </script>
 
 </head>
@@ -95,8 +115,32 @@
 					<!-- 查询条件 -->
 					<div class="contenttitle2">
 						<p style="margin: 0px">
-                            <label>城市名称：</label>
-                            <span class="field"><input id="city" type="text" name="city"  class="form-search"/></span>
+							<label>订单编码：</label>
+							<span class="field">
+								<input id="code" type="text" name="code"  class="form-search"/>
+							</span>
+
+							<label>手机号：</label>
+							<span class="field">
+								<input id="phone" type="text" name="phone"  class="form-search"/>
+							</span>
+
+							<label>报告名称：</label>
+							<span class="field">
+								<input id="report-title" type="text" name="reportTitle"  class="form-search"/>
+							</span>
+
+							<label>报告等级：</label>
+							<span class="field">
+								<select id="level" name="level" class="form-search">
+									<option value="">---请选择---</option>
+									<option value="RL161006100001">普通</option>
+									<option value="RL161006100002">高级</option>
+									<option value="RL161006100003">专业</option>
+								</select>
+							</span>
+
+							<a onclick="searchReport()" style="cursor: pointer;">【搜索】</a>
 						</p>
 					</div>
 				</div>
@@ -121,6 +165,7 @@
 					            <input type="checkbox" id="checkedAll"/>
 					        </th>
 					        <th class="head0 nosort">订单编码</th>
+							<th class="head1 nosort">支付状态</th>
 					        <th class="head1 nosort">支付类型</th>
 					        <th class="head0 nosort">支付金额</th>
 					        <th class="head1 nosort">手机号</th>

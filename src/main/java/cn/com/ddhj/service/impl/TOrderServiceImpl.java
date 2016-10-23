@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -319,4 +320,30 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		result.setPage(page);
 		return result;
 	}
+
+	@Override
+	public JSONObject deleteOne(Integer id) {
+		JSONObject result = new JSONObject();
+		Integer flag = mapper.deleteOne(id);
+		if(flag == 1){
+			result.put("code", "1");
+			result.put("msg", "删除成功");
+		}else{
+			result.put("code", 0);
+			result.put("msg", "删除失败"); 
+		}
+		
+		return result;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -1,5 +1,7 @@
 package cn.com.ddhj.service.user;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.model.user.TUser;
@@ -88,4 +90,16 @@ public interface ITUserService extends IBaseService<TUser, TUserDto> {
 	 * @return
 	 */
 	UserDataResult getUserData(TUserDto dto);
+
+	public JSONObject getUserInfo(String uuid);
+
+	public JSONObject updateUserInfo(TUserDto dto);
+
+	public JSONObject deleteOne(Integer id);   
 }
+
+
+
+
+
+
