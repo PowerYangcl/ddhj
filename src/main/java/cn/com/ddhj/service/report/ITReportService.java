@@ -117,4 +117,17 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @return
 	 */
 	BaseResult createReport(TReportDto dto,String path,SysUser user);
+	
+	/**
+	 * 
+	 * 方法: insertSelective <br>
+	 * 描述: 添加新的报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月23日 下午7:57:35
+	 * @param entity
+	 * @param path
+	 * @return
+	 */
+	BaseResult insertSelective(TReport entity,String path);
+	
 }

@@ -1,17 +1,25 @@
 package cn.com.ddhj.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.model.report.TReport;
+import cn.com.ddhj.model.report.TReportLevel;
 import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.result.report.TReportDataResult;
+import cn.com.ddhj.service.ITLandedPropertyService;
+import cn.com.ddhj.service.report.ITReportLevelService;
 import cn.com.ddhj.service.report.ITReportService;
 
 @Controller
@@ -20,6 +28,10 @@ public class TReportController {
 
 	@Autowired
 	private ITReportService service;
+	@Autowired
+	private ITLandedPropertyService lpService;
+	@Autowired
+	private ITReportLevelService rlService;
 
 	@RequestMapping("index")
 	public String index() {
@@ -60,5 +72,40 @@ public class TReportController {
 		SysUser user = (SysUser) session.getAttribute("user");
 		String path = request.getSession().getServletContext().getRealPath("");
 		return service.createReport(dto, path, user);
+	}
+
+	@RequestMapping("addindex")
+	public String addIndex(String lpCode, ModelMap model) {
+		TLandedProperty lp = lpService.selectByCode(lpCode);
+		model.addAttribute("lp", lp);
+		// 报告等级
+		List<TReportLevel> rl = rlService.findLevelAll();
+		model.addAttribute("rl", rl);
+		return "jsp/report/add";
+	}
+
+	@RequestMapping("add")
+	@ResponseBody
+	public BaseResult add(TReport entity, HttpServletRequest request) {
+		entity.setCreateUser("system");
+		String path = request.getSession().getServletContext().getRealPath("");
+		return service.insertSelective(entity, path);
+	}
+
+	@RequestMapping("editindex")
+	public String editIndex(String code, ModelMap model) {
+		TReport r = service.selectByCode(code);
+		model.addAttribute("r", r);
+		// 报告等级
+		List<TReportLevel> rl = rlService.findLevelAll();
+		model.addAttribute("rl", rl);
+		return "jsp/report/edit";
+	}
+	@RequestMapping("edit")
+	@ResponseBody
+	public BaseResult edit(TReport entity, HttpServletRequest request) {
+		entity.setCreateUser("system");
+		String path = request.getSession().getServletContext().getRealPath("");
+		return service.updateByCode(entity, path);
 	}
 }

@@ -45,7 +45,7 @@
 			alert(obj.resultMessage);
 		}else if(obj.resultCode == 1){
 			if(confirm("楼盘没有报告是否生成？")){
-				window.open("${basePath}report/add.htm","_self")
+				window.open("${basePath}report/addindex.htm?lpCode="+val,"_self")
 			}
 		}
 	}
@@ -68,6 +68,7 @@
 				html +="<td>"+obj.completion+"</td>";
 				html +="<td>";
 				html +="<a href=\"javascript:void(0)\" onclick=\"createReport('"+obj.code+"')\">生成</a>";
+				//html +="<a href='${basePath}report/addindex.htm?lpCode="+obj.code+"'>添加报告</a>";
 				html +="</td>";
 				html +="<td>";
 				html +="<a href=\"editindex.htm?code="+obj.code+"\">编辑</a>  <a>删除</a>";

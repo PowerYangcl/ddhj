@@ -12,13 +12,19 @@ import cn.com.ddhj.dto.BaseDto;
 public class TReportDto extends BaseDto {
 
 	private String code;
-	
+
+	private String title;
+
+	private String lpTitle;
+
+	private String city;
+
 	/**
 	 * 楼盘编码
 	 */
 	private String lpCode;
 	/**
-	 * 报告等级编码 
+	 * 报告等级编码
 	 */
 	private String levelCode;
 	/**
@@ -29,8 +35,30 @@ public class TReportDto extends BaseDto {
 	private String minLng;
 	private String maxLat;
 	private String maxLng;
-	
-	
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getLpTitle() {
+		return lpTitle;
+	}
+
+	public void setLpTitle(String lpTitle) {
+		this.lpTitle = lpTitle;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
 
 	public String getLpCode() {
 		return lpCode;

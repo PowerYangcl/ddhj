@@ -645,4 +645,36 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		}
 		return result;
 	}
+
+	@Override
+	public BaseResult insertSelective(TReport entity, String path) {
+		BaseResult result = new BaseResult();
+		if (!StringUtils.isNotBlank(entity.getHousesCode())) {
+			result.setResultCode(-1);
+			result.setResultMessage("楼盘不能为空");
+		} else {
+			String code = WebHelper.getInstance().getUniqueCode("R");
+			PDFReportResult createResult = createPDF(code, entity.getHousesCode(), path, null);
+			if (createResult.getResultCode() == 0) {
+				entity.setCode(code);
+				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+				entity.setPath(createResult.getPath());
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				entity.setUpdateUser(entity.getCreateUser());
+				entity.setUpdateTime(entity.getCreateTime());
+				int flag = mapper.insertSelective(entity);
+				if (flag > 0) {
+					result.setResultCode(0);
+					result.setResultMessage("创建报告成功");
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("失败");
+				}
+			} else {
+				result.setResultCode(createResult.getResultCode());
+				result.setResultMessage(createResult.getResultMessage());
+			}
+		}
+		return result;
+	}
 }

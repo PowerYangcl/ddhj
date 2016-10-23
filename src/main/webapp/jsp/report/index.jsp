@@ -15,7 +15,7 @@
 	 */
 	$(function() {
 		var type_ = 'post';
-		var url_ = '${basePath}report/data.htm';
+		var url_ = 'data.htm';
 		var data_ = {"pageIndex":0,"pageSize":10};
 		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
 		aForm.launch(url_, 'table-form', obj).init().drawForm(loadTable);
@@ -53,7 +53,7 @@
 				html +='<td>'+obj.createTime+'</td>';
 				html +='<td>'+obj.updateTime+'</td>';
 				html +='<td>';
-				html +='<a>编辑</a>  <a>删除</a>';
+				html +='<a href="editindex.htm?code='+obj.code+'">编辑</a>  <a>删除</a>';
 				html +='</td>';
 				html +='</tr>';
 			}
@@ -65,7 +65,8 @@
 		$('#data').append(html);
 	}
 
-	function deleteOne(id_) {
+	//暂时保留
+	function del(id_) {
 		if (confirm('您确定要删除这条记录吗？')) {
 			var type_ = 'post';
 			var url_ = '${basePath}example/deleteOne.do';
@@ -81,6 +82,14 @@
 			}
 		}
 	}
+	
+	function searchReport(){
+		var type_ = 'post';
+		var url_ = 'data.htm';
+		var data_ = {"pageIndex":0,"pageSize":10,"title":$("#title").val(),"lpTitle":$("#lpTitle").val()};
+		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
+		aForm.launch(url_, 'table-form', obj).init().drawForm(loadTable);		
+	}
 </script>
 
 </head>
@@ -95,9 +104,22 @@
 					<!-- 查询条件 -->
 					<div class="contenttitle2">
 						<p style="margin: 0px">
-                            <label>城市名称：</label>
-                            <span class="field"><input id="city" type="text" name="city"  class="form-search"/></span>
+                            <label>楼盘名称：</label>
+                            <span class="field">
+                            	<input id="lpTitle" type="text" name="lpTitle"  class="form-search"/>
+                            </span>
 						</p>
+						<p style="margin: 0px">
+                            <label>报告名称：</label>
+                            <span class="field">
+                            	<input id="title" type="text" name="title"  class="form-search"/>
+                            </span>
+						</p>
+                        <p style="margin:5px 0px 0px 0px;">
+                            <a href="javascript:void(0)" onclick="searchReport()" class="btn btn_orange btn_search radius50" style="float:right">
+                                <span>Search</span>
+                            </a>
+                        </p>
 					</div>
 				</div>
 				<!-- 设置页面显示数据数量 -->

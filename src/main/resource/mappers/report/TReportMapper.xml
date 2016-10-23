@@ -20,7 +20,9 @@
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
-		<result column="detail" property="detail" jdbcType="LONGVARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="lpName" property="lpName" jdbcType="VARCHAR" />
+		<result column="rDesc" property="rDesc" jdbcType="LONGVARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, uuid, code, houses_code, title, level_code, pic, image,
@@ -43,6 +45,7 @@
 		SELECT
 		r.id,
 		r.`code`,
+		r.title,
 		r.pic,
 		r.image,
 		r.rang,
@@ -59,7 +62,9 @@
 		lp.addressFull
 		as address,
 		r.price,
-		r.path
+		r.path,
+		lp.title as lpName,
+		r.detail as rDesc
 		FROM
 		t_report AS r
 		LEFT JOIN
@@ -367,6 +372,15 @@
 		LEFT JOIN
 		t_report_level AS rl ON
 		r.level_code = rl.`code`
+		<where>
+			1=1
+			<if test="lpTitle != null and lpTitle != ''">
+				AND lp.title like CONCAT('%',#{lpTitle,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="title != null and title != ''">
+				AND r.title like CONCAT('%',#{title,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
 	</select>
 	<!-- 根据楼盘编码和等级编码查询报告是否存在 2016-10-22 zhy -->
 	<select id="findReportByLpCodeAndLevelCode" parameterType="cn.com.ddhj.dto.report.TReportDto" resultMap="BaseResultMap">
