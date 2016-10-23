@@ -37,4 +37,6 @@ public interface TOrderMapper extends BaseMapper<TOrder, TOrderDto> {
 	 * @return
 	 */
 	List<Map<String, String>> findOrderAll(TOrderDto dto);
+
+	public Integer deleteOne(Integer id); 
 }

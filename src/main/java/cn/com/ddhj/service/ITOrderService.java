@@ -2,6 +2,8 @@ package cn.com.ddhj.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.model.TOrder;
@@ -107,4 +109,6 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @return
 	 */
 	SysOrderDataResult getOrderBySys(TOrderDto dto);
+
+	public JSONObject deleteOne(Integer id); 
 }
