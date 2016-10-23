@@ -57,7 +57,7 @@
 				html +='<td>'+obj.createTime+'</td>';
 				html +='<td>'+obj.updateTime+'</td>';
 				html +='<td>';
-				html +='<a onclick="openDialogPage(\'' + obj.uuid + '\')" style="cursor: pointer;" >编辑</a>  <a>删除</a>';
+				html +='<a onclick="openDialogPage(\'' + obj.uuid + '\')" style="cursor: pointer;" >编辑</a>  <a onclick="deleteOne(\'' + obj.id + '\')" style="cursor: pointer;" >删除</a>';
 				html +='</td>';
 				html +='</tr>';
 			}
@@ -76,14 +76,15 @@
 	function deleteOne(id_) {
 		if (confirm('您确定要删除这条记录吗？')) {
 			var type_ = 'post';
-			var url_ = '${basePath}example/deleteOne.do';
+			var url_ = '${basePath}user/deleteOne.htm';
 			var data_ = {
 				id : id_
 			};
 			var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
-			if (obj.status == 'success') {
+			if (obj.code == '1') {
 				alert(obj.msg);
-				$("#tr-" + id_).remove();
+				var pageIndex = $(".paginate_active").html();
+				aForm.formPaging(pageIndex);
 			} else {
 				alert(obj.msg);
 			}
@@ -106,10 +107,18 @@
 	 */
 	function openDialogPage(uuid){
 		var type_ = 'post';
-		var url_ = '${basePath}example/ajaxPageData.do';
+		var url_ = '${basePath}user/getUserInfo.htm';
 		var data_ = {uuid:uuid};
-//		var obj = JSON.parse(ajaxs.sendAjax(type_ , url_ , data_));
+    	var obj = JSON.parse(ajaxs.sendAjax(type_ , url_ , data_));
 
+		$("#e-uuid").val(obj.data.uuid);
+    	$("#e-user-code").val(obj.data.userCode);
+    	$("#e-phone").val(obj.data.phone);
+    	$("#e-nick-name").val(obj.data.nickName);
+    	$("#e-email").val(obj.data.eMail);
+    	$("#e-password").val("");
+    	
+    	
 		$.blockUI({
 			showOverlay:true ,
 			css:  {
@@ -124,6 +133,16 @@
 			fadeIn: 500,//淡入时间
 			fadeOut: 1000  //淡出时间
 		});
+	}
+
+	function updateUserInfo(){
+		var type_ = 'post';
+		var url_ = '${basePath}user/updateUserInfo.htm';
+		var data_ = $("#edit-form").serializeArray();
+		var obj = JSON.parse(ajaxs.sendAjax(type_ , url_ , data_));
+		var pageIndex = $(".paginate_active").html();
+		aForm.formPaging(pageIndex);
+		closeDialog();
 	}
 
 
@@ -186,7 +205,7 @@
 					        <th class="head1 nosort">电子邮箱</th>
 					        <th class="head0 nosort">创建时间</th>
 					        <th class="head1 nosort">修改时间</th>
-					        <th class="head1 " width="100px">操作</th>
+					        <th class="head1 " width="100px" style="cursor: pointer;" >操作</th>
 					    </tr>
 					</thead>
 					<tbody id="data">
@@ -211,31 +230,35 @@
     <div id="dialog-content-wrapper" class="contentwrapper">
         <div id="dialog-table-form" class="dataTables_wrapper" >
             <%-- 以下内容根据你自己的业务需要进行修改--%>
-            <table id="dialog-table" cellpadding="0" cellspacing="0" border="0">
-                <tbody id="dialog-ajax-tbody">
-                	<%-- 等待填充 --%>
+			<form id="edit-form">
+				<table id="dialog-table" cellpadding="0" cellspacing="0" border="0">
+					<tbody id="dialog-ajax-tbody">
+					<%-- 等待填充 --%>
+					<input type="hidden" id="e-uuid" name="uuid" value=""/>
 					<tr >
 						<td width="100px">用户编号</td>
-						<td><input id="aaaa" value="U161007100001"/></td>
+						<td><input id="e-user-code"  type="text" name="userCode" value=""/></td>
 					</tr>
 					<tr >
 						<td width="100px">手机号</td>
-						<td><input id="aaab" value="U161007100001"/></td>
+						<td><input id="e-phone" type="text" name="phone" value=""/></td>
 					</tr>
 					<tr >
 						<td width="100px">用户昵称</td>
-						<td><input id="aaab" value="U161007100001"/></td>
+						<td><input id="e-nick-name" type="text" name="nickName" value=""/></td>
 					</tr>
 					<tr >
 						<td width="100px">用户密码</td>
-						<td><input id="aaab" value="U161007100001"/></td>
+						<td><input id="e-password" type="text" name="password" value=""/></td>
 					</tr>
 					<tr >
 						<td width="100px">邮箱</td>
-						<td><input id="aaab" value="U161007100001"/></td>
+						<td><input id="e-email" type="text" name="eMail" value=""/></td>
 					</tr>
-                </tbody>
-            </table>
+					</tbody>
+				</table>
+			</form>
+            <a onclick="updateUserInfo()">【提交】</a>
 
         </div>
     </div>

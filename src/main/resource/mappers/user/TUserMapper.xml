@@ -171,6 +171,47 @@
 			</if>
 		</where> 
 	</select>
+	
+	
+	<select id="getUserInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+			*
+		from 
+			t_user
+		where 
+			uuid = #{uuid} limit 1
+	</select>
+	
+	<update id="updateUserInfo" parameterType="cn.com.ddhj.dto.user.TUserDto">
+		update t_user
+		<set>
+			<if test="userCode != null and userCode != ''">
+				user_code =  #{userCode,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null and phone != ''"> 
+				phone =  #{phone , jdbcType=VARCHAR},
+			</if>
+			<if test="nickName != null and nickName != ''">
+				nick_name =  #{nickName , jdbcType=VARCHAR},
+			</if>
+			<if test="password != null and password != ''">
+				password =  #{password , jdbcType=VARCHAR},
+			</if>
+			<if test="eMail != null and eMail != ''">
+				e_mail =  #{eMail , jdbcType=VARCHAR},
+			</if>
+		</set>
+		<where>
+			uuid = #{uuid,jdbcType=VARCHAR}
+		</where>
+	</update>
+	
+	<delete id="deleteOne" parameterType="java.lang.Integer">
+		delete 
+			from t_user
+		where
+			id = #{id} 
+	</delete>
 </mapper>
 
 
