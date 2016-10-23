@@ -150,7 +150,6 @@ var aForm = {
         if(isNaN(s)){
             s = 10;
         }
-//        pn = pn-1;
         var actions = url + '?pageIndex=' + pn +'&pageSize=' + s;
         if(this.callName != null && (typeof this.callName=="function")){
             this.callName(actions);
@@ -159,9 +158,7 @@ var aForm = {
 
     // 绘制表单
     drawForm : function(callback){
-        if(callback != null && (typeof callback=="function")){
-        	callback();
-        }
+        callback();
         eval("this.callName = callback;");
         return aForm;
     } ,
