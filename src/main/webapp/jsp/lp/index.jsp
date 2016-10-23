@@ -15,12 +15,13 @@
 	 */
 	$(function() {
 		var type_ = 'post';
-		var url_ = '${basePath}lp/data.htm';
+		var url_ = 'data.htm';
 		var data_ = {"pageIndex":0,"pageSize":10};
 		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
 		aForm.launch(url_, 'table-form', obj).init().drawForm(loadTable);
 	});
 
+	 
 	// 回调函数
 	function loadTable(url_) {
 		if (url_ == undefined) { // 首次加载表单
@@ -36,7 +37,6 @@
 	}
 	
 	function createReport(val){
-		alert(val);
 		var url_ = '${basePath}report/create.htm';
 		var type_ = 'post';
 		var data_ = {"lpCode":val,"levelCode":"RL161006100001"};
@@ -82,10 +82,11 @@
 		$('#data').append(html);
 	}
 
-	function deleteOne(id_) {
+	//暂时不做，保留
+	function del(id_) {
 		if (confirm('您确定要删除这条记录吗？')) {
 			var type_ = 'post';
-			var url_ = '${basePath}example/deleteOne.do';
+			var url_ = 'delete.htm';
 			var data_ = {
 				id : id_
 			};
@@ -97,6 +98,14 @@
 				alert(obj.msg);
 			}
 		}
+	}
+	
+	function searchLp(){
+		var type_ = 'post';
+		var url_ = 'data.htm';
+		var data_ = {"pageIndex":0,"pageSize":10,"city":$("#city").val(),"title":$("#title").val()};
+		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
+		aForm.launch(url_, 'table-form', obj).init().drawForm(loadTable);		
 	}
 </script>
 
@@ -112,11 +121,22 @@
 					<!-- 查询条件 -->
 					<div class="contenttitle2">
 						<p style="margin: 0px">
+                            <label>楼盘名称：</label>
+                            <span class="field"><input id="title" type="text" name="title"  class="form-search"/></span>
+						</p>
+						<p style="margin: 0px">
                             <label>城市名称：</label>
                             <span class="field"><input id="city" type="text" name="city"  class="form-search"/></span>
 						</p>
-						<p>
-							<a href="addindex.htm">添加</a>
+                        <p style="margin:5px 0px 0px 0px;">
+                            <a href="javascript:void(0)" onclick="searchLp()" class="btn btn_orange btn_search radius50" style="float:right">
+                                <span>Search</span>
+                            </a>
+                        </p>
+					</div>
+					<div>
+						<p style="margin:5px 0px 0px 0px;">
+							<a href="addindex.htm" class="btn" style="width:100px;text-align: center;">添加</a>
 						</p>
 					</div>
 				</div>

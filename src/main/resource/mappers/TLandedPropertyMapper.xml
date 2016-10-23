@@ -429,6 +429,9 @@
 		<include refid="Base_Column_List" />
 		from t_landed_property
 		<where>
+			<if test="title != null and title != ''">
+				title like CONCAT('%',#{title,jdbcType=VARCHAR},'%')
+			</if>
 			<if test="city != null and city != ''">
 				city = #{city,jdbcType=VARCHAR}
 			</if>
@@ -470,20 +473,3 @@
 		</foreach>
 	</update>
 </mapper>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
