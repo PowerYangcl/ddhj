@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
@@ -149,5 +150,15 @@ public class TReportTest extends BaseTest {
 		List<String> list = new ArrayList<String>();
 		list.add("R161006100001");
 		System.out.println(mapper.findRreportByChart(list));
+	}
+
+	@Test
+	public void createPDF() {
+		TReportDto dto = new TReportDto();
+		dto.setCode("R161009164878");
+		dto.setLpCode("LP161009105939");
+		dto.setLevelCode("RL161006100003");
+		BaseResult result = service.createReport(dto, "E://", null);
+		System.out.println(JSON.toJSON(result));
 	}
 }
