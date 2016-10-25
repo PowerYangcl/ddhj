@@ -28,8 +28,9 @@ public class TLandedPropertyTest extends BaseTest {
 	@Autowired
 	private TLandedPropertyMapper mapper;
 
+	@Test
 	public void insert() {
-		service.insertDataFromAPI("天津");
+		service.insertDataFromAPI("成都");
 	}
 
 	public void select() {
@@ -80,7 +81,6 @@ public class TLandedPropertyTest extends BaseTest {
 		mapper.batchUpdateScore(list);
 	}
 
-	@Test
 	public void getLpData() {
 		TLandedPropertyDto dto = new TLandedPropertyDto();
 		dto.setPageIndex(0);

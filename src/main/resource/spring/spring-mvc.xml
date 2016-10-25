@@ -59,30 +59,48 @@
 			<value>4096</value>
 		</property>
 	</bean>
-	
+
 	<!-- Quartz http://www.cnblogs.com/jianzhi/p/3384436.html -->
-    <bean name="jobResyncEstateScore" class="cn.com.ddhj.service.impl.EstateEnvironmentServiceImpl" />
-    <bean id="quartzJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="jobResyncEstateScore"></property>
-        <property name="targetMethod" value="resyncEstateScore"></property>
-        <!-- 设定多个job不会并发运行 -->
-        <property name="concurrent" value="false"></property>
-    </bean>
-    <bean id="quartzTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="quartzJob"/>
-        <!-- 每天6点运行一次 "0 00 06 ? * *"   | 每30秒运行一次 "30 * * * * ?" -->
-        <property name="cronExpression" value="0 00 06 ? * *"></property>
-    </bean>
-    <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="triggers">
-            <list>
-                <ref bean="quartzTrigger" />
-            </list>
-        </property>
-    </bean>
-	
-	
-	
+	<bean name="jobResyncEstateScore" class="cn.com.ddhj.service.impl.EstateEnvironmentServiceImpl" />
+	<bean id="quartzJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="jobResyncEstateScore"></property>
+		<property name="targetMethod" value="resyncEstateScore"></property>
+		<!-- 设定多个job不会并发运行 -->
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="quartzTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="quartzJob" />
+		<!-- 每天6点运行一次 "0 00 06 ? * *" | 每30秒运行一次 "30 * * * * ?" -->
+		<property name="cronExpression" value="0 00 06 ? * *"></property>
+	</bean>
+	<bean name="quartzScheduler"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="quartzTrigger" />
+				<ref bean="createReportTrigger"/>
+			</list>
+		</property>
+	</bean>
+	<!-- 自动生成环境报告 -->
+	<bean name="createReport" class="cn.com.ddhj.service.impl.report.TReportServiceImpl" />
+	<bean id="reportJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="createReport"></property>
+		<property name="targetMethod" value="batchCreateReport"></property>
+		<!-- 设定多个job不会并发运行 -->
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="createReportTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="reportJob" />
+		<!-- 每天6点运行一次 "0 00 06 ? * *" | 每30秒运行一次 "30 * * * * ?" -->
+		<property name="cronExpression" value="0 58 17 ? * * "></property>
+	</bean>
+
+
 	<mvc:annotation-driven>
 		<!-- 处理responseBody 里面日期类型 -->
 		<mvc:message-converters>

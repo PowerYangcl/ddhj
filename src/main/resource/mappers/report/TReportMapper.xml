@@ -60,7 +60,8 @@
 		lp.title AS
 		houses_name,
 		lp.addressFull
-		as address,
+		as
+		address,
 		r.price,
 		r.path,
 		lp.title as lpName,
@@ -375,22 +376,26 @@
 		<where>
 			1=1
 			<if test="lpTitle != null and lpTitle != ''">
-				AND lp.title like CONCAT('%',#{lpTitle,jdbcType=VARCHAR},'%')
+				AND lp.title like
+				CONCAT('%',#{lpTitle,jdbcType=VARCHAR},'%')
 			</if>
 			<if test="title != null and title != ''">
-				AND r.title like CONCAT('%',#{title,jdbcType=VARCHAR},'%')
+				AND r.title like
+				CONCAT('%',#{title,jdbcType=VARCHAR},'%')
 			</if>
 		</where>
 	</select>
 	<!-- 根据楼盘编码和等级编码查询报告是否存在 2016-10-22 zhy -->
-	<select id="findReportByLpCodeAndLevelCode" parameterType="cn.com.ddhj.dto.report.TReportDto" resultMap="BaseResultMap">
+	<select id="findReportByLpCodeAndLevelCode" parameterType="cn.com.ddhj.dto.report.TReportDto"
+		resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from t_report
 		<where>
 			houses_code = #{lpCode,jdbcType=VARCHAR}
 			AND
-			level_code = #{levelCode,jdbcType=VARCHAR}
+			level_code =
+			#{levelCode,jdbcType=VARCHAR}
 		</where>
 	</select>
 </mapper>
