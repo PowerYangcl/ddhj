@@ -10,9 +10,11 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import cn.com.ddhj.base.BaseClass;
@@ -82,5 +84,44 @@ public class PdfUtil extends BaseClass {
 		// 关闭文档
 		document.close();
 		return path;
+	}
+
+	/**
+	 * 
+	 * 方法: getHead <br>
+	 * 描述: 设置页眉 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月25日 下午6:00:39
+	 * 
+	 * @param writer
+	 * @param document
+	 * @return
+	 */
+	private static PdfContentByte getHeadAndFoot(PdfWriter writer, Document document, BaseFont font) {
+		PdfContentByte headAndFootPdfContent = writer.getDirectContent();
+		try {
+			headAndFootPdfContent.saveState();
+			headAndFootPdfContent.beginText();
+			// 设置中文
+			headAndFootPdfContent.setFontAndSize(font, 12);
+			// ================ 设置页眉 start ===============
+			// 左侧图片
+			float x = document.top(-5);
+			Image image = Image.getInstance("");
+			image.setAbsolutePosition(document.left() + 100, x);
+			// 页头信息右侧
+			headAndFootPdfContent.showTextAligned(PdfContentByte.ALIGN_RIGHT, "亿科云版权所有 侵权必究",
+					(document.right() - 100) / 2, x, 0);
+			// =============== 设置页眉 end =====================
+			// ================== 设置页脚 start ==============
+			float y = document.bottom(-35);
+			headAndFootPdfContent.showTextAligned(PdfContentByte.ALIGN_LEFT, document.getPageNumber() + "  北京亿科云科技有限公司",
+					document.left() + 100, y, 0);
+			// ================== 设置页脚 end ==============
+			headAndFootPdfContent.endText();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return headAndFootPdfContent;
 	}
 }
