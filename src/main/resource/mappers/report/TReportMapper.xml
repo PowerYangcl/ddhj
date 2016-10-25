@@ -20,7 +20,9 @@
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
-		<result column="detail" property="detail" jdbcType="LONGVARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="lpName" property="lpName" jdbcType="VARCHAR" />
+		<result column="rDesc" property="rDesc" jdbcType="LONGVARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, uuid, code, houses_code, title, level_code, pic, image,
@@ -43,6 +45,7 @@
 		SELECT
 		r.id,
 		r.`code`,
+		r.title,
 		r.pic,
 		r.image,
 		r.rang,
@@ -59,7 +62,9 @@
 		lp.addressFull
 		as address,
 		r.price,
-		r.path
+		r.path,
+		lp.title as lpName,
+		r.detail as rDesc
 		FROM
 		t_report AS r
 		LEFT JOIN
@@ -336,6 +341,56 @@
 		r.`code` = #{code,jdbcType=VARCHAR}
 	</select>
 	<select id="findTReportAll" resultMap="BaseResultMap">
-		select <include refid="Base_Column_List" /> from t_report
+		select
+		<include refid="Base_Column_List" />
+		from t_report
+	</select>
+	<select id="findReportDataAll" resultType="Map"
+		parameterType="cn.com.ddhj.dto.report.TReportDto">
+		SELECT
+		r.`code`,
+		r.title,
+		lp.title AS lpName,
+		rl.`name` AS levelName,
+		r.price,
+		DATE_FORMAT(
+		r.create_time,
+		'%Y-%m-%d %H:%i:%s'
+		) AS
+		createTime,
+		DATE_FORMAT(
+		r.update_time,
+		'%Y-%m-%d %H:%i:%s'
+		) AS
+		updateTime
+		FROM
+		t_report AS r
+		LEFT JOIN
+		t_landed_property
+		AS lp ON r.houses_code =
+		lp.`code`
+		LEFT JOIN
+		t_report_level AS rl ON
+		r.level_code = rl.`code`
+		<where>
+			1=1
+			<if test="lpTitle != null and lpTitle != ''">
+				AND lp.title like CONCAT('%',#{lpTitle,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="title != null and title != ''">
+				AND r.title like CONCAT('%',#{title,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+	</select>
+	<!-- 根据楼盘编码和等级编码查询报告是否存在 2016-10-22 zhy -->
+	<select id="findReportByLpCodeAndLevelCode" parameterType="cn.com.ddhj.dto.report.TReportDto" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_report
+		<where>
+			houses_code = #{lpCode,jdbcType=VARCHAR}
+			AND
+			level_code = #{levelCode,jdbcType=VARCHAR}
+		</where>
 	</select>
 </mapper>

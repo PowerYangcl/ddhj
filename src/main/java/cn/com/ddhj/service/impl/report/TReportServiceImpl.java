@@ -3,6 +3,7 @@ package cn.com.ddhj.service.impl.report;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
@@ -30,10 +33,12 @@ import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 import cn.com.ddhj.model.report.TReportTemplate;
+import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserLpFollow;
 import cn.com.ddhj.result.report.PDFReportResult;
+import cn.com.ddhj.result.report.TReportDataResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.ICityAirService;
@@ -310,18 +315,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return content;
 	}
 
-	/**
-	 * 
-	 * 方法: createPDF <br>
-	 * 
-	 * @param code
-	 * @param housesCode
-	 * @param path
-	 * @return
-	 * @see cn.com.ddhj.service.report.ITReportService#createPDF(java.lang.String,
-	 *      java.lang.String, java.lang.String)
-	 */
-	@Override
 	public PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir) {
 		PDFReportResult result = new PDFReportResult();
 		try {
@@ -421,7 +414,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				String levelName = mapper.findLevel(code);
 				PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path);
 				result.setResultCode(0);
-				result.setResultMessage("");
+				result.setResultMessage("创建报告成功");
 				result.setPath(filePath);
 			} else {
 				result.setResultCode(-1);
@@ -483,6 +476,31 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			result.setResultCode(-1);
 			result.setResultMessage("楼盘数据不存在");
 		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: getPageData <br>
+	 * 
+	 * @param dto
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#getPageData(cn.com.ddhj.dto.report.TReportDto)
+	 */
+	@Override
+	public TReportDataResult getPageData(TReportDto dto) {
+		TReportDataResult result = new TReportDataResult();
+		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
+		List<Map<String, String>> list = mapper.findReportDataAll(dto);
+		if (list != null && list.size() > 0) {
+			result.setResultCode(0);
+		} else {
+			list = new ArrayList<Map<String, String>>();
+			result.setResultCode(-1);
+			result.setResultMessage("查询环境报告列表为空");
+		}
+		PageInfo<Map<String, String>> page = new PageInfo<Map<String, String>>(list);
+		result.setPage(page);
 		return result;
 	}
 
@@ -598,5 +616,65 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 		}
 		return codes;
+	}
+
+	/**
+	 * 
+	 * 方法: createReport <br>
+	 * 
+	 * @param dto
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#createReport(cn.com.ddhj.dto.report.TReportDto)
+	 */
+	@Override
+	public BaseResult createReport(TReportDto dto, String path, SysUser user) {
+		BaseResult result = new BaseResult();
+		// 查询报告是否已存在,获取报告的
+		TReport report = mapper.findReportByLpCodeAndLevelCode(dto);
+		if (report != null) {
+			// 如果存在，根据等级生成新的环境报告
+			PDFReportResult createResult = createPDF(report.getCode(), dto.getLpCode(), path, null);
+			result.setResultCode(createResult.getResultCode());
+			result.setResultMessage(createResult.getResultMessage());
+			report.setUpdateTime(DateUtil.getSysDateTime());
+			report.setUpdateUser(user != null ? user.getCode() : "system");
+			mapper.updateByCode(report);
+		} else {
+			result.setResultCode(1);
+			result.setResultMessage("报告未创建");
+		}
+		return result;
+	}
+
+	@Override
+	public BaseResult insertSelective(TReport entity, String path) {
+		BaseResult result = new BaseResult();
+		if (!StringUtils.isNotBlank(entity.getHousesCode())) {
+			result.setResultCode(-1);
+			result.setResultMessage("楼盘不能为空");
+		} else {
+			String code = WebHelper.getInstance().getUniqueCode("R");
+			PDFReportResult createResult = createPDF(code, entity.getHousesCode(), path, null);
+			if (createResult.getResultCode() == 0) {
+				entity.setCode(code);
+				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+				entity.setPath(createResult.getPath());
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				entity.setUpdateUser(entity.getCreateUser());
+				entity.setUpdateTime(entity.getCreateTime());
+				int flag = mapper.insertSelective(entity);
+				if (flag > 0) {
+					result.setResultCode(0);
+					result.setResultMessage("创建报告成功");
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("失败");
+				}
+			} else {
+				result.setResultCode(createResult.getResultCode());
+				result.setResultMessage(createResult.getResultMessage());
+			}
+		}
+		return result;
 	}
 }

@@ -8,7 +8,7 @@
 		<result column="title" property="title" jdbcType="VARCHAR" />
 		<result column="total" property="total" jdbcType="VARCHAR" />
 		<result column="city" property="city" jdbcType="VARCHAR" />
-		<result column="score" property="score" jdbcType="DOUBLE"/>
+		<result column="score" property="score" jdbcType="DOUBLE" />
 		<result column="completion" property="completion" jdbcType="VARCHAR" />
 		<result column="propertyType" property="propertyType" jdbcType="VARCHAR" />
 		<result column="propertyCompany" property="propertyCompany"
@@ -185,8 +185,8 @@
 			#{updateUser,jdbcType=VARCHAR},
 			STR_TO_DATE(
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
-			<if test="addressfull != null">
-				#{addressfull,jdbcType=LONGVARCHAR},
+			<if test="addressFull != null">
+				#{addressFull,jdbcType=LONGVARCHAR},
 			</if>
 			<if test="bus != null">
 				#{bus,jdbcType=LONGVARCHAR},
@@ -279,32 +279,32 @@
 			<if test="completion != null">
 				completion = #{completion,jdbcType=VARCHAR},
 			</if>
-			<if test="propertytype != null">
-				propertyType = #{propertytype,jdbcType=VARCHAR},
+			<if test="propertyType != null">
+				propertyType = #{propertyType,jdbcType=VARCHAR},
 			</if>
-			<if test="propertycompany != null">
-				propertyCompany = #{propertycompany,jdbcType=VARCHAR},
+			<if test="propertyCompany != null">
+				propertyCompany = #{propertyCompany,jdbcType=VARCHAR},
 			</if>
 			<if test="price != null">
 				price = #{price,jdbcType=VARCHAR},
 			</if>
-			<if test="volumerate != null">
-				volumeRate = #{volumerate,jdbcType=VARCHAR},
+			<if test="volumeRate != null">
+				volumeRate = #{volumeRate,jdbcType=VARCHAR},
 			</if>
-			<if test="propertycosts != null">
-				propertyCosts = #{propertycosts,jdbcType=VARCHAR},
+			<if test="propertyCosts != null">
+				propertyCosts = #{propertyCosts,jdbcType=VARCHAR},
 			</if>
 			<if test="parking != null">
 				parking = #{parking,jdbcType=VARCHAR},
 			</if>
-			<if test="greeningrate != null">
-				greeningRate = #{greeningrate,jdbcType=VARCHAR},
+			<if test="greeningRate != null">
+				greeningRate = #{greeningRate,jdbcType=VARCHAR},
 			</if>
 			<if test="gfa != null">
 				gfa = #{gfa,jdbcType=VARCHAR},
 			</if>
 			<if test="metro != null">
-				metro = #{metro,jdbcType=VARCHAR},+
+				metro = #{metro,jdbcType=VARCHAR},
 			</if>
 			<if test="lat != null">
 				lat = #{lat,jdbcType=VARCHAR},
@@ -312,11 +312,11 @@
 			<if test="lng != null">
 				lng = #{lng,jdbcType=VARCHAR},
 			</if>
-			#{updateUser,jdbcType=VARCHAR},
-			STR_TO_DATE(
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time = STR_TO_DATE(
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
-			<if test="addressfull != null">
-				addressFull = #{addressfull,jdbcType=LONGVARCHAR},
+			<if test="addressFull != null">
+				addressFull = #{addressFull,jdbcType=LONGVARCHAR},
 			</if>
 			<if test="bus != null">
 				bus = #{bus,jdbcType=LONGVARCHAR},
@@ -422,6 +422,22 @@
 			)
 		</where>
 	</select>
+	<!-- 管理后台查询楼盘列表 2016-10-21 zhy -->
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_landed_property
+		<where>
+			<if test="title != null and title != ''">
+				title like CONCAT('%',#{title,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="city != null and city != ''">
+				city = #{city,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by update_time desc
+	</select>
 	<select id="findLpAllByCoord" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
 		resultMap="BaseResultMap">
 		SELECT
@@ -436,45 +452,24 @@
 			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
 		</where>
 	</select>
-	
-	<!-- 取出全部地产信息 - Yangcl-->
+
+	<!-- 取出全部地产信息 - Yangcl -->
 	<select id="selectAllEstateInfo" resultMap="BaseResultMap">
 		select
-			*
-		from 
-			t_landed_property 
+		*
+		from
+		t_landed_property
 	</select>
-	
-	
 	<update id="batchUpdateScore" parameterType="java.util.List">
-		<foreach collection="list" item="item" index="index" open="" close="" separator=";">  
-            update 
-            	t_landed_property 
-            set 
-            	score = #{item.score , jdbcType=DOUBLE},
-            	update_time = #{item.updateTime , jdbcType=VARCHAR} 
-           	where id = #{item.id , jdbcType=INTEGER} 
-     	</foreach>  
+		<foreach collection="list" item="item" index="index" open=""
+			close="" separator=";">
+			update
+			t_landed_property
+			set
+			score = #{item.score ,
+			jdbcType=DOUBLE},
+			update_time = #{item.updateTime , jdbcType=VARCHAR}
+			where id = #{item.id , jdbcType=INTEGER}
+		</foreach>
 	</update>
-	
-	
-	
-	
 </mapper>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

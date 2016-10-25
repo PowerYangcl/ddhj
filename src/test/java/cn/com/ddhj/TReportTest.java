@@ -6,13 +6,11 @@ import java.util.List;
 import java.util.UUID;
 
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
@@ -151,18 +149,5 @@ public class TReportTest extends BaseTest {
 		List<String> list = new ArrayList<String>();
 		list.add("R161006100001");
 		System.out.println(mapper.findRreportByChart(list));
-	}
-
-	public void createPdf() {
-		service.createPDF("R161009100010", "LP161004101471", "d://",null);
-	}
-
-	@Test
-	public void init() {
-		List<TReport> list = mapper.findTReportAll();
-		JSONArray array = JSONArray.parseArray("[{\"level\":{\"water\":1,\"air\":5},\"city\":\"北京\"},{\"level\":{\"water\":1,\"air\":4},\"city\":\"天津\"}]");
-		for (TReport r : list) {
-			service.createPDF(r.getCode(), r.getHousesCode(), "E://",array);
-		}
 	}
 }

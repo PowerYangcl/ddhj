@@ -2,6 +2,7 @@ package cn.com.ddhj.service;
 
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.result.lp.TLandedPropertyDataResult;
 
 /**
  * 
@@ -20,4 +21,16 @@ public interface ITLandedPropertyService extends IBaseService<TLandedProperty, T
 	 * 时间: 2016年10月3日 下午6:13:27
 	 */
 	void insertDataFromAPI(String cityName);
+
+	/**
+	 * 
+	 * 方法: getLpData <br>
+	 * 描述: 获取楼盘列表数据 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月21日 下午4:17:36
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	TLandedPropertyDataResult getLpData(TLandedPropertyDto dto);
 }
