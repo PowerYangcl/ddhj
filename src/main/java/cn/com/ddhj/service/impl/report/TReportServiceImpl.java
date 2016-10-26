@@ -25,7 +25,6 @@ import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
-import cn.com.ddhj.mapper.report.TReportLevelMapper;
 import cn.com.ddhj.mapper.report.TReportLogMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.report.TReportTemplateMapper;
@@ -36,7 +35,6 @@ import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
-import cn.com.ddhj.model.report.TReportLevel;
 import cn.com.ddhj.model.report.TReportLog;
 import cn.com.ddhj.model.report.TReportTemplate;
 import cn.com.ddhj.model.system.SysUser;
@@ -91,8 +89,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private ITAreaNoiseMapper noiseMapper;
 	@Autowired
 	private TReportLogMapper rLogMapper;
-	@Autowired
-	private TReportLevelMapper rlMapper;
 	@Autowired
 	private ITChemicalPlantService chemicalService;
 
@@ -560,7 +556,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return result;
 	}
 
+	/**
+	 * 
+	 * 方法: batchCreateReport <br>
+	 * 
+	 * @see cn.com.ddhj.service.report.ITReportService#batchCreateReport()
+	 */
 	@SuppressWarnings("unused")
+	@Override
 	public void batchCreateReport() {
 		Long start = System.currentTimeMillis();
 		String lock = "";
@@ -569,8 +572,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (StringUtils.isNoneBlank(lock)) {
 				// 获取报告列表
 				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
-				// 获取报告等级列表
-				List<TReportLevel> rlList = rlMapper.findEntityAll();
 				// 需要添加的报告列表
 				List<TReport> insertData = new ArrayList<TReport>();
 				// 需要编辑的报告列表

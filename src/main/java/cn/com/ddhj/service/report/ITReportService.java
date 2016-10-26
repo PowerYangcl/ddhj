@@ -116,18 +116,28 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * @param lpCode
 	 * @return
 	 */
-	BaseResult createReport(TReportDto dto,String path,SysUser user);
-	
+	BaseResult createReport(TReportDto dto, String path, SysUser user);
+
 	/**
 	 * 
 	 * 方法: insertSelective <br>
 	 * 描述: 添加新的报告 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月23日 下午7:57:35
+	 * 
 	 * @param entity
 	 * @param path
 	 * @return
 	 */
-	BaseResult insertSelective(TReport entity,String path);
-	
+	BaseResult insertSelective(TReport entity, String path);
+
+	/**
+	 * 
+	 * 方法: batchCreateReport <br>
+	 * 描述: 批量生成报告，用于定时任务 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午10:33:04
+	 */
+	void batchCreateReport();
+
 }
