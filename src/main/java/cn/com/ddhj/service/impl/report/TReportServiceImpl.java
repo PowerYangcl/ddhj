@@ -31,6 +31,7 @@ import cn.com.ddhj.mapper.report.TReportTemplateMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserLpFollowMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
+import cn.com.ddhj.model.BaseModel;
 import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
@@ -562,7 +563,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * 
 	 * @see cn.com.ddhj.service.report.ITReportService#batchCreateReport()
 	 */
-	@SuppressWarnings("unused")
 	@Override
 	public void batchCreateReport() {
 		Long start = System.currentTimeMillis();
@@ -590,7 +590,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							dto.setLpCode(lp.getCode());
 							dto.setLevelCode("RL161006100001");
 							TReport entity = mapper.findReportByLpCodeAndLevelCode(dto);
-							String date = isSync(entity != null?entity.getReportDate():null);
+							String date = isSync(entity != null ? entity.getReportDate() : null);
 							if (StringUtils.isNotBlank(date)) {
 								if (entity != null) {
 									codes.add(entity.getCode());
@@ -640,11 +640,13 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					}
 					// 批量添加报告到报告表
 					if (insertData != null && insertData.size() > 0) {
-						mapper.insertReportData(insertData);
+						subInsertReport(insertData, mapper);
+						// mapper.insertReportData(insertData);
 					}
 					// 批量从临时表同步数据到报告表
 					if (updateData != null && updateData.size() > 0) {
-						mapper.batchInsertReportToTmp(updateData);
+						// mapper.batchInsertReportToTmp(updateData);
+						subInsertReportTmp(updateData, mapper);
 						mapper.importReportFormTmp();
 						mapper.delReportTmp();
 					}
@@ -845,5 +847,47 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			e.printStackTrace();
 		}
 		return date;
+	}
+
+	/**
+	 * 
+	 * 方法: subInsertData <br>
+	 * 描述: 分批次添加报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月27日 上午2:00:02
+	 * 
+	 * @param list
+	 * @param type
+	 */
+	private void subInsertReport(List<TReport> list, TReportMapper mapper) {
+		int total = list.size();
+		int avg = total / 10000;
+		for (int i = 0; i < avg; i++) {
+			list = list.subList(i * 10000, (i + 1) * 10000 - 1);
+			mapper.insertReportData(list);
+		}
+		list = list.subList(avg * 10000, list.size());
+		mapper.insertReportData(list);
+	}
+
+	/**
+	 * 
+	 * 方法: subInsertReportTmp <br>
+	 * 描述: 分批次添加报告到临时表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月27日 上午2:07:42
+	 * 
+	 * @param list
+	 * @param mapper
+	 */
+	private void subInsertReportTmp(List<TReport> list, TReportMapper mapper) {
+		int total = list.size();
+		int avg = total / 10000;
+		for (int i = 0; i < avg; i++) {
+			list = list.subList(i * 10000, (i + 1) * 10000 - 1);
+			mapper.batchInsertReportToTmp(list);
+		}
+		list = list.subList(avg * 10000, list.size());
+		mapper.batchInsertReportToTmp(list);
 	}
 }
