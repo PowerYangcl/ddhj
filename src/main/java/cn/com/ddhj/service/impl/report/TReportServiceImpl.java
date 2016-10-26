@@ -579,7 +579,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				// 存储日志信息
 				List<TReportLog> logData = new ArrayList<TReportLog>();
 				List<String> codes = new ArrayList<String>();
-				String path = "D:\\";
+				String path = "/opt/";
 				JSONArray cityAir = this.getCityAirLevel();
 				if (lpList != null && lpList.size() > 0) {
 					for (int i = 0; i < lpList.size(); i++) {
