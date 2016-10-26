@@ -3,24 +3,20 @@ package cn.com.ddhj.service.impl.report;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.servlet.ServletContext;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
@@ -577,56 +573,82 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		List<TReport> updateData = new ArrayList<TReport>();
 		// 存储日志信息
 		List<TReportLog> logData = new ArrayList<TReportLog>();
-
-		WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
-		ServletContext servletContext = webApplicationContext.getServletContext();
-		String path = servletContext.getRealPath("/");
+		List<String> codes = new ArrayList<String>();
+		String path = "/opt/";
 		JSONArray cityAir = this.getCityAirLevel();
 		if (lpList != null && lpList.size() > 0) {
 			for (int i = 0; i < lpList.size(); i++) {
 				TLandedProperty lp = lpList.get(i);
-				TReportLog log = new TReportLog();// 日志
-				TReportDto dto = new TReportDto();
-				dto.setLpCode(lp.getCode());
-				dto.setLevelCode("RL161006100001");
-				TReport entity = mapper.findReportByLpCodeAndLevelCode(dto);
-				if (entity != null) {
-					PDFReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
-					log.setReportCode(entity.getCode());
-					log.setDetail(JSON.toJSONString(result));
-				} else {
-					String code = WebHelper.getInstance().getUniqueCode("R");
-					PDFReportResult result = createPDF(code, lp.getCode(), path, null);
-					entity = new TReport();
-					entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
-					entity.setCode(code);
-					entity.setHousesCode(lp.getCode());
-					entity.setTitle(lp.getTitle() + "-环境报告-普通");
-					entity.setLevelCode("RL161006100001");
-					entity.setPic("");
-					entity.setImage("");
-					entity.setRang(10);
-					entity.setPrice(BigDecimal.valueOf(0.01));
-					entity.setPath(result.getPath());
-					entity.setDetail(lp.getTitle() + "-环境报告说明-普通");
-					entity.setCreateUser("system");
-					entity.setCreateTime(DateUtil.getSysDateTime());
-					entity.setUpdateUser("system");
-					entity.setUpdateTime(DateUtil.getSysDateTime());
-					insertData.add(entity);
-					log.setReportCode(code);
-					log.setDetail(JSON.toJSONString(result));
+				if (StringUtils.equals(lp.getCity(), "北京")) {
+					TReportLog log = new TReportLog();// 日志
+					TReportDto dto = new TReportDto();
+					dto.setLpCode(lp.getCode());
+					dto.setLevelCode("RL161006100001");
+					TReport entity = mapper.findReportByLpCodeAndLevelCode(dto);
+					String date = isSync(entity.getReportDate());
+					if (StringUtils.isNotBlank(date)) {
+						if (entity != null) {
+							codes.add(entity.getCode());
+							PDFReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
+							entity.setPath(result.getPath());
+							entity.setReportDate(date);
+							entity.setUpdateUser("system");
+							entity.setUpdateTime(DateUtil.getSysDateTime());
+							updateData.add(entity);
+							log.setReportCode(entity.getCode());
+							log.setDetail(JSON.toJSONString(result));
+						} else {
+							String code = WebHelper.getInstance().getUniqueCode("R");
+							codes.add(code);
+							PDFReportResult result = createPDF(code, lp.getCode(), path, null);
+							entity = new TReport();
+							entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+							entity.setCode(code);
+							entity.setHousesCode(lp.getCode());
+							entity.setTitle(lp.getTitle() + "-环境报告-普通");
+							entity.setLevelCode("RL161006100001");
+							entity.setPic("");
+							entity.setImage("");
+							entity.setRang(10);
+							entity.setPrice(BigDecimal.valueOf(0.01));
+							entity.setPath(result.getPath());
+							entity.setDetail(lp.getTitle() + "-环境报告说明-普通");
+							entity.setCreateUser("system");
+							entity.setCreateTime(DateUtil.getSysDateTime());
+							entity.setUpdateUser("system");
+							entity.setUpdateTime(DateUtil.getSysDateTime());
+							insertData.add(entity);
+							log.setReportCode(code);
+							log.setDetail(JSON.toJSONString(result));
+						}
+						log.setUuid(UUID.randomUUID().toString().replace("-", ""));
+						log.setLpCode(lp.getCode());
+						log.setCreateUser("system");
+						log.setCreateTime(DateUtil.getSysDateTime());
+						logData.add(log);
+					}
 				}
-				log.setUuid(UUID.randomUUID().toString().replace("-", ""));
-				log.setLpCode(lp.getCode());
-				log.setCreateUser("system");
-				log.setCreateTime(DateUtil.getSysDateTime());
-				logData.add(log);
 			}
 			// 批量添加日志到日志表
-			rLogMapper.batchInsertLog(logData);
+			if (logData != null && logData.size() > 0) {
+				rLogMapper.batchInsertLog(logData);
+			}
 			// 批量添加报告到报告表
-			mapper.insertReportData(insertData);
+			if (insertData != null && insertData.size() > 0) {
+				mapper.insertReportData(insertData);
+			}
+			// 批量从临时表同步数据到报告表
+			if (updateData != null && updateData.size() > 0) {
+				mapper.batchInsertReportToTmp(updateData);
+				mapper.importReportFormTmp();
+				mapper.delReportTmp();
+			}
+			// 将临时文件pdf生成带水印的报告
+			if (codes != null && codes.size() > 0) {
+				for (int i = 0; i < codes.size(); i++) {
+					PdfUtil.instance().createWatermark(path, codes.get(i));
+				}
+			}
 		}
 		Long end = System.currentTimeMillis();
 		System.out.println("定时执行时间为:" + (end - start));
@@ -782,4 +804,35 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return content;
 	}
 
+	/**
+	 * 
+	 * 方法: isSync <br>
+	 * 描述: 根据报告生成日期与当前日期比较，如果小于当前日期重新生成报告，如果大于不做处理 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午8:48:15
+	 * 
+	 * @param reportDate
+	 * @return
+	 */
+	private static String isSync(String reportDate) {
+		String date = "";
+		try {
+			Calendar a = Calendar.getInstance();
+			a.setTime(new Date());
+			a.set(Calendar.DAY_OF_MONTH, 1);
+			if (StringUtils.isNoneBlank(reportDate)) {
+				Date report = DateUtil.strToDate(reportDate);
+				int compare = report.compareTo(a.getTime());
+				if (compare <= 0) {
+					date = DateUtil.dateToString(a.getTime());
+				}
+			} else {
+				date = DateUtil.dateToString(a.getTime());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return date;
+	}
 }

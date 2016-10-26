@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
@@ -152,7 +153,6 @@ public class TReportTest extends BaseTest {
 		System.out.println(mapper.findRreportByChart(list));
 	}
 
-	@Test
 	public void createPDF() {
 		TReportDto dto = new TReportDto();
 		dto.setCode("R161009164878");
@@ -160,5 +160,28 @@ public class TReportTest extends BaseTest {
 		dto.setLevelCode("RL161006100003");
 		BaseResult result = service.createReport(dto, "D://", null);
 		System.out.println(JSON.toJSON(result));
+	}
+
+	@Test
+	public void batch() {
+		TReport entity = new TReport();
+		entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+		entity.setCode(WebHelper.getInstance().getUniqueCode("L"));
+		entity.setHousesCode("LP161009105939");
+		entity.setTitle("测试" + "-环境报告-普通");
+		entity.setLevelCode("RL161006100001");
+		entity.setPic("");
+		entity.setImage("");
+		entity.setRang(10);
+		entity.setPrice(BigDecimal.valueOf(0.01));
+		entity.setPath("");
+		entity.setDetail("测试" + "-环境报告说明-普通");
+		entity.setCreateUser("system");
+		entity.setCreateTime(DateUtil.getSysDateTime());
+		entity.setUpdateUser("system");
+		entity.setUpdateTime(DateUtil.getSysDateTime());
+		List<TReport> list = new ArrayList<TReport>();
+		list.add(entity);
+		mapper.insertReportData(list);
 	}
 }

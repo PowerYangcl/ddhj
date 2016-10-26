@@ -100,8 +100,9 @@ public class PdfUtil extends BaseClass {
 		document.add(areaAir);
 		document.add(new Paragraph("\n"));
 		document.add(new Paragraph(
-				"环境质量报告根据所监测的各项环境数据，按一定的标准和方法对某区域范围内的环境质量进行说明、评定和预测。本报告包含以下环境指标：噪音、水质、空气质量、土壤、垃圾处理设施、绿地率（小区）、容积率（小区）。\n",
+				"环境质量报告根据所监测的各项环境数据，按一定的标准和方法对某区域范围内的环境质量进行说明、评定和预测。本报告包含以下环境指标：噪音、水质、空气质量、土壤、垃圾处理设施、绿地率（小区）、容积率（小区）。",
 				textFont));
+		document.add(new Paragraph("\n"));
 		if (array != null && array.size() > 0) {
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject obj = array.getJSONObject(i);
@@ -133,20 +134,25 @@ public class PdfUtil extends BaseClass {
 		}
 		// 关闭文档
 		document.close();
-		if (!document.isOpen()) {
-			createWatermark(path, code);
-		}
-
 		return path + "/report/" + code + ".pdf";
 	}
 
-	public static void createWatermark(String path, String code) {
+	/**
+	 * 
+	 * 方法: createWatermark <br>
+	 * 描述: 为模板设置水印 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午7:08:31
+	 * 
+	 * @param path
+	 * @param code
+	 */
+	public void createWatermark(String path, String code) {
 		PdfReader reader = null;
 		PdfStamper stamper = null;
 		try {
 			reader = new PdfReader(path + "report/temp/" + code + ".pdf");
 			stamper = new PdfStamper(reader, new FileOutputStream(path + "report/" + code + ".pdf"));
-
 			PdfContentByte under;
 			int total = reader.getNumberOfPages() + 1;
 			for (int i = 1; i < total; i++) {

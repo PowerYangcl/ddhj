@@ -80,7 +80,7 @@
 		<property name="triggers">
 			<list>
 				<ref bean="quartzTrigger" />
-				<ref bean="createReportTrigger"/>
+				<ref bean="createReportTrigger" />
 			</list>
 		</property>
 	</bean>
@@ -96,8 +96,12 @@
 	<bean id="createReportTrigger"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="reportJob" />
-		<!-- 每天6点运行一次 "0 00 06 ? * *" | 每30秒运行一次 "30 * * * * ?" -->
-		<property name="cronExpression" value="0 40 17 ? * * "></property>
+		<!-- 每天6点运行一次 "0 00 06 ? * *" | 每30秒运行一次 "30 * * * * ?" --> 
+		<property name="cronExpression" value="0 38 21 ? * * "></property>
+		
+		<!-- 每月1号00:00触发生成报告 
+		<property name="cronExpression" value="0 0 0 15 * ?"></property>
+		-->
 	</bean>
 
 

@@ -99,4 +99,38 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * @return
 	 */
 	TReport findReportByLpCodeAndLevelCode(TReportDto dto);
+
+	/**
+	 * 
+	 * 方法: batchInsertReportToTmp <br>
+	 * 描述: 存储数据到报告临时表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午9:12:01
+	 * 
+	 * @param list
+	 * @return
+	 */
+	int batchInsertReportToTmp(List<TReport> list);
+
+	/**
+	 * 
+	 * 方法: importReportFormTmp <br>
+	 * 描述: 从报告临时表将数据同步到报告表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午9:12:16
+	 * 
+	 * @return
+	 */
+	int importReportFormTmp();
+
+	/**
+	 * 
+	 * 方法: delReportTmp <br>
+	 * 描述: 删除临时表数据 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午9:12:20
+	 * 
+	 * @return
+	 */
+	int delReportTmp();
 }
