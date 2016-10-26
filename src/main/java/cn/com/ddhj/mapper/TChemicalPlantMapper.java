@@ -38,25 +38,6 @@ public interface TChemicalPlantMapper extends BaseMapper<TChemicalPlant, TChemic
 	 */
 	TChemicalPlant getMinTChemicalPlant(TChemicalPlantDto dto);
 	
+	
 	public List<TChemicalPlant> findListByCity(String city);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -18,7 +18,6 @@ public class TReportEnvironmentLevelTest extends BaseTest {
 	@Autowired
 	private ITReportEnvironmentLevelService service;
 
-	@Test
 	public void insert() {
 		// 噪音
 		TReportEnvironmentLevel noise = new TReportEnvironmentLevel();
@@ -218,7 +217,7 @@ public class TReportEnvironmentLevelTest extends BaseTest {
 		volume.setType("volume");
 		volume.setContent("目前您您所在的小区容积率标准为：容积率小于3：优，居住密度低，舒适型。");
 		service.insertSelective(volume);
-		
+
 		TReportEnvironmentLevel volume2 = new TReportEnvironmentLevel();
 		volume2.setCreateUser("system");
 		volume2.setCode(WebHelper.getInstance().getUniqueCode("TL"));
@@ -226,7 +225,7 @@ public class TReportEnvironmentLevelTest extends BaseTest {
 		volume2.setType("volume");
 		volume2.setContent("目前您您所在的小区容积率标准为：容积率大于3小于5，居住密度尚可，较为舒适：良。");
 		service.insertSelective(volume2);
-		
+
 		TReportEnvironmentLevel volume3 = new TReportEnvironmentLevel();
 		volume3.setCreateUser("system");
 		volume3.setCode(WebHelper.getInstance().getUniqueCode("TL"));
@@ -234,6 +233,24 @@ public class TReportEnvironmentLevelTest extends BaseTest {
 		volume3.setType("volume");
 		volume3.setContent("目前您您所在的小区容积率标准为：容积率大于5：差，居住密度太大，不适宜居住。");
 		service.insertSelective(volume3);
-		
+	}
+
+	@Test
+	public void insert2() {
+		TReportEnvironmentLevel chemical = new TReportEnvironmentLevel();
+		chemical.setCreateUser("system");
+		chemical.setCode(WebHelper.getInstance().getUniqueCode("TL"));
+		chemical.setLevel(0);
+		chemical.setType("chemical");
+		chemical.setContent("目前您您所在的小区距离化工厂大于 1000 米，潜在风险较小。");
+		service.insertSelective(chemical);
+
+		TReportEnvironmentLevel chemical2 = new TReportEnvironmentLevel();
+		chemical2.setCreateUser("system");
+		chemical2.setCode(WebHelper.getInstance().getUniqueCode("TL"));
+		chemical2.setLevel(1);
+		chemical2.setType("chemical");
+		chemical2.setContent("目前您您所在的小区距离化工厂小于 1000 米，潜在风险较高。");
+		service.insertSelective(chemical2);
 	}
 }

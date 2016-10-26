@@ -52,6 +52,7 @@ import cn.com.ddhj.result.report.TReportDataResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.ICityAirService;
+import cn.com.ddhj.service.ITChemicalPlantService;
 import cn.com.ddhj.service.ITRubbishRecyclingService;
 import cn.com.ddhj.service.IWaterQualityService;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
@@ -96,6 +97,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TReportLogMapper rLogMapper;
 	@Autowired
 	private TReportLevelMapper rlMapper;
+	@Autowired
+	private ITChemicalPlantService chemicalService;
 
 	/**
 	 * 
@@ -369,9 +372,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			// }
 			// 垃圾设施等级
 			Integer rubbishLevel = 1;
-			if (StringUtils.isEmpty(lp.getCity()) && StringUtils.isEmpty(lp.getLat())
-					&& StringUtils.isEmpty(lp.getLng())) {
+			if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
+					&& StringUtils.isNotBlank(lp.getLng())) {
 				rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
+			}
+			// 化工厂
+			Integer chemicalLevel = 1;
+			if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
+					&& StringUtils.isNotBlank(lp.getLng())) {
+				chemicalLevel = chemicalService.chemicalLevel(lp.getCity(), lp.getLat(), lp.getLng());
 			}
 			// 噪音等级
 			int nosieLevel = getNoiseLevel(lp);
@@ -393,13 +402,16 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						obj.put("level", getLevelContent(model.getType(), waterLevel, levelList));
 					} else if ("rubbish".equals(model.getType())) {
 						obj.put("level", getLevelContent(model.getType(), rubbishLevel, levelList));
-					} else if ("".equals(model.getType())) {
-						obj.put("noise", getLevelContent(model.getType(), nosieLevel, levelList));
+					} else if ("noise".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), nosieLevel, levelList));
+					} else if ("chemical".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), chemicalLevel, levelList));
 					} else {
 						obj.put("level", getLevelContent(model.getType(), 1, levelList));
 					}
 					array.add(obj);
 				}
+				System.out.println(array.toJSONString());
 				String levelName = mapper.findLevel(code);
 				path = PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path, code);
 				result.setResultCode(0);

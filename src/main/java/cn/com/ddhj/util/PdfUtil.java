@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -50,7 +53,7 @@ public class PdfUtil extends BaseClass {
 		// 字体的定义：这里用的是自带的jar里面的字体
 		BaseFont bfChinese = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
 
-		Font reportTitleFont = new Font(bfChinese, 28, Font.BOLD);
+		Font reportTitleFont = new Font(bfChinese, 32, Font.BOLD);
 		Font titleFont = new Font(bfChinese, 14, Font.BOLD);
 		titleFont.setColor(218, 112, 214);
 		Font titleFont2 = new Font(bfChinese, 20, Font.BOLD);
@@ -69,20 +72,24 @@ public class PdfUtil extends BaseClass {
 		// 打开文档
 		document.open();
 		// 添加报告名称
+
 		Paragraph reportTitle = new Paragraph("环境质量报告", reportTitleFont);
 		reportTitle.setAlignment(Paragraph.ALIGN_CENTER);
-		reportTitle.setPaddingTop(100);
 		document.add(reportTitle);
 		// 添加报告等级
 		// Paragraph levelP = new Paragraph("(" + reportLevel + ")", new
 		// Font(bfChinese, 14, Font.BOLD));
 		// levelP.setAlignment(Paragraph.ALIGN_CENTER);
 		// document.add(levelP);
-		document.add(new Paragraph(new Chunk("\n")));
+		for (int i = 0; i < 30; i++) {
+			document.add(new Paragraph("\n"));
+		}
 		// 添加公司名称
 		Font companyFont = new Font(bfChinese, 16, Font.BOLD);
+		companyFont.setColor(BaseColor.GRAY);
 		Paragraph companyName = new Paragraph("北京亿科云科技有限公司", companyFont);
 		companyName.setAlignment(Paragraph.ALIGN_CENTER);
+		companyName.setPaddingTop(document.bottom());
 		document.add(companyName);
 		document.newPage();
 		// 向文档添加空气质量评分
@@ -104,12 +111,14 @@ public class PdfUtil extends BaseClass {
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject obj = array.getJSONObject(i);
 				document.add(new Paragraph(obj.getString("title"), titleFont));
+				document.add(new Paragraph("\n"));
 				// 添加图标
-				// Image image = Image.getInstance(path+obj.getString("pic"));
-				Image image = Image.getInstance(path + "/resource/report/greening.jpg");
-				image.setAlignment(Image.ALIGN_CENTER);
-				image.scaleToFit(200, 110);
-				document.add(image);
+				if (StringUtils.isNotBlank(obj.getString("pic"))) {
+					Image image = Image.getInstance(path + obj.getString("pic"));
+					image.setAlignment(Image.ALIGN_CENTER);
+					image.scaleToFit(200, 110);
+					document.add(image);
+				}
 				document.add(new Paragraph());
 				Chunk content = new Chunk(obj.getString("content"), textFont);
 				document.add(content);
@@ -124,7 +133,7 @@ public class PdfUtil extends BaseClass {
 		return path + "/report/" + code + ".pdf";
 	}
 
-	private static void createWatermark(String path, String code) {
+	public static void createWatermark(String path, String code) {
 		try {
 			PdfReader reader = new PdfReader(path + "/report/temp/" + code + ".pdf");
 			PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(path + "/report/" + code + ".pdf"));
