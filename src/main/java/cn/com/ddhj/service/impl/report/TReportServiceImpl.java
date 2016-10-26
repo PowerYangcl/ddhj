@@ -590,7 +590,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							dto.setLpCode(lp.getCode());
 							dto.setLevelCode("RL161006100001");
 							TReport entity = mapper.findReportByLpCodeAndLevelCode(dto);
-							String date = isSync(entity.getReportDate());
+							String date = isSync(entity != null?entity.getReportDate():null);
 							if (StringUtils.isNotBlank(date)) {
 								if (entity != null) {
 									codes.add(entity.getCode());
