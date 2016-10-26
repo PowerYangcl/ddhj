@@ -61,7 +61,8 @@
 	</bean>
 	
 	<!-- Quartz http://www.cnblogs.com/jianzhi/p/3384436.html -->
-    <bean name="jobResyncEstateScore" class="cn.com.ddhj.service.impl.EstateEnvironmentServiceImpl" />
+    <!-- bean name="jobResyncEstateScore" class="cn.com.ddhj.service.impl.EstateEnvironmentServiceImpl" / -->
+    <bean name="jobResyncEstateScore" class="cn.com.ddhj.job.ResyncEstateScore" />
     <bean id="quartzJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="jobResyncEstateScore"></property>
         <property name="targetMethod" value="resyncEstateScore"></property>
