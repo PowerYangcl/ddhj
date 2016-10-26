@@ -31,7 +31,6 @@ import cn.com.ddhj.mapper.report.TReportTemplateMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserLpFollowMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
-import cn.com.ddhj.model.BaseModel;
 import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
