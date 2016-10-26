@@ -31,24 +31,34 @@ public class TChemicalPlantServiceImpl extends BaseServiceImpl<TChemicalPlant, T
 		dto.setLat(lat);
 		dto.setLng(lng);
 		TChemicalPlant model = this.getTChemicalPlant(dto);
-		Double ll = CommonUtil.getDistanceFromLL(Double.valueOf(dto.getLat()), Double.valueOf(dto.getLng()),
-				Double.valueOf(model.getLat()), Double.valueOf(model.getLng()));
-		if (ll > 1000) {
-			level = 2;
+		if (model != null) {
+			Double ll = CommonUtil.getDistanceFromLL(Double.valueOf(dto.getLat()), Double.valueOf(dto.getLng()),
+					Double.valueOf(model.getLat()), Double.valueOf(model.getLng()));
+			if (ll > 1000) {
+				level = 2;
+			}
 		}
 		return level;
 	}
 
 	private TChemicalPlant getTChemicalPlant(TChemicalPlantDto dto) {
+		TChemicalPlant model = null;
 		TChemicalPlant max = mapper.getMaxTChemicalPlant(dto);
 		TChemicalPlant min = mapper.getMinTChemicalPlant(dto);
-		Double maxLL = Double.valueOf(dto.getLat()) - Double.valueOf(max.getLat());
-		Double minLL = Double.valueOf(min.getLat()) - Double.valueOf(dto.getLat());
-		if (maxLL < minLL) {
-			return max;
-		} else {
-			return min;
+		if (max != null && min == null) {
+			model = max;
+		} else if (max == null && min != null) {
+			model = min;
+		} else if (max != null && min != null) {
+			Double maxLL = Double.valueOf(dto.getLat()) - Double.valueOf(max.getLat());
+			Double minLL = Double.valueOf(min.getLat()) - Double.valueOf(dto.getLat());
+			if (maxLL < minLL) {
+				model = max;
+			} else {
+				model = min;
+			}
 		}
+		return model;
 	}
 
 }

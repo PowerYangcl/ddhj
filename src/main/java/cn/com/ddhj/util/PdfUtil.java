@@ -132,13 +132,16 @@ public class PdfUtil extends BaseClass {
 		if (!document.isOpen()) {
 			createWatermark(path, code);
 		}
+
 		return path + "/report/" + code + ".pdf";
 	}
 
 	public static void createWatermark(String path, String code) {
+		PdfReader reader = null;
+		PdfStamper stamper = null;
 		try {
-			PdfReader reader = new PdfReader(path + "report/temp/" + code + ".pdf");
-			PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(path + "report/" + code + ".pdf"));
+			reader = new PdfReader(path + "report/temp/" + code + ".pdf");
+			stamper = new PdfStamper(reader, new FileOutputStream(path + "report/" + code + ".pdf"));
 
 			PdfContentByte under;
 			int total = reader.getNumberOfPages() + 1;
@@ -160,6 +163,9 @@ public class PdfUtil extends BaseClass {
 			stamper.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			File file = new File(path + "report/temp/" + code + ".pdf");
+			file.delete();
 		}
 	}
 }
