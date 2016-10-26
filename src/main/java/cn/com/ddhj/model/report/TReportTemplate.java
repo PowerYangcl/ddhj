@@ -19,6 +19,26 @@ public class TReportTemplate extends BaseModel {
 
 	private String content;
 
+	private String pic;
+
+	private Integer sort;
+
+	public String getPic() {
+		return pic;
+	}
+
+	public void setPic(String pic) {
+		this.pic = pic;
+	}
+
+	public Integer getSort() {
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+		this.sort = sort;
+	}
+
 	public String getName() {
 		return name;
 	}

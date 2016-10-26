@@ -349,24 +349,24 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			Integer airLevel = 1;
 			// 水质量等级
 			Integer waterLevel = 1;
-//			if (StringUtils.isNotBlank(lp.getCity())) {
-//				JSONArray cityAirLevel = null;
-//				if (cityAir != null && cityAir.size() > 0) {
-//					cityAirLevel = cityAir;
-//				} else {
-//					cityAirLevel = this.getCityAirLevel();
-//				}
-//				if (cityAirLevel != null && cityAirLevel.size() > 0) {
-//					for (int i = 0; i < cityAirLevel.size(); i++) {
-//						JSONObject level = cityAirLevel.getJSONObject(i);
-//
-//						if (StringUtils.equals(lp.getCity(), level.getString("city"))) {
-//							airLevel = level.getJSONObject("level").getInteger("air");
-//							waterLevel = level.getJSONObject("level").getInteger("water");
-//						}
-//					}
-//				}
-//			}
+			// if (StringUtils.isNotBlank(lp.getCity())) {
+			// JSONArray cityAirLevel = null;
+			// if (cityAir != null && cityAir.size() > 0) {
+			// cityAirLevel = cityAir;
+			// } else {
+			// cityAirLevel = this.getCityAirLevel();
+			// }
+			// if (cityAirLevel != null && cityAirLevel.size() > 0) {
+			// for (int i = 0; i < cityAirLevel.size(); i++) {
+			// JSONObject level = cityAirLevel.getJSONObject(i);
+			//
+			// if (StringUtils.equals(lp.getCity(), level.getString("city"))) {
+			// airLevel = level.getJSONObject("level").getInteger("air");
+			// waterLevel = level.getJSONObject("level").getInteger("water");
+			// }
+			// }
+			// }
+			// }
 			// 垃圾设施等级
 			Integer rubbishLevel = 1;
 			if (StringUtils.isEmpty(lp.getCity()) && StringUtils.isEmpty(lp.getLat())
@@ -381,6 +381,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					TReportTemplate model = templateList.get(i);
 					JSONObject obj = new JSONObject();
 					obj.put("title", model.getName());
+					obj.put("pic", model.getPic());
 					obj.put("content", model.getContent());
 					if ("afforest".equals(model.getType())) {
 						obj.put("level", getLevelContent(model.getType(), afforestLevel, levelList));

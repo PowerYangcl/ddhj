@@ -158,7 +158,7 @@ public class TReportTest extends BaseTest {
 		dto.setCode("R161009164878");
 		dto.setLpCode("LP161009105939");
 		dto.setLevelCode("RL161006100003");
-		BaseResult result = service.createReport(dto, "E://", null);
+		BaseResult result = service.createReport(dto, "D://", null);
 		System.out.println(JSON.toJSON(result));
 	}
 }
