@@ -1,7 +1,10 @@
 package cn.com.ddhj.service.impl.report;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -9,12 +12,11 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
@@ -23,6 +25,8 @@ import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
+import cn.com.ddhj.mapper.report.TReportLevelMapper;
+import cn.com.ddhj.mapper.report.TReportLogMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.report.TReportTemplateMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
@@ -32,6 +36,8 @@ import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
+import cn.com.ddhj.model.report.TReportLevel;
+import cn.com.ddhj.model.report.TReportLog;
 import cn.com.ddhj.model.report.TReportTemplate;
 import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.model.user.TUser;
@@ -42,6 +48,7 @@ import cn.com.ddhj.result.report.TReportDataResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.ICityAirService;
+import cn.com.ddhj.service.ITChemicalPlantService;
 import cn.com.ddhj.service.ITRubbishRecyclingService;
 import cn.com.ddhj.service.IWaterQualityService;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
@@ -82,6 +89,12 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TUserMapper userMapper;
 	@Autowired
 	private ITAreaNoiseMapper noiseMapper;
+	@Autowired
+	private TReportLogMapper rLogMapper;
+	@Autowired
+	private TReportLevelMapper rlMapper;
+	@Autowired
+	private ITChemicalPlantService chemicalService;
 
 	/**
 	 * 
@@ -257,7 +270,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (list != null && list.size() > 0) {
 			// 生成pdf环境报告
 			for (int i = 0; i < list.size(); i++) {
-				PDFReportResult pdfResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/", null);
+				PDFReportResult pdfResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/",
+						this.getCityAirLevel());
 				if (pdfResult.getResultCode() == 0) {
 					list.get(i).setPath(pdfResult.getPath());
 				}
@@ -290,31 +304,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return result;
 	}
 
-	/**
-	 * 
-	 * 方法: getLevelContent <br>
-	 * 描述: 获取环境等级描述信息 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月3日 下午2:27:42
-	 * 
-	 * @param type
-	 * @param level
-	 * @param list
-	 * @return
-	 */
-	private static String getLevelContent(String type, Integer level, List<TReportEnvironmentLevel> list) {
-		String content = "";
-		if (list != null && list.size() > 0) {
-			for (TReportEnvironmentLevel model : list) {
-				if (type.equals(model.getType()) && level == model.getLevel()) {
-					content = model.getContent();
-					break;
-				}
-			}
-		}
-		return content;
-	}
-
 	public PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir) {
 		PDFReportResult result = new PDFReportResult();
 		try {
@@ -322,8 +311,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (!file.exists()) {
 				file.mkdirs();
 			}
-			String filePath = "report/" + code + ".pdf";
-			path = path + "/" + filePath;
 			// 根据code获取地产楼盘信息
 			TLandedProperty lp = lpMapper.selectByCode(housesCode);
 			List<TReportTemplate> templateList = templateMapper.findReportTemplateAll();
@@ -381,9 +368,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 			// 垃圾设施等级
 			Integer rubbishLevel = 1;
-			if (StringUtils.isEmpty(lp.getCity()) && StringUtils.isEmpty(lp.getLat())
-					&& StringUtils.isEmpty(lp.getLng())) {
+			if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
+					&& StringUtils.isNotBlank(lp.getLng())) {
 				rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
+			}
+			// 化工厂
+			Integer chemicalLevel = 1;
+			if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
+					&& StringUtils.isNotBlank(lp.getLng())) {
+				chemicalLevel = chemicalService.chemicalLevel(lp.getCity(), lp.getLat(), lp.getLng());
 			}
 			// 噪音等级
 			int nosieLevel = getNoiseLevel(lp);
@@ -393,6 +386,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					TReportTemplate model = templateList.get(i);
 					JSONObject obj = new JSONObject();
 					obj.put("title", model.getName());
+					obj.put("pic", model.getPic());
 					obj.put("content", model.getContent());
 					if ("afforest".equals(model.getType())) {
 						obj.put("level", getLevelContent(model.getType(), afforestLevel, levelList));
@@ -404,18 +398,20 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						obj.put("level", getLevelContent(model.getType(), waterLevel, levelList));
 					} else if ("rubbish".equals(model.getType())) {
 						obj.put("level", getLevelContent(model.getType(), rubbishLevel, levelList));
-					} else if ("".equals(model.getType())) {
-						obj.put("noise", getLevelContent(model.getType(), nosieLevel, levelList));
+					} else if ("noise".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), nosieLevel, levelList));
+					} else if ("chemical".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), chemicalLevel, levelList));
 					} else {
 						obj.put("level", getLevelContent(model.getType(), 1, levelList));
 					}
 					array.add(obj);
 				}
 				String levelName = mapper.findLevel(code);
-				PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path);
+				path = PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path, code);
 				result.setResultCode(0);
 				result.setResultMessage("创建报告成功");
-				result.setPath(filePath);
+				result.setPath(path);
 			} else {
 				result.setResultCode(-1);
 				result.setResultMessage("创建报告失败");
@@ -506,120 +502,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 	/**
 	 * 
-	 * 方法: getCityAirLevel <br>
-	 * 描述: 查询楼盘城市列表的空气质量和水质量等级 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月10日 上午10:03:34
-	 * 
-	 * @return
-	 */
-	private JSONArray getCityAirLevel() {
-		JSONArray array = new JSONArray();
-		List<String> citys = lpMapper.findTLandedPropertyCity();
-		if (citys != null && citys.size() > 0) {
-			for (int i = 0; i < citys.size(); i++) {
-				if (StringUtils.isNotBlank(citys.get(i))) {
-					int air = cityAirService.getAQILevel(citys.get(i));
-					int water = waterQualityService.getWaterLevel(citys.get(i));
-					JSONObject obj = new JSONObject();
-					obj.put("air", air);
-					obj.put("water", water);
-					JSONObject cityLevel = new JSONObject();
-					cityLevel.put("city", citys.get(i));
-					cityLevel.put("level", obj);
-					array.add(cityLevel);
-				}
-			}
-		}
-		return array;
-	}
-
-	/**
-	 * 
-	 * 方法: getNoiseLevel <br>
-	 * 描述: 获取楼盘的噪音等级 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月15日 下午9:23:44
-	 * 
-	 * @param lp
-	 * @return
-	 */
-	private Integer getNoiseLevel(TLandedProperty lp) {
-		int level = 0;
-		if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
-			Double lat = Double.valueOf(lp.getLat());
-			Double lng = Double.valueOf(lp.getLng());
-			Double nlat = null; // 北纬
-			Double slat = null; // 南纬
-			Double elng = null; // 东经
-			Double wlng = null; // 西经
-			List<TAreaNoise> list = noiseMapper.selectByArea(lp.getCity());
-			List<TAreaNoise> areaList = new ArrayList<>();
-			for (TAreaNoise e : list) {
-				if (e.getFlag() == 2) {
-					if (e.getName().equals("WN")) { // 坐标西北点
-						nlat = e.getLat();
-						wlng = e.getLng();
-					} else if (e.getName().equals("ES")) {// 坐标东南点
-						elng = e.getLng();
-						slat = e.getLat();
-					}
-				} else {
-					areaList.add(e);
-				}
-			}
-			for (TAreaNoise e : areaList) {
-				Double distance = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
-				if (distance < 2000) {
-					if (e.getLevel().equals("III类")) {
-						level = 3;
-					} else if (e.getLevel().equals("0类")) {
-						level = 1;
-					}
-				}
-			}
-			if (level == 0) {
-				if ((slat < lat && lat < nlat) && (wlng < lng && lng < elng)) { // 五环里
-					level = 2;
-				} else { // 北京：五环外 |上海：外环外 |广州：外环外|天津：外环外|深圳：关外全部划为I类标准
-					level = 1;
-				}
-			}
-		} else {
-			level = 1;
-		}
-
-		return level;
-	}
-
-	/**
-	 * 
-	 * 方法: getLpCodes <br>
-	 * 描述: 获取限制的楼盘编码 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月12日 下午3:06:25
-	 * 
-	 * @return
-	 */
-	private List<String> getLpCodes() {
-		List<String> codes = new ArrayList<String>();
-		double[] r = CommonUtil.getAround(39.9659730000, 116.3325020000, 10 * 1000);
-		TLandedPropertyDto dto = new TLandedPropertyDto();
-		dto.setMinLat(r[0]);
-		dto.setMinLng(r[1]);
-		dto.setMaxLat(r[2]);
-		dto.setMaxLng(r[3]);
-		List<TLandedProperty> list = lpMapper.findLpAllByCoord(dto);
-		if (list != null && list.size() > 0) {
-			for (TLandedProperty lp : list) {
-				codes.add(lp.getCode());
-			}
-		}
-		return codes;
-	}
-
-	/**
-	 * 
 	 * 方法: createReport <br>
 	 * 
 	 * @param dto
@@ -676,5 +558,291 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 		}
 		return result;
+	}
+
+	@SuppressWarnings("unused")
+	public void batchCreateReport() {
+		Long start = System.currentTimeMillis();
+		String lock = "";
+		try {
+			lock = WebHelper.getInstance().addLock(10, "batchCreateReport");
+			if (StringUtils.isNoneBlank(lock)) {
+				// 获取报告列表
+				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
+				// 获取报告等级列表
+				List<TReportLevel> rlList = rlMapper.findEntityAll();
+				// 需要添加的报告列表
+				List<TReport> insertData = new ArrayList<TReport>();
+				// 需要编辑的报告列表
+				List<TReport> updateData = new ArrayList<TReport>();
+				// 存储日志信息
+				List<TReportLog> logData = new ArrayList<TReportLog>();
+				List<String> codes = new ArrayList<String>();
+				String path = "D:\\";
+				JSONArray cityAir = this.getCityAirLevel();
+				if (lpList != null && lpList.size() > 0) {
+					for (int i = 0; i < lpList.size(); i++) {
+						TLandedProperty lp = lpList.get(i);
+						if (StringUtils.equals(lp.getCity(), "北京")) {
+							TReportLog log = new TReportLog();// 日志
+							TReportDto dto = new TReportDto();
+							dto.setLpCode(lp.getCode());
+							dto.setLevelCode("RL161006100001");
+							TReport entity = mapper.findReportByLpCodeAndLevelCode(dto);
+							String date = isSync(entity.getReportDate());
+							if (StringUtils.isNotBlank(date)) {
+								if (entity != null) {
+									codes.add(entity.getCode());
+									PDFReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
+									entity.setPath(result.getPath());
+									entity.setReportDate(date);
+									entity.setUpdateUser("system");
+									entity.setUpdateTime(DateUtil.getSysDateTime());
+									updateData.add(entity);
+									log.setReportCode(entity.getCode());
+									log.setDetail(JSON.toJSONString(result));
+								} else {
+									String code = WebHelper.getInstance().getUniqueCode("R");
+									codes.add(code);
+									PDFReportResult result = createPDF(code, lp.getCode(), path, null);
+									entity = new TReport();
+									entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+									entity.setCode(code);
+									entity.setHousesCode(lp.getCode());
+									entity.setTitle(lp.getTitle() + "-环境报告-普通");
+									entity.setLevelCode("RL161006100001");
+									entity.setPic("");
+									entity.setImage("");
+									entity.setRang(10);
+									entity.setPrice(BigDecimal.valueOf(0.01));
+									entity.setPath(result.getPath());
+									entity.setDetail(lp.getTitle() + "-环境报告说明-普通");
+									entity.setCreateUser("system");
+									entity.setCreateTime(DateUtil.getSysDateTime());
+									entity.setUpdateUser("system");
+									entity.setUpdateTime(DateUtil.getSysDateTime());
+									insertData.add(entity);
+									log.setReportCode(code);
+									log.setDetail(JSON.toJSONString(result));
+								}
+								log.setUuid(UUID.randomUUID().toString().replace("-", ""));
+								log.setLpCode(lp.getCode());
+								log.setCreateUser("system");
+								log.setCreateTime(DateUtil.getSysDateTime());
+								logData.add(log);
+							}
+						}
+					}
+					// 批量添加日志到日志表
+					if (logData != null && logData.size() > 0) {
+						rLogMapper.batchInsertLog(logData);
+					}
+					// 批量添加报告到报告表
+					if (insertData != null && insertData.size() > 0) {
+						mapper.insertReportData(insertData);
+					}
+					// 批量从临时表同步数据到报告表
+					if (updateData != null && updateData.size() > 0) {
+						mapper.batchInsertReportToTmp(updateData);
+						mapper.importReportFormTmp();
+						mapper.delReportTmp();
+					}
+					// 将临时文件pdf生成带水印的报告
+					if (codes != null && codes.size() > 0) {
+						for (int i = 0; i < codes.size(); i++) {
+							PdfUtil.instance().createWatermark(path, codes.get(i));
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			WebHelper.getInstance().unLock(lock);
+		}
+		Long end = System.currentTimeMillis();
+		System.out.println("定时执行时间为:" + (end - start));
+	}
+
+	/**
+	 * 
+	 * 方法: getCityAirLevel <br>
+	 * 描述: 查询楼盘城市列表的空气质量和水质量等级 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月10日 上午10:03:34
+	 * 
+	 * @return
+	 */
+	private JSONArray getCityAirLevel() {
+		JSONArray array = new JSONArray();
+		List<String> citys = lpMapper.findTLandedPropertyCity();
+		if (citys != null && citys.size() > 0) {
+			for (int i = 0; i < citys.size(); i++) {
+				if (StringUtils.isNotBlank(citys.get(i))) {
+					int air = cityAirService.getAQILevel(citys.get(i));
+					int water = waterQualityService.getWaterLevel(citys.get(i));
+					JSONObject obj = new JSONObject();
+					obj.put("air", air);
+					obj.put("water", water);
+					JSONObject cityLevel = new JSONObject();
+					cityLevel.put("city", citys.get(i));
+					cityLevel.put("level", obj);
+					array.add(cityLevel);
+				}
+			}
+		}
+		return array;
+	}
+
+	/**
+	 * 
+	 * 方法: getNoiseLevel <br>
+	 * 描述: 获取楼盘的噪音等级 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月15日 下午9:23:44
+	 * 
+	 * @param lp
+	 * @return
+	 */
+	private Integer getNoiseLevel(TLandedProperty lp) {
+		int level = 0;
+		if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
+			Double lat = Double.valueOf(lp.getLat());
+			Double lng = Double.valueOf(lp.getLng());
+			Double nlat = null; // 北纬
+			Double slat = null; // 南纬
+			Double elng = null; // 东经
+			Double wlng = null; // 西经
+			List<TAreaNoise> list = noiseMapper.selectByArea(lp.getCity());
+			List<TAreaNoise> areaList = new ArrayList<>();
+			if (list != null && list.size() > 0) {
+				for (TAreaNoise e : list) {
+					if (e.getFlag() == 2) {
+						if (e.getName().equals("WN")) { // 坐标西北点
+							nlat = e.getLat();
+							wlng = e.getLng();
+						} else if (e.getName().equals("ES")) {// 坐标东南点
+							elng = e.getLng();
+							slat = e.getLat();
+						}
+					} else {
+						areaList.add(e);
+					}
+				}
+				for (TAreaNoise e : areaList) {
+					Double distance = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
+					if (distance < 2000) {
+						if (e.getLevel().equals("III类")) {
+							level = 3;
+						} else if (e.getLevel().equals("0类")) {
+							level = 1;
+						}
+					}
+				}
+				if (level == 0) {
+					try {
+						if (lat != null && lng != null) {
+							if ((slat < lat && lat < nlat) && (wlng < lng && lng < elng)) { // 五环里
+								level = 2;
+							} else { // 北京：五环外 |上海：外环外
+										// |广州：外环外|天津：外环外|深圳：关外全部划为I类标准
+								level = 1;
+							}
+						}
+					} catch (Exception e) {
+						level = 1;
+					}
+				}
+			} else {
+				level = 1;
+			}
+		} else {
+			level = 1;
+		}
+
+		return level;
+	}
+
+	/**
+	 * 
+	 * 方法: getLpCodes <br>
+	 * 描述: 获取限制的楼盘编码 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月12日 下午3:06:25
+	 * 
+	 * @return
+	 */
+	private List<String> getLpCodes() {
+		List<String> codes = new ArrayList<String>();
+		double[] r = CommonUtil.getAround(39.9659730000, 116.3325020000, 10 * 1000);
+		TLandedPropertyDto dto = new TLandedPropertyDto();
+		dto.setMinLat(r[0]);
+		dto.setMinLng(r[1]);
+		dto.setMaxLat(r[2]);
+		dto.setMaxLng(r[3]);
+		List<TLandedProperty> list = lpMapper.findLpAllByCoord(dto);
+		if (list != null && list.size() > 0) {
+			for (TLandedProperty lp : list) {
+				codes.add(lp.getCode());
+			}
+		}
+		return codes;
+	}
+
+	/**
+	 * 
+	 * 方法: getLevelContent <br>
+	 * 描述: 获取环境等级描述信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月3日 下午2:27:42
+	 * 
+	 * @param type
+	 * @param level
+	 * @param list
+	 * @return
+	 */
+	private static String getLevelContent(String type, Integer level, List<TReportEnvironmentLevel> list) {
+		String content = "";
+		if (list != null && list.size() > 0) {
+			for (TReportEnvironmentLevel model : list) {
+				if (type.equals(model.getType()) && level == model.getLevel()) {
+					content = model.getContent();
+					break;
+				}
+			}
+		}
+		return content;
+	}
+
+	/**
+	 * 
+	 * 方法: isSync <br>
+	 * 描述: 根据报告生成日期与当前日期比较，如果小于当前日期重新生成报告，如果大于不做处理 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午8:48:15
+	 * 
+	 * @param reportDate
+	 * @return
+	 */
+	private static String isSync(String reportDate) {
+		String date = "";
+		try {
+			Calendar a = Calendar.getInstance();
+			a.setTime(new Date());
+			a.set(Calendar.DAY_OF_MONTH, 1);
+			if (StringUtils.isNoneBlank(reportDate)) {
+				Date report = DateUtil.strToDate(reportDate);
+				int compare = report.compareTo(a.getTime());
+				if (compare <= 0) {
+					date = DateUtil.dateToString(a.getTime());
+				}
+			} else {
+				date = DateUtil.dateToString(a.getTime());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return date;
 	}
 }

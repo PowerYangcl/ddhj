@@ -2,7 +2,6 @@ package cn.com.ddhj.mapper.user;
 
 import java.util.List;
 
-import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.mapper.BaseMapper;

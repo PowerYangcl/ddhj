@@ -35,17 +35,25 @@ public class TRubbishRecyclingServiceImpl
 	 */
 	@Override
 	public TRubbishRecycling getTRubbishRecycling(TRubbishRecyclingDto dto) {
+		TRubbishRecycling model = null;
 		// 小于dto经纬度的最大距离垃圾回收站
 		TRubbishRecycling toMax = mapper.getMaxTRubbishRecycling(dto);
 		// 大于dto经纬度的最小距离垃圾回收站
 		TRubbishRecycling toMin = mapper.getMinTRubbishRecycling(dto);
-		Double maxLL = Double.valueOf(dto.getLat()) - Double.valueOf(toMax.getLat());
-		Double minLL = Double.valueOf(toMin.getLat()) - Double.valueOf(dto.getLat());
-		if (maxLL < minLL) {
-			return toMax;
-		} else {
-			return toMin;
+		if (toMax != null && toMin == null) {
+			model = toMax;
+		} else if (toMax == null && toMin != null) {
+			model = toMin;
+		} else if (toMax != null && toMin != null) {
+			Double maxLL = Double.valueOf(dto.getLat()) - Double.valueOf(toMax.getLat());
+			Double minLL = Double.valueOf(toMin.getLat()) - Double.valueOf(dto.getLat());
+			if (maxLL < minLL) {
+				model = toMax;
+			} else {
+				model = toMin;
+			}
 		}
+		return model;
 	}
 
 	/**
@@ -60,8 +68,11 @@ public class TRubbishRecyclingServiceImpl
 	@Override
 	public Double getDistance(TRubbishRecyclingDto dto) {
 		TRubbishRecycling model = this.getTRubbishRecycling(dto);
-		Double ll = CommonUtil.getDistanceFromLL(Double.valueOf(dto.getLat()), Double.valueOf(dto.getLng()),
-				Double.valueOf(model.getLat()), Double.valueOf(model.getLng()));
+		Double ll = null;
+		if (model != null) {
+			ll = CommonUtil.getDistanceFromLL(Double.valueOf(dto.getLat()), Double.valueOf(dto.getLng()),
+					Double.valueOf(model.getLat()), Double.valueOf(model.getLng()));
+		}
 		return ll;
 	}
 
@@ -82,10 +93,12 @@ public class TRubbishRecyclingServiceImpl
 		dto.setLat(lat);
 		dto.setLng(lng);
 		Double distance = this.getDistance(dto);
-		if (distance > 300 && distance <= 1000) {
-			level = 2;
-		} else if (distance <= 300) {
-			level = 3;
+		if (distance != null) {
+			if (distance > 300 && distance <= 1000) {
+				level = 2;
+			} else if (distance <= 300) {
+				level = 3;
+			}
 		}
 		return level;
 	}

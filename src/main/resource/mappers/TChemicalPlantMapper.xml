@@ -20,7 +20,8 @@
 		where id = #{id,jdbcType=INTEGER}
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-		delete from t_chemical_plant
+		delete from
+		t_chemical_plant
 		where id = #{id,jdbcType=INTEGER}
 	</delete>
 	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TChemicalPlant">
@@ -81,28 +82,54 @@
 		</set>
 		where id = #{id,jdbcType=INTEGER}
 	</update>
-	
-	<select id="findListByCity" resultMap="BaseResultMap" parameterType="java.lang.String">
+
+	<select id="findListByCity" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
 		select
-			*
-		from 
-			t_chemical_plant
-		where 
-			city = #{city}
+		*
+		from
+		t_chemical_plant
+		where
+		city = #{city}
+	</select>
+	<!-- 获取小于dto经纬度的垃圾回收站中最大的数据 -->
+	<select id="getMaxTChemicalPlant" parameterType="cn.com.ddhj.dto.TChemicalPlantDto"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		t_chemical_plant
+		WHERE
+		id = (
+		SELECT
+		max(id)
+		FROM
+		t_chemical_plant
+		WHERE
+		lat &lt; #{lat,jdbcType=VARCHAR}
+		AND lng &lt; #{lng,jdbcType=VARCHAR}
+		AND
+		city = #{city,jdbcType=VARCHAR}
+		)
+	</select>
+	<!-- 获取大于dto经纬度的垃圾回收站中最小的数据 -->
+	<select id="getMinTChemicalPlant" parameterType="cn.com.ddhj.dto.TChemicalPlantDto"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		t_chemical_plant
+		WHERE
+		id = (
+		SELECT
+		max(id)
+		FROM
+		t_chemical_plant
+		WHERE
+		lat &gt; #{lat,jdbcType=VARCHAR}
+		AND lng &gt; #{lng,jdbcType=VARCHAR}
+		AND
+		city = #{city,jdbcType=VARCHAR}
+		)
 	</select>
 </mapper>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

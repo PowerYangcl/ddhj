@@ -23,6 +23,8 @@
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 		<result column="lpName" property="lpName" jdbcType="VARCHAR" />
 		<result column="rDesc" property="rDesc" jdbcType="LONGVARCHAR" />
+		<!-- reportDate -->
+		<result column="report_date" property="reportDate" jdbcType="LONGVARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, uuid, code, houses_code, title, level_code, pic, image,
@@ -38,7 +40,12 @@
 		update_time,
 		'%Y-%m-%d'
 		) AS
-		update_time
+		update_time,
+		DATE_FORMAT(
+		report_date,
+		'%Y-%m-%d'
+		) AS
+		report_date
 	</sql>
 	<select id="selectByCode" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
@@ -60,7 +67,8 @@
 		lp.title AS
 		houses_name,
 		lp.addressFull
-		as address,
+		as
+		address,
 		r.price,
 		r.path,
 		lp.title as lpName,
@@ -112,6 +120,9 @@
 			<if test="detail != null">
 				detail,
 			</if>
+			<if test="reportDate != null and report_date != ''">
+				report_date
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			#{uuid,jdbcType=VARCHAR},
@@ -145,6 +156,10 @@
 			<if test="detail != null">
 				#{detail,jdbcType=LONGVARCHAR},
 			</if>
+			<if test="reportDate != null and report_date != ''">
+				STR_TO_DATE(
+				#{reportDate,jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
 		</trim>
 	</insert>
 	<insert id="insertReportData" parameterType="list">
@@ -164,12 +179,13 @@
 			create_time,
 			update_user,
 			update_time,
-			detail
+			detail,
+			report_date
 		</trim>
 		values
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			<trim prefix=" (" suffix=")" suffixOverrides=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
 				#{item.uuid,jdbcType=VARCHAR},
 				#{item.code,jdbcType=VARCHAR},
 				#{item.housesCode,jdbcType=VARCHAR},
@@ -186,7 +202,9 @@
 				#{item.updateUser,jdbcType=VARCHAR},
 				STR_TO_DATE(
 				#{item.updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
-				#{item.detail,jdbcType=LONGVARCHAR}
+				#{item.detail,jdbcType=LONGVARCHAR},
+				STR_TO_DATE(
+				#{item.reportDate,jdbcType=VARCHAR},'%Y-%m-%d')
 			</trim>
 		</foreach>
 	</insert>
@@ -213,6 +231,10 @@
 			</if>
 			<if test="path != null">
 				path = #{path,jdbcType=VARCHAR},
+			</if>
+			<if test="reportDate != null and reportDate != ''">
+				report_date =
+				STR_TO_DATE(#{reportDate,jdbcType=VARCHAR},'%Y-%m-%d'),
 			</if>
 			update_user = #{updateUser,jdbcType=VARCHAR},
 			update_time =
@@ -375,22 +397,64 @@
 		<where>
 			1=1
 			<if test="lpTitle != null and lpTitle != ''">
-				AND lp.title like CONCAT('%',#{lpTitle,jdbcType=VARCHAR},'%')
+				AND lp.title like
+				CONCAT('%',#{lpTitle,jdbcType=VARCHAR},'%')
 			</if>
 			<if test="title != null and title != ''">
-				AND r.title like CONCAT('%',#{title,jdbcType=VARCHAR},'%')
+				AND r.title like
+				CONCAT('%',#{title,jdbcType=VARCHAR},'%')
 			</if>
 		</where>
 	</select>
 	<!-- 根据楼盘编码和等级编码查询报告是否存在 2016-10-22 zhy -->
-	<select id="findReportByLpCodeAndLevelCode" parameterType="cn.com.ddhj.dto.report.TReportDto" resultMap="BaseResultMap">
+	<select id="findReportByLpCodeAndLevelCode" parameterType="cn.com.ddhj.dto.report.TReportDto"
+		resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from t_report
 		<where>
 			houses_code = #{lpCode,jdbcType=VARCHAR}
 			AND
-			level_code = #{levelCode,jdbcType=VARCHAR}
+			level_code =
+			#{levelCode,jdbcType=VARCHAR}
 		</where>
 	</select>
+	<!-- 存储数据到报告临时表 -->
+	<insert id="batchInsertReportToTmp" parameterType="list">
+		insert into t_report_tmp
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			code,
+			path,
+			report_date,
+			update_user,
+			update_time,
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.code,jdbcType=VARCHAR},
+				#{item.path,jdbcType=VARCHAR},
+				#{item.reportDate,jdbcType=VARCHAR},
+				#{item.updateUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			</trim>
+		</foreach>
+	</insert>
+	<!-- 从报告临时表将数据同步到报告表 -->
+	<update id="importReportFormTmp">
+		UPDATE t_report AS r,
+		t_report_tmp AS rt
+		SET r.path =
+		rt.path,
+		r.update_user = rt.update_user,
+		r.update_time = rt.update_time
+		WHERE
+		r.`code` = rt.`code`
+	</update>
+	<!-- 删除临时表数据 -->
+	<delete id="delReportTmp">
+		delete from t_report_tmp
+	</delete>
 </mapper>
