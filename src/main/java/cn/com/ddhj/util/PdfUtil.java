@@ -98,6 +98,10 @@ public class PdfUtil extends BaseClass {
 		Paragraph areaAir = new Paragraph("所测区域环境质量", titleFont2);
 		areaAir.setAlignment(Paragraph.ALIGN_CENTER);
 		document.add(areaAir);
+		document.add(new Paragraph("\n"));
+		document.add(new Paragraph(
+				"环境质量报告根据所监测的各项环境数据，按一定的标准和方法对某区域范围内的环境质量进行说明、评定和预测。本报告包含以下环境指标：噪音、水质、空气质量、土壤、垃圾处理设施、绿地率（小区）、容积率（小区）。\n",
+				textFont));
 		if (array != null && array.size() > 0) {
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject obj = array.getJSONObject(i);
@@ -163,9 +167,6 @@ public class PdfUtil extends BaseClass {
 			stamper.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			File file = new File(path + "report/temp/" + code + ".pdf");
-			file.delete();
 		}
 	}
 }
