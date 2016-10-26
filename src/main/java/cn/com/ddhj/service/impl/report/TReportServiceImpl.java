@@ -580,7 +580,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 		WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
 		ServletContext servletContext = webApplicationContext.getServletContext();
-		String path = servletContext.getRealPath("");
+		String path = servletContext.getRealPath("/");
 		JSONArray cityAir = this.getCityAirLevel();
 		if (lpList != null && lpList.size() > 0) {
 			for (int i = 0; i < lpList.size(); i++) {

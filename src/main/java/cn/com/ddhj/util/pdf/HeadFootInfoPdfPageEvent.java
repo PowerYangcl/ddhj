@@ -45,7 +45,7 @@ public class HeadFootInfoPdfPageEvent extends PdfPageEventHelper {
 			// ================== 设置页脚 start ==============
 			float y = document.bottom() - 40;
 			// 添加页面图标
-			Image page = Image.getInstance(path + "/resource/report/page/" + document.getPageNumber() + ".png");
+			Image page = Image.getInstance(path + "resource/report/page/" + document.getPageNumber() + ".png");
 			page.setAbsolutePosition(document.left(), y - 5);
 			page.scaleToFit(50, 20);
 			content.addImage(page);

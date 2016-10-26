@@ -59,10 +59,10 @@ public class PdfUtil extends BaseClass {
 		titleFont.setColor(218, 112, 214);
 		Font titleFont2 = new Font(bfChinese, 20, Font.BOLD);
 		titleFont2.setColor(218, 112, 214);
-		Font textFont = new Font(bfChinese, 10, Font.NORMAL);
+		Font textFont = new Font(bfChinese, 11, Font.NORMAL);
 
 		// 建立一个书写器(Writer)与document对象关联，通过书写器(Writer)可以将文档写入到磁盘中
-		File file = new File(path + "/report/temp/" + code + ".pdf");
+		File file = new File(path + "report/temp/" + code + ".pdf");
 		if (!file.exists()) {
 			file.createNewFile();
 		}
@@ -121,7 +121,7 @@ public class PdfUtil extends BaseClass {
 					image.scaleToFit(200, 110);
 					document.add(image);
 				}
-				document.add(new Paragraph());
+				document.add(new Paragraph("\n"));
 				Chunk content = new Chunk(obj.getString("content"), textFont);
 				document.add(content);
 				document.add(new Paragraph("\n"));
@@ -137,8 +137,8 @@ public class PdfUtil extends BaseClass {
 
 	public static void createWatermark(String path, String code) {
 		try {
-			PdfReader reader = new PdfReader(path + "/report/temp/" + code + ".pdf");
-			PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(path + "/report/" + code + ".pdf"));
+			PdfReader reader = new PdfReader(path + "report/temp/" + code + ".pdf");
+			PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(path + "report/" + code + ".pdf"));
 
 			PdfContentByte under;
 			int total = reader.getNumberOfPages() + 1;
@@ -149,7 +149,7 @@ public class PdfUtil extends BaseClass {
 				for (int x = -3; x < 3; x++) {
 					for (int y = -3; y < 3; y++) {
 						// 添加水印图片
-						Image image = Image.getInstance(path + "/resource/report/watermark.png");
+						Image image = Image.getInstance(path + "resource/report/watermark.png");
 						image.setGrayFill(20);
 						image.scaleToFit(100, 100);
 						image.setAbsolutePosition(left + (x * 200), right + (y * 200));

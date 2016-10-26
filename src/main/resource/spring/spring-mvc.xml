@@ -97,7 +97,7 @@
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="reportJob" />
 		<!-- 每天6点运行一次 "0 00 06 ? * *" | 每30秒运行一次 "30 * * * * ?" -->
-		<property name="cronExpression" value="0 58 17 ? * * "></property>
+		<property name="cronExpression" value="0 40 17 ? * * "></property>
 	</bean>
 
 
