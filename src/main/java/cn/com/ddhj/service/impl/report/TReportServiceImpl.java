@@ -411,7 +411,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					}
 					array.add(obj);
 				}
-				System.out.println(array.toJSONString());
 				String levelName = mapper.findLevel(code);
 				path = PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path, code);
 				result.setResultCode(0);

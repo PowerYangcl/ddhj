@@ -24,6 +24,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.util.pdf.HeadFootInfoPdfPageEvent;
+import cn.com.ddhj.util.pdf.PageBorderEvent;
 
 /**
  * 
@@ -67,6 +68,7 @@ public class PdfUtil extends BaseClass {
 		}
 		PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(file));
 		writer.setPageEvent(new HeadFootInfoPdfPageEvent(writer, document, bfChinese, path));
+		writer.setPageEvent(new PageBorderEvent(writer, document));
 		// 添加边距
 		document.setMargins(100, 100, 100, 100);
 		// 打开文档

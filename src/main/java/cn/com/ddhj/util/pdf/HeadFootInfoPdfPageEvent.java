@@ -53,6 +53,12 @@ public class HeadFootInfoPdfPageEvent extends PdfPageEventHelper {
 			// ================== 设置页脚 end ==============
 			content.endText();
 			content.restoreState();
+			content.setLineWidth(0.5f);
+			content.moveTo(document.left(), x - 10);
+			content.lineTo(document.right(), x - 10);
+			content.moveTo(document.left(), y + 15);
+			content.lineTo(document.right(), y + 15);
+			content.stroke();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
