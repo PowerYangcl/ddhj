@@ -95,10 +95,10 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月22日 下午8:34:25
 	 * 
-	 * @param dto
+	 * @param list
 	 * @return
 	 */
-	TReport findReportByLpCodeAndLevelCode(TReportDto dto);
+	TReport findReportByLpCodeAndLevelCode(List<String> list);
 
 	/**
 	 * 

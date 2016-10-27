@@ -407,16 +407,21 @@
 		</where>
 	</select>
 	<!-- 根据楼盘编码和等级编码查询报告是否存在 2016-10-22 zhy -->
-	<select id="findReportByLpCodeAndLevelCode" parameterType="cn.com.ddhj.dto.report.TReportDto"
+	<select id="findReportByLpCodeAndLevelCode" parameterType="list"
 		resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from t_report
 		<where>
-			houses_code = #{lpCode,jdbcType=VARCHAR}
+			houses_code in
+			(
+			<foreach collection="list" item="item" index="index"
+				separator=",">
+				${#item,jdbcType=VARCHAR}
+			</foreach>
+			)
 			AND
-			level_code =
-			#{levelCode,jdbcType=VARCHAR}
+			level_code = 'RL161006100001'
 		</where>
 	</select>
 	<!-- 存储数据到报告临时表 -->

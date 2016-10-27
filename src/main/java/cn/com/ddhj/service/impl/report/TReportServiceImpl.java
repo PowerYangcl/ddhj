@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -508,7 +509,9 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult createReport(TReportDto dto, String path, SysUser user) {
 		BaseResult result = new BaseResult();
 		// 查询报告是否已存在,获取报告的
-		TReport report = mapper.findReportByLpCodeAndLevelCode(dto);
+		List<String> lpCodes = new ArrayList<String>();
+		lpCodes.add(dto.getLpCode());
+		TReport report = mapper.findReportByLpCodeAndLevelCode(lpCodes);
 		if (report != null) {
 			// 如果存在，根据等级生成新的环境报告
 			PDFReportResult createResult = createPDF(report.getCode(), dto.getLpCode(), path, null);
@@ -581,6 +584,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				String path = "/opt/ddhj/";
 				JSONArray cityAir = this.getCityAirLevel();
 				if (lpList != null && lpList.size() > 0) {
+					// 根据楼盘列表获取报告列表
+					List<TReport> reports = getTreportByLpCodes(lpList);
 					for (int i = 0; i < lpList.size(); i++) {
 						TLandedProperty lp = lpList.get(i);
 						if (StringUtils.equals(lp.getCity(), "北京")) {
@@ -588,7 +593,16 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							TReportDto dto = new TReportDto();
 							dto.setLpCode(lp.getCode());
 							dto.setLevelCode("RL161006100001");
-							TReport entity = mapper.findReportByLpCodeAndLevelCode(dto);
+							// 根据楼盘编码查询报告
+							TReport entity = null;
+							if (reports != null && reports.size() > 0) {
+								for (TReport r : reports) {
+									if (StringUtils.equals(r.getHousesCode(), lp.getCode())) {
+										entity = r;
+										break;
+									}
+								}
+							}
 							String date = isSync(entity != null ? entity.getReportDate() : null);
 							if (StringUtils.isNotBlank(date)) {
 								if (entity != null) {
@@ -600,7 +614,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 									entity.setUpdateTime(DateUtil.getSysDateTime());
 									updateData.add(entity);
 									log.setReportCode(entity.getCode());
-									log.setDetail(JSON.toJSONString(result));
+									// log.setDetail(JSON.toJSONString(result));
 								} else {
 									String code = WebHelper.getInstance().getUniqueCode("R");
 									codes.add(code);
@@ -652,7 +666,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					// 将临时文件pdf生成带水印的报告
 					if (codes != null && codes.size() > 0) {
 						for (int i = 0; i < codes.size(); i++) {
-							PdfUtil.instance().createWatermark(path, codes.get(i));
+							File file = new File(path + "report/temp/" + codes.get(i) + ".pdf");
+							if (file.exists()) {
+								PdfUtil.instance().createWatermark(path, codes.get(i));
+							}
 						}
 					}
 				}
@@ -862,8 +879,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		int total = list.size();
 		int avg = total / 10000;
 		for (int i = 0; i < avg; i++) {
-			list = list.subList(i * 10000, (i + 1) * 10000 - 1);
-			mapper.insertReportData(list);
+			List<TReport> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
+			mapper.insertReportData(sublist);
 		}
 		list = list.subList(avg * 10000, list.size());
 		mapper.insertReportData(list);
@@ -882,11 +899,28 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private void subInsertReportTmp(List<TReport> list, TReportMapper mapper) {
 		int total = list.size();
 		int avg = total / 10000;
-		for (int i = 0; i < avg; i++) {
-			list = list.subList(i * 10000, (i + 1) * 10000 - 1);
+		if (avg > 0) {
+			for (int i = 0; i < avg; i++) {
+				List<TReport> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
+				mapper.batchInsertReportToTmp(sublist);
+			}
+			list = list.subList(avg * 10000, list.size());
+			mapper.batchInsertReportToTmp(list);
+		} else {
 			mapper.batchInsertReportToTmp(list);
 		}
-		list = list.subList(avg * 10000, list.size());
-		mapper.batchInsertReportToTmp(list);
+
+	}
+
+	public List<TReport> getTreportByLpCodes(List<TLandedProperty> list) {
+		List<TReport> reports = null;
+		List<String> lpCodes = new ArrayList<String>();
+		for (TLandedProperty lp : list) {
+			lpCodes.add(lp.getCode());
+		}
+		if (lpCodes != null && lpCodes.size() > 0) {
+			reports = mapper.findPriceByCode(lpCodes);
+		}
+		return reports;
 	}
 }
