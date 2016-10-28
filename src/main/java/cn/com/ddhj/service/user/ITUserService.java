@@ -91,15 +91,21 @@ public interface ITUserService extends IBaseService<TUser, TUserDto> {
 	 */
 	UserDataResult getUserData(TUserDto dto);
 
+	/**
+	 * 
+	 * 方法: getUser <br>
+	 * 描述: 根据userTocken查询用户信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月28日 上午10:16:09
+	 * 
+	 * @param userTocken
+	 * @return
+	 */
+	UserDataResult getUser(String userTocken);
+
 	public JSONObject getUserInfo(String uuid);
 
 	public JSONObject updateUserInfo(TUserDto dto);
 
-	public JSONObject deleteOne(Integer id);   
+	public JSONObject deleteOne(Integer id);
 }
-
-
-
-
-
-

@@ -134,7 +134,7 @@ public class PdfUtil extends BaseClass {
 		}
 		// 关闭文档
 		document.close();
-		return path + "/report/" + code + ".pdf";
+		return "report/" + code + ".pdf";
 	}
 
 	/**

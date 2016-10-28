@@ -374,64 +374,81 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 		return result;
 	}
 
-	
-	
 	public JSONObject getUserInfo(String uuid) {
 		JSONObject result = new JSONObject();
-		
+
 		TUser u = mapper.findTUserByUuid(uuid);
-		if( u != null){
+		if (u != null) {
 			result.put("code", "1");
 			result.put("msg", "SUCCESS");
-			result.put("data", u); 
-		}else{
+			result.put("data", u);
+		} else {
 			result.put("code", 0);
-			result.put("msg", "数据异常"); 
+			result.put("msg", "数据异常");
 		}
-		
+
 		return result;
 	}
 
 	public JSONObject updateUserInfo(TUserDto dto) {
 		JSONObject result = new JSONObject();
-		if(StringUtils.isNotBlank(dto.getPassword())){
+		if (StringUtils.isNotBlank(dto.getPassword())) {
 			String md5 = MD5Util.md5Sign(dto.getPassword());
-			dto.setPassword(md5); 
+			dto.setPassword(md5);
 		}
 		Integer flag = mapper.updateUserInfo(dto);
-		if(flag == 1){
+		if (flag == 1) {
 			result.put("code", "1");
 			result.put("msg", "SUCCESS");
-		}else{
+		} else {
 			result.put("code", 0);
-			result.put("msg", "更新异常"); 
+			result.put("msg", "更新异常");
 		}
-		
+
 		return result;
 	}
 
 	public JSONObject deleteOne(Integer id) {
 		JSONObject result = new JSONObject();
 		Integer flag = mapper.deleteOne(id);
-		if(flag == 1){
+		if (flag == 1) {
 			result.put("code", "1");
 			result.put("msg", "删除成功");
-		}else{
+		} else {
 			result.put("code", 0);
-			result.put("msg", "删除失败"); 
+			result.put("msg", "删除失败");
 		}
-		
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: getUser <br>
+	 * 
+	 * @param dto
+	 * @return
+	 * @see cn.com.ddhj.service.user.ITUserService#getUser(cn.com.ddhj.dto.user.TUserDto)
+	 */
+	@Override
+	public UserDataResult getUser(String userTocken) {
+		UserDataResult result = new UserDataResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userTocken);
+		if (login == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户未登录");
+		} else {
+			TUser user = mapper.findTUserByUuid(login.getUserToken());
+			if (user != null) {
+				result.setResultCode(0);
+				result.setResultMessage("获取用户信息成功");
+				result.setUser(user);
+			} else {
+				result.setResultCode(0);
+				result.setResultMessage("用户不存在");
+			}
+		}
 		return result;
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
