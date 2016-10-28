@@ -129,9 +129,9 @@ public class ApiController extends BaseClass {
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 根据userTocken查询用户新
-		else if ("user_data".equals(api.getApiInput())) {
-			UserDataResult result = userService.getUser(obj.getString("userToken"));
+		// 根据userTocken查询用户信息
+		else if ("user_data".equals(api.getApiTarget())) {
+			UserDataResult result = userService.getUser(api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 修改密码

@@ -84,6 +84,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 						stepMapper.updateByEquipmentCode(step);
 					}
 					result.setResultCode(0);
+					user.setPassword("");
 					result.setUser(user);
 					result.setResultMessage("登录成功");
 					result.setUserToken(login.getUuid());
@@ -133,6 +134,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					loginMapper.insertSelective(login);
 					// end
 					result.setResultCode(0);
+					entity.setPassword("");
 					result.setUser(entity);
 					result.setResultMessage("注册成功");
 					result.setUserToken(login.getUuid());
@@ -315,6 +317,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					login.setCreateTime(DateUtil.getSysDateTime());
 					loginMapper.insertSelective(login);
 					result.setResultCode(0);
+					user.setPassword("");
 					result.setUser(user);
 					result.setResultMessage("登录成功");
 					result.setUserToken(login.getUuid());
@@ -342,6 +345,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					loginMapper.insertSelective(login);
 					// end
 					result.setResultCode(0);
+					entity.setPassword("");
 					result.setUser(entity);
 					result.setResultMessage("登录成功");
 					result.setUserToken(login.getUuid());
@@ -442,6 +446,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			if (user != null) {
 				result.setResultCode(0);
 				result.setResultMessage("获取用户信息成功");
+				user.setPassword("");
 				result.setUser(user);
 			} else {
 				result.setResultCode(0);
