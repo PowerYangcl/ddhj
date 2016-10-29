@@ -614,7 +614,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 									entity.setUpdateTime(DateUtil.getSysDateTime());
 									updateData.add(entity);
 									log.setReportCode(entity.getCode());
-									// log.setDetail(JSON.toJSONString(result));
+									log.setDetail(JSON.toJSONString(result));
 								} else {
 									String code = WebHelper.getInstance().getUniqueCode("R");
 									codes.add(code);
@@ -649,7 +649,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					}
 					// 批量添加日志到日志表
 					if (logData != null && logData.size() > 0) {
-						rLogMapper.batchInsertLog(logData);
+						// rLogMapper.batchInsertLog(logData);
+						subInsertLog(logData, rLogMapper);
 					}
 					// 批量添加报告到报告表
 					if (insertData != null && insertData.size() > 0) {
@@ -910,6 +911,31 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			mapper.batchInsertReportToTmp(list);
 		}
 
+	}
+
+	/**
+	 * 
+	 * 方法: subInsertLog <br>
+	 * 描述: 批量添加日志到日志表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月29日 下午6:33:43
+	 * 
+	 * @param list
+	 * @param mapper
+	 */
+	private void subInsertLog(List<TReportLog> list, TReportLogMapper mapper) {
+		int total = list.size();
+		int avg = total / 10000;
+		if (avg > 0) {
+			for (int i = 0; i < avg; i++) {
+				List<TReportLog> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
+				mapper.batchInsertLog(sublist);
+			}
+			list = list.subList(avg * 10000, list.size());
+			mapper.batchInsertLog(list);
+		} else {
+			mapper.batchInsertLog(list);
+		}
 	}
 
 	public List<TReport> getTreportByLpCodes(List<TLandedProperty> list) {
