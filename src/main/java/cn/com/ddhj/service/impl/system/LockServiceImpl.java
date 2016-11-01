@@ -6,11 +6,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.mapper.system.LockMapper;
 import cn.com.ddhj.service.system.ILockService;
 
 @Service
-public class LockServiceImpl implements ILockService {
+public class LockServiceImpl extends BaseClass implements ILockService {
 
 	@Autowired
 	private LockMapper mapper;
@@ -54,6 +55,18 @@ public class LockServiceImpl implements ILockService {
 		param.put("lockflag", "2");
 		param.put("uuid", uuid);
 		return mapper.lock(param);
+	}
+
+	/**
+	 * 
+	 * 方法: clearLock <br>
+	 * 
+	 * @return
+	 * @see cn.com.ddhj.service.system.ILockService#clearLock()
+	 */
+	@Override
+	public int clearLock() {
+		return mapper.clearLock();
 	}
 
 }

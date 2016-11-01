@@ -74,16 +74,13 @@ public class PdfUtil extends BaseClass {
 		// 打开文档
 		document.open();
 		// 添加报告名称
-
+		for (int i = 0; i < 10; i++) {
+			document.add(new Paragraph("\n"));
+		}
 		Paragraph reportTitle = new Paragraph("环境质量报告", reportTitleFont);
 		reportTitle.setAlignment(Paragraph.ALIGN_CENTER);
 		document.add(reportTitle);
-		// 添加报告等级
-		// Paragraph levelP = new Paragraph("(" + reportLevel + ")", new
-		// Font(bfChinese, 14, Font.BOLD));
-		// levelP.setAlignment(Paragraph.ALIGN_CENTER);
-		// document.add(levelP);
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 20; i++) {
 			document.add(new Paragraph("\n"));
 		}
 		// 添加公司名称
@@ -157,18 +154,13 @@ public class PdfUtil extends BaseClass {
 			int total = reader.getNumberOfPages() + 1;
 			for (int i = 1; i < total; i++) {
 				under = stamper.getUnderContent(i);
-				float left = under.getPdfDocument().left();
-				float right = under.getPdfDocument().right();
-				for (int x = -3; x < 3; x++) {
-					for (int y = -3; y < 3; y++) {
-						// 添加水印图片
-						Image image = Image.getInstance(path + "resource/report/watermark.png");
-						image.setGrayFill(20);
-						image.scaleToFit(100, 100);
-						image.setAbsolutePosition(left + (x * 200), right + (y * 200));
-						under.addImage(image);
-					}
-				}
+				// 设置背景图
+				Image bgImage = Image.getInstance(path + "resource/report/bg.png");
+				// 设置图片的位置，参数Image.UNDERLYING是作为文字的背景显示。
+				bgImage.setAlignment(Image.UNDERLYING);
+				bgImage.setAbsolutePosition(0, 0);
+				bgImage.scaleToFit(PageSize.A4);// 大小
+				under.addImage(bgImage);
 			}
 			stamper.close();
 		} catch (Exception e) {

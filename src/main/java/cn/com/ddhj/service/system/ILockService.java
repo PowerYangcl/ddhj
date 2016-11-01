@@ -28,4 +28,14 @@ public interface ILockService{
 	 * @return
 	 */
 	String unLock(String uuid);
+	
+	/**
+	 * 
+	 * 方法: clearLock <br>
+	 * 描述: 清空系统锁 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月31日 上午9:06:47
+	 * @return
+	 */
+	int clearLock();
 }

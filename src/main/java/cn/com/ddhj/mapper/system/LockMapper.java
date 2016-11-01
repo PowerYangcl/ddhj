@@ -26,4 +26,15 @@ public interface LockMapper extends BaseMapper<BaseModel, BaseDto> {
 	 * @return
 	 */
 	String lock(Map<String, String> param);
+
+	/**
+	 * 
+	 * 方法: clearLock <br>
+	 * 描述: 清空系统锁 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月31日 上午9:06:26
+	 * 
+	 * @return
+	 */
+	int clearLock();
 }

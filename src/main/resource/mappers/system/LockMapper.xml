@@ -13,4 +13,8 @@
 		resultType="String">
 		CALL proc_lock_or_unlock_somekey(?,?,?,?,?)
 	</select>
+	<!-- 清空系统锁 2016-10-31 zhy -->
+	<delete id="clearLock">
+		delete from sys_lock
+	</delete>
 </mapper>

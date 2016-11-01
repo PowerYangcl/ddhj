@@ -162,7 +162,6 @@ public class TReportTest extends BaseTest {
 		System.out.println(JSON.toJSON(result));
 	}
 
-	@Test
 	public void batch() {
 		TReport entity = new TReport();
 		entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -183,5 +182,10 @@ public class TReportTest extends BaseTest {
 		List<TReport> list = new ArrayList<TReport>();
 		list.add(entity);
 		mapper.insertReportData(list);
+	}
+
+	@Test
+	public void batchCreateReport() {
+		service.batchCreateReport();
 	}
 }
