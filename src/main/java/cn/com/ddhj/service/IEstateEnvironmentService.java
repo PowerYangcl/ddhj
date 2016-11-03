@@ -57,6 +57,16 @@ public interface IEstateEnvironmentService {
 	 * @version 1.0.0.1
 	 */
 	public void resyncEstateScore();
+	
+	
+	/**
+	 * @description:  手动刷新水环境信息 | 接口号 2049 
+	 *  
+	 * @author Yangcl 
+	 * @date 2016年11月3日 下午3:07:54 
+	 * @version 1.0.0.1
+	 */
+	public void resyncWaterEnviroment(); 
 }
 
 

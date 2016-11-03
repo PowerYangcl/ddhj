@@ -4,15 +4,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,8 +31,10 @@ import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TChemicalPlantMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
+import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.estateInfo.EData;
 import cn.com.ddhj.service.ICityAirService;
@@ -88,6 +88,8 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	@Resource
 	private TChemicalPlantMapper chemicalMapper; // 污染源-化工厂
 	
+	@Resource
+	private TWaterEnviromentMapper waterEnvMapper;  // 水质量信息
 	
 	
 	/**
@@ -126,6 +128,12 @@ long start = System.currentTimeMillis();
 			wea.setLng(lng);
 			Future<JSONObject> weaTask =  executor.submit(wea);  
 			
+			Task1032WaterEnv w = new Task1032WaterEnv();
+	        w.setWaterEnvMapper(waterEnvMapper);
+	        w.setCity(city);
+	        w.setPosition(position);
+	        Future<Map<String , String>> wFuture = executor.submit(w);
+			
 			JSONObject addr = posTask.get();
 			JSONObject obj = weaTask.get();
 	        executor.shutdown();
@@ -163,7 +171,7 @@ System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫�
 					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
 				}
 				
-				String score = this.getDoctorScore(hourAqi, hourAqi, "0.5", "0.5");
+				String score = this.getDoctorScore(hourAqi, hourAqi, "0.5", "0.5"  , wFuture.get().get("s"));
 				result.put("score", score); // 环境综合评分
 				result.put("level", this.scoreLevel(score));  // 环境等级
 //				result.put("value", "16");// 环境值 经过讨论，这个值不再显示
@@ -240,6 +248,11 @@ long start = System.currentTimeMillis();
 	        est.setEstateService(estateService);
 	        Future<List<EnvInfo>> estFuture = executor.submit(est);
 	        
+	        Task1032WaterEnv w = new Task1032WaterEnv();
+	        w.setWaterEnvMapper(waterEnvMapper);
+	        w.setCity(city);
+	        w.setPosition(position);
+	        Future<Map<String , String>> wFuture = executor.submit(w);
 	        
 	        
 	        JSONObject weather = weaTask.get();
@@ -284,7 +297,7 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 			} 
 			
 start = System.currentTimeMillis();
-			String score = this.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate);
+			String score = this.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s"));
 end = System.currentTimeMillis();
 System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " 毫秒"); 
 	        
@@ -322,11 +335,12 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			}
 			envList.add(gar);
 			
-			EnvInfo water = new EnvInfo();
+			EnvInfo water = new EnvInfo();  
 			water.setName("水质");
-			water.setMemo("色度低"); 
-			water.setLevel("优良");  
+			water.setMemo("溶解氧"); 
+			water.setLevel(wFuture.get().get("level"));
 			envList.add(water);
+			
 			// 新版需求
 			EnvInfo land = new EnvInfo();    // 土壤
 			land.setName("土壤");
@@ -488,12 +502,12 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 	
 	/**
 	 * @description:  手动刷新楼盘评分 | 接口号 2048 
-	 * 
+	 *  http://localhost:8080/ddhj/api.htm?apiTarget=2048&api_key=appfamilyhas
 	 * @author Yangcl 
 	 * @date 2016年10月18日 下午4:29:29 
 	 * @version 1.0.0.1
 	 */
-	public void resyncEstateScore(){
+	public void resyncEstateScore(){ 
 		List<String> clist = new ArrayList<String>();
 		clist.add("北京");
 		clist.add("天津");
@@ -577,6 +591,51 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 	}
 	
 	
+	/**
+	 * @description:  手动刷新水环境信息 | 接口号 2049 
+	 * http://localhost:8080/ddhj/api.htm?apiTarget=2049&api_key=appfamilyhas
+	 * @author Yangcl 
+	 * @date 2016年11月3日 下午3:07:54 
+	 * @version 1.0.0.1
+	 */
+	public void resyncWaterEnviroment(){
+		List<String> stateList = new ArrayList<String>(); // 保存检测站点名称
+		String key = "935ddb80b6c973938852bd9e38d1777b";
+		String url = "http://web.juhe.cn:8080/environment/water/stateList";
+		Map<String, String> param = new HashMap<String, String>(); 		 
+		param.put("key", key);				 	 
+		String responseJson = PureNetUtil.post(url , param);
+		if (responseJson != null && !"".equals(responseJson)) {
+			JSONObject obj = JSONObject.parseObject(responseJson);
+			if(obj.getString("reason").equals("SUCCESSD!") || obj.getInteger("error_code") == 0){
+				stateList = JSONObject.parseArray(obj.getString("result"), String.class);
+			}
+		}
+		
+		List<TWaterEnviroment> list = new ArrayList<TWaterEnviroment>();
+		if(stateList != null && stateList.size() != 0){
+			key = "935ddb80b6c973938852bd9e38d1777b";
+			url = "http://web.juhe.cn:8080/environment/water/state";
+			for(String s : stateList){
+				param.put("key", key);
+				param.put("state", s);
+				responseJson = PureNetUtil.get(url , param);
+				if (responseJson != null && !"".equals(responseJson)){
+					JSONObject obj = JSONObject.parseObject(responseJson);
+					if(obj.getString("resultcode").equals("200")){ 
+						List<TWaterEnviroment> list_ = new ArrayList<TWaterEnviroment>();
+						list_ = JSONObject.parseArray(obj.getString("result"), TWaterEnviroment.class);  
+						TWaterEnviroment e = list_.get(0);
+						e.setUid(UUID.randomUUID().toString().replace("-", ""));
+						e.setCreateTime(new Date());
+						e.setUpdateTime(new Date());
+						e.setType(1);
+						waterEnvMapper.insertSelective(e);
+					}
+				}
+			}
+		}
+	}
 	
 	
 	
@@ -632,13 +691,13 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */
-	private String getDoctorScore(String a ,String b ,String c , String d){
+	private String getDoctorScore(String a ,String b ,String c , String d , String s){
 		String url = "http://123.56.169.49:8338/environment/servlet/environmentZHInterface";
 		JSONObject obj = null;
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("hourAQI", a);		 
 		param.put("dayAQI", b);	 
-		param.put("s", "2");						 
+		param.put("s", s);				 		 
 		param.put("z1", "2");							 
 		param.put("z2", "2");							 
 		param.put("l", c);	
@@ -932,47 +991,7 @@ class Estate implements Comparable{
 }
 
 
-
-/**
-	
-	// 收录此代码 
- 	重组日期
-	public String showWeekday2(String date) {
-		String[] arr = date.split("-");
-		Calendar temp = Calendar.getInstance();
-		temp.set(Integer.valueOf(arr[0]) , Integer.valueOf(arr[1]) - 1, Integer.valueOf(arr[2]));
-		int x = temp.get(Calendar.DAY_OF_WEEK);
-		String str = "";
-		switch (x){
-			case Calendar.SUNDAY:
-				str = "星期日";
-				break;
-			case Calendar.MONDAY:
-				str = "星期一";
-				break;
-			case Calendar.TUESDAY:
-				str = "星期二";
-				break;
-			case Calendar.WEDNESDAY:
-				str = "星期三";
-				break;
-			case Calendar.THURSDAY:
-				str = "星期四";
-				break;
-			case Calendar.FRIDAY:
-				str = "星期五";
-				break;
-			case Calendar.SATURDAY:
-				str = "星期六";
-				break; 
-		}
-		
-		return str;
-	}
-	
-	
-	
- */
+ 
 
 
 

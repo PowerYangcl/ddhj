@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TWaterEnviromentMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TWaterEnviroment">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uid" property="uid" jdbcType="VARCHAR" />
+		<result column="state" property="state" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="lat" property="lat" jdbcType="DOUBLE" />
+		<result column="lng" property="lng" jdbcType="DOUBLE" />
+		<result column="ph" property="ph" jdbcType="VARCHAR" />
+		<result column="phquality" property="phquality" jdbcType="VARCHAR" />
+		<result column="oxygen" property="oxygen" jdbcType="VARCHAR" />
+		<result column="oxygenquality" property="oxygenquality" jdbcType="VARCHAR" />
+		<result column="nitrogen" property="nitrogen" jdbcType="VARCHAR" />
+		<result column="nitrogenquality" property="nitrogenquality" jdbcType="VARCHAR" />
+		<result column="permangan" property="permangan" jdbcType="VARCHAR" />
+		<result column="permanganquality" property="permanganquality" jdbcType="VARCHAR" />
+		<result column="orgacarbon" property="orgacarbon" jdbcType="VARCHAR" />
+		<result column="orgacarbonquality" property="orgacarbonquality" jdbcType="VARCHAR" />
+		<result column="section" property="section" jdbcType="VARCHAR" />
+		<result column="profile" property="profile" jdbcType="LONGVARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="type" property="type" jdbcType="INTEGER" />
+	</resultMap>
+		 
+	 
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+			*
+		from 
+			t_water_enviroment
+		where 
+			id = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_water_enviroment where id = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TWaterEnviroment">
+		replace into t_water_enviroment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			<if test="city != null">
+				city,
+			</if>
+			<if test="lat != null">
+				lat,
+			</if>
+			<if test="lng != null">
+				lng,
+			</if>
+			<if test="ph != null">
+				ph,
+			</if>
+			<if test="phquality != null">
+				phquality,
+			</if>
+			<if test="oxygen != null">
+				oxygen,
+			</if>
+			<if test="oxygenquality != null">
+				oxygenquality,
+			</if>
+			<if test="nitrogen != null">
+				nitrogen,
+			</if>
+			<if test="nitrogenquality != null">
+				nitrogenquality,
+			</if>
+			<if test="permangan != null">
+				permangan,
+			</if>
+			<if test="permanganquality != null">
+				permanganquality,
+			</if>
+			<if test="orgacarbon != null">
+				orgacarbon,
+			</if>
+			<if test="orgacarbonquality != null">
+				orgacarbonquality,
+			</if>
+			<if test="section != null">
+				section,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="profile != null">
+				profile,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="uid != null">
+				#{uid,jdbcType=VARCHAR},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				#{city,jdbcType=VARCHAR},
+			</if>
+			<if test="lat != null">
+				#{lat,jdbcType=DOUBLE},
+			</if>
+			<if test="lng != null">
+				#{lng,jdbcType=DOUBLE},
+			</if>
+			<if test="ph != null">
+				#{ph,jdbcType=VARCHAR},
+			</if>
+			<if test="phquality != null">
+				#{phquality,jdbcType=VARCHAR},
+			</if>
+			<if test="oxygen != null">
+				#{oxygen,jdbcType=VARCHAR},
+			</if>
+			<if test="oxygenquality != null">
+				#{oxygenquality,jdbcType=VARCHAR},
+			</if>
+			<if test="nitrogen != null">
+				#{nitrogen,jdbcType=VARCHAR},
+			</if>
+			<if test="nitrogenquality != null">
+				#{nitrogenquality,jdbcType=VARCHAR},
+			</if>
+			<if test="permangan != null">
+				#{permangan,jdbcType=VARCHAR},
+			</if>
+			<if test="permanganquality != null">
+				#{permanganquality,jdbcType=VARCHAR},
+			</if>
+			<if test="orgacarbon != null">
+				#{orgacarbon,jdbcType=VARCHAR},
+			</if>
+			<if test="orgacarbonquality != null">
+				#{orgacarbonquality,jdbcType=VARCHAR},
+			</if>
+			<if test="section != null">
+				#{section,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=INTEGER},
+			</if>
+			<if test="profile != null">
+				#{profile,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	
+	<update id="updateSelective" parameterType="cn.com.ddhj.model.TWaterEnviroment">
+		update t_water_enviroment
+		<set>
+			<if test="uid != null">
+				uid = #{uid,jdbcType=VARCHAR},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				city = #{city,jdbcType=VARCHAR},
+			</if>
+			<if test="lat != null">
+				lat = #{lat,jdbcType=DOUBLE},
+			</if>
+			<if test="lng != null">
+				lng = #{lng,jdbcType=DOUBLE},
+			</if>
+			<if test="ph != null">
+				ph = #{ph,jdbcType=VARCHAR},
+			</if>
+			<if test="phquality != null">
+				phquality = #{phquality,jdbcType=VARCHAR},
+			</if>
+			<if test="oxygen != null">
+				oxygen = #{oxygen,jdbcType=VARCHAR},
+			</if>
+			<if test="oxygenquality != null">
+				oxygenquality = #{oxygenquality,jdbcType=VARCHAR},
+			</if>
+			<if test="nitrogen != null">
+				nitrogen = #{nitrogen,jdbcType=VARCHAR},
+			</if>
+			<if test="nitrogenquality != null">
+				nitrogenquality = #{nitrogenquality,jdbcType=VARCHAR},
+			</if>
+			<if test="permangan != null">
+				permangan = #{permangan,jdbcType=VARCHAR},
+			</if>
+			<if test="permanganquality != null">
+				permanganquality = #{permanganquality,jdbcType=VARCHAR},
+			</if>
+			<if test="orgacarbon != null">
+				orgacarbon = #{orgacarbon,jdbcType=VARCHAR},
+			</if>
+			<if test="orgacarbonquality != null">
+				orgacarbonquality = #{orgacarbonquality,jdbcType=VARCHAR},
+			</if>
+			<if test="section != null">
+				section = #{section,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="profile != null">
+				profile = #{profile,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="selectByCity" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			*
+		from 
+			t_water_enviroment
+		where 
+			city = #{city} and  type = 1
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
