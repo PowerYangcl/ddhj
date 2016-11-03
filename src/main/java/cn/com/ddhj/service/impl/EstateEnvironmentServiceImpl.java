@@ -488,12 +488,19 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 	
 	/**
 	 * @description:  手动刷新楼盘评分 | 接口号 2048 
-	 * 
+	 *  http://localhost:8080/ddhj/api.htm?apiTarget=2048&api_key=appfamilyhas
 	 * @author Yangcl 
 	 * @date 2016年10月18日 下午4:29:29 
 	 * @version 1.0.0.1
 	 */
 	public void resyncEstateScore(){
+//		boolean a = true;
+//		
+//		if(a)
+//			return;
+		
+		
+		
 		List<String> clist = new ArrayList<String>();
 		clist.add("北京");
 		clist.add("天津");
