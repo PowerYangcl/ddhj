@@ -4,6 +4,7 @@ import cn.com.ddhj.dto.BaseDto;
 
 public class TUserDto extends BaseDto {
 
+	private String uuid;
 	/**
 	 * 用户编码
 	 */
@@ -49,6 +50,14 @@ public class TUserDto extends BaseDto {
 
 	public String getUserCode() {
 		return userCode;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	public void setUserCode(String userCode) {

@@ -11,11 +11,14 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.result.lp.TLandedPropertyDataResult;
 import cn.com.ddhj.service.ITLandedPropertyService;
 import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.PureNetUtil;
@@ -37,7 +40,6 @@ public class TLandedPropertyServiceImpl extends
 	/**
 	 * 
 	 * 方法: insertDataFromAPI <br>
-	 * 描述: TODO
 	 * 
 	 * @see cn.com.ddhj.service.ITLandedPropertyService#insertDataFromAPI()
 	 */
@@ -88,6 +90,31 @@ public class TLandedPropertyServiceImpl extends
 			}
 			page++;
 		}
+	}
+
+	/**
+	 * 
+	 * 方法: getLpData <br>
+	 * 
+	 * @param dto
+	 * @return
+	 * @see cn.com.ddhj.service.ITLandedPropertyService#getLpData(cn.com.ddhj.dto.TLandedPropertyDto)
+	 */
+	@Override
+	public TLandedPropertyDataResult getLpData(TLandedPropertyDto dto) {
+		TLandedPropertyDataResult result = new TLandedPropertyDataResult();
+		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
+		List<TLandedProperty> list = mapper.findEntityAll(dto);
+		if (list != null && list.size() > 0) {
+			result.setResultCode(0);
+		} else {
+			list = new ArrayList<TLandedProperty>();
+			result.setResultCode(-1);
+			result.setResultMessage("查询楼盘列表为空");
+		}
+		PageInfo<TLandedProperty> page = new PageInfo<TLandedProperty>(list);
+		result.setPage(page);
+		return result;
 	}
 
 }

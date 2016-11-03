@@ -17,8 +17,8 @@ public class XmasPayConfig{
 //	 */
 	public static String getPayGateURL(){
 ////		return config.bConfig("xmaspay.paygate_url");
-		return "http://test.pay.lacues.cn/createorder/";
-//		return "http://pay.ichsy.com/createorder";
+//		return "http://test.pay.lacues.cn/createorder/";
+		return "http://pay.huijiayou.cn/createorder";
 	}
 //	
 //	/**
@@ -27,8 +27,8 @@ public class XmasPayConfig{
 //	 */
 	public static String getPayGateMid(){
 ////		return config.bConfig("xmaspay.paygate_mid");
-		return "1000447";
-//		return "1000003";
+//		return "1000447";
+		return "1000448";
 	}
 //	
 //	/**
@@ -37,8 +37,8 @@ public class XmasPayConfig{
 //	 */
 	public static String getPayGatePass(){
 ////		return config.bConfig("xmaspay.paygate_pass");
-		return "ffffff";
-//		return "latyd2le2sgrkcpu6e81nw2j93dgto1d9ajwxih8i89";
+//		return "ffffff";
+		return "t36g9xxpshl3bfha6f24a7p0ut3ilvw6";
 	}
 //	
 //	/**
@@ -59,7 +59,8 @@ public class XmasPayConfig{
 //	 */
 	public static String getPayGateDefaultReURL(){
 //////		return config.bConfig("xmaspay.paygate_reurl");
-		return "http://ddhj.eplans.cn/orderlist.html";
+//		return "http://ddhj.eplans.cn/orderlist.html";
+		return "http://www.ecomapit.com/orderlist.html";
 	}
 //	
 //	/**

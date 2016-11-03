@@ -12,6 +12,21 @@ import cn.com.ddhj.dto.BaseDto;
 public class TReportDto extends BaseDto {
 
 	private String code;
+
+	private String title;
+
+	private String lpTitle;
+
+	private String city;
+
+	/**
+	 * 楼盘编码
+	 */
+	private String lpCode;
+	/**
+	 * 报告等级编码
+	 */
+	private String levelCode;
 	/**
 	 * 范围，默认为公里数
 	 */
@@ -20,6 +35,46 @@ public class TReportDto extends BaseDto {
 	private String minLng;
 	private String maxLat;
 	private String maxLng;
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getLpTitle() {
+		return lpTitle;
+	}
+
+	public void setLpTitle(String lpTitle) {
+		this.lpTitle = lpTitle;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getLpCode() {
+		return lpCode;
+	}
+
+	public void setLpCode(String lpCode) {
+		this.lpCode = lpCode;
+	}
+
+	public String getLevelCode() {
+		return levelCode;
+	}
+
+	public void setLevelCode(String levelCode) {
+		this.levelCode = levelCode;
+	}
 
 	public Integer getRaidus() {
 		return raidus;

@@ -124,7 +124,7 @@
 		r.path,
 		rl.`name` AS level_name,
 		lp.addressFull AS address,
-		o.update_time AS update_time 
+		o.update_time AS update_time
 		FROM
 		t_order AS
 		o
@@ -142,7 +142,7 @@
 				AND o.`status` = #{status,jdbcType=INTEGER}
 			</if>
 		</where>
-		order by o.update_time desc 
+		order by o.update_time desc
 		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
 	<select id="findEntityAllCount" parameterType="cn.com.ddhj.dto.TOrderDto"
@@ -196,4 +196,74 @@
 		DESC
 		LIMIT 1
 	</select>
+	
+	<!-- 后台管理查询订单列表 2016-10-21 zhy -->
+	<select id="findOrderAll" parameterType="cn.com.ddhj.dto.TOrderDto" resultType="Map">
+		SELECT
+		    o.id as id, 
+			o.`code` AS `code`,
+			IFNULL(p.`name`,'') AS payName,
+			IFNULL(o.pay_price,'0.00') AS payPrice,
+			u.phone AS phone,
+			r.title AS reportTile,
+			rl.`name` AS levelName,
+			DATE_FORMAT(o.create_time, '%Y-%m-%d %H:%i:%s' ) AS createTime,
+			o.`status` as status  
+		FROM
+			t_order AS o
+			LEFT JOIN t_pay_type AS p ON o.pay_code = p.`code`
+			LEFT JOIN t_user AS u ON o.create_user = u.user_code
+			LEFT JOIN t_report AS r ON o.report_code = r.`code`
+			LEFT JOIN t_landed_property AS lp ON r.houses_code = lp.`code`
+			LEFT JOIN t_report_level AS rl ON r.level_code = rl.`code`
+		<where>
+			1 = 1 
+			<if test="status != null and status != ''  ">
+				and o.`status` = #{status,jdbcType=INTEGER}
+			</if>
+			<if test="code != null and code != ''  ">
+				and o.`code` = #{code , jdbcType=VARCHAR}
+			</if>
+			<if test="phone != null and phone != ''  ">
+				and u.phone = #{phone , jdbcType=VARCHAR}
+			</if>
+			<if test="reportTitle != null and reportTitle != ''  ">
+				and r.title = #{reportTitle , jdbcType=VARCHAR}
+			</if>
+			<if test="level != null and level != ''  ">
+				and rl.`code` = #{level , jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by o.update_time desc
+	</select>
+	
+	<delete id="deleteOne" parameterType="java.lang.Integer">
+		delete 
+			from t_order
+		where
+			id = #{id} 
+	</delete>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

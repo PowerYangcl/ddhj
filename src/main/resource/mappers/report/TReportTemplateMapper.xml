@@ -12,9 +12,12 @@
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 		<result column="content" property="content" jdbcType="LONGVARCHAR" />
+		<result column="pic" property="pic" jdbcType="VARCHAR" />
+		<result column="sort" property="sort" jdbcType="INTEGER" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, uuid, `code`,`name`, type,content, create_user,
+		id, uuid, `code`,`name`, type,content,pic,sort,
+		create_user,
 		DATE_FORMAT(
 		create_time,
 		'%Y-%m-%d'
@@ -50,7 +53,9 @@
 			create_time,
 			update_user,
 			update_time,
-			content
+			content,
+			pic,
+			sort
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			#{uuid,jdbcType=VARCHAR},
@@ -63,7 +68,9 @@
 			#{updateUser,jdbcType=VARCHAR},
 			STR_TO_DATE(
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
-			#{content,jdbcType=LONGVARCHAR}
+			#{content,jdbcType=LONGVARCHAR},
+			#{pic,jdbcType=VARCHAR},
+			#{sort,jdbcType=INTEGER},
 		</trim>
 	</insert>
 	<update id="updateByCode" parameterType="cn.com.ddhj.model.report.TReportTemplate">
@@ -77,6 +84,12 @@
 			</if>
 			<if test="content != null and content != ''">
 				content = #{content,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="pic != null and pic != ''">
+				pic = #{pic,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				sort = #{sort,jdbcType=INTEGER},
 			</if>
 			update_user =
 			#{updateUser,jdbcType=VARCHAR},
@@ -97,5 +110,6 @@
 		select
 		<include refid="Base_Column_List" />
 		from t_report_template
+		order by sort asc
 	</select>
 </mapper>

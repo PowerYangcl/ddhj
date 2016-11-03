@@ -1,8 +1,10 @@
 package cn.com.ddhj.mapper.report;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.report.TReport;
 
@@ -73,4 +75,62 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * @return
 	 */
 	List<TReport> findTReportAll();
+
+	/**
+	 * 
+	 * 方法: findReportDataAll <br>
+	 * 描述: 获取所有环境报告数据 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月21日 下午11:31:44
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	List<Map<String, String>> findReportDataAll(TReportDto dto);
+
+	/**
+	 * 
+	 * 方法: findReportByLpCodeAndLevelCode <br>
+	 * 描述: 根据楼盘编码和等级编码查询报告是否存在 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月22日 下午8:34:25
+	 * 
+	 * @param list
+	 * @return
+	 */
+	TReport findReportByLpCodeAndLevelCode(List<String> list);
+
+	/**
+	 * 
+	 * 方法: batchInsertReportToTmp <br>
+	 * 描述: 存储数据到报告临时表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午9:12:01
+	 * 
+	 * @param list
+	 * @return
+	 */
+	int batchInsertReportToTmp(List<TReport> list);
+
+	/**
+	 * 
+	 * 方法: importReportFormTmp <br>
+	 * 描述: 从报告临时表将数据同步到报告表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午9:12:16
+	 * 
+	 * @return
+	 */
+	int importReportFormTmp();
+
+	/**
+	 * 
+	 * 方法: delReportTmp <br>
+	 * 描述: 删除临时表数据 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午9:12:20
+	 * 
+	 * @return
+	 */
+	int delReportTmp();
 }

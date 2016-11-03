@@ -164,8 +164,8 @@ public class CityAirServiceImpl implements ICityAirService {
 	/**
 	 * 
 	 * 方法: getCityAir <br>
-	 * 描述: 获取城市空气质量数据 <br> | 分属：(PM2.5 )空气质量接口；聚合水质量接口右侧的接口
-	 * 作者: zhy<br>
+	 * 描述: 获取城市空气质量数据 <br>
+	 * | 分属：(PM2.5 )空气质量接口；聚合水质量接口右侧的接口 作者: zhy<br>
 	 * 时间: 2016年10月4日 下午8:00:21
 	 * 
 	 * @param cityName
@@ -260,40 +260,43 @@ public class CityAirServiceImpl implements ICityAirService {
 		JSONObject air = getCityAir(cityName);
 		if (air != null) {
 			JSONArray result = JSONArray.parseArray(air.getString("result"));
-			JSONObject citynow = JSONObject.parseObject(result.getJSONObject(0).getString("citynow"));
-			Integer aqi = citynow.getInteger("AQI");
-			if (aqi >= 50 && aqi <= 100) {
-				level = 2;
-			} else if (aqi >= 101 && aqi <= 150) {
-				level = 3;
-			} else if (aqi >= 151 && aqi <= 200) {
-				level = 4;
-			} else if (aqi >= 201 && aqi <= 300) {
-				level = 5;
-			} else if (aqi > 301) {
-				level = 6;
+			if (result != null && result.size() > 0) {
+				JSONObject citynow = JSONObject.parseObject(result.getJSONObject(0).getString("citynow"));
+				Integer aqi = citynow.getInteger("AQI");
+				if (aqi >= 50 && aqi <= 100) {
+					level = 2;
+				} else if (aqi >= 101 && aqi <= 150) {
+					level = 3;
+				} else if (aqi >= 151 && aqi <= 200) {
+					level = 4;
+				} else if (aqi >= 201 && aqi <= 300) {
+					level = 5;
+				} else if (aqi > 301) {
+					level = 6;
+				}
 			}
 		}
 		return level;
 	}
 
-	
 	/**
 	 * @descriptions 返回当前时间的Aqi数据以及历史7天的Aqi数据
 	 *
 	 * @param cityName
 	 * @return
 	 * @date 2016年10月4日 下午8:55:07
-	 * @author Yangcl 
+	 * @author Yangcl
 	 * @version 1.0.0.1
 	 */
 	public CityAqi getCityAqi(String cityName) {
 		CityAqi e = new CityAqi();
-		e.setName(cityName); 
+		e.setName(cityName);
 		JSONObject air = getCityAir(cityName);
 		if (air != null && air.getInteger("resultcode") == 200) {
 			JSONArray result = JSONArray.parseArray(air.getString("result"));
-			CityAqiData data = JSONObject.parseObject(JSONObject.parseObject(result.getJSONObject(0).getString("citynow")).toJSONString(), CityAqiData.class);
+			CityAqiData data = JSONObject.parseObject(
+					JSONObject.parseObject(result.getJSONObject(0).getString("citynow")).toJSONString(),
+					CityAqiData.class);
 			e.setEntity(data);
 			JSONArray array = new JSONArray();
 			JSONObject weeks = JSONObject.parseObject(result.getJSONObject(0).getString("lastTwoWeeks"));
@@ -302,40 +305,34 @@ public class CityAirServiceImpl implements ICityAirService {
 				int m = 23;
 				int n = 28;
 				// 聚合接口会返回错误数据。
-				if(weeks.getJSONObject("28") != null && weeks.getJSONObject("28").getString("date").equals(today)){
-					m --;
-					n --;
+				if (weeks.getJSONObject("28") != null && weeks.getJSONObject("28").getString("date").equals(today)) {
+					m--;
+					n--;
 				}
-				for (int i = m ; i <= n ; i++) {
+				for (int i = m; i <= n; i++) {
 					JSONObject obj = weeks.getJSONObject(i + "");
 					array.add(obj);
 				}
-				List<CityAqiData> list = JSONObject.parseArray(array.toJSONString() , CityAqiData.class);
+				List<CityAqiData> list = JSONObject.parseArray(array.toJSONString(), CityAqiData.class);
 				CityAqiData cad = new CityAqiData();
 				cad.setDate(today);
 				cad.setCity(data.getCity());
 				cad.setAQI(data.getAQI());
-				cad.setQuality(data.getQuality()); 
+				cad.setQuality(data.getQuality());
 				list.add(cad);
-				e.setList(list); 
+				e.setList(list);
 			}
-		} 
+		}
 		return e;
 	}
-	
-	
-	
-	
-	
-	
-	
+
 	/**
 	 * @descriptions 访问天气预报接口
 	 *
 	 * @param city
 	 * @return
 	 * @date 2016年10月5日 上午12:35:34
-	 * @author Yangcl 
+	 * @author Yangcl
 	 * @version 1.0.0.1
 	 */
 	private JSONObject getCityWeather(String city) {
@@ -344,7 +341,7 @@ public class CityAirServiceImpl implements ICityAirService {
 		try {
 			Map<String, String> param = new HashMap<String, String>();
 			param.put("key", "cb6b71e3dc87bb434da0a8babf701936");
-			param.put("cityname", city); 
+			param.put("cityname", city);
 			String result = PureNetUtil.get(url, param);
 			if (result != null && !"".equals(result)) {
 				obj = JSONObject.parseObject(result);
@@ -368,7 +365,7 @@ public class CityAirServiceImpl implements ICityAirService {
 	 * @param city
 	 * @return
 	 * @date 2016年10月5日 上午1:09:38
-	 * @author Yangcl 
+	 * @author Yangcl
 	 * @version 1.0.0.1
 	 */
 	public JSONObject getWeatherInfo(String city) {
@@ -389,45 +386,26 @@ public class CityAirServiceImpl implements ICityAirService {
 			String wind_ = wind.getString("direct") + "/" + wind.getString("power");
 			String quality = pm25_.getString("quality");
 			String des = pm25_.getString("des");
-			if(StringUtils.isBlank(info)){
+			if (StringUtils.isBlank(info)) {
 				info = "天气还行";
 			}
-			if(StringUtils.isBlank(wind_)){
+			if (StringUtils.isBlank(wind_)) {
 				wind_ = "西北风/2级";
 			}
-			if(StringUtils.isBlank(quality)){
+			if (StringUtils.isBlank(quality)) {
 				quality = "优";
 			}
-			if(StringUtils.isBlank(des)){
+			if (StringUtils.isBlank(des)) {
 				des = "可正常活动";
 			}
-			
-			res.put("info", info);					// 阵雨
-			res.put("wind", wind_);  // 东南风/2级
-			res.put("quality", quality);	    // 优|轻度污染
-			res.put("des", des);					// 可正常活动。
+
+			res.put("info", info); // 阵雨
+			res.put("wind", wind_); // 东南风/2级
+			res.put("quality", quality); // 优|轻度污染
+			res.put("des", des); // 可正常活动。
 			return res;
 		}
 
 		return null;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

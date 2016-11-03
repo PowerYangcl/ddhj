@@ -2,13 +2,12 @@ package cn.com.ddhj.service.report;
 
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.report.TReport;
-import cn.com.ddhj.result.report.PDFReportResult;
+import cn.com.ddhj.model.system.SysUser;
+import cn.com.ddhj.result.report.TReportDataResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.IBaseService;
@@ -97,15 +96,48 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 
 	/**
 	 * 
-	 * 方法: createPDF <br>
-	 * 描述: 生成pdf环境报告 <br>
+	 * 方法: getPageData <br>
+	 * 描述: 获取所有报告列表 <br>
 	 * 作者: zhy<br>
-	 * 时间: 2016年10月15日 下午5:30:37
+	 * 时间: 2016年10月21日 下午11:52:57
 	 * 
-	 * @param code
-	 * @param housesCode
+	 * @param dto
+	 * @return
+	 */
+	TReportDataResult getPageData(TReportDto dto);
+
+	/**
+	 * 
+	 * 方法: createReport <br>
+	 * 描述: 根据楼盘编码生成环境报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月22日 下午8:16:51
+	 * 
+	 * @param lpCode
+	 * @return
+	 */
+	BaseResult createReport(TReportDto dto, String path, SysUser user);
+
+	/**
+	 * 
+	 * 方法: insertSelective <br>
+	 * 描述: 添加新的报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月23日 下午7:57:35
+	 * 
+	 * @param entity
 	 * @param path
 	 * @return
 	 */
-	PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir);
+	BaseResult insertSelective(TReport entity, String path);
+
+	/**
+	 * 
+	 * 方法: batchCreateReport <br>
+	 * 描述: 批量生成报告，用于定时任务 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午10:33:04
+	 */
+	void batchCreateReport();
+
 }

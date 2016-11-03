@@ -126,7 +126,8 @@
 			<if test="pm != null">
 				pm = #{pm,jdbcType=INTEGER},
 			</if>
-			#{updateUser,jdbcType=VARCHAR},
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time =
 			STR_TO_DATE(
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</set>

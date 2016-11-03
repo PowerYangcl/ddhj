@@ -1,5 +1,8 @@
 package cn.com.ddhj.service.impl.report;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.ddhj.dto.BaseDto;
@@ -18,5 +21,13 @@ import cn.com.ddhj.service.report.ITReportLevelService;
 @Service
 public class TReportLevelServiceImpl extends BaseServiceImpl<TReportLevel, TReportLevelMapper, BaseDto>
 		implements ITReportLevelService {
+
+	@Autowired
+	private TReportLevelMapper mapper;
+
+	@Override
+	public List<TReportLevel> findLevelAll() {
+		return mapper.findEntityAll();
+	}
 
 }

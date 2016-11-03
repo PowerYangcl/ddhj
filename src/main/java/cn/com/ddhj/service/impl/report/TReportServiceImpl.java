@@ -1,17 +1,23 @@
 package cn.com.ddhj.service.impl.report;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
@@ -20,6 +26,7 @@ import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
+import cn.com.ddhj.mapper.report.TReportLogMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.report.TReportTemplateMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
@@ -29,14 +36,18 @@ import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
+import cn.com.ddhj.model.report.TReportLog;
 import cn.com.ddhj.model.report.TReportTemplate;
+import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserLpFollow;
 import cn.com.ddhj.result.report.PDFReportResult;
+import cn.com.ddhj.result.report.TReportDataResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.ICityAirService;
+import cn.com.ddhj.service.ITChemicalPlantService;
 import cn.com.ddhj.service.ITRubbishRecyclingService;
 import cn.com.ddhj.service.IWaterQualityService;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
@@ -77,6 +88,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TUserMapper userMapper;
 	@Autowired
 	private ITAreaNoiseMapper noiseMapper;
+	@Autowired
+	private TReportLogMapper rLogMapper;
+	@Autowired
+	private ITChemicalPlantService chemicalService;
 
 	/**
 	 * 
@@ -252,7 +267,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (list != null && list.size() > 0) {
 			// 生成pdf环境报告
 			for (int i = 0; i < list.size(); i++) {
-				PDFReportResult pdfResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/", null);
+				PDFReportResult pdfResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/",
+						this.getCityAirLevel());
 				if (pdfResult.getResultCode() == 0) {
 					list.get(i).setPath(pdfResult.getPath());
 				}
@@ -285,43 +301,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return result;
 	}
 
-	/**
-	 * 
-	 * 方法: getLevelContent <br>
-	 * 描述: 获取环境等级描述信息 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月3日 下午2:27:42
-	 * 
-	 * @param type
-	 * @param level
-	 * @param list
-	 * @return
-	 */
-	private static String getLevelContent(String type, Integer level, List<TReportEnvironmentLevel> list) {
-		String content = "";
-		if (list != null && list.size() > 0) {
-			for (TReportEnvironmentLevel model : list) {
-				if (type.equals(model.getType()) && level == model.getLevel()) {
-					content = model.getContent();
-					break;
-				}
-			}
-		}
-		return content;
-	}
-
-	/**
-	 * 
-	 * 方法: createPDF <br>
-	 * 
-	 * @param code
-	 * @param housesCode
-	 * @param path
-	 * @return
-	 * @see cn.com.ddhj.service.report.ITReportService#createPDF(java.lang.String,
-	 *      java.lang.String, java.lang.String)
-	 */
-	@Override
 	public PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir) {
 		PDFReportResult result = new PDFReportResult();
 		try {
@@ -329,8 +308,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (!file.exists()) {
 				file.mkdirs();
 			}
-			String filePath = "report/" + code + ".pdf";
-			path = path + "/" + filePath;
 			// 根据code获取地产楼盘信息
 			TLandedProperty lp = lpMapper.selectByCode(housesCode);
 			List<TReportTemplate> templateList = templateMapper.findReportTemplateAll();
@@ -388,9 +365,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 			// 垃圾设施等级
 			Integer rubbishLevel = 1;
-			if (StringUtils.isEmpty(lp.getCity()) && StringUtils.isEmpty(lp.getLat())
-					&& StringUtils.isEmpty(lp.getLng())) {
+			if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
+					&& StringUtils.isNotBlank(lp.getLng())) {
 				rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
+			}
+			// 化工厂
+			Integer chemicalLevel = 1;
+			if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
+					&& StringUtils.isNotBlank(lp.getLng())) {
+				chemicalLevel = chemicalService.chemicalLevel(lp.getCity(), lp.getLat(), lp.getLng());
 			}
 			// 噪音等级
 			int nosieLevel = getNoiseLevel(lp);
@@ -400,6 +383,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					TReportTemplate model = templateList.get(i);
 					JSONObject obj = new JSONObject();
 					obj.put("title", model.getName());
+					obj.put("pic", model.getPic());
 					obj.put("content", model.getContent());
 					if ("afforest".equals(model.getType())) {
 						obj.put("level", getLevelContent(model.getType(), afforestLevel, levelList));
@@ -411,18 +395,20 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						obj.put("level", getLevelContent(model.getType(), waterLevel, levelList));
 					} else if ("rubbish".equals(model.getType())) {
 						obj.put("level", getLevelContent(model.getType(), rubbishLevel, levelList));
-					} else if ("".equals(model.getType())) {
-						obj.put("noise", getLevelContent(model.getType(), nosieLevel, levelList));
+					} else if ("noise".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), nosieLevel, levelList));
+					} else if ("chemical".equals(model.getType())) {
+						obj.put("level", getLevelContent(model.getType(), chemicalLevel, levelList));
 					} else {
 						obj.put("level", getLevelContent(model.getType(), 1, levelList));
 					}
 					array.add(obj);
 				}
 				String levelName = mapper.findLevel(code);
-				PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path);
+				path = PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path, code);
 				result.setResultCode(0);
-				result.setResultMessage("");
-				result.setPath(filePath);
+				result.setResultMessage("创建报告成功");
+				result.setPath(path);
 			} else {
 				result.setResultCode(-1);
 				result.setResultMessage("创建报告失败");
@@ -488,6 +474,218 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 	/**
 	 * 
+	 * 方法: getPageData <br>
+	 * 
+	 * @param dto
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#getPageData(cn.com.ddhj.dto.report.TReportDto)
+	 */
+	@Override
+	public TReportDataResult getPageData(TReportDto dto) {
+		TReportDataResult result = new TReportDataResult();
+		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
+		List<Map<String, String>> list = mapper.findReportDataAll(dto);
+		if (list != null && list.size() > 0) {
+			result.setResultCode(0);
+		} else {
+			list = new ArrayList<Map<String, String>>();
+			result.setResultCode(-1);
+			result.setResultMessage("查询环境报告列表为空");
+		}
+		PageInfo<Map<String, String>> page = new PageInfo<Map<String, String>>(list);
+		result.setPage(page);
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: createReport <br>
+	 * 
+	 * @param dto
+	 * @return
+	 * @see cn.com.ddhj.service.report.ITReportService#createReport(cn.com.ddhj.dto.report.TReportDto)
+	 */
+	@Override
+	public BaseResult createReport(TReportDto dto, String path, SysUser user) {
+		BaseResult result = new BaseResult();
+		// 查询报告是否已存在,获取报告的
+		List<String> lpCodes = new ArrayList<String>();
+		lpCodes.add(dto.getLpCode());
+		TReport report = mapper.findReportByLpCodeAndLevelCode(lpCodes);
+		if (report != null) {
+			// 如果存在，根据等级生成新的环境报告
+			PDFReportResult createResult = createPDF(report.getCode(), dto.getLpCode(), path, null);
+			result.setResultCode(createResult.getResultCode());
+			result.setResultMessage(createResult.getResultMessage());
+			report.setUpdateTime(DateUtil.getSysDateTime());
+			report.setUpdateUser(user != null ? user.getCode() : "system");
+			mapper.updateByCode(report);
+		} else {
+			result.setResultCode(1);
+			result.setResultMessage("报告未创建");
+		}
+		return result;
+	}
+
+	@Override
+	public BaseResult insertSelective(TReport entity, String path) {
+		BaseResult result = new BaseResult();
+		if (!StringUtils.isNotBlank(entity.getHousesCode())) {
+			result.setResultCode(-1);
+			result.setResultMessage("楼盘不能为空");
+		} else {
+			String code = WebHelper.getInstance().getUniqueCode("R");
+			PDFReportResult createResult = createPDF(code, entity.getHousesCode(), path, null);
+			if (createResult.getResultCode() == 0) {
+				entity.setCode(code);
+				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+				entity.setPath(createResult.getPath());
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				entity.setUpdateUser(entity.getCreateUser());
+				entity.setUpdateTime(entity.getCreateTime());
+				int flag = mapper.insertSelective(entity);
+				if (flag > 0) {
+					result.setResultCode(0);
+					result.setResultMessage("创建报告成功");
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("失败");
+				}
+			} else {
+				result.setResultCode(createResult.getResultCode());
+				result.setResultMessage(createResult.getResultMessage());
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: batchCreateReport <br>
+	 * 
+	 * @see cn.com.ddhj.service.report.ITReportService#batchCreateReport()
+	 */
+	@Override
+	public void batchCreateReport() {
+		Long start = System.currentTimeMillis();
+		String lock = "";
+		try {
+			lock = WebHelper.getInstance().addLock(10, "batchCreateReport");
+			if (StringUtils.isNoneBlank(lock)) {
+				// 获取报告列表
+				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
+				// 需要添加的报告列表
+				List<TReport> insertData = new ArrayList<TReport>();
+				// 需要编辑的报告列表
+				List<TReport> updateData = new ArrayList<TReport>();
+				// 存储日志信息
+				List<TReportLog> logData = new ArrayList<TReportLog>();
+				List<String> codes = new ArrayList<String>();
+				String path = "/opt/ddhj/";
+				JSONArray cityAir = this.getCityAirLevel();
+				if (lpList != null && lpList.size() > 0) {
+					// 根据楼盘列表获取报告列表
+					List<TReport> reports = getTreportByLpCodes(lpList);
+					for (int i = 0; i < lpList.size(); i++) {
+						TLandedProperty lp = lpList.get(i);
+						if (StringUtils.equals(lp.getCity(), "北京")) {
+							TReportLog log = new TReportLog();// 日志
+							TReportDto dto = new TReportDto();
+							dto.setLpCode(lp.getCode());
+							dto.setLevelCode("RL161006100001");
+							// 根据楼盘编码查询报告
+							TReport entity = null;
+							if (reports != null && reports.size() > 0) {
+								for (TReport r : reports) {
+									if (StringUtils.equals(r.getHousesCode(), lp.getCode())) {
+										entity = r;
+										break;
+									}
+								}
+							}
+							String date = isSync(entity != null ? entity.getReportDate() : null);
+							if (StringUtils.isNotBlank(date)) {
+								if (entity != null) {
+									codes.add(entity.getCode());
+									PDFReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
+									entity.setPath(result.getPath());
+									entity.setReportDate(date);
+									entity.setUpdateUser("system");
+									entity.setUpdateTime(DateUtil.getSysDateTime());
+									updateData.add(entity);
+									log.setReportCode(entity.getCode());
+									log.setDetail(JSON.toJSONString(result));
+								} else {
+									String code = WebHelper.getInstance().getUniqueCode("R");
+									codes.add(code);
+									PDFReportResult result = createPDF(code, lp.getCode(), path, null);
+									entity = new TReport();
+									entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+									entity.setCode(code);
+									entity.setHousesCode(lp.getCode());
+									entity.setTitle(lp.getTitle() + "-环境报告-普通");
+									entity.setLevelCode("RL161006100001");
+									entity.setPic("");
+									entity.setImage("");
+									entity.setRang(10);
+									entity.setPrice(BigDecimal.valueOf(0.01));
+									entity.setPath(result.getPath());
+									entity.setDetail(lp.getTitle() + "-环境报告说明-普通");
+									entity.setCreateUser("system");
+									entity.setCreateTime(DateUtil.getSysDateTime());
+									entity.setUpdateUser("system");
+									entity.setUpdateTime(DateUtil.getSysDateTime());
+									insertData.add(entity);
+									log.setReportCode(code);
+									log.setDetail(JSON.toJSONString(result));
+								}
+								log.setUuid(UUID.randomUUID().toString().replace("-", ""));
+								log.setLpCode(lp.getCode());
+								log.setCreateUser("system");
+								log.setCreateTime(DateUtil.getSysDateTime());
+								logData.add(log);
+							}
+						}
+					}
+					// 批量添加日志到日志表
+					if (logData != null && logData.size() > 0) {
+						// rLogMapper.batchInsertLog(logData);
+						subInsertLog(logData, rLogMapper);
+					}
+					// 批量添加报告到报告表
+					if (insertData != null && insertData.size() > 0) {
+						subInsertReport(insertData, mapper);
+						// mapper.insertReportData(insertData);
+					}
+					// 批量从临时表同步数据到报告表
+					if (updateData != null && updateData.size() > 0) {
+						// mapper.batchInsertReportToTmp(updateData);
+						subInsertReportTmp(updateData, mapper);
+						mapper.importReportFormTmp();
+						mapper.delReportTmp();
+					}
+					// 将临时文件pdf生成带水印的报告
+					if (codes != null && codes.size() > 0) {
+						for (int i = 0; i < codes.size(); i++) {
+							File file = new File(path + "report/temp/" + codes.get(i) + ".pdf");
+							if (file.exists()) {
+								PdfUtil.instance().createWatermark(path, codes.get(i));
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			WebHelper.getInstance().unLock(lock);
+		}
+		Long end = System.currentTimeMillis();
+		System.out.println("定时执行时间为:" + (end - start));
+	}
+
+	/**
+	 * 
 	 * 方法: getCityAirLevel <br>
 	 * 描述: 查询楼盘城市列表的空气质量和水质量等级 <br>
 	 * 作者: zhy<br>
@@ -537,35 +735,46 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			Double wlng = null; // 西经
 			List<TAreaNoise> list = noiseMapper.selectByArea(lp.getCity());
 			List<TAreaNoise> areaList = new ArrayList<>();
-			for (TAreaNoise e : list) {
-				if (e.getFlag() == 2) {
-					if (e.getName().equals("WN")) { // 坐标西北点
-						nlat = e.getLat();
-						wlng = e.getLng();
-					} else if (e.getName().equals("ES")) {// 坐标东南点
-						elng = e.getLng();
-						slat = e.getLat();
+			if (list != null && list.size() > 0) {
+				for (TAreaNoise e : list) {
+					if (e.getFlag() == 2) {
+						if (e.getName().equals("WN")) { // 坐标西北点
+							nlat = e.getLat();
+							wlng = e.getLng();
+						} else if (e.getName().equals("ES")) {// 坐标东南点
+							elng = e.getLng();
+							slat = e.getLat();
+						}
+					} else {
+						areaList.add(e);
 					}
-				} else {
-					areaList.add(e);
 				}
-			}
-			for (TAreaNoise e : areaList) {
-				Double distance = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
-				if (distance < 2000) {
-					if (e.getLevel().equals("III类")) {
-						level = 3;
-					} else if (e.getLevel().equals("0类")) {
+				for (TAreaNoise e : areaList) {
+					Double distance = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
+					if (distance < 2000) {
+						if (e.getLevel().equals("III类")) {
+							level = 3;
+						} else if (e.getLevel().equals("0类")) {
+							level = 1;
+						}
+					}
+				}
+				if (level == 0) {
+					try {
+						if (lat != null && lng != null) {
+							if ((slat < lat && lat < nlat) && (wlng < lng && lng < elng)) { // 五环里
+								level = 2;
+							} else { // 北京：五环外 |上海：外环外
+										// |广州：外环外|天津：外环外|深圳：关外全部划为I类标准
+								level = 1;
+							}
+						}
+					} catch (Exception e) {
 						level = 1;
 					}
 				}
-			}
-			if (level == 0) {
-				if ((slat < lat && lat < nlat) && (wlng < lng && lng < elng)) { // 五环里
-					level = 2;
-				} else { // 北京：五环外 |上海：外环外 |广州：外环外|天津：外环外|深圳：关外全部划为I类标准
-					level = 1;
-				}
+			} else {
+				level = 1;
 			}
 		} else {
 			level = 1;
@@ -598,5 +807,146 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 		}
 		return codes;
+	}
+
+	/**
+	 * 
+	 * 方法: getLevelContent <br>
+	 * 描述: 获取环境等级描述信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月3日 下午2:27:42
+	 * 
+	 * @param type
+	 * @param level
+	 * @param list
+	 * @return
+	 */
+	private static String getLevelContent(String type, Integer level, List<TReportEnvironmentLevel> list) {
+		String content = "";
+		if (list != null && list.size() > 0) {
+			for (TReportEnvironmentLevel model : list) {
+				if (type.equals(model.getType()) && level == model.getLevel()) {
+					content = model.getContent();
+					break;
+				}
+			}
+		}
+		return content;
+	}
+
+	/**
+	 * 
+	 * 方法: isSync <br>
+	 * 描述: 根据报告生成日期与当前日期比较，如果小于当前日期重新生成报告，如果大于不做处理 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月26日 下午8:48:15
+	 * 
+	 * @param reportDate
+	 * @return
+	 */
+	private static String isSync(String reportDate) {
+		String date = "";
+		try {
+			Calendar a = Calendar.getInstance();
+			a.setTime(new Date());
+			a.set(Calendar.DAY_OF_MONTH, 1);
+			if (StringUtils.isNoneBlank(reportDate)) {
+				Date report = DateUtil.strToDate(reportDate);
+				int compare = report.compareTo(a.getTime());
+				if (compare <= 0) {
+					date = DateUtil.dateToString(a.getTime());
+				}
+			} else {
+				date = DateUtil.dateToString(a.getTime());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return date;
+	}
+
+	/**
+	 * 
+	 * 方法: subInsertData <br>
+	 * 描述: 分批次添加报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月27日 上午2:00:02
+	 * 
+	 * @param list
+	 * @param type
+	 */
+	private void subInsertReport(List<TReport> list, TReportMapper mapper) {
+		int total = list.size();
+		int avg = total / 10000;
+		for (int i = 0; i < avg; i++) {
+			List<TReport> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
+			mapper.insertReportData(sublist);
+		}
+		list = list.subList(avg * 10000, list.size());
+		mapper.insertReportData(list);
+	}
+
+	/**
+	 * 
+	 * 方法: subInsertReportTmp <br>
+	 * 描述: 分批次添加报告到临时表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月27日 上午2:07:42
+	 * 
+	 * @param list
+	 * @param mapper
+	 */
+	private void subInsertReportTmp(List<TReport> list, TReportMapper mapper) {
+		int total = list.size();
+		int avg = total / 10000;
+		if (avg > 0) {
+			for (int i = 0; i < avg; i++) {
+				List<TReport> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
+				mapper.batchInsertReportToTmp(sublist);
+			}
+			list = list.subList(avg * 10000, list.size());
+			mapper.batchInsertReportToTmp(list);
+		} else {
+			mapper.batchInsertReportToTmp(list);
+		}
+
+	}
+
+	/**
+	 * 
+	 * 方法: subInsertLog <br>
+	 * 描述: 批量添加日志到日志表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月29日 下午6:33:43
+	 * 
+	 * @param list
+	 * @param mapper
+	 */
+	private void subInsertLog(List<TReportLog> list, TReportLogMapper mapper) {
+		int total = list.size();
+		int avg = total / 10000;
+		if (avg > 0) {
+			for (int i = 0; i < avg; i++) {
+				List<TReportLog> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
+				mapper.batchInsertLog(sublist);
+			}
+			list = list.subList(avg * 10000, list.size());
+			mapper.batchInsertLog(list);
+		} else {
+			mapper.batchInsertLog(list);
+		}
+	}
+
+	public List<TReport> getTreportByLpCodes(List<TLandedProperty> list) {
+		List<TReport> reports = null;
+		List<String> lpCodes = new ArrayList<String>();
+		for (TLandedProperty lp : list) {
+			lpCodes.add(lp.getCode());
+		}
+		if (lpCodes != null && lpCodes.size() > 0) {
+			reports = mapper.findPriceByCode(lpCodes);
+		}
+		return reports;
 	}
 }

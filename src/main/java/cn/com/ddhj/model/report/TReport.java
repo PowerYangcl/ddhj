@@ -39,10 +39,40 @@ public class TReport extends BaseModel {
 
 	private String address;
 
+	private String lpName;
+
+	private String rDesc;
+
+	private String reportDate;
+
 	/**
 	 * 根据楼盘编码获取的报告集合
 	 */
 	private List<TReport> levelList;
+
+	public String getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(String reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public String getLpName() {
+		return lpName;
+	}
+
+	public void setLpName(String lpName) {
+		this.lpName = lpName;
+	}
+
+	public String getrDesc() {
+		return rDesc;
+	}
+
+	public void setrDesc(String rDesc) {
+		this.rDesc = rDesc;
+	}
 
 	public List<TReport> getLevelList() {
 		return levelList;
