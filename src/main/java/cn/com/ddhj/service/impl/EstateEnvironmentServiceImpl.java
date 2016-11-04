@@ -33,7 +33,10 @@ import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
+import cn.com.ddhj.model.TAreaNoise;
+import cn.com.ddhj.model.TChemicalPlant;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.model.TRubbishRecycling;
 import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.estateInfo.EData;
@@ -637,10 +640,15 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 					}
 					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
 				}
-				// 按照city名称 分为N个线程，一共会启动N*8*3个线程|TODO 注意：此处线程数量不建议超过120个  
+				// 按照city名称 分为N个线程，一共会启动N*20个线程|TODO 注意：此处线程数量不建议超过120个  
 				if(map.containsKey(aqi.getName())){
 					List<TLandedProperty> tlpList = map.get(aqi.getName());
-					Task2048EstateArea tea = new Task2048EstateArea(executor, tlpList, hourAqi, dayAqi, noiseMapper, waterEnvMapper, rubbishMapper, chemicalMapper);
+					List<TAreaNoise> noiseList = noiseMapper.selectByArea(aqi.getName()); 
+					List<TWaterEnviroment> waterEnvList = waterEnvMapper.selectByCity(aqi.getName());
+					List<TRubbishRecycling> rubbishList = rubbishMapper.findListByCity(aqi.getName()); 
+					List<TChemicalPlant> chemicalList = chemicalMapper.findListByCity(aqi.getName());  
+					
+					Task2048EstateArea tea = new Task2048EstateArea(executor, tlpList, hourAqi, dayAqi, noiseList, waterEnvList, rubbishList, chemicalList); 
 					tlpFutureList.add(executor.submit(tea));
 				}
 			} 
