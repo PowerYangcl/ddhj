@@ -16,6 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.com.ddhj.mapper.ITAreaNoiseMapper;
+import cn.com.ddhj.mapper.TChemicalPlantMapper;
+import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
+import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.util.PureNetUtil;
 
@@ -32,17 +36,29 @@ public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
 	private List<TLandedProperty> list;
 	private String hourAqi;
 	private String dayAqi;
+	private ITAreaNoiseMapper noiseMapper;
+	private TWaterEnviromentMapper waterEnvMapper;   
+	private TRubbishRecyclingMapper rubbishMapper;
+	private TChemicalPlantMapper chemicalMapper; 
 	
-	public Task2048EstateArea(ExecutorService executor , List<TLandedProperty> list, String hourAqi, String dayAqi) {
+	public Task2048EstateArea(ExecutorService executor, List<TLandedProperty> list, String hourAqi, String dayAqi,
+			ITAreaNoiseMapper noiseMapper, TWaterEnviromentMapper waterEnvMapper, TRubbishRecyclingMapper rubbishMapper,
+			TChemicalPlantMapper chemicalMapper) {
+		super();
 		this.executor = executor;
 		this.list = list;
 		this.hourAqi = hourAqi;
 		this.dayAqi = dayAqi;
+		this.noiseMapper = noiseMapper;
+		this.waterEnvMapper = waterEnvMapper;
+		this.rubbishMapper = rubbishMapper;
+		this.chemicalMapper = chemicalMapper;
 	}
+
 
 	public List<TLandedProperty> call() throws Exception {
 		Thread.currentThread().setName(this.list.get(0).getCity() + "二级线程已经启动 - 99999999999999999"); 
-		int size = 20; // 单组list大小
+		int size = 5; // 单组list大小
 		int count = list.size() / size; // TreeMap 的分组数       10008/20 = 500 余 8 
 		int count_ = list.size() - count * size; // 余数 
 		Map<Integer , List<TLandedProperty>> map = new TreeMap<Integer , List<TLandedProperty>>();
@@ -58,7 +74,9 @@ public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
 			List<Future<TLandedProperty>> futList = new ArrayList<>();
 			List<TLandedProperty> subList = entry.getValue();
 			for(TLandedProperty e : subList){
-				Task2048EstateScore score = new Task2048EstateScore(e, hourAqi, dayAqi);       // 每个TreeMap分组对应20个线程去请求教授接口
+				String position = e.getLat() + "," + e.getLng();  
+				Task2048EstateScore score = new Task2048EstateScore(e, hourAqi, dayAqi, executor, e.getCity(), position, noiseMapper, waterEnvMapper, rubbishMapper, chemicalMapper); 
+						// 每个TreeMap分组对应20个线程去请求教授接口
 				futList.add(executor.submit(score));
 			}
 			for(Future<TLandedProperty> fut : futList){
@@ -67,8 +85,6 @@ public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
 				list_.add(fut.get()); 
 			}
 		}
-		
-		System.out.println(list_.get(0).getCity() + " = " + list_.size()); 
 		
 		return list_; 
 	}

@@ -32,7 +32,7 @@ public class DoctorScoreUtil {
 	 * @version 1.0.0.1
 	 */
 	public static String getDoctorScore(String a ,String b ,String c , String d , String s ,String z1 , String z2){
-		String url = "http://123.56.169.49:8338/environment/servlet/environmentZHInterface";
+		String url = "http://api.sys.ecomapit.com/environment/servlet/environmentZHInterface";
 		JSONObject obj = null;
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("hourAQI", a);		 

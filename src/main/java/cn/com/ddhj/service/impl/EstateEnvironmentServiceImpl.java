@@ -229,7 +229,11 @@ System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫�
 				}
 				String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
 				if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
-					score = String.valueOf( (Integer.valueOf(score) + Integer.valueOf(rubFuture.get().get("score"))) );
+					score = String.valueOf( (Double.valueOf(score) + Double.valueOf(rubFuture.get().get("score"))) );
+					if(score.length() > 5){
+						System.out.println("exception score = " + score); 
+						score = score.substring(0, 5);
+					}
 				}
 				result.put("score", score); // 环境综合评分
 				result.put("level", this.scoreLevel(score));  // 环境等级
@@ -375,7 +379,11 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 			}
 			String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
 			if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
-				score = String.valueOf( (Integer.valueOf(score) + Integer.valueOf(rubFuture.get().get("score"))) );
+				score = String.valueOf( (Double.valueOf(score) + Double.valueOf(rubFuture.get().get("score"))) );
+				if(score.length() > 5){
+					System.out.println("exception score = " + score); 
+					score = score.substring(0, 5);
+				}
 			}
 			result.put("score", score); // 环境综合评分
 			result.put("level", this.scoreLevel(score));  // 环境等级
@@ -629,13 +637,13 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 					}
 					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
 				}
-				// 按照city名称 分为N个线程，一共会启动N*20个线程 
+				// 按照city名称 分为N个线程，一共会启动N*8*3个线程|TODO 注意：此处线程数量不建议超过120个  
 				if(map.containsKey(aqi.getName())){
 					List<TLandedProperty> tlpList = map.get(aqi.getName());
-					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList , hourAqi, dayAqi);  
+					Task2048EstateArea tea = new Task2048EstateArea(executor, tlpList, hourAqi, dayAqi, noiseMapper, waterEnvMapper, rubbishMapper, chemicalMapper);
 					tlpFutureList.add(executor.submit(tea));
 				}
-			}
+			} 
 			
 			// 组合nestateList 然后批量更新数据库
 			for(Future<List<TLandedProperty>> fut : tlpFutureList){
