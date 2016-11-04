@@ -23,8 +23,7 @@ import cn.com.ddhj.util.PureNetUtil;
 
 /**
  * @descriptions 地产数据|地产检索接口，周边地产接口，支持城市列表接口
- * 
- * TODO 地产周边接口有问题，无法取得有效信息
+ *  
  *
  * @date 2016年10月2日 下午10:11:49
  * @author Yangcl 

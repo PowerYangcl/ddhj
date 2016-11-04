@@ -2,12 +2,15 @@ package cn.com.ddhj.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.StringUtils;
 
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.model.TAreaNoise;
+import cn.com.ddhj.util.CommonUtil;
 
 public class Task1032Noise implements Callable<String> {
 	
@@ -37,20 +40,32 @@ public class Task1032Noise implements Callable<String> {
 					elng = e.getLng();
 					slat = e.getLat();
 				}
-			}else{
+			}else{ //  if(e.getFlag() == 1 || e.getFlag() == 3)
 				areaList.add(e);
 			}
 		}
-		String  level = "";
+		
+		TreeMap<Integer , String> map = new TreeMap<Integer , String>();
+		String  level = "I类@45/55";
 		for(TAreaNoise e : areaList){
-			if(this.getDistance(lat, lng, e.getLat() , e.getLng()) < 2000){
-				if(e.getLevel().equals("III类")){
+			Integer distance = CommonUtil.getMeterDistance(lat, lng, e.getLat() , e.getLng());
+			if(distance < 2000){
+				if(e.getFlag() == 3){ //e.getLevel().equals("III类")  
 					level = e.getLevel() + "@55/65";
-				}else if(e.getLevel().equals("0类")){
+				}else if(e.getFlag() == 1){ // e.getLevel().equals("0类")
 					level = e.getLevel() + "@40/50";
+				}else if(e.getFlag() == 5){ // IV类 距离候车站地点2km以内的，4类 
+					level = e.getLevel() + "@55/70"; 
 				}
+			}else if(e.getFlag() == 4 && distance < 5000){  // 机场5km以内 4类
+				level = e.getLevel() + "@55/70"; 
 			}
+			map.put(distance , level);
 		}
+		if(map.size() > 0){
+			return map.get(map.firstKey());
+		}
+		
 		if(StringUtils.isBlank(level)){
 			if((slat<lat && lat < nlat) &&(wlng < lng && lng < elng)){ // 五环里
 				level = "II类@50/60";
@@ -63,36 +78,7 @@ public class Task1032Noise implements Callable<String> {
 	}
 	
 	
-	/**
-	 * @descriptions 根据两个位置的经纬度，来计算两地的距离（单位为米）
-	 *
-	 * @param lat1  用户纬度
-	 * @param lng1 用户经度
-	 * @param lat2 商家纬度
-	 * @param lng2 商家经度
-	 * @return
-	 * @date 2016年10月7日 下午10:25:46
-	 * @author Yangcl 
-	 * @version 1.0.0.1
-	 */
-    public Integer getDistance(Double lat1, Double lng1, Double lat2, Double lng2) {
-    	double earthRadius = 6378.137; // 地球半径 
-        double radLat1 = rad(lat1);
-        double radLat2 = rad(lat2);
-        double difference = radLat1 - radLat2;
-        double mdifference = rad(lng1) - rad(lng2);
-        double distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(difference / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(mdifference / 2), 2)));
-        distance = distance * earthRadius;
-        distance = Math.round(distance * 10000) / 10000;
-        String distanceStr = distance+"";
-        distanceStr = distanceStr. substring(0, distanceStr.indexOf("."));
-        
-        return Integer.valueOf(distanceStr) * 1000;
-    }
-    
-    private double rad(double d) { 
-        return d * Math.PI / 180.0; 
-    }
+	
 	
 	
 	

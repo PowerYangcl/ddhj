@@ -77,6 +77,33 @@ public class CommonUtil {
 	}
 	
 	/**
+	 * @descriptions 根据两个位置的经纬度，来计算两地的距离（单位为米）|返回具体的米数
+	 *
+	 * @param lat1  用户纬度
+	 * @param lng1 用户经度
+	 * @param lat2 商家纬度
+	 * @param lng2 商家经度
+	 * @return
+	 * @date 2016年10月7日 下午10:25:46
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public static Integer getMeterDistance(Double lat1, Double lng1, Double lat2, Double lng2) {
+    	double earthRadius = 6378.137; // 地球半径 
+        double radLat1 = rad(lat1);
+        double radLat2 = rad(lat2);
+        double difference = radLat1 - radLat2;
+        double mdifference = rad(lng1) - rad(lng2);
+        double distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(difference / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(mdifference / 2), 2)));
+        distance = distance * earthRadius;
+        distance = Math.round(distance * 10000) / 10;   
+        String distanceStr = distance+"";
+        distanceStr = distanceStr. substring(0, distanceStr.indexOf("."));
+        
+        return Integer.valueOf(distanceStr);
+    }
+	
+	/**
 	 * @descriptions 根据两个位置的经纬度，来计算两地的距离（单位为米）
 	 *
 	 * @param lat1  用户纬度
@@ -101,6 +128,29 @@ public class CommonUtil {
         distanceStr = distanceStr. substring(0, distanceStr.indexOf("."));
         
         return Integer.valueOf(distanceStr) * 1000;
+    }
+    
+ 
+    public static String getDistance(String lat1_, String lng1_, String lat2_, String lng2_) {
+    	double earthRadius = 6378.137; // 地球半径
+    	
+        Double lat1 = Double.parseDouble(lat1_);
+        Double lng1 = Double.parseDouble(lng1_);
+        Double lat2 = Double.parseDouble(lat2_);
+        Double lng2 = Double.parseDouble(lng2_); 
+         
+        double radLat1 = rad(lat1);
+        double radLat2 = rad(lat2);
+        double difference = radLat1 - radLat2;
+        double mdifference = rad(lng1) - rad(lng2);
+        double distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(difference / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(mdifference / 2), 2)));
+        distance = distance * earthRadius;
+        System.out.println(Math.round(distance * 10000) / 10 + " 米"); 
+        distance = Math.round(distance * 10000) / 10000;
+        String distanceStr = distance+"";
+        distanceStr = distanceStr. substring(0, distanceStr.indexOf("."));
+         
+        return distanceStr;
     }
     
     private static double rad(double d) { 

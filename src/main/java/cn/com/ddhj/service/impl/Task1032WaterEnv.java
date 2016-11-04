@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.model.TWaterEnviroment;
+import cn.com.ddhj.util.CommonUtil;
 
 
 /**
@@ -45,7 +46,7 @@ public class Task1032WaterEnv implements Callable<Map<String , String>>{
 				 Double lng = Double.valueOf(arr[1]); 
 				 TreeMap<Integer , TWaterEnviroment> map_ = new TreeMap<Integer , TWaterEnviroment>();
 				 for(TWaterEnviroment e : list){
-					 Integer d = this.getDistance(lat, lng, Double.valueOf(e.getLat()), Double.valueOf(e.getLng())); 
+					 Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()), Double.valueOf(e.getLng())); 
 					 map_.put(d, e);
 				 }
 				 TWaterEnviroment w = map_.get(map_.firstKey());
@@ -80,25 +81,6 @@ public class Task1032WaterEnv implements Callable<Map<String , String>>{
 		return water;
 	}
 
-
-	public Integer getDistance(Double lat1, Double lng1, Double lat2, Double lng2) {
-    	double earthRadius = 6378.137; // 地球半径 
-        double radLat1 = rad(lat1);
-        double radLat2 = rad(lat2);
-        double difference = radLat1 - radLat2;
-        double mdifference = rad(lng1) - rad(lng2);
-        double distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(difference / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(mdifference / 2), 2)));
-        distance = distance * earthRadius;
-        distance = Math.round(distance * 10000) / 10;   
-        String distanceStr = distance+"";
-        distanceStr = distanceStr. substring(0, distanceStr.indexOf("."));
-        
-        return Integer.valueOf(distanceStr);
-    }
-    
-    private static double rad(double d) { 
-        return d * Math.PI / 180.0; 
-    }
 
 
 	public TWaterEnviromentMapper getWaterEnvMapper() {

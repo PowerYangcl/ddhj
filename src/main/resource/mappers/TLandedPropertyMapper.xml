@@ -458,7 +458,7 @@
 		select
 		*
 		from
-		t_landed_property
+		t_landed_property 
 	</select>
 	<update id="batchUpdateScore" parameterType="java.util.List">
 		<foreach collection="list" item="item" index="index" open=""

@@ -33,7 +33,10 @@ import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
+import cn.com.ddhj.model.TAreaNoise;
+import cn.com.ddhj.model.TChemicalPlant;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.model.TRubbishRecycling;
 import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.estateInfo.EData;
@@ -42,6 +45,8 @@ import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.IEstateInfoService;
 import cn.com.ddhj.service.ILongitudeLatitudeService;
 import cn.com.ddhj.service.IWeatherAreaSupportService;
+import cn.com.ddhj.util.CommonUtil;
+import cn.com.ddhj.util.DoctorScoreUtil;
 import cn.com.ddhj.util.PureNetUtil;
 
 
@@ -133,6 +138,19 @@ long start = System.currentTimeMillis();
 	        w.setCity(city);
 	        w.setPosition(position);
 	        Future<Map<String , String>> wFuture = executor.submit(w);
+	        
+	        Task1032Noise noi = new Task1032Noise();
+	        noi.setCity(city);
+	        noi.setNoiseMapper(noiseMapper);
+	        noi.setPosition(position);
+	        Future<String> noiFuture = executor.submit(noi);
+	        
+	        Task1032Rubbish rub = new Task1032Rubbish();
+	        rub.setCity(city);
+	        rub.setPosition(position);
+	        rub.setMapper(rubbishMapper);
+	        rub.setChemicalMapper(chemicalMapper); 
+	        Future<Map<String , String>> rubFuture = executor.submit(rub);
 			
 			JSONObject addr = posTask.get();
 			JSONObject obj = weaTask.get();
@@ -171,7 +189,55 @@ System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫�
 					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
 				}
 				
-				String score = this.getDoctorScore(hourAqi, hourAqi, "0.5", "0.5"  , wFuture.get().get("s"));
+				String greeningRate = "1";  // 如下条件不满足则用默认值
+				String volumeRate = "0.4";	   // 如下条件不满足则用默认值
+				JSONObject estate = this.estateList(position, "1" , "1" , "1000"); // 获取楼盘信息 
+				if(estate.getString("code").equals("1")) {
+					List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
+					try {
+						if(estateList != null && estateList.size() > 0){
+							EData e = estateList.get(0);               // 因为精度是1米 所以只有一条记录，且就是这个楼盘
+							result.put("name", e.getTitle()); // 位置名称
+							if(StringUtils.isNoneBlank(e.getGreeningRate())){
+								if(Double.valueOf(e.getGreeningRate().split("%")[0])/100 < 0.5){   // 潜在的异常点
+									greeningRate = "0.5"; //教授接口返回HTTP Status 500 - 绿化率指数l只能是0.5或1|真坑爹
+								}
+							}
+							// 聚合接口的容积率均返回错误数据，"volumeRate": "一期2.45元/平米/月;二期2.45/平米/月；三期3.1元/",	
+							// volumeRate = "0.4"; // 这里写定一个默认值		
+						}
+					} catch (Exception e) {
+						greeningRate = "1";
+					}
+				}
+				
+				String z1 = "1";
+				String z2 = "0";
+				String nlevel = noiFuture.get().split("@")[1];
+				if(nlevel.equals("0类")){
+					z1 = "0"; 
+					z2 = "0"; 
+				}else if(nlevel.equals("I类")){
+					z1 = "1"; 
+					z2 = "0"; 
+				}else if(nlevel.equals("II类")){
+					z1 = "2"; 
+					z2 = "1"; 
+				}else if(nlevel.equals("III类")){
+					z1 = "3"; 
+					z2 = "2"; 
+				}else if(nlevel.equals("IV类")){
+					z1 = "4"; 
+					z2 = "3"; 
+				}
+				String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
+				if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
+					score = String.valueOf( (Double.valueOf(score) + Double.valueOf(rubFuture.get().get("score"))) );
+					if(score.length() > 5){
+						System.out.println("exception score = " + score); 
+						score = score.substring(0, 5);
+					}
+				}
 				result.put("score", score); // 环境综合评分
 				result.put("level", this.scoreLevel(score));  // 环境等级
 //				result.put("value", "16");// 环境值 经过讨论，这个值不再显示
@@ -240,7 +306,7 @@ long start = System.currentTimeMillis();
 	        rub.setPosition(position);
 	        rub.setMapper(rubbishMapper);
 	        rub.setChemicalMapper(chemicalMapper); 
-	        Future<EnvInfo> rubFuture = executor.submit(rub);
+	        Future<Map<String , String>> rubFuture = executor.submit(rub);
 	        
 	        Task1032Estate est = new Task1032Estate();
 	        est.setPosition(position);
@@ -295,13 +361,33 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 					greeningRate = "1";
 				}
 			} 
-			
-start = System.currentTimeMillis();
-			String score = this.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s"));
-end = System.currentTimeMillis();
-System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " 毫秒"); 
-	        
-	        
+			String z1 = "1";
+			String z2 = "0";
+			String nlevel = noiFuture.get().split("@")[1];
+			if(nlevel.equals("0类")){
+				z1 = "0"; 
+				z2 = "0"; 
+			}else if(nlevel.equals("I类")){
+				z1 = "1"; 
+				z2 = "0"; 
+			}else if(nlevel.equals("II类")){
+				z1 = "2"; 
+				z2 = "1"; 
+			}else if(nlevel.equals("III类")){
+				z1 = "3"; 
+				z2 = "2"; 
+			}else if(nlevel.equals("IV类")){
+				z1 = "4"; 
+				z2 = "3"; 
+			}
+			String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
+			if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
+				score = String.valueOf( (Double.valueOf(score) + Double.valueOf(rubFuture.get().get("score"))) );
+				if(score.length() > 5){
+					System.out.println("exception score = " + score); 
+					score = score.substring(0, 5);
+				}
+			}
 			result.put("score", score); // 环境综合评分
 			result.put("level", this.scoreLevel(score));  // 环境等级
 			if(aqi.getList() != null){
@@ -326,10 +412,12 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			
 			// 污染源
 			EnvInfo gar = new EnvInfo();
+			gar.setName("污染源");
 			if(rubFuture.get() != null){
-				gar = rubFuture.get(); 
+				Map<String , String> rmap = rubFuture.get(); 
+				gar.setMemo(rmap.get("memo"));
+				gar.setLevel(rmap.get("level")); 
 			}else{
-				gar.setName("污染源");
 				gar.setMemo("5Km以内");
 				gar.setLevel("无"); 
 			}
@@ -436,7 +524,7 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 					// 开始组建数据
 					for(EData e : list){
 						String position_ = e.getLat() + "," + e.getLng();
-						String distance = this.getDistance(lat, lng, e.getLat(), e.getLng());
+						String distance = CommonUtil.getDistance(lat, lng, e.getLat(), e.getLng());
 						String lpcode = "";
 						String price = "￥200";
 						if(lpList != null && lpList.size() > 0){
@@ -552,13 +640,18 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 					}
 					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
 				}
-				// 按照city名称 分为N个线程，一共会启动N*20个线程 
+				// 按照city名称 分为N个线程，一共会启动N*20个线程|TODO 注意：此处线程数量不建议超过120个  
 				if(map.containsKey(aqi.getName())){
 					List<TLandedProperty> tlpList = map.get(aqi.getName());
-					Task2048EstateArea tea = new Task2048EstateArea(executor , tlpList , hourAqi, dayAqi);  
+					List<TAreaNoise> noiseList = noiseMapper.selectByArea(aqi.getName()); 
+					List<TWaterEnviroment> waterEnvList = waterEnvMapper.selectByCity(aqi.getName());
+					List<TRubbishRecycling> rubbishList = rubbishMapper.findListByCity(aqi.getName()); 
+					List<TChemicalPlant> chemicalList = chemicalMapper.findListByCity(aqi.getName());  
+					
+					Task2048EstateArea tea = new Task2048EstateArea(executor, tlpList, hourAqi, dayAqi, noiseList, waterEnvList, rubbishList, chemicalList); 
 					tlpFutureList.add(executor.submit(tea));
 				}
-			}
+			} 
 			
 			// 组合nestateList 然后批量更新数据库
 			for(Future<List<TLandedProperty>> fut : tlpFutureList){
@@ -612,7 +705,6 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 			}
 		}
 		
-		List<TWaterEnviroment> list = new ArrayList<TWaterEnviroment>();
 		if(stateList != null && stateList.size() != 0){
 			key = "935ddb80b6c973938852bd9e38d1777b";
 			url = "http://web.juhe.cn:8080/environment/water/state";
@@ -638,81 +730,6 @@ System.out.println("1032号接口 - 教授接口耗时：" + (end - start) + " �
 	}
 	
 	
-	
-	
-	/**
-	 * @descriptions 根据两个位置的经纬度，来计算两地的距离（单位为KM）
-	 *
-	 * @param lat1_ 用户经度
-	 * @param lng1_ 用户纬度
-	 * @param lat2_ 商家经度
-	 * @param lng2_ 商家纬度
-	 * @return
-	 * @date 2016年10月7日 下午10:25:46
-	 * @author Yangcl 
-	 * @version 1.0.0.1
-	 */
-    public String getDistance(String lat1_, String lng1_, String lat2_, String lng2_) {
-    	double earthRadius = 6378.137; // 地球半径
-    	
-        Double lat1 = Double.parseDouble(lat1_);
-        Double lng1 = Double.parseDouble(lng1_);
-        Double lat2 = Double.parseDouble(lat2_);
-        Double lng2 = Double.parseDouble(lng2_); 
-         
-        double radLat1 = rad(lat1);
-        double radLat2 = rad(lat2);
-        double difference = radLat1 - radLat2;
-        double mdifference = rad(lng1) - rad(lng2);
-        double distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(difference / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(mdifference / 2), 2)));
-        distance = distance * earthRadius;
-        System.out.println(Math.round(distance * 10000) / 10 + " 米"); 
-        distance = Math.round(distance * 10000) / 10000;
-        String distanceStr = distance+"";
-        distanceStr = distanceStr. substring(0, distanceStr.indexOf("."));
-         
-        return distanceStr;
-    }
-    
-    private double rad(double d) { 
-        return d * Math.PI / 180.0; 
-    }
-    
-	
-	/**
-	 * @descriptions 获取教授数学模型综合评分|噪音和水质暂时默认为2
-	 *
-	 * @param a hourAQI
-	 * @param b dayAQI   @教授的接口文档有问题，暂时放一个参数
-	 * @param c  l  生态状况:绿化率指数 0.5或1  【地产检索接口->"greeningRate":"50%"】
-	 * @param d  j 生态状况:容积率指数  0~9之间 【地产检索接口->"volumeRate":"0.46"】
-	 * @return
-	 * @date 2016年10月4日 下午10:18:29
-	 * @author Yangcl 
-	 * @version 1.0.0.1
-	 */
-	private String getDoctorScore(String a ,String b ,String c , String d , String s){
-		String url = "http://123.56.169.49:8338/environment/servlet/environmentZHInterface";
-		JSONObject obj = null;
-		Map<String, String> param = new HashMap<String, String>();
-		param.put("hourAQI", a);		 
-		param.put("dayAQI", b);	 
-		param.put("s", s);				 		 
-		param.put("z1", "2");							 
-		param.put("z2", "2");							 
-		param.put("l", c);	
-		param.put("j", d);	
-		param.put("t", "2");
-		
-		String result = PureNetUtil.get(url, param);
-		if (result != null && !"".equals(result)) {
-			obj = JSONObject.parseObject(result); 
-			if(obj.getString("flag").equals("true")){
-				return obj.getString("message");
-			}
-		}
-		return "0";
-	}
 	
 	
 	/**
