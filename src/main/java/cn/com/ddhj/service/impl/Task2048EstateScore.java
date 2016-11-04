@@ -111,22 +111,19 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 		return "0";
 	}
 }
-//if(entity.getVolumeRate() != null){
-//volumeRate = entity.getVolumeRate();
-//if(volumeRate.length() > 2){
-//	volumeRate = volumeRate.substring(0, 2);
-//	if(StringUtils.isNumeric(volumeRate)){
-//		volumeRate = Double.valueOf(volumeRate) + "";
-//		if(Double.valueOf(volumeRate) > 9){
-//			volumeRate = 8.9 + "";
-//		}
-//	}else{
-//		System.out.println("错误的容积率数据 | 非数字：" + entity.getId()); 
-//		volumeRate = "0.4";
-//	}
-//	
-//}else{
-//	System.out.println("错误的容积率数据 | 空：" + entity.getId()); 
-//	volumeRate = "0.4";
-//}
-//}	
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

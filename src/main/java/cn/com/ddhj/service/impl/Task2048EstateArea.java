@@ -75,20 +75,7 @@ public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
 
 }
 
-//while(!fut.isDone()){
-//TLandedProperty tlp = null;
-//try {
-//	tlp = fut.get(100, TimeUnit.MILLISECONDS);
-//} catch (InterruptedException e) {
-//} catch (ExecutionException e) {
-//} catch (TimeoutException e) {
-//	System.out.println("Time is out"); 
-//    fut.cancel(true);
-//}
-//if(tlp != null){
-//	list_.add(tlp);
-//}
-//}
+ 
 
 
 
