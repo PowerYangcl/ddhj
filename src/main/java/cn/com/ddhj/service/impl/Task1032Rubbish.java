@@ -44,18 +44,23 @@ public class Task1032Rubbish implements Callable<Map<String , String>> {
 		String score = "0";  
 		Integer distance = map.firstKey();
 		if(distance > 5000){
-			msg = "5Km以外";
-		}else if(4000< distance &&distance < 5000){
-			msg = "4Km以外";
+			r.put("level", "无");
+			r.put("memo", msg); 
+			r.put("score", score);
+			return r;
+		}if(4000< distance &&distance < 5000){
+			msg = "5Km以内";
 		}else if(3000< distance &&distance < 4000){
-			msg = "3Km以外";
+			msg = "4Km以内";
 		}else if(2000< distance &&distance < 3000){
-			msg = "2Km以外";
+			msg = "3Km以内";
 			score = "-5";
 		}else if (1000 < distance && distance < 2000){
-			msg = "1Km以外";
+			msg = "2Km以内";
 			score = "-20";
-		}else if(distance < 500){
+		}else if ( distance < 1000 ){
+			msg = "1Km以内";
+		} else if(distance < 500){
 			score = "-30"; 
 		}
 		
