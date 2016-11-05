@@ -254,7 +254,7 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 			r.put("score", "0");
 			return r;
 		}
-		if((rubbishList == null || rubbishList.size() == 0) && (chemicalList == null || chemicalList.size() == 0) ){
+		if((rubbishList == null || rubbishList.size() == 0) || (chemicalList == null || chemicalList.size() == 0) ){
 			r.put("score", "0");
 			return r;
 		}
