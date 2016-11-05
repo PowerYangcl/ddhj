@@ -157,24 +157,36 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 		}
 		
 		TreeMap<Integer , String> map = new TreeMap<Integer , String>();
-		String  level = "I类@45/55";
+		String  level = "";
 		for(TAreaNoise e : areaList){
 			Integer distance = CommonUtil.getMeterDistance(lat, lng, e.getLat() , e.getLng());
 			if(distance < 2000){
-				if(e.getFlag() == 3){ //e.getLevel().equals("III类")  
-					level = e.getLevel() + "@55/65";
-				}else if(e.getFlag() == 1){ // e.getLevel().equals("0类")
+				if(e.getFlag() == 1){ // e.getLevel().equals("0类")
 					level = e.getLevel() + "@40/50";
+					map.put(0, level);
+					System.out.println(e.getName() + "|" + level + "|" + distance); 
+				}else if(e.getFlag() == 3){ //e.getLevel().equals("III类")  
+					level = e.getLevel() + "@55/65";
+					map.put(3, level);
+					System.out.println(e.getName() + "|" + level + "|" + distance); 
+				}else if(e.getFlag() == 4){ // IV类 距离机场2000米以内的，4类 
+					level = e.getLevel() + "@55/70"; 
+					map.put(4, level);
+					System.out.println(e.getName() + "|" + level + "|" + distance); 
 				}else if(e.getFlag() == 5){ // IV类 距离候车站地点2km以内的，4类 
 					level = e.getLevel() + "@55/70"; 
+					map.put(4, level);
+					System.out.println(e.getName() + "|" + level + "|" + distance); 
 				}
-			}else if(e.getFlag() == 4 && distance < 5000){  // 机场5km以内 4类
+			}else if(distance < 5000 && e.getFlag() == 4){  // 机场5km以内 4类
 				level = e.getLevel() + "@55/70"; 
+				System.out.println(e.getName() + "|" + level + "|" + distance); 
+				map.put(4, level);
 			}
-			map.put(distance , level);
 		}
 		if(map.size() > 0){
-			return map.get(map.firstKey());
+			System.out.println(map); 
+			return map.get(map.lastKey());
 		}
 		
 		if(StringUtils.isBlank(level)){
@@ -184,7 +196,6 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 				level = "I类@45/55";
 			}
 		}
-		
 		return level;
 	}
 	
