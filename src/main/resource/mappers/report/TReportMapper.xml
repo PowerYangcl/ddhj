@@ -417,7 +417,7 @@
 			(
 			<foreach collection="list" item="item" index="index"
 				separator=",">
-				${#item,jdbcType=VARCHAR}
+				#{item,jdbcType=VARCHAR}
 			</foreach>
 			)
 			AND

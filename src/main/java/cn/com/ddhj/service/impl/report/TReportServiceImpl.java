@@ -53,7 +53,6 @@ import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.ITChemicalPlantService;
 import cn.com.ddhj.service.ITRubbishRecyclingService;
-import cn.com.ddhj.service.IWaterQualityService;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.CommonUtil;
@@ -80,8 +79,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TLandedPropertyMapper lpMapper;
 	@Autowired
 	private ICityAirService cityAirService;
-//	@Autowired
-//	private IWaterQualityService waterQualityService;
 	@Autowired
 	private ITRubbishRecyclingService rubbishService;
 	@Autowired
@@ -708,11 +705,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			for (int i = 0; i < citys.size(); i++) {
 				if (StringUtils.isNotBlank(citys.get(i))) {
 					int air = cityAirService.getAQILevel(citys.get(i));
-					// int water =
-					// waterQualityService.getWaterLevel(citys.get(i));
 					JSONObject obj = new JSONObject();
 					obj.put("air", air);
-					// obj.put("water", water);
 					JSONObject cityLevel = new JSONObject();
 					cityLevel.put("city", citys.get(i));
 					cityLevel.put("level", obj);

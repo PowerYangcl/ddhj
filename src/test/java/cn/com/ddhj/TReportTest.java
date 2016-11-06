@@ -22,6 +22,7 @@ import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
+import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.DateUtil;
@@ -153,12 +154,12 @@ public class TReportTest extends BaseTest {
 		System.out.println(mapper.findRreportByChart(list));
 	}
 
+	@Test
 	public void createPDF() {
 		TReportDto dto = new TReportDto();
 		dto.setCode("R161009164878");
 		dto.setLpCode("LP161009105939");
-		dto.setLevelCode("RL161006100003");
-		BaseResult result = service.createReport(dto, "D://", null);
+		BaseResult result = service.createReport(dto, "E://", null);
 		System.out.println(JSON.toJSON(result));
 	}
 
@@ -184,7 +185,6 @@ public class TReportTest extends BaseTest {
 		mapper.insertReportData(list);
 	}
 
-	@Test
 	public void batchCreateReport() {
 		service.batchCreateReport();
 	}
