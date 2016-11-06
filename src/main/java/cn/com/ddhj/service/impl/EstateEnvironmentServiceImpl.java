@@ -433,7 +433,7 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 			EnvInfo land = new EnvInfo();    // 土壤
 			land.setName("土壤");
 			land.setMemo("无污染");
-			land.setLevel("优"); 
+			land.setLevel("良"); 
 			
 			EnvInfo dang = new EnvInfo(); // 危险品
 			dang.setName("危险品");
