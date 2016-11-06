@@ -18,7 +18,7 @@ public class XmasPayConfig{
 	public static String getPayGateURL(){
 ////		return config.bConfig("xmaspay.paygate_url");
 //		return "http://test.pay.lacues.cn/createorder/";
-		return "http://pay.huijiayou.cn/createorder";
+		return "http://pay.huijiayou.cn/createorder/";
 	}
 //	
 //	/**

@@ -593,63 +593,61 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					List<TReport> reports = getTreportByLpCodes(lpList);
 					for (int i = 0; i < lpList.size(); i++) {
 						TLandedProperty lp = lpList.get(i);
-						if (StringUtils.equals(lp.getCity(), "北京")) {
-							TReportLog log = new TReportLog();// 日志
-							TReportDto dto = new TReportDto();
-							dto.setLpCode(lp.getCode());
-							dto.setLevelCode("RL161006100001");
-							// 根据楼盘编码查询报告
-							TReport entity = null;
-							if (reports != null && reports.size() > 0) {
-								for (TReport r : reports) {
-									if (StringUtils.equals(r.getHousesCode(), lp.getCode())) {
-										entity = r;
-										break;
-									}
+						TReportLog log = new TReportLog();// 日志
+						TReportDto dto = new TReportDto();
+						dto.setLpCode(lp.getCode());
+						dto.setLevelCode("RL161006100001");
+						// 根据楼盘编码查询报告
+						TReport entity = null;
+						if (reports != null && reports.size() > 0) {
+							for (TReport r : reports) {
+								if (StringUtils.equals(r.getHousesCode(), lp.getCode())) {
+									entity = r;
+									break;
 								}
 							}
-							String date = isSync(entity != null ? entity.getReportDate() : null);
-							if (StringUtils.isNotBlank(date)) {
-								if (entity != null) {
-									codes.add(entity.getCode());
-									PDFReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
-									entity.setPath(result.getPath());
-									entity.setReportDate(date);
-									entity.setUpdateUser("system");
-									entity.setUpdateTime(DateUtil.getSysDateTime());
-									updateData.add(entity);
-									log.setReportCode(entity.getCode());
-									log.setDetail(JSON.toJSONString(result));
-								} else {
-									String code = WebHelper.getInstance().getUniqueCode("R");
-									codes.add(code);
-									PDFReportResult result = createPDF(code, lp.getCode(), path, null);
-									entity = new TReport();
-									entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
-									entity.setCode(code);
-									entity.setHousesCode(lp.getCode());
-									entity.setTitle(lp.getTitle() + "-环境报告-普通");
-									entity.setLevelCode("RL161006100001");
-									entity.setPic("");
-									entity.setImage("");
-									entity.setRang(10);
-									entity.setPrice(BigDecimal.valueOf(0.01));
-									entity.setPath(result.getPath());
-									entity.setDetail(lp.getTitle() + "-环境报告说明-普通");
-									entity.setCreateUser("system");
-									entity.setCreateTime(DateUtil.getSysDateTime());
-									entity.setUpdateUser("system");
-									entity.setUpdateTime(DateUtil.getSysDateTime());
-									insertData.add(entity);
-									log.setReportCode(code);
-									log.setDetail(JSON.toJSONString(result));
-								}
-								log.setUuid(UUID.randomUUID().toString().replace("-", ""));
-								log.setLpCode(lp.getCode());
-								log.setCreateUser("system");
-								log.setCreateTime(DateUtil.getSysDateTime());
-								logData.add(log);
+						}
+						String date = isSync(entity != null ? entity.getReportDate() : null);
+						if (StringUtils.isNotBlank(date)) {
+							if (entity != null) {
+								codes.add(entity.getCode());
+								PDFReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
+								entity.setPath(result.getPath());
+								entity.setReportDate(date);
+								entity.setUpdateUser("system");
+								entity.setUpdateTime(DateUtil.getSysDateTime());
+								updateData.add(entity);
+								log.setReportCode(entity.getCode());
+								log.setDetail(JSON.toJSONString(result));
+							} else {
+								String code = WebHelper.getInstance().getUniqueCode("R");
+								codes.add(code);
+								PDFReportResult result = createPDF(code, lp.getCode(), path, null);
+								entity = new TReport();
+								entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+								entity.setCode(code);
+								entity.setHousesCode(lp.getCode());
+								entity.setTitle(lp.getTitle() + "-环境报告-普通");
+								entity.setLevelCode("RL161006100001");
+								entity.setPic("");
+								entity.setImage("");
+								entity.setRang(10);
+								entity.setPrice(BigDecimal.valueOf(0.01));
+								entity.setPath(result.getPath());
+								entity.setDetail(lp.getTitle() + "-环境报告说明-普通");
+								entity.setCreateUser("system");
+								entity.setCreateTime(DateUtil.getSysDateTime());
+								entity.setUpdateUser("system");
+								entity.setUpdateTime(DateUtil.getSysDateTime());
+								insertData.add(entity);
+								log.setReportCode(code);
+								log.setDetail(JSON.toJSONString(result));
 							}
+							log.setUuid(UUID.randomUUID().toString().replace("-", ""));
+							log.setLpCode(lp.getCode());
+							log.setCreateUser("system");
+							log.setCreateTime(DateUtil.getSysDateTime());
+							logData.add(log);
 						}
 					}
 					// 批量添加日志到日志表
