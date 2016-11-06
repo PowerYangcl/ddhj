@@ -5,8 +5,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +27,7 @@ import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
+import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
 import cn.com.ddhj.mapper.report.TReportLogMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
@@ -34,6 +37,7 @@ import cn.com.ddhj.mapper.user.TUserLpFollowMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 import cn.com.ddhj.model.report.TReportLog;
@@ -49,7 +53,6 @@ import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.ITChemicalPlantService;
 import cn.com.ddhj.service.ITRubbishRecyclingService;
-import cn.com.ddhj.service.IWaterQualityService;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.CommonUtil;
@@ -77,8 +80,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Autowired
 	private ICityAirService cityAirService;
 	@Autowired
-	private IWaterQualityService waterQualityService;
-	@Autowired
 	private ITRubbishRecyclingService rubbishService;
 	@Autowired
 	private TUserLpFollowMapper followMapper;
@@ -92,6 +93,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TReportLogMapper rLogMapper;
 	@Autowired
 	private ITChemicalPlantService chemicalService;
+	@Autowired
+	private TWaterEnviromentMapper waterEnvMapper;
 
 	/**
 	 * 
@@ -343,8 +346,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 			// 空气质量等级
 			Integer airLevel = 1;
-			// 水质量等级
-			Integer waterLevel = 1;
 			if (StringUtils.isNotBlank(lp.getCity())) {
 				JSONArray cityAirLevel = null;
 				if (cityAir != null && cityAir.size() > 0) {
@@ -355,14 +356,18 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				if (cityAirLevel != null && cityAirLevel.size() > 0) {
 					for (int i = 0; i < cityAirLevel.size(); i++) {
 						JSONObject level = cityAirLevel.getJSONObject(i);
-
 						if (StringUtils.equals(lp.getCity(), level.getString("city"))) {
 							airLevel = level.getJSONObject("level").getInteger("air");
-							waterLevel = level.getJSONObject("level").getInteger("water");
 						}
 					}
 				}
 			}
+			// 水质量等级
+			Integer waterLevel = 2;
+			if (StringUtils.isNoneBlank(lp.getCity())) {
+				waterLevel = this.waterEnv(lp);
+			}
+
 			// 垃圾设施等级
 			Integer rubbishLevel = 1;
 			if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
@@ -588,63 +593,61 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					List<TReport> reports = getTreportByLpCodes(lpList);
 					for (int i = 0; i < lpList.size(); i++) {
 						TLandedProperty lp = lpList.get(i);
-						if (StringUtils.equals(lp.getCity(), "北京")) {
-							TReportLog log = new TReportLog();// 日志
-							TReportDto dto = new TReportDto();
-							dto.setLpCode(lp.getCode());
-							dto.setLevelCode("RL161006100001");
-							// 根据楼盘编码查询报告
-							TReport entity = null;
-							if (reports != null && reports.size() > 0) {
-								for (TReport r : reports) {
-									if (StringUtils.equals(r.getHousesCode(), lp.getCode())) {
-										entity = r;
-										break;
-									}
+						TReportLog log = new TReportLog();// 日志
+						TReportDto dto = new TReportDto();
+						dto.setLpCode(lp.getCode());
+						dto.setLevelCode("RL161006100001");
+						// 根据楼盘编码查询报告
+						TReport entity = null;
+						if (reports != null && reports.size() > 0) {
+							for (TReport r : reports) {
+								if (StringUtils.equals(r.getHousesCode(), lp.getCode())) {
+									entity = r;
+									break;
 								}
 							}
-							String date = isSync(entity != null ? entity.getReportDate() : null);
-							if (StringUtils.isNotBlank(date)) {
-								if (entity != null) {
-									codes.add(entity.getCode());
-									PDFReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
-									entity.setPath(result.getPath());
-									entity.setReportDate(date);
-									entity.setUpdateUser("system");
-									entity.setUpdateTime(DateUtil.getSysDateTime());
-									updateData.add(entity);
-									log.setReportCode(entity.getCode());
-									log.setDetail(JSON.toJSONString(result));
-								} else {
-									String code = WebHelper.getInstance().getUniqueCode("R");
-									codes.add(code);
-									PDFReportResult result = createPDF(code, lp.getCode(), path, null);
-									entity = new TReport();
-									entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
-									entity.setCode(code);
-									entity.setHousesCode(lp.getCode());
-									entity.setTitle(lp.getTitle() + "-环境报告-普通");
-									entity.setLevelCode("RL161006100001");
-									entity.setPic("");
-									entity.setImage("");
-									entity.setRang(10);
-									entity.setPrice(BigDecimal.valueOf(0.01));
-									entity.setPath(result.getPath());
-									entity.setDetail(lp.getTitle() + "-环境报告说明-普通");
-									entity.setCreateUser("system");
-									entity.setCreateTime(DateUtil.getSysDateTime());
-									entity.setUpdateUser("system");
-									entity.setUpdateTime(DateUtil.getSysDateTime());
-									insertData.add(entity);
-									log.setReportCode(code);
-									log.setDetail(JSON.toJSONString(result));
-								}
-								log.setUuid(UUID.randomUUID().toString().replace("-", ""));
-								log.setLpCode(lp.getCode());
-								log.setCreateUser("system");
-								log.setCreateTime(DateUtil.getSysDateTime());
-								logData.add(log);
+						}
+						String date = isSync(entity != null ? entity.getReportDate() : null);
+						if (StringUtils.isNotBlank(date)) {
+							if (entity != null) {
+								codes.add(entity.getCode());
+								PDFReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
+								entity.setPath(result.getPath());
+								entity.setReportDate(date);
+								entity.setUpdateUser("system");
+								entity.setUpdateTime(DateUtil.getSysDateTime());
+								updateData.add(entity);
+								log.setReportCode(entity.getCode());
+								log.setDetail(JSON.toJSONString(result));
+							} else {
+								String code = WebHelper.getInstance().getUniqueCode("R");
+								codes.add(code);
+								PDFReportResult result = createPDF(code, lp.getCode(), path, null);
+								entity = new TReport();
+								entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+								entity.setCode(code);
+								entity.setHousesCode(lp.getCode());
+								entity.setTitle(lp.getTitle() + "-环境报告-普通");
+								entity.setLevelCode("RL161006100001");
+								entity.setPic("");
+								entity.setImage("");
+								entity.setRang(10);
+								entity.setPrice(BigDecimal.valueOf(0.01));
+								entity.setPath(result.getPath());
+								entity.setDetail(lp.getTitle() + "-环境报告说明-普通");
+								entity.setCreateUser("system");
+								entity.setCreateTime(DateUtil.getSysDateTime());
+								entity.setUpdateUser("system");
+								entity.setUpdateTime(DateUtil.getSysDateTime());
+								insertData.add(entity);
+								log.setReportCode(code);
+								log.setDetail(JSON.toJSONString(result));
 							}
+							log.setUuid(UUID.randomUUID().toString().replace("-", ""));
+							log.setLpCode(lp.getCode());
+							log.setCreateUser("system");
+							log.setCreateTime(DateUtil.getSysDateTime());
+							logData.add(log);
 						}
 					}
 					// 批量添加日志到日志表
@@ -700,10 +703,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			for (int i = 0; i < citys.size(); i++) {
 				if (StringUtils.isNotBlank(citys.get(i))) {
 					int air = cityAirService.getAQILevel(citys.get(i));
-					int water = waterQualityService.getWaterLevel(citys.get(i));
 					JSONObject obj = new JSONObject();
 					obj.put("air", air);
-					obj.put("water", water);
 					JSONObject cityLevel = new JSONObject();
 					cityLevel.put("city", citys.get(i));
 					cityLevel.put("level", obj);
@@ -752,11 +753,18 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				for (TAreaNoise e : areaList) {
 					Double distance = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
 					if (distance < 2000) {
-						if (e.getLevel().equals("III类")) {
-							level = 3;
-						} else if (e.getLevel().equals("0类")) {
+						if (e.getFlag() == 1) { // e.getLevel().equals("0类")
 							level = 1;
+						} else if (e.getFlag() == 3) { // e.getLevel().equals("III类")
+							level = 3;
+						} else if (e.getFlag() == 4) { // IV类 距离机场2000米以内的，4类
+							level = 4;
+						} else if (e.getFlag() == 5) { // IV类 距离候车站地点2km以内的，4类
+							level = 4;
 						}
+					} else if (distance < 5000 && e.getFlag() == 4) { // 机场5km以内
+																		// 4类
+						level = 4;
 					}
 				}
 				if (level == 0) {
@@ -948,5 +956,66 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			reports = mapper.findPriceByCode(lpCodes);
 		}
 		return reports;
+	}
+
+	/**
+	 * 
+	 * 方法: waterEnv <br>
+	 * 描述: 获取水质量环境等级 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年11月6日 上午11:41:08
+	 * 
+	 * @param position
+	 * @param city
+	 * @param list
+	 * @return
+	 */
+	private Integer waterEnv(TLandedProperty lp) {
+		int level = 2;
+
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("北京", "北京");
+		map.put("上海", "上海");
+		map.put("天津", "天津");
+		map.put("广州", "广州");
+		map.put("深圳", "广州"); // 广州和深圳的水源地取同一个
+		String city_ = map.get(lp.getCity());
+		if (StringUtils.isBlank(city_)) { // 不在我定义的城市中则给默认值
+			level = 2;
+		} else {
+			if (StringUtils.isNoneBlank(lp.getLat()) && StringUtils.isNotBlank(lp.getLng())) {
+				List<TWaterEnviroment> list = waterEnvMapper.selectByCity(city_);
+				if (list != null && list.size() != 0) {
+					Double lat = Double.valueOf(lp.getLat());
+					Double lng = Double.valueOf(lp.getLng());
+					TreeMap<Integer, TWaterEnviroment> map_ = new TreeMap<Integer, TWaterEnviroment>();
+					for (TWaterEnviroment e : list) {
+						Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()),
+								Double.valueOf(e.getLng()));
+						map_.put(d, e);
+					}
+					TWaterEnviroment w = map_.get(map_.firstKey());
+					String oxy = w.getOxygenquality();
+					if (StringUtils.isBlank(oxy)) {
+						level = 2;
+					} else if (oxy.equals("Ⅰ")) {
+						level = 1;
+					} else if (oxy.equals("-") || oxy.equals("Ⅱ")) {
+						level = 1;
+					} else if (oxy.equals("Ⅲ")) {
+						level = 3;
+					} else if (oxy.equals("Ⅳ")) {
+						level = 4;
+					} else {
+						level = 5;
+					}
+				} else {
+					level = 2;
+				}
+			} else {
+				level = 2;
+			}
+		}
+		return level;
 	}
 }
