@@ -887,12 +887,16 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private void subInsertReport(List<TReport> list, TReportMapper mapper) {
 		int total = list.size();
 		int avg = total / 10000;
-		for (int i = 0; i < avg; i++) {
-			List<TReport> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
-			mapper.insertReportData(sublist);
+		if (avg > 0) {
+			for (int i = 0; i < avg; i++) {
+				List<TReport> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
+				mapper.insertReportData(sublist);
+			}
+			list = list.subList(avg * 10000, list.size());
+			mapper.insertReportData(list);
+		}else{
+			mapper.insertReportData(list);
 		}
-		list = list.subList(avg * 10000, list.size());
-		mapper.insertReportData(list);
 	}
 
 	/**
