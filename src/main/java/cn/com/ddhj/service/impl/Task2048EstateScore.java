@@ -93,7 +93,8 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 			
 			String z1 = "1";
 			String z2 = "0";
-			String nlevel = this.noise(position, noiseList).split("@")[1]; 
+			Double nscore = 0.00;
+			String nlevel = this.noise(position, noiseList).split("@")[0]; 
 			if(nlevel.equals("0类")){
 				z1 = "0"; 
 				z2 = "0"; 
@@ -109,10 +110,11 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 			}else if(nlevel.equals("IV类")){
 				z1 = "4"; 
 				z2 = "3"; 
+				nscore = -10.00;
 			}
 			Map<String , String> waterEnv = this.waterEnv(position, city, waterEnvList);
 			score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , waterEnv.get("s") , z1 , z2);
-			score = String.valueOf( (Double.valueOf(score) + Double.valueOf(this.rubbish(position, rubbishList, chemicalList).get("score"))) );  // 污染源，针对最后的综合评分 距离500米 得出分-30
+			score = String.valueOf( (Double.valueOf(score) + nscore + Double.valueOf(this.rubbish(position, rubbishList, chemicalList).get("score"))));  // 污染源，针对最后的综合评分 距离500米 得出分-30
 			if(score.length() > 5){
 				System.out.println("exception score = " + score); 
 				score = score.substring(0, 5);

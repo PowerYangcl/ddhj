@@ -213,7 +213,8 @@ System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫�
 				
 				String z1 = "1";
 				String z2 = "0";
-				String nlevel = noiFuture.get().split("@")[1];
+				Double nscore = 0.00;
+				String nlevel = noiFuture.get().split("@")[0];
 				if(nlevel.equals("0类")){
 					z1 = "0"; 
 					z2 = "0"; 
@@ -229,10 +230,11 @@ System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫�
 				}else if(nlevel.equals("IV类")){
 					z1 = "4"; 
 					z2 = "3"; 
+					nscore = -10.00;
 				}
 				String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
 				if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
-					score = String.valueOf( (Double.valueOf(score) + Double.valueOf(rubFuture.get().get("score"))) );
+					score = String.valueOf( (Double.valueOf(score) + nscore + Double.valueOf(rubFuture.get().get("score"))) );
 					if(score.length() > 5){
 						System.out.println("exception score = " + score); 
 						score = score.substring(0, 5);
@@ -363,7 +365,8 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 			} 
 			String z1 = "1";
 			String z2 = "0";
-			String nlevel = noiFuture.get().split("@")[1];
+			Double nscore = 0.00;
+			String nlevel = noiFuture.get().split("@")[0];
 			if(nlevel.equals("0类")){
 				z1 = "0"; 
 				z2 = "0"; 
@@ -379,10 +382,11 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 			}else if(nlevel.equals("IV类")){
 				z1 = "4"; 
 				z2 = "3"; 
+				nscore = -10.00;
 			}
 			String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
 			if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
-				score = String.valueOf( (Double.valueOf(score) + Double.valueOf(rubFuture.get().get("score"))) );
+				score = String.valueOf( (Double.valueOf(score) + nscore + Double.valueOf(rubFuture.get().get("score"))) );
 				if(score.length() > 5){
 					System.out.println("exception score = " + score); 
 					score = score.substring(0, 5);
