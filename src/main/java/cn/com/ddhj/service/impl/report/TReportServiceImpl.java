@@ -886,13 +886,17 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 */
 	private void subInsertReport(List<TReport> list, TReportMapper mapper) {
 		int total = list.size();
-		int avg = total / 10000;
-		for (int i = 0; i < avg; i++) {
-			List<TReport> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
-			mapper.insertReportData(sublist);
+		int avg = total / 5000;
+		if (avg > 0) {
+			for (int i = 0; i < avg; i++) {
+				List<TReport> sublist = list.subList(i * 5000, (i + 1) * 5000 - 1);
+				mapper.insertReportData(sublist);
+			}
+			list = list.subList(avg * 5000, list.size());
+			mapper.insertReportData(list);
+		} else {
+			mapper.insertReportData(list);
 		}
-		list = list.subList(avg * 10000, list.size());
-		mapper.insertReportData(list);
 	}
 
 	/**
@@ -907,13 +911,13 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 */
 	private void subInsertReportTmp(List<TReport> list, TReportMapper mapper) {
 		int total = list.size();
-		int avg = total / 10000;
+		int avg = total / 5000;
 		if (avg > 0) {
 			for (int i = 0; i < avg; i++) {
-				List<TReport> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
+				List<TReport> sublist = list.subList(i * 5000, (i + 1) * 5000 - 1);
 				mapper.batchInsertReportToTmp(sublist);
 			}
-			list = list.subList(avg * 10000, list.size());
+			list = list.subList(avg * 5000, list.size());
 			mapper.batchInsertReportToTmp(list);
 		} else {
 			mapper.batchInsertReportToTmp(list);
@@ -933,13 +937,13 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 */
 	private void subInsertLog(List<TReportLog> list, TReportLogMapper mapper) {
 		int total = list.size();
-		int avg = total / 10000;
+		int avg = total / 5000;
 		if (avg > 0) {
 			for (int i = 0; i < avg; i++) {
-				List<TReportLog> sublist = list.subList(i * 10000, (i + 1) * 10000 - 1);
+				List<TReportLog> sublist = list.subList(i * 5000, (i + 1) * 5000 - 1);
 				mapper.batchInsertLog(sublist);
 			}
-			list = list.subList(avg * 10000, list.size());
+			list = list.subList(avg * 5000, list.size());
 			mapper.batchInsertLog(list);
 		} else {
 			mapper.batchInsertLog(list);
