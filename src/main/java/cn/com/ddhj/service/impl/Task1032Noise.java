@@ -2,17 +2,18 @@ package cn.com.ddhj.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.util.CommonUtil;
 
 public class Task1032Noise implements Callable<String> {
+	private static Logger logger=Logger.getLogger(Task1032Noise.class);
 	
 	private ITAreaNoiseMapper noiseMapper;
 	private String city;
@@ -84,6 +85,11 @@ public class Task1032Noise implements Callable<String> {
 			}else{ 	// 北京：五环外 |上海：外环外 |广州：外环外|天津：外环外|深圳：关外全部划为I类标准
 				level = "I类@45/55";
 			}
+		}
+		
+		if(StringUtils.isBlank(level)){
+			level = "II类@50/60";
+			logger.error("警告！Task1032Noise线程level取值为默认值！"); 
 		}
 		return level;
 	}
