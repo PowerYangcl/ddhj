@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.PageResult;
 import cn.com.ddhj.dto.BaseDto;
@@ -25,7 +26,7 @@ import cn.com.ddhj.util.DateUtil;
  * @param <M>
  * @param <DTO>
  */
-public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, DTO extends BaseDto>
+public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, DTO extends BaseDto> extends BaseClass
 		implements IBaseService<T, DTO> {
 
 	@Autowired
