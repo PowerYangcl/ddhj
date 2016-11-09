@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -29,7 +30,8 @@ import cn.com.ddhj.util.DoctorScoreUtil;
 import cn.com.ddhj.util.PureNetUtil;
 
 public class Task2048EstateScore implements Callable<TLandedProperty> {
-
+	private static Logger logger=Logger.getLogger(Task2048EstateScore.class);
+	
 	private TLandedProperty entity;
 	private String hourAqi;
 	private String dayAqi;
@@ -198,6 +200,12 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 				level = "I类@45/55";
 			}
 		}
+		
+		if(StringUtils.isBlank(level)){
+			level = "II类@50/60";
+			logger.error("警告！Task2048EstateScore线程level取值为默认值！"); 
+		}
+		
 		return level;
 	}
 	
