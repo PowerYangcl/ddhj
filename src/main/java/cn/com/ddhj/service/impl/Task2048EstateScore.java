@@ -280,7 +280,6 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 			return r;
 		}
 		
-		
 		String[] arr = position.split(",");
 		Double lat = Double.valueOf(arr[0]);
 		Double lng = Double.valueOf(arr[1]); 
@@ -317,9 +316,7 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 		}else if(distance < 500){
 			score = "-30"; 
 		}
-		
-//		r.put("level", map.get(map.firstKey()));
-//		r.put("memo", msg);
+		 
 		/*
 		 * 污染源，针对最后的综合评分 
 		 * 距离500米 得出分-30
