@@ -28,20 +28,38 @@ public class Task1032Rubbish implements Callable<Map<String , String>> {
 		String[] arr = this.getPosition().split(",");
 		Double lat = Double.valueOf(arr[0]);
 		Double lng = Double.valueOf(arr[1]); 
-		List<TRubbishRecycling> list = this.getMapper().findListByCity(this.getCity());
 		String msg = "5Km以内";
 		TreeMap<Integer , String> map = new TreeMap<Integer , String>();
-		for(TRubbishRecycling e : list){
-			Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()), Double.valueOf(e.getLng())); 
-			map.put(d , "垃圾站");
-		}
-		List<TChemicalPlant> clist = this.getChemicalMapper().findListByCity(this.getCity());
-		for(TChemicalPlant e : clist){
-			Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()), Double.valueOf(e.getLng())); 
-			map.put(d , "化工厂"); 
+		List<TRubbishRecycling> list = null;
+		List<TChemicalPlant> clist = null;
+		try {
+			list = this.getMapper().findListByCity(this.getCity());
+			if(list != null && list.size() != 0){
+				for(TRubbishRecycling e : list){
+					Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()), Double.valueOf(e.getLng())); 
+					map.put(d , "垃圾站");
+				}
+			}
+			clist = this.getChemicalMapper().findListByCity(this.getCity());
+			if(clist != null && clist.size() != 0){
+				for(TChemicalPlant e : clist){
+					Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()), Double.valueOf(e.getLng())); 
+					map.put(d , "化工厂"); 
+				}
+			}
+		} catch (Exception e) {
+			System.out.println( "list = " + list.toString() + " | clist = " + clist.toString() );  
 		}
 		
 		String score = "0";  
+		if(map.size() == 0){
+			System.out.println(city + " map.firstKey() |" + this.getPosition()); 
+			r.put("level", "无");
+			r.put("memo", msg); 
+			r.put("score", score);
+			return r;
+		}
+		
 		Integer distance = map.firstKey();
 		if(distance > 5000){
 			r.put("level", "无");

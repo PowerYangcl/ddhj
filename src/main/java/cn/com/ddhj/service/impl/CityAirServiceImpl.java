@@ -404,8 +404,12 @@ public class CityAirServiceImpl implements ICityAirService {
 			res.put("quality", quality); // 优|轻度污染
 			res.put("des", des); // 可正常活动。
 			return res;
+		}else{
+			res.put("info", "无天气信息"); // 阵雨
+			res.put("wind", "2级"); // 东南风/2级
+			res.put("quality", "优"); // 优|轻度污染
+			res.put("des", "人烟稀少，尽量少去"); // 可正常活动。
+			return res;
 		}
-
-		return null;
 	}
 }
