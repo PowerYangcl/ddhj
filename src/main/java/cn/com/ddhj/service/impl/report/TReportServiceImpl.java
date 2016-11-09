@@ -684,7 +684,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			WebHelper.getInstance().unLock(lock);
 		}
 		Long end = System.currentTimeMillis();
-		System.out.println("定时执行时间为:" + (end - start));
+		getLogger().logInfo("定时执行时间为:" + (end - start));
 	}
 
 	/**
