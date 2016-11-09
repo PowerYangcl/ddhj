@@ -183,6 +183,9 @@ public class PdfUtil extends BaseClass {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			if (reader != null) {
+				reader.close();
+			}
 		}
 	}
 }
