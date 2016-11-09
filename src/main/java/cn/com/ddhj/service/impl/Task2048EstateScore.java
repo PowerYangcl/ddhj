@@ -296,6 +296,11 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 		}
 		
 		String score = "0";  
+		if(map.size() == 0){
+			r.put("score", score);
+			return r;
+		}
+		
 		Integer distance = map.firstKey();
 		if(distance > 5000){
 			msg = "5Km以外";
