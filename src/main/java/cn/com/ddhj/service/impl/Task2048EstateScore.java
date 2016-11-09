@@ -193,7 +193,7 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 			return map.get(map.lastKey());
 		}
 		
-		if(StringUtils.isBlank(level)){
+		if(StringUtils.isBlank(level) && !StringUtils.isAnyBlank(String.valueOf(slat) , String.valueOf(nlat) , String.valueOf(wlng) ,String.valueOf(elng))){
 			if((slat<lat && lat < nlat) &&(wlng < lng && lng < elng)){ // 五环里
 				level = "II类@50/60";
 			}else{ 	// 北京：五环外 |上海：外环外 |广州：外环外|天津：外环外|深圳：关外全部划为I类标准
