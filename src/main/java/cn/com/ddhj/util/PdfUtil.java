@@ -162,9 +162,19 @@ public class PdfUtil extends BaseClass {
 				bgImage.scaleToFit(PageSize.A4);// 大小
 				under.addImage(bgImage);
 			}
-			stamper.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}finally{
+			try {
+				if(stamper != null){
+					stamper.close();					
+				}
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }
