@@ -405,7 +405,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					} else if ("chemical".equals(model.getType())) {
 						obj.put("level", getLevelContent(model.getType(), chemicalLevel, levelList));
 					} else {
-						obj.put("level", getLevelContent(model.getType(), 1, levelList));
+						obj.put("level", getLevelContent(model.getType(), 2, levelList));
 					}
 					array.add(obj);
 				}
@@ -758,13 +758,13 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						} else if (e.getFlag() == 3) { // e.getLevel().equals("III类")
 							level = 3;
 						} else if (e.getFlag() == 4) { // IV类 距离机场2000米以内的，4类
-							level = 4;
+							level = 3;
 						} else if (e.getFlag() == 5) { // IV类 距离候车站地点2km以内的，4类
-							level = 4;
+							level = 3;
 						}
 					} else if (distance < 5000 && e.getFlag() == 4) { // 机场5km以内
 																		// 4类
-						level = 4;
+						level = 3;
 					}
 				}
 				if (level == 0) {
@@ -1007,11 +1007,11 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					} else if (oxy.equals("-") || oxy.equals("Ⅱ")) {
 						level = 1;
 					} else if (oxy.equals("Ⅲ")) {
-						level = 3;
+						level = 2;
 					} else if (oxy.equals("Ⅳ")) {
-						level = 4;
+						level = 3;
 					} else {
-						level = 5;
+						level = 3;
 					}
 				} else {
 					level = 2;

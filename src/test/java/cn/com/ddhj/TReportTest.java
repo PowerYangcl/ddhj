@@ -154,7 +154,6 @@ public class TReportTest extends BaseTest {
 		System.out.println(mapper.findRreportByChart(list));
 	}
 
-	@Test
 	public void createPDF() {
 		TReportDto dto = new TReportDto();
 		dto.setCode("R161009164878");
@@ -185,6 +184,7 @@ public class TReportTest extends BaseTest {
 		mapper.insertReportData(list);
 	}
 
+	@Test
 	public void batchCreateReport() {
 		service.batchCreateReport();
 	}
