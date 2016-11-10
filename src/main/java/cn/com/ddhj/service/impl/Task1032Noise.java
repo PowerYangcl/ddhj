@@ -54,28 +54,28 @@ public class Task1032Noise implements Callable<String> {
 				if(e.getFlag() == 1){ // e.getLevel().equals("0类")
 					level = e.getLevel() + "@40/50";
 					map.put(0, level);
-					System.out.println(e.getName() + "|" + level + "|" + distance); 
+					logger.info(e.getName() + "|" + level + "|" + distance); 
 				}else if(e.getFlag() == 3){ //e.getLevel().equals("III类")  
 					level = e.getLevel() + "@55/65";
 					map.put(3, level);
-					System.out.println(e.getName() + "|" + level + "|" + distance); 
+					logger.info(e.getName() + "|" + level + "|" + distance); 
 				}else if(e.getFlag() == 4){ // IV类 距离机场2000米以内的，4类 
 					level = e.getLevel() + "@55/70"; 
 					map.put(4, level);
-					System.out.println(e.getName() + "|" + level + "|" + distance); 
+					logger.info(e.getName() + "|" + level + "|" + distance); 
 				}else if(e.getFlag() == 5){ // IV类 距离候车站地点2km以内的，4类 
 					level = e.getLevel() + "@55/70"; 
 					map.put(4, level);
-					System.out.println(e.getName() + "|" + level + "|" + distance); 
+					logger.info(e.getName() + "|" + level + "|" + distance); 
 				}
 			}else if(distance < 5000 && e.getFlag() == 4){  // 机场5km以内 4类
 				level = e.getLevel() + "@55/70"; 
-				System.out.println(e.getName() + "|" + level + "|" + distance); 
+				logger.info(e.getName() + "|" + level + "|" + distance); 
 				map.put(4, level);
 			}
 		}
 		if(map.size() > 0){
-			System.out.println(map); 
+			logger.info(map); 
 			return map.get(map.lastKey());
 		}
 		
@@ -89,7 +89,7 @@ public class Task1032Noise implements Callable<String> {
 		
 		if(StringUtils.isBlank(level)){
 			level = "II类@50/60";
-			logger.error("警告！Task1032Noise线程level取值为默认值！"); 
+			logger.info("警告！Task1032Noise线程level取值为默认值！"); 
 		}
 		return level;
 	}

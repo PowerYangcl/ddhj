@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -35,7 +36,8 @@ import cn.com.ddhj.util.PureNetUtil;
  * @version 1.0.1
  */
 public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
-
+	private static Logger logger=Logger.getLogger(Task2048EstateArea.class);
+	
 	private ExecutorService executor;
 	private List<TLandedProperty> list;
 	private String hourAqi;
@@ -80,7 +82,7 @@ public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
 			List<TLandedProperty> subList = entry.getValue();
 			for(TLandedProperty e : subList){
 				if(StringUtils.isAnyBlank(e.getLat() , e.getLng())){
-					System.out.println("该楼盘经纬度信息不全：" + e.getCity() + "|" + e.getTitle()); 
+					logger.info("该楼盘经纬度信息不全：" + e.getCity() + "|" + e.getTitle()); 
 					continue;
 				}
 				String position = e.getLat() + "," + e.getLng();  

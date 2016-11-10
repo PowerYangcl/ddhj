@@ -156,7 +156,7 @@ long start = System.currentTimeMillis();
 			JSONObject obj = weaTask.get();
 	        executor.shutdown();
 long end = System.currentTimeMillis();
-System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
+logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
 	        			
 			
 			if(addr.getString("code").equals("1") && StringUtils.isNotBlank(addr.getString("business")) ){
@@ -236,7 +236,7 @@ System.out.println("1025接口 - 聚合接口耗时：" + (end - start) + " 毫�
 				if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
 					score = String.valueOf( (Double.valueOf(score) + nscore + Double.valueOf(rubFuture.get().get("score"))) );
 					if(score.length() > 5){
-						System.out.println("exception score = " + score); 
+						logger.info("exception score = " + score); 
 						score = score.substring(0, 5);
 					}
 				}
@@ -327,7 +327,7 @@ long start = System.currentTimeMillis();
 	        CityAqi aqi = aqiFuture.get();
 	        executor.shutdown();
 long end = System.currentTimeMillis();
-System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
+logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
 	        
 	        
 	        String hourAqi = "80";
@@ -388,7 +388,7 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 			if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
 				score = String.valueOf( (Double.valueOf(score) + nscore + Double.valueOf(rubFuture.get().get("score"))) );
 				if(score.length() > 5){
-					System.out.println("exception score = " + score); 
+					logger.info("exception score = " + score); 
 					score = score.substring(0, 5);
 				}
 			}
@@ -464,7 +464,7 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 			result.put("tiptitle", weather.getString("des"));  // 提示标题
 			result.put("resultCode", 0); 
 			result.put("resultMessage", "SUCCESS"); 
-			System.out.println("1032接口：" + result); 
+			logger.info("1032接口：" + result); 
 			return  result;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -558,7 +558,7 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 					Collections.sort(projectList); 
 					Collections.reverse(projectList); 
 					for(Estate e : projectList){
-						System.out.println(e.getScore() + "|" + e.getDistance()); 
+						logger.info(e.getScore() + "|" + e.getDistance()); 
 					}
 					if(projectList.size() != 0){
 						result.put("resultCode", 0);
@@ -578,7 +578,7 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 			result.put("resultMessage", "经纬度地址解析失败，无法获取当前地理位置信息");
 		}
 		
-		System.out.println("1033接口：" + result);  
+		logger.info("1033接口：" + result);  
 		return  result; 
 	}
 	
@@ -631,7 +631,7 @@ System.out.println("1032号接口 - 聚合接口耗时：" + (end - start) + " �
 			for (Future<CityAqi> fs : futureList){  
 				CityAqi aqi = null;
 				while(!fs.isDone()){
-					System.out.println("等待中");
+					logger.info("等待中");
 					Thread.sleep(100); 
 				}
 				aqi = fs.get();

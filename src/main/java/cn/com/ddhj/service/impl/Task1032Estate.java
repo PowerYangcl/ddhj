@@ -38,6 +38,14 @@ public class Task1032Estate implements Callable<List<EnvInfo>> {
 				Integer distance = CommonUtil.getDistance(Double.valueOf(lat) , Double.valueOf(lng) , Double.valueOf(e.getLat()) , Double.valueOf(e.getLng()));
 				map.put(distance , e);
 			}
+			if(map.size() == 0){
+				rj.setLevel("1.2");
+				lh.setLevel("28%");
+				list.add(rj);
+				list.add(lh);
+				return list; 
+			}
+			
 			EData e = map.get(map.firstKey());
 			rj.setMemo(e.getTitle());
 			lh.setMemo(e.getTitle()); 

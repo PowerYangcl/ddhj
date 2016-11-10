@@ -82,12 +82,12 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 							volumeRate = 8.9 + "";
 						}
 					}else{
-						System.out.println("错误的容积率数据 | 非数字：" + entity.getId());
+						logger.info("错误的容积率数据 | 非数字：" + entity.getId());
 						volumeRate = "0.4";
 					}
 
 				}else{
-					System.out.println("错误的容积率数据 | 空：" + entity.getId());
+					logger.info("错误的容积率数据 | 空：" + entity.getId());
 					volumeRate = "0.4";
 				}
 			}
@@ -118,7 +118,7 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 			score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , waterEnv.get("s") , z1 , z2);
 			score = String.valueOf( (Double.valueOf(score) + nscore + Double.valueOf(this.rubbish(position, rubbishList, chemicalList).get("score"))));  // 污染源，针对最后的综合评分 距离500米 得出分-30
 			if(score.length() > 5){
-				System.out.println("exception score = " + score); 
+				logger.info("exception score = " + score); 
 				score = score.substring(0, 5);
 			}
 			
@@ -168,28 +168,28 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 				if(e.getFlag() == 1){ // e.getLevel().equals("0类")
 					level = e.getLevel() + "@40/50";
 					map.put(0, level);
-					System.out.println(e.getName() + "|" + level + "|" + distance); 
+					logger.info(e.getName() + "|" + level + "|" + distance); 
 				}else if(e.getFlag() == 3){ //e.getLevel().equals("III类")  
 					level = e.getLevel() + "@55/65";
 					map.put(3, level);
-					System.out.println(e.getName() + "|" + level + "|" + distance); 
+					logger.info(e.getName() + "|" + level + "|" + distance); 
 				}else if(e.getFlag() == 4){ // IV类 距离机场2000米以内的，4类 
 					level = e.getLevel() + "@55/70"; 
 					map.put(4, level);
-					System.out.println(e.getName() + "|" + level + "|" + distance); 
+					logger.info(e.getName() + "|" + level + "|" + distance); 
 				}else if(e.getFlag() == 5){ // IV类 距离候车站地点2km以内的，4类 
 					level = e.getLevel() + "@55/70"; 
 					map.put(4, level);
-					System.out.println(e.getName() + "|" + level + "|" + distance); 
+					logger.info(e.getName() + "|" + level + "|" + distance); 
 				}
 			}else if(distance < 5000 && e.getFlag() == 4){  // 机场5km以内 4类
 				level = e.getLevel() + "@55/70"; 
-				System.out.println(e.getName() + "|" + level + "|" + distance); 
+				logger.info(e.getName() + "|" + level + "|" + distance); 
 				map.put(4, level);
 			}
 		}
 		if(map.size() > 0){
-			System.out.println(map); 
+			logger.info(map); 
 			return map.get(map.lastKey());
 		}
 		
@@ -203,7 +203,7 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 		
 		if(StringUtils.isBlank(level)){
 			level = "II类@50/60";
-			logger.error("警告！Task2048EstateScore线程level取值为默认值！"); 
+			logger.info("警告！Task2048EstateScore线程level取值为默认值！"); 
 		}
 		
 		return level;

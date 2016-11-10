@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
+import org.apache.log4j.Logger;
+
 import cn.com.ddhj.mapper.TChemicalPlantMapper;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.model.TChemicalPlant;
@@ -14,12 +16,11 @@ import cn.com.ddhj.util.CommonUtil;
 
 public class Task1032Rubbish implements Callable<Map<String , String>> {
 
+	private static Logger logger=Logger.getLogger(Task1032Rubbish.class);
+	
 	private TRubbishRecyclingMapper mapper;
-	
 	private TChemicalPlantMapper chemicalMapper; 
-	
 	private String city;
-	
 	private String position;
 	
 	
@@ -48,12 +49,12 @@ public class Task1032Rubbish implements Callable<Map<String , String>> {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println( "list = " + list.toString() + " | clist = " + clist.toString() );  
+			logger.info( "list = " + list.toString() + " | clist = " + clist.toString() );  
 		}
 		
 		String score = "0";  
 		if(map.size() == 0){
-			System.out.println(city + " map.firstKey() |" + this.getPosition()); 
+			logger.info(city + " map.firstKey() |" + this.getPosition()); 
 			r.put("level", "无");
 			r.put("memo", msg); 
 			r.put("score", score);
