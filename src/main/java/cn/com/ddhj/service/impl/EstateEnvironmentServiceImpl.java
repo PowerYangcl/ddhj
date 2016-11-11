@@ -594,7 +594,10 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	
 	/**
 	 * @description:  手动刷新楼盘评分 | 接口号 2048 
+	 * 本地测试地址：
 	 *  http://localhost:8080/ddhj/api.htm?apiTarget=2048&api_key=appfamilyhas
+	 *  线上访问地址：
+	 *  http://api.sys.ecomapit.com/ddhj/api.htm?apiTarget=2048&api_key=appfamilyhas
 	 * @author Yangcl 
 	 * @date 2016年10月18日 下午4:29:29 
 	 * @version 1.0.0.1
