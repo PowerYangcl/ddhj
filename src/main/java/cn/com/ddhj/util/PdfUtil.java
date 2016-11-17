@@ -83,7 +83,18 @@ public class PdfUtil extends BaseClass {
 			Paragraph reportTitle = new Paragraph("环境质量报告", reportTitleFont);
 			reportTitle.setAlignment(Paragraph.ALIGN_CENTER);
 			document.add(reportTitle);
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < 2; i++) {
+				document.add(new Paragraph("\n"));
+			}
+			// 楼盘名称
+			Paragraph lpTitle = new Paragraph(lpName, new Font(bfChinese, 14, Font.BOLD));
+			lpTitle.setAlignment(Paragraph.ALIGN_CENTER);
+			document.add(lpTitle);
+			// 报告创建时间
+			Paragraph createTimeTitle = new Paragraph(DateUtil.getSysDate(), new Font(bfChinese, 14, Font.BOLD));
+			createTimeTitle.setAlignment(Paragraph.ALIGN_CENTER);
+			document.add(createTimeTitle);
+			for (int i = 0; i < 14; i++) {
 				document.add(new Paragraph("\n"));
 			}
 			// 添加公司名称
