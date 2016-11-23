@@ -462,4 +462,8 @@
 	<delete id="delReportTmp">
 		delete from t_report_tmp
 	</delete>
+	<!-- 批量修改环境报告的修改时间 2016-11-23 zhy -->
+	<update id="updateReportTime">
+		update t_report set update_time = now()
+	</update>
 </mapper>

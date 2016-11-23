@@ -133,4 +133,15 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * @return
 	 */
 	int delReportTmp();
+
+	/**
+	 * 
+	 * 方法: updateReportTime <br>
+	 * 描述: 批量修改环境报告的修改时间 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年11月23日 下午4:31:48
+	 * 
+	 * @return
+	 */
+	int updateReportTime();
 }

@@ -676,6 +676,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							}
 						}
 					}
+					/**
+					 * 批量修改报告的最后生成时间
+					 */
+					mapper.updateReportTime();
 				}
 			}
 		} catch (Exception e) {
