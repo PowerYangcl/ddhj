@@ -499,7 +499,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		String lat = arr[0];
 		String lng = arr[1];
 		
-		JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");     // TODO 耗时接口  
+		JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");     
 		if(addr.getString("code").equals("1")){
 			result.put("currname", addr.getString("address")); // 当前位置信息
 			
@@ -523,7 +523,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 						rList = reportMapper.findPriceByCode(lpcodes);
 					}
 					
-					
+					SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
 					List<Estate> projectList = new ArrayList<>();
 					// 开始组建数据
 					for(EData e : list){
@@ -531,6 +531,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 						String distance = CommonUtil.getDistance(lat, lng, e.getLat(), e.getLng());
 						String lpcode = "";
 						String price = "￥200";
+						String updateTime = sdf.format(new Date());  // 默认为今天
 						if(lpList != null && lpList.size() > 0){
 							for(TLandedProperty p : lpList){
 								String lpname = p.getTitle();
@@ -540,6 +541,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 										for(TReport r : rList){
 											if(r.getHousesCode().equals(lpcode)){
 												price = String.valueOf(r.getPrice());
+												updateTime = r.getUpdateTime();
 												break;
 											}
 										}
@@ -552,7 +554,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 						if(e.getImages() != null && e.getImages().size() > 0){
 							img = e.getImages().get(0);
 						}
-						projectList.add(new Estate(e.getTitle() , distance , e.getAddressFull() , price , lpcode, position_, img , e.getScore()) );		
+						projectList.add(new Estate(e.getTitle() , distance , e.getAddressFull() , price , lpcode, position_, img , e.getScore() , updateTime) );		
 					}
 
 					Collections.sort(projectList); 
@@ -940,8 +942,9 @@ class Estate implements Comparable{
 	private String position;
 	private String img;
 	private Double score;
+	private String updateTime;
 	
-	public Estate(String name, String distance, String address, String price, String number, String position, String img ,Double score) {
+	public Estate(String name, String distance, String address, String price, String number, String position, String img ,Double score , String updateTime) {
 		this.name = name;
 		this.distance = distance;
 		this.address = address;
@@ -950,6 +953,7 @@ class Estate implements Comparable{
 		this.position = position;
 		this.img = img;
 		this.score = score;
+		this.updateTime = updateTime;
 	}
 
 	public int compareTo(Object o){  // 分数相同则以距离作为排序依据 
@@ -963,6 +967,12 @@ class Estate implements Comparable{
 	}
 
 	
+	public String getUpdateTime() {
+		return updateTime;
+	}
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
+	}
 	public String getName() {
 		return name;
 	}
