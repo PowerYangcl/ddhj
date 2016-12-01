@@ -349,12 +349,14 @@ public class CityAirServiceImpl implements ICityAirService {
 				obj = new JSONObject();
 				obj.put("code", "-1");
 				obj.put("message", "查询数据为空");
+				obj.put("reason", "error");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			obj = new JSONObject();
-			obj.put("code", "-1");
+			obj.put("code", "-2");
 			obj.put("message", "查询数据错误");
+			obj.put("reason", "error");
 		}
 		return obj;
 	}
@@ -405,10 +407,17 @@ public class CityAirServiceImpl implements ICityAirService {
 			res.put("des", des); // 可正常活动。
 			return res;
 		}else{
-			res.put("info", "无天气信息"); // 阵雨
-			res.put("wind", "2级"); // 东南风/2级
-			res.put("quality", "优"); // 优|轻度污染
-			res.put("des", "人烟稀少，尽量少去"); // 可正常活动。
+			if(obj.getString("code").equals("-1")){
+				res.put("info", "天气一般"); // 阵雨
+				res.put("wind", "1级"); // 东南风/2级
+				res.put("quality", "优"); // 优|轻度污染
+				res.put("des", "可正常活动"); // 可正常活动。
+			}else{
+				res.put("info", "无天气信息"); // 阵雨
+				res.put("wind", "2级"); // 东南风/2级
+				res.put("quality", "优"); // 优|轻度污染
+				res.put("des", "人烟稀少，尽量少去"); // 可正常活动。
+			}
 			return res;
 		}
 	}

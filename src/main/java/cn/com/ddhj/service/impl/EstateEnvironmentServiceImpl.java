@@ -429,15 +429,15 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 			
 			EnvInfo water = new EnvInfo();  
 			water.setName("水质");
-			water.setMemo("溶解氧"); 
+			water.setMemo(wFuture.get().get("memo"));   // "溶解氧"
 			water.setLevel(wFuture.get().get("level"));
 			envList.add(water);
 			
 			// 新版需求
 			EnvInfo land = new EnvInfo();    // 土壤
 			land.setName("土壤");
-			land.setMemo("无污染");
-			land.setLevel("良"); 
+			land.setMemo("良");
+			land.setLevel("ll类"); 
 			
 			EnvInfo dang = new EnvInfo(); // 危险品
 			dang.setName("危险品");

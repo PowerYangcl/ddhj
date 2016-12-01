@@ -36,8 +36,9 @@ public class Task1032WaterEnv implements Callable<Map<String , String>>{
 		Map<String , String> water = new HashMap<String , String>(); 
 		String city_ = map.get(this.city);
 		if(StringUtils.isBlank(city_)){   // 不在我定义的城市中则给默认值
-			water.put("level", "II");
+			water.put("level", "II类");
 			water.put("s", "2");
+			water.put("memo", "良");
 		}else{
 			 List<TWaterEnviroment> list = this.waterEnvMapper.selectByCity(city_);
 			 if(list != null && list.size() != 0){
@@ -53,23 +54,29 @@ public class Task1032WaterEnv implements Callable<Map<String , String>>{
 				 String level = w.getOxygenquality();
 				 water.put("level", level);
 				 if(level.equals("Ⅰ")){
-					 water.put("level", "I");
+					 water.put("level", "I类");
 					 water.put("s", "1");
+					 water.put("memo", "优");
 				 }else if(level.equals("-") || level.equals("Ⅱ")){
-					 water.put("level", "II");
+					 water.put("level", "II类");
 					 water.put("s", "2");
+					 water.put("memo", "良");
 				 }else if(StringUtils.isBlank(level)){
-					 water.put("level", "II");
+					 water.put("level", "II类");
 					 water.put("s", "2");
+					 water.put("memo", "良");
 				 }else if(level.equals("Ⅲ")){
-					 water.put("level", "III");
+					 water.put("level", "III类");
 					 water.put("s", "3");
+					 water.put("memo", "中");
 				 }else if(level.equals("Ⅳ")){
-					 water.put("level", "IV");
+					 water.put("level", "IV类");
 					 water.put("s", "4");
+					 water.put("memo", "差");
 				 }else {
-					 water.put("level", "V");
+					 water.put("level", "V类");
 					 water.put("s", "5");
+					 water.put("memo", "劣");
 				 }
 				 
 			 }else{
