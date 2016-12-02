@@ -2,10 +2,13 @@ package cn.com.ddhj.service.impl;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -322,10 +325,39 @@ public class CityAirServiceImpl implements ICityAirService {
 				list.add(cad);
 				e.setList(list);
 			}
+		}else{
+			String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+			CityAqiData c = new CityAqiData();
+			c.setDate(today);
+			c.setCity(cityName);
+			c.setAQI("80");
+			c.setQuality("II"); 
+			
+			List<CityAqiData> el = new ArrayList<CityAqiData>();
+			for(int i = 1 ; i < 8 ; i ++){
+				int flag = Integer.valueOf("-" + i);
+				CityAqiData a = new CityAqiData();
+				String day = new SimpleDateFormat("yyyy-MM-dd").format(this.dateCount(new Date(), flag)); 
+				a.setDate(day);
+				a.setCity(cityName);
+				Integer aqi = 20 + new Random().nextInt(100) + 1;
+				a.setAQI(aqi.toString());
+				a.setQuality("II"); 
+				el.add(a);
+			}
+			e.setEntity(c);
+			e.setList(el); 
 		}
 		return e;
 	}
 
+	private Date dateCount(Date date , int flag){
+	    Calendar calendar = Calendar.getInstance();       // 日历对象
+	    calendar.setTime(date);       // 设置当前日期
+	    calendar.add(Calendar.DATE , flag); // 月份减一 或 加一
+	    return calendar.getTime();
+	}
+	
 	/**
 	 * @descriptions 访问天气预报接口
 	 *
