@@ -90,7 +90,7 @@
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="quartzCreateReport" />
 		<!-- 修改为每周六晚上00:00运行定时任务 -->
-		<property name="cronExpression" value="0 00 00 ? * SAT"></property>
+		<property name="cronExpression" value="0 00 23 ? * SAT"></property>
 	</bean>
 	<bean name="quartzScheduler"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
