@@ -90,11 +90,7 @@ public class PdfUtil extends BaseClass {
 			Paragraph lpTitle = new Paragraph(lpName, new Font(bfChinese, 14, Font.BOLD));
 			lpTitle.setAlignment(Paragraph.ALIGN_CENTER);
 			document.add(lpTitle);
-			// 报告创建时间
-			Paragraph createTimeTitle = new Paragraph(DateUtil.getSysDate(), new Font(bfChinese, 14, Font.BOLD));
-			createTimeTitle.setAlignment(Paragraph.ALIGN_CENTER);
-			document.add(createTimeTitle);
-			for (int i = 0; i < 14; i++) {
+			for (int i = 0; i < 16; i++) {
 				document.add(new Paragraph("\n"));
 			}
 			// 添加公司名称
