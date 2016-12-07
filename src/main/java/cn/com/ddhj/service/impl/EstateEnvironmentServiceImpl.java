@@ -749,7 +749,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 * @param city_ 
 	 * @param area_
 	 * @param type A SevenAqi| B FifteenWeather
-	 * @return
+	 * @test http://localhost:8080/ddhj/api.htm?apiTarget=2050&api_key=appfamilyhas
 	 * @date 2016年12月7日 下午10:57:16
 	 * @author Yangcl 
 	 * @version 1.0.0.1
