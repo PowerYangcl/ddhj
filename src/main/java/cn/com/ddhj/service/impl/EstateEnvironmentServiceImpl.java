@@ -801,6 +801,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 							TCityWeatherForecast e = new TCityWeatherForecast();
 							e.setId(cwf.getId());
 							e.setSevenAqi(sevenAqi); 
+							e.setUpdateTime(new Date()); 
 							cityWeatherForecastMapper.updateSelective(e);
 							result.put("code", 1);
 							result.put("date", JSONArray.parseArray(obj.getString("series"))); 
@@ -824,6 +825,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 							TCityWeatherForecast e = new TCityWeatherForecast();
 							e.setId(cwf.getId());
 							e.setFifteenWeather(fifteenWeather); 
+							e.setUpdateTime(new Date()); 
 							cityWeatherForecastMapper.updateSelective(e);
 							result.put("code", 1);
 							result.put("date", JSONArray.parseArray(obj.getString("series")));
