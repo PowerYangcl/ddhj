@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,12 +30,14 @@ import cn.com.ddhj.dto.CityAqi;
 import cn.com.ddhj.dto.CityAqiData;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TChemicalPlantMapper;
+import cn.com.ddhj.mapper.TCityWeatherForecastMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TChemicalPlant;
+import cn.com.ddhj.model.TCityWeatherForecast;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TRubbishRecycling;
 import cn.com.ddhj.model.TWaterEnviroment;
@@ -96,7 +99,8 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	@Resource
 	private TWaterEnviromentMapper waterEnvMapper;  // 水质量信息
 	
-	
+	@Resource
+	private TCityWeatherForecastMapper cityWeatherForecastMapper; // 【7*24小时城市天气空气质量预报】
 	/**
 	 * @descriptions 地区环境接口|1025
 	 *
@@ -738,6 +742,103 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		}
 	}
 	
+	/**
+	 * @descriptions 【7*24小时城市天气空气质量预报】
+	 * 										A【根据地区编码查询每日AQI 均值】未来7天的数据
+	 *								  			B【15天概览天气预报数据】
+	 * @param city_ 
+	 * @param area_
+	 * @param type A SevenAqi| B FifteenWeather
+	 * @return
+	 * @date 2016年12月7日 下午10:57:16
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject getFutureSevenAqi(String city_ , String area_ , String type){
+		JSONObject result = new JSONObject();
+		result.put("code", 0);
+		String city = StringUtils.substringBefore(city_, "市");
+		String area = "";
+		if(StringUtils.endsWith(area_, "区")){
+			area = StringUtils.substringBefore(area_, "区");
+		}else if(StringUtils.endsWith(area_,   "县" )){
+			area = StringUtils.substringBefore(area_, "县");
+		}else if(StringUtils.endsWith(area_, "市" )){
+			area = StringUtils.substringBefore(area_, "市");
+		}else if(StringUtils.endsWith(area_, "旗")){
+			area = StringUtils.substringBefore(area_, "旗");
+		}
+		Map<String , String > map = new HashMap<String , String>();
+		map.put("tcity", city);
+		map.put("tarea", area);
+		TCityWeatherForecast cwf = cityWeatherForecastMapper.selectByCityArea(map);
+		if(cwf == null){
+			return result;
+		}
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		String today = formatter.format(new Date());
+		String url = "";
+		String key = "d0949e3362e8a98f426273b7763fec1e";
+		Map<String, String> param = new HashMap<String, String>(); 		 
+		param.put("key", key);		
+		param.put("areaid" , cwf.getAreaid());
+		String responseJson = ""; 
+		try {
+			if(type.equals("A")){
+				if(StringUtils.isNotBlank(cwf.getSevenAqi()) && cwf.getSevenAqi().startsWith(today)){
+					result.put("code", 1);
+					result.put("date", JSONArray.parseArray(StringUtils.substringAfter(cwf.getSevenAqi(), today))); 
+				}else{ 
+					param.put("startTime" , this.getSpecifyDate(new Date(), 1, "yyyyMMdd"));     // 更新今天的数据
+					param.put("endTime" , this.getSpecifyDate(new Date(), 7, "yyyyMMdd")); 
+					url = "http://v.juhe.cn/xiangji_weather/aqi_average_byAreaid.php";
+					responseJson = PureNetUtil.post(url , param);
+					if (responseJson != null && !"".equals(responseJson)) {
+						JSONObject obj = JSONObject.parseObject(responseJson);
+						if(obj.getString("reason").equals("success")){
+							obj = JSONObject.parseObject(obj.getString("result"));
+							String sevenAqi = today + obj.getString("series");
+							TCityWeatherForecast e = new TCityWeatherForecast();
+							e.setId(cwf.getId());
+							e.setSevenAqi(sevenAqi); 
+							cityWeatherForecastMapper.updateSelective(e);
+							result.put("code", 1);
+							result.put("date", JSONArray.parseArray(obj.getString("series"))); 
+						}
+					} 
+				}
+			}else if(type.equals("B")){
+				if(StringUtils.isNotBlank(cwf.getFifteenWeather()) && cwf.getFifteenWeather().startsWith(today)){
+					result.put("code", 1);
+					result.put("date", JSONArray.parseArray(StringUtils.substringAfter(cwf.getFifteenWeather(), today))); 
+				}else{ 
+					param.put("startTime" , this.getSpecifyDate(new Date(), 1, "yyyyMMdd"));  // 更新今天的数据
+					param.put("endTime" , this.getSpecifyDate(new Date(), 15, "yyyyMMdd")); 
+					url = "http://v.juhe.cn/xiangji_weather/15_area.php";
+					responseJson = PureNetUtil.post(url , param);
+					if (responseJson != null && !"".equals(responseJson)) {
+						JSONObject obj = JSONObject.parseObject(responseJson);
+						if(obj.getString("reason").equals("success")){
+							obj = JSONObject.parseObject(obj.getString("result"));
+							String fifteenWeather = today + obj.getString("series");
+							TCityWeatherForecast e = new TCityWeatherForecast();
+							e.setId(cwf.getId());
+							e.setFifteenWeather(fifteenWeather); 
+							cityWeatherForecastMapper.updateSelective(e);
+							result.put("code", 1);
+							result.put("date", JSONArray.parseArray(obj.getString("series")));
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); 
+		}
+		
+		return result;
+	}
+	
+	
 	
 	
 	
@@ -858,8 +959,26 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		return level;
 	}
 	
-	
-	
+	/**
+	 * @descriptions
+	 *
+	 * @param date
+	 * @param num  把日期往后增加 num 天.  整数往后推, 负数往前移动
+	 * @param format_ "yyyyMMdd"
+	 * @return
+	 * @date 2016年12月7日 下午11:31:11
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	private String getSpecifyDate(Date date , int num , String format_){
+		 Calendar calendar = new GregorianCalendar();
+		 calendar.setTime(date);
+		 calendar.add(calendar.DATE , num); 
+		 date=calendar.getTime();  
+		 SimpleDateFormat formatter = new SimpleDateFormat(format_);
+		 
+		 return formatter.format(date);
+	}
 
 }
 

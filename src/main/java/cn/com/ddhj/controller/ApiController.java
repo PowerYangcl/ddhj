@@ -230,6 +230,15 @@ public class ApiController extends BaseClass {
 			long end = System.currentTimeMillis();
 			System.out.println("2049号接口总共耗时：" + +(end - start) + " 毫秒");
 			return null;
+		}else if ("2050".equals(api.getApiTarget())) { //  
+			long start = System.currentTimeMillis(); 
+			String city = obj.getString("city"); 		// "北京市" 
+			String area = obj.getString("area");    // "通州区" 
+			String type = obj.getString("city");      // "A" |"B"
+			JSONObject result_ = estateEnvService.getFutureSevenAqi(city , area , type);  
+			long end = System.currentTimeMillis();
+			System.out.println("2050号接口总共耗时：" + +(end - start) + " 毫秒");
+			return result_;
 		}
 		
 		

@@ -67,6 +67,9 @@ public interface IEstateEnvironmentService {
 	 * @version 1.0.0.1
 	 */
 	public void resyncWaterEnviroment(); 
+	
+	
+	public JSONObject getFutureSevenAqi(String city , String area , String type);
 }
 
 
