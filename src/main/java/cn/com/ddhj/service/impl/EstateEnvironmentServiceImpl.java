@@ -175,7 +175,7 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 				JSONObject result_ = JSONObject.parseObject(obj.getString("result")); 
 				JSONObject today = JSONObject.parseObject(result_.getString("today")); 
 				String weather = today.getString("weather");
-				String weatherId = today.getString("weather_id");
+				JSONObject weatherId = JSONObject.parseObject(today.getString("weather_id"));  // 序列话成对象，避免出现转义json串的情况，方便页面调用
 				String windpower = today.getString("wind");
 				String tempmin = today.getString("temperature").split("~")[0].split("℃")[0];
 				String tempmax = today.getString("temperature").split("~")[1].split("℃")[0];
