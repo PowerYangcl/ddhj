@@ -175,6 +175,7 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 				JSONObject result_ = JSONObject.parseObject(obj.getString("result")); 
 				JSONObject today = JSONObject.parseObject(result_.getString("today")); 
 				String weather = today.getString("weather");
+				String weatherId = today.getString("weather_id");
 				String windpower = today.getString("wind");
 				String tempmin = today.getString("temperature").split("~")[0].split("℃")[0];
 				String tempmax = today.getString("temperature").split("~")[1].split("℃")[0];
@@ -249,6 +250,7 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 //				result.put("value", "16");// 环境值 经过讨论，这个值不再显示
 				
 				result.put("weather", weather); 
+				result.put("weatherId", weatherId);
 				result.put("windpower", windpower); 
 				result.put("tempmin", tempmin); 
 				result.put("tempmax", tempmax); 
