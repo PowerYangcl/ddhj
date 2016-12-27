@@ -873,7 +873,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 			calendar = JSONObject.parseObject(String.valueOf( o ));
 		}
 		
-		if( o == null || StringUtils.isBlank(calendar.getString("date")) || !calendar.getString("date").equals(today)){
+		if( o == null || StringUtils.isBlank(calendar.getString("date")) || !calendar.getString("date").equals(today) || !calendar.getBoolean("flag")){
 			ExecutorService executor = Executors.newCachedThreadPool();
 			Task2051Calendar cale_ = new Task2051Calendar(today);
 			Future<JSONObject> caleTask =  executor.submit(cale_); 
@@ -888,7 +888,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 					result.putAll(cale);
 					result.putAll(holiday); 
 				}else{
-					result.put("flag", false);
+					result.put("flag", false); //  标识字段，如果为false 则代表聚合请求失败，给的是假数据，再次请求的时候会作为判断依据
 					result.put("avoid", "上班、写代码、做文案、挤公交");  // 开市.纳采.订盟.作灶.造庙.造船.经络
 					result.put("animalsYear", "猫");  // 猴
 					result.put("weekday", this.weekday(today));  // 星期六 

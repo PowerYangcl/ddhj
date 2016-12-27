@@ -47,7 +47,7 @@ public class Task2051Calendar implements Callable<JSONObject>{
 				if(obj.getString("reason").equals("Success")){
 					obj = JSONObject.parseObject(obj.getString("result"));
 					obj = JSONObject.parseObject(obj.getString("data"));
-					result.put("avoid", obj.getString("data"));  // 开市.纳采.订盟.作灶.造庙.造船.经络
+					result.put("avoid", obj.getString("avoid"));  // 开市.纳采.订盟.作灶.造庙.造船.经络
 					result.put("animalsYear", obj.getString("animalsYear"));  // 猴
 					result.put("weekday", obj.getString("weekday"));  // 星期六
 					result.put("suit", obj.getString("suit"));  //  嫁娶.冠笄.祭祀.祈福.求嗣.雕刻.开光.安香.出行.入学.修造.动土.竖柱.上梁.造屋.起基.安门.出火.移徙.入宅.掘井.造畜椆栖.安葬.破土.除服.成服
@@ -56,7 +56,9 @@ public class Task2051Calendar implements Callable<JSONObject>{
 					result.put("date", obj.getString("date"));  // 2016-12-24
 					result.put("flag", true);
 				}else{
-					logger.info("【聚合接口】->【万年历】->【获取当天的详细信息】|聚合接口获取当天的详细信息失败！错误码：" + obj.getInteger("error_code"));
+					String msg = "【聚合接口】->【万年历】->【获取当天的详细信息】|聚合接口获取当天的详细信息失败！错误码：" + obj.getInteger("error_code")  + "|" + obj.getString("reason");
+					System.out.println(msg + "|聚合key=" + key); 
+					logger.info(msg + "|聚合key=" + key);
 				}
 			}else{
 				logger.info("【聚合接口】->【万年历】->【获取当天的详细信息】点点环境服务器发起请求失败！服务器网络不稳定！");

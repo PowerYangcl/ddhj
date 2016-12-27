@@ -55,10 +55,12 @@ public class Task2051Holiday implements Callable<JSONObject>{
 						result.put("holidayDesc", arr.getJSONObject(0).getString("desc"));  // 1月1日放假，1月2日（星期一）补休，共3天。
 						result.put("flag", true);
 					}else{
-						logger.info("聚合接口】->【万年历】->【获取近期假期】聚合接口返回节假日信息为空");
+						logger.info("【聚合接口】->【万年历】->【获取近期假期】聚合接口返回节假日信息为空");
 					}
 				}else{
-					logger.info("聚合接口】->【万年历】->【获取近期假期】|聚合接口返回节假日信息失败！错误码：" + obj.getInteger("error_code"));
+					String msg = "【聚合接口】->【万年历】->【获取近期假期】|聚合接口返回节假日信息失败！错误码：" + obj.getInteger("error_code")  + "|" + obj.getString("reason");
+					System.out.println(msg + "|聚合key=" + key); 
+					logger.info(msg + "|聚合key=" + key);
 				}
 			}else{
 				logger.info("【聚合接口】->【万年历】->【获取近期假期】点点环境服务器发起请求失败！服务器网络不稳定！");
