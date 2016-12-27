@@ -18,6 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -155,9 +156,16 @@ long start = System.currentTimeMillis();
 	        rub.setMapper(rubbishMapper);
 	        rub.setChemicalMapper(chemicalMapper); 
 	        Future<Map<String , String>> rubFuture = executor.submit(rub);
+	        
+	        Task1032Weather tw_ = new Task1032Weather();
+			tw_.setCity("北京");
+			tw_.setCityAirService(cityAirService); 
+			Future<JSONObject> twTask =  executor.submit(tw_); 
+			
 			
 			JSONObject addr = posTask.get();
 			JSONObject obj = weaTask.get();
+			JSONObject tw = twTask.get();
 	        executor.shutdown();
 long end = System.currentTimeMillis();
 logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
@@ -249,6 +257,8 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 				result.put("level", this.scoreLevel(score));  // 环境等级
 //				result.put("value", "16");// 环境值 经过讨论，这个值不再显示
 				
+				result.put("humidity", tw.getString("humidity"));
+				result.put("temperature", tw.getString("temperature"));
 				result.put("weather", weather); 
 				result.put("weatherId", weatherId);
 				result.put("windpower", windpower); 
@@ -843,7 +853,66 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	}
 	
 	
-	
+	/**
+	 * @description: 万年历接口 
+	 * 
+	 * @test http://localhost:8080/ddhj/api.htm?apiTarget=2051&api_key=appfamilyhas  
+	 * @author Yangcl 
+	 * @date 2016年12月27日 上午10:17:54 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject perpetualCalendar(HttpSession s){
+		JSONObject result = new JSONObject();
+		result.put("code", 0);
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String today = format.format(new Date());
+		JSONObject calendar = null;
+		Object o = s.getAttribute("perpetual_calendar");  //  null ;
+		if(o != null){
+			calendar = JSONObject.parseObject(String.valueOf( o ));
+		}
+		
+		if( o == null || StringUtils.isBlank(calendar.getString("date")) || !calendar.getString("date").equals(today)){
+			ExecutorService executor = Executors.newCachedThreadPool();
+			Task2051Calendar cale_ = new Task2051Calendar(today);
+			Future<JSONObject> caleTask =  executor.submit(cale_); 
+			
+			Task2051Holiday holiday_ = new Task2051Holiday(today);
+			Future<JSONObject> holidayTask =  executor.submit(holiday_); 
+			
+			try {
+				JSONObject cale = caleTask.get();
+				JSONObject holiday = holidayTask.get();
+				if(cale.getBoolean("flag") && holiday.getBoolean("flag")){
+					result.putAll(cale);
+					result.putAll(holiday); 
+				}else{
+					result.put("flag", false);
+					result.put("avoid", "上班、写代码、做文案、挤公交");  // 开市.纳采.订盟.作灶.造庙.造船.经络
+					result.put("animalsYear", "猫");  // 猴
+					result.put("weekday", this.weekday(today));  // 星期六 
+					result.put("suit", "看电影、逛街、逗女友、吃大餐");  //  嫁娶.冠笄.祭祀.祈福.求嗣.雕刻.开光.安香.出行.入学.修造.动土.竖柱.上梁.造屋.起基.安门.出火.移徙.入宅.掘井.造畜椆栖.安葬.破土.除服.成服
+					result.put("lunarYear", "东汉末年");  // 丙申年 
+					result.put("lunar", "七月初七");  // 十一月廿六
+					result.put("date", today );  // 2016-12-24
+					result.put("holidayName", "");  //  元旦
+					result.put("holidayFestival", "");  // 2017-1-1
+					result.put("holidayDesc", "");  // 1月1日放假，1月2日（星期一）补休，共3天。
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+			System.out.println(result.toJSONString()); 
+			s.setAttribute("perpetual_calendar", result.toJSONString());  
+		}else{
+			return calendar;  // 数据存在直接取缓存中的信息 
+		}
+		
+		return result;
+	}
 	
 	
 	/**
@@ -893,6 +962,39 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		
 		return str + "@" + this.formateDay(date);
 	}
+	
+	private String weekday(String date) {
+		String[] arr = date.split("-");
+		Calendar temp = Calendar.getInstance();
+		temp.set(Integer.valueOf(arr[0]) , Integer.valueOf(arr[1]) - 1, Integer.valueOf(arr[2]));
+		int x = temp.get(Calendar.DAY_OF_WEEK);
+		String str = "";
+		switch (x){
+			case Calendar.SUNDAY:
+				str = "星期日";
+				break;
+			case Calendar.MONDAY:
+				str = "星期一";
+				break;
+			case Calendar.TUESDAY:
+				str = "星期二";
+				break;
+			case Calendar.WEDNESDAY:
+				str = "星期三";
+				break;
+			case Calendar.THURSDAY:
+				str = "星期四";
+				break;
+			case Calendar.FRIDAY:
+				str = "星期五";
+				break;
+			case Calendar.SATURDAY:
+				str = "星期六";
+				break; 
+		}
+		
+		return str ;
+	} 
 	
 	/**
 	 * @descriptions 格式化月份日期为：8.29

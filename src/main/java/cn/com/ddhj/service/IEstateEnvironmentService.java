@@ -1,5 +1,7 @@
 package cn.com.ddhj.service;
 
+import javax.servlet.http.HttpSession;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -70,6 +72,15 @@ public interface IEstateEnvironmentService {
 	
 	
 	public JSONObject getFutureSevenAqi(String city , String area , String type);
+	
+	/**
+	 * @description: 万年历接口 
+	 * 
+	 * @author Yangcl 
+	 * @date 2016年12月27日 上午10:17:54 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject perpetualCalendar(HttpSession session);
 }
 
 

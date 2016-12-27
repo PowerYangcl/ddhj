@@ -239,6 +239,9 @@ public class ApiController extends BaseClass {
 			long end = System.currentTimeMillis();
 			System.out.println("2050号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;
+		}else if ("2051".equals(api.getApiTarget())){      // 万年历接口  
+			JSONObject result_ = estateEnvService.perpetualCalendar(session);
+			return result_;
 		}
 		
 		

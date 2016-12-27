@@ -417,6 +417,8 @@ public class CityAirServiceImpl implements ICityAirService {
 			// {"des":"可正常活动。","curPm":"39","pm25":"27","level":1,"pm10":"55","quality":"优"}
 			JSONObject pm25_ = JSONObject.parseObject(pm25.getString("pm25"));
 			String info = weather.getString("info");
+			String humidity = weather.getString("humidity"); // 湿度
+			String temperature = weather.getString("temperature");  // 温度 
 			String wind_ = wind.getString("direct") + "/" + wind.getString("power");
 			String quality = pm25_.getString("quality");
 			String des = pm25_.getString("des");
@@ -434,6 +436,8 @@ public class CityAirServiceImpl implements ICityAirService {
 			}
 
 			res.put("info", info); // 阵雨
+			res.put("humidity", humidity);
+			res.put("temperature", temperature);  
 			res.put("wind", wind_); // 东南风/2级
 			res.put("quality", quality); // 优|轻度污染
 			res.put("des", des); // 可正常活动。
