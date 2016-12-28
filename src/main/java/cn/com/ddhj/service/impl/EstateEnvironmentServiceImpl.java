@@ -857,6 +857,8 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 * @description: 万年历接口 
 	 * 
 	 * @test http://localhost:8080/ddhj/api.htm?apiTarget=2051&api_key=appfamilyhas  
+	 * 	线上访问地址：
+	 * 	http://api.sys.ecomapit.com/ddhj/api.htm?apiTarget=2051&api_key=appfamilyhas
 	 * @author Yangcl 
 	 * @date 2016年12月27日 上午10:17:54 
 	 * @version 1.0.0.1

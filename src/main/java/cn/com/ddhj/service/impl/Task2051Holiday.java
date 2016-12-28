@@ -34,7 +34,7 @@ public class Task2051Holiday implements Callable<JSONObject>{
 		JSONObject result = new JSONObject();
 		result.put("flag", false);
 		
-		String url = "http://japi.juhe.cn/calendar/month";
+		String url = "http://v.juhe.cn/calendar/month";
 		String key = "6b773a4dceca6afd793098e116f647de";
 		Map<String, String> param = new HashMap<String, String>(); 		 
 		param.put("key", key);
@@ -47,7 +47,7 @@ public class Task2051Holiday implements Callable<JSONObject>{
 				JSONObject obj = JSONObject.parseObject(responseJson);
 				if(obj.getString("reason").equals("Success")){
 					obj = JSONObject.parseObject(obj.getString("result"));
-					obj = JSONObject.parseObject(obj.getString("data"));
+//					obj = JSONObject.parseObject(obj.getString("data"));
 					JSONArray arr = JSONArray.parseArray(obj.getString("holiday"));
 					if(arr != null && arr.size() != 0){
 						result.put("holidayName", arr.getJSONObject(0).getString("name"));  //  元旦
