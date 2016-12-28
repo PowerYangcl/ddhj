@@ -886,6 +886,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 			try {
 				JSONObject cale = caleTask.get();
 				JSONObject holiday = holidayTask.get();
+				executor.shutdown();
 				if(cale.getBoolean("flag") && holiday.getBoolean("flag")){
 					result.putAll(cale);
 					result.putAll(holiday); 
