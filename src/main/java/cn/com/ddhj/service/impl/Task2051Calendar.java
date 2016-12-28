@@ -46,7 +46,7 @@ public class Task2051Calendar implements Callable<JSONObject>{
 				JSONObject obj = JSONObject.parseObject(responseJson);
 				if(obj.getString("reason").equals("Success")){
 					obj = JSONObject.parseObject(obj.getString("result"));
-//					obj = JSONObject.parseObject(obj.getString("data"));
+					obj = JSONObject.parseObject(obj.getString("data"));
 					result.put("avoid", obj.getString("avoid"));  // 开市.纳采.订盟.作灶.造庙.造船.经络
 					result.put("animalsYear", obj.getString("animalsYear"));  // 猴
 					result.put("weekday", obj.getString("weekday"));  // 星期六

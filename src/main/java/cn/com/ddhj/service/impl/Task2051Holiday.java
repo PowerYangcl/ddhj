@@ -47,7 +47,7 @@ public class Task2051Holiday implements Callable<JSONObject>{
 				JSONObject obj = JSONObject.parseObject(responseJson);
 				if(obj.getString("reason").equals("Success")){
 					obj = JSONObject.parseObject(obj.getString("result"));
-//					obj = JSONObject.parseObject(obj.getString("data"));
+					obj = JSONObject.parseObject(obj.getString("data"));
 					JSONArray arr = JSONArray.parseArray(obj.getString("holiday"));
 					if(arr != null && arr.size() != 0){
 						result.put("holidayName", arr.getJSONObject(0).getString("name"));  //  元旦
