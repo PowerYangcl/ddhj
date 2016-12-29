@@ -158,7 +158,7 @@ long start = System.currentTimeMillis();
 	        Future<Map<String , String>> rubFuture = executor.submit(rub);
 	        
 	        Task1032Weather tw_ = new Task1032Weather();
-			tw_.setCity("北京");
+			tw_.setCity(city);
 			tw_.setCityAirService(cityAirService); 
 			Future<JSONObject> twTask =  executor.submit(tw_); 
 			
@@ -259,6 +259,7 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 				
 				result.put("humidity", tw.getString("humidity"));
 				result.put("temperature", tw.getString("temperature"));
+				result.put("updateTime", tw.getString("updateTime"));  
 				result.put("weather", weather); 
 				result.put("weatherId", weatherId);
 				result.put("windpower", windpower); 

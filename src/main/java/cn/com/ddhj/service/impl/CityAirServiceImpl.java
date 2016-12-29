@@ -359,7 +359,7 @@ public class CityAirServiceImpl implements ICityAirService {
 	}
 	
 	/**
-	 * @descriptions 访问天气预报接口
+	 * @descriptions【 聚合接口】->【天气预报】(免费接口)
 	 *
 	 * @param city
 	 * @return
@@ -438,6 +438,7 @@ public class CityAirServiceImpl implements ICityAirService {
 			res.put("info", info); // 阵雨
 			res.put("humidity", humidity);
 			res.put("temperature", temperature);  
+			res.put("updateTime", realtime.getString("time"));       
 			res.put("wind", wind_); // 东南风/2级
 			res.put("quality", quality); // 优|轻度污染
 			res.put("des", des); // 可正常活动。
