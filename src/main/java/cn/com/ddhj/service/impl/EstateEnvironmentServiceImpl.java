@@ -276,6 +276,7 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 				return result;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			result.put("resultCode", -1); 
 			result.put("resultMessage", "平台内部错误"); 
 			return result;

@@ -377,6 +377,9 @@ public class CityAirServiceImpl implements ICityAirService {
 			String result = PureNetUtil.get(url, param);
 			if (result != null && !"".equals(result)) {
 				obj = JSONObject.parseObject(result);
+				if(obj.getString("resultcode").equals("202")){
+					obj.put("code", "-3"); // 查询不到该城市的信息
+				}
 			} else {
 				obj = new JSONObject();
 				obj.put("code", "-1");
@@ -453,7 +456,7 @@ public class CityAirServiceImpl implements ICityAirService {
 				res.put("info", "无天气信息"); // 阵雨
 				res.put("wind", "2级"); // 东南风/2级
 				res.put("quality", "优"); // 优|轻度污染
-				res.put("des", "人烟稀少，尽量少去"); // 可正常活动。
+				res.put("des", "查询不到该城市的信息"); // 可正常活动。
 			}
 			return res;
 		}
