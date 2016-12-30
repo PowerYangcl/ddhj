@@ -377,7 +377,7 @@ public class CityAirServiceImpl implements ICityAirService {
 			String result = PureNetUtil.get(url, param);
 			if (result != null && !"".equals(result)) {
 				obj = JSONObject.parseObject(result);
-				if(obj.getString("resultcode").equals("202")){
+				if(obj.getString("error_code").equals("207302")){
 					obj.put("code", "-3"); // 查询不到该城市的信息
 				}
 			} else {
