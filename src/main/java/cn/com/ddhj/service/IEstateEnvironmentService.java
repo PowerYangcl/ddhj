@@ -1,6 +1,9 @@
 package cn.com.ddhj.service;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+
+import org.springframework.context.ApplicationContext;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -80,7 +83,7 @@ public interface IEstateEnvironmentService {
 	 * @date 2016年12月27日 上午10:17:54 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject perpetualCalendar(HttpSession session);
+	public JSONObject perpetualCalendar(ServletContext application);
 }
 
 
