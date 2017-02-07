@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseTest;
@@ -26,6 +27,7 @@ public class TOrderTest extends BaseTest {
 	@Autowired
 	private ITOrderService service;
 
+	@Test
 	public void insert() {
 		TOrder entity = new TOrder();
 		entity.setCode(WebHelper.getInstance().getUniqueCode("D"));
@@ -34,11 +36,18 @@ public class TOrderTest extends BaseTest {
 		entity.setPayCode("PT161007100002");
 		entity.setInvoiceTitle("个人");
 		entity.setPayPrice(BigDecimal.TEN);
+		entity.setBuyerCode("12332");
+		entity.setBuyerMobile("13452221133");
+		entity.setCheckPayMoney(entity.getPayPrice());
+		entity.setCarbonMoney(BigDecimal.ZERO);
+		entity.setCouponCodes("13232,12312312");
+		entity.setInvoiceType("增值税");
+		entity.setInvoiceContent("惠家有");
 		entity.setUpdateUser("system");
-		service.insertSelective(entity);
+		System.out.println(JSON.toJSON(entity));
+		// service.insertSelective(entity);
 	}
 
-	@Test
 	public void data() {
 		TOrderDto dto = new TOrderDto();
 		dto.setPageIndex(0);
@@ -58,11 +67,10 @@ public class TOrderTest extends BaseTest {
 
 	public void orderAffirm() {
 		String codes = "R161006100001";
-		OrderAffirmResult result = service.orderAffirm(codes);
+		OrderAffirmResult result = service.orderAffirm(codes,"6a397b4cd42f4d62b3c5c43143d94714");
 		System.out.println(JSONObject.toJSON(result));
 	}
 
-	@Test
 	public void payTest() {
 		double goodPercent = BigDecimal.valueOf(12).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
 				.doubleValue();

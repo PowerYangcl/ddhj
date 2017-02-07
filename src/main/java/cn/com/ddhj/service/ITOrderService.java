@@ -69,14 +69,14 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	/**
 	 * 
 	 * 方法: orderAffirm <br>
-	 * 描述: 根据报告code数组查询报告集合 <br>
+	 * 描述: 根据订单code订单信息及报告集合 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月7日 下午4:31:34
 	 * 
 	 * @param codes
 	 * @return
 	 */
-	OrderAffirmResult orderAffirm(String codes);
+	OrderAffirmResult orderAffirm(String code,String userToken);
 
 	/**
 	 * 订单支付

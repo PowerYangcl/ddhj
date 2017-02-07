@@ -20,6 +20,19 @@
 		<result column="level_code" property="levelCode" jdbcType="VARCHAR" />
 		<result column="level_name" property="levelName" jdbcType="VARCHAR" />
 		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="check_pay_money" property="checkPayMoney"
+			jdbcType="DECIMAL" />
+		<result column="carbon_money" property="carbonMoney" jdbcType="DECIMAL" />
+		<result column="coupon_codes" property="couponCodes" jdbcType="VARCHAR" />
+		<result column="buyer_code" property="buyerCode" jdbcType="VARCHAR" />
+		<result column="buyer_mobile" property="buyerMobile" jdbcType="VARCHAR" />
+		<result column="pay_ip" property="payIp" jdbcType="VARCHAR" />
+		<result column="uniqid" property="uniqid" jdbcType="VARCHAR" />
+		<result column="app_vision" property="appVision" jdbcType="VARCHAR" />
+		<result column="os" property="os" jdbcType="VARCHAR" />
+		<result column="invoice_type" property="invoiceType" jdbcType="VARCHAR" />
+		<result column="invoice_content" property="invoiceContent"
+			jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, uuid, code, report_code,
@@ -35,7 +48,7 @@
 		update_time,
 		'%Y-%m-%d'
 		) AS
-		update_time
+		update_time,check_pay_money,buyer_code,buyer_mobile,pay_ip,uniqid,app_vision,os,invoice_type,invoice_content
 	</sql>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
@@ -73,6 +86,33 @@
 			create_time,
 			update_user,
 			update_time,
+			check_pay_money,
+			<if test="carbonMoney != null">
+				carbon_money,
+			</if>
+			<if test="couponCodes != null">
+				coupon_codes,
+			</if>
+			buyer_code,
+			buyer_mobile,
+			<if test="payIp != null">
+				pay_ip,
+			</if>
+			<if test="uniqid != null">
+				uniqid,
+			</if>
+			<if test="appVision != null">
+				app_vision,
+			</if>
+			<if test="os != null">
+				os,
+			</if>
+			<if test="invoiceType != null">
+				invoice_type,
+			</if>
+			<if test="invoiceContent != null">
+				invoice_content,
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			#{uuid,jdbcType=VARCHAR},
@@ -91,7 +131,34 @@
 			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 			#{updateUser,jdbcType=VARCHAR},
 			STR_TO_DATE(
-			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{checkPayMoney,jdbcType=DECIMAL},
+			<if test="carbonMoney != null">
+				#{carbonMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="couponCodes != null">
+				#{couponCodes,jdbcType=VARCHAR},
+			</if>
+			#{buyerCode,jdbcType=VARCHAR},
+			#{buyerMobile,jdbcType=VARCHAR},
+			<if test="payIp != null">
+				#{payIp,jdbcType=VARCHAR},
+			</if>
+			<if test="uniqid != null">
+				#{uniqid,jdbcType=VARCHAR},
+			</if>
+			<if test="appVision != null">
+				#{appVision,jdbcType=VARCHAR},
+			</if>
+			<if test="os != null">
+				#{os,jdbcType=VARCHAR},
+			</if>
+			<if test="invoiceType != null">
+				#{invoiceType,jdbcType=VARCHAR},
+			</if>
+			<if test="invoiceContent != null">
+				#{invoiceContent,jdbcType=VARCHAR},
+			</if>
 		</trim>
 	</insert>
 	<update id="updateByCode" parameterType="cn.com.ddhj.model.TOrder">
@@ -99,6 +166,9 @@
 		<set>
 			<if test="payPrice != null">
 				pay_price = #{payPrice,jdbcType=DECIMAL},
+			</if>
+			<if test="checkPayMoney != null">
+				check_pay_money = #{checkPayMoney,jdbcType=DECIMAL},
 			</if>
 			<if test="status != null">
 				`status` = #{status,jdbcType=INTEGER},
@@ -135,7 +205,8 @@
 		r.houses_code = lp.`code`
 		LEFT JOIN
 		t_report_level AS rl ON
-		r.level_code = rl.`code`
+		r.level_code
+		= rl.`code`
 		<where>
 			o.create_user = #{createUser,jdbcType=VARCHAR}
 			<if test="status != null">
@@ -143,7 +214,8 @@
 			</if>
 		</where>
 		order by o.update_time desc
-		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+		limit
+		#{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
 	<select id="findEntityAllCount" parameterType="cn.com.ddhj.dto.TOrderDto"
 		resultType="java.lang.Integer">
@@ -196,28 +268,34 @@
 		DESC
 		LIMIT 1
 	</select>
-	
+
 	<!-- 后台管理查询订单列表 2016-10-21 zhy -->
-	<select id="findOrderAll" parameterType="cn.com.ddhj.dto.TOrderDto" resultType="Map">
+	<select id="findOrderAll" parameterType="cn.com.ddhj.dto.TOrderDto"
+		resultType="Map">
 		SELECT
-		    o.id as id, 
-			o.`code` AS `code`,
-			IFNULL(p.`name`,'') AS payName,
-			IFNULL(o.pay_price,'0.00') AS payPrice,
-			u.phone AS phone,
-			r.title AS reportTile,
-			rl.`name` AS levelName,
-			DATE_FORMAT(o.create_time, '%Y-%m-%d %H:%i:%s' ) AS createTime,
-			o.`status` as status  
+		o.id as id,
+		o.`code` AS `code`,
+		IFNULL(p.`name`,'') AS payName,
+		IFNULL(o.pay_price,'0.00') AS payPrice,
+		u.phone AS phone,
+		r.title AS
+		reportTile,
+		rl.`name` AS levelName,
+		DATE_FORMAT(o.create_time, '%Y-%m-%d
+		%H:%i:%s' ) AS createTime,
+		o.`status` as status
 		FROM
-			t_order AS o
-			LEFT JOIN t_pay_type AS p ON o.pay_code = p.`code`
-			LEFT JOIN t_user AS u ON o.create_user = u.user_code
-			LEFT JOIN t_report AS r ON o.report_code = r.`code`
-			LEFT JOIN t_landed_property AS lp ON r.houses_code = lp.`code`
-			LEFT JOIN t_report_level AS rl ON r.level_code = rl.`code`
+		t_order AS o
+		LEFT
+		JOIN t_pay_type AS p ON o.pay_code = p.`code`
+		LEFT JOIN t_user AS u ON
+		o.create_user = u.user_code
+		LEFT JOIN t_report AS r ON o.report_code =
+		r.`code`
+		LEFT JOIN t_landed_property AS lp ON r.houses_code = lp.`code`
+		LEFT JOIN t_report_level AS rl ON r.level_code = rl.`code`
 		<where>
-			1 = 1 
+			1 = 1
 			<if test="status != null and status != ''  ">
 				and o.`status` = #{status,jdbcType=INTEGER}
 			</if>
@@ -236,34 +314,12 @@
 		</where>
 		order by o.update_time desc
 	</select>
-	
+
 	<delete id="deleteOne" parameterType="java.lang.Integer">
-		delete 
-			from t_order
+		delete
+		from t_order
 		where
-			id = #{id} 
+		id =
+		#{id}
 	</delete>
 </mapper>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

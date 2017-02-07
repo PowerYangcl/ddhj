@@ -133,7 +133,22 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				entity.setCreateTime(DateUtil.getSysDateTime());
 				entity.setUpdateUser(user.getUserCode());
 				entity.setUpdateTime(DateUtil.getSysDateTime());
+				/**
+				 * 判断炭币是否与应付金额相同，如果金额相同，订单状态为已支付未下载
+				 */
+				if (entity.getCheckPayMoney().compareTo(entity.getCarbonMoney()) == 0) {
+					entity.setStatus(1);
+				}
 				mapper.insertSelective(entity);
+				/**
+				 * 如果使用了炭币，扣除炭币
+				 */
+				TUser updateCarbonMoneyUser = new TUser();
+				updateCarbonMoneyUser.setUserCode(user.getUserCode());
+				updateCarbonMoneyUser.setCarbonMoney(user.getCarbonMoney().subtract(entity.getCarbonMoney()));
+				updateCarbonMoneyUser.setUpdateUser(user.getUserCode());
+				updateCarbonMoneyUser.setUpdateTime(DateUtil.getSysDateTime());
+				userMapper.updateByCode(updateCarbonMoneyUser);
 				result.setResultCode(0);
 				result.setResultMessage("创建订单成功");
 				result.setCode(code);
@@ -190,40 +205,53 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	 * @see cn.com.ddhj.service.ITOrderService#orderAffirm(java.lang.String)
 	 */
 	@Override
-	public OrderAffirmResult orderAffirm(String codes) {
+	public OrderAffirmResult orderAffirm(String codes, String userToken) {
 		OrderAffirmResult result = new OrderAffirmResult();
-		if (codes != null && !"".equals(codes)) {
-			try {
-				List<String> list = Arrays.asList(codes.split(","));
-				if (list != null && list.size() > 0) {
-					List<TReport> reports = reportMapper.findRreportByChart(list);
-					if (reports != null && reports.size() > 0) {
-						double payMoney = 0;
-						for (int i = 0; i < reports.size(); i++) {
-							TReport r = reports.get(i);
-							r.setLevelList(reportMapper.findReportByHousesCode(r.getHousesCode()));
-							payMoney += r.getPrice().doubleValue();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if (login != null) {
+			TUser user = userMapper.findTUserByUuid(login.getUserToken());
+			if (user != null) {
+				result.setCarbonMoney(user.getCarbonMoney());
+				if (codes != null && !"".equals(codes)) {
+					try {
+						List<String> list = Arrays.asList(codes.split(","));
+						if (list != null && list.size() > 0) {
+							List<TReport> reports = reportMapper.findRreportByChart(list);
+							if (reports != null && reports.size() > 0) {
+								double payMoney = 0;
+								for (int i = 0; i < reports.size(); i++) {
+									TReport r = reports.get(i);
+									r.setLevelList(reportMapper.findReportByHousesCode(r.getHousesCode()));
+									payMoney += r.getPrice().doubleValue();
+								}
+								result.setResultCode(0);
+								result.setResultMessage("获取环境报告成功");
+								result.setPayMoney(BigDecimal.valueOf(payMoney));
+								result.setReportList(reports);
+							} else {
+								result.setResultCode(-1);
+								result.setResultMessage("环境报告为空");
+							}
+						} else {
+							result.setResultCode(-1);
+							result.setResultMessage("无效参数");
 						}
-						result.setResultCode(0);
-						result.setResultMessage("获取环境报告成功");
-						result.setPageMoney(BigDecimal.valueOf(payMoney));
-						result.setReportList(reports);
-					} else {
+					} catch (Exception e) {
+						e.printStackTrace();
 						result.setResultCode(-1);
-						result.setResultMessage("环境报告为空");
+						result.setResultMessage("无效参数");
 					}
 				} else {
 					result.setResultCode(-1);
 					result.setResultMessage("无效参数");
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			} else {
 				result.setResultCode(-1);
-				result.setResultMessage("无效参数");
+				result.setResultMessage("用户不存在");
 			}
 		} else {
 			result.setResultCode(-1);
-			result.setResultMessage("无效参数");
+			result.setResultMessage("用户未登录");
 		}
 		return result;
 	}
@@ -325,25 +353,14 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	public JSONObject deleteOne(Integer id) {
 		JSONObject result = new JSONObject();
 		Integer flag = mapper.deleteOne(id);
-		if(flag == 1){
+		if (flag == 1) {
 			result.put("code", "1");
 			result.put("msg", "删除成功");
-		}else{
+		} else {
 			result.put("code", 0);
-			result.put("msg", "删除失败"); 
+			result.put("msg", "删除失败");
 		}
-		
+
 		return result;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-

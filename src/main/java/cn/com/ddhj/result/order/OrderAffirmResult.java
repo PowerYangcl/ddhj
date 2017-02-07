@@ -16,7 +16,16 @@ import cn.com.ddhj.model.report.TReport;
 public class OrderAffirmResult extends BaseResult {
 
 	private List<TReport> reportList;
-	private BigDecimal pageMoney;
+	private BigDecimal payMoney;
+	private BigDecimal carbonMoney;
+
+	public BigDecimal getCarbonMoney() {
+		return carbonMoney;
+	}
+
+	public void setCarbonMoney(BigDecimal carbonMoney) {
+		this.carbonMoney = carbonMoney;
+	}
 
 	public List<TReport> getReportList() {
 		return reportList;
@@ -26,12 +35,12 @@ public class OrderAffirmResult extends BaseResult {
 		this.reportList = reportList;
 	}
 
-	public BigDecimal getPageMoney() {
-		return pageMoney;
+	public BigDecimal getPayMoney() {
+		return payMoney;
 	}
 
-	public void setPageMoney(BigDecimal pageMoney) {
-		this.pageMoney = pageMoney;
+	public void setPayMoney(BigDecimal payMoney) {
+		this.payMoney = payMoney;
 	}
 
 }

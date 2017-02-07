@@ -1,5 +1,7 @@
 package cn.com.ddhj.model.user;
 
+import java.math.BigDecimal;
+
 import cn.com.ddhj.model.BaseModel;
 
 /**
@@ -45,6 +47,19 @@ public class TUser extends BaseModel {
 	 * 是否已登录，0 已登录 1 已登出
 	 */
 	private Integer isLogin;
+
+	/**
+	 * 炭币
+	 */
+	private BigDecimal carbonMoney = BigDecimal.ZERO;
+
+	public BigDecimal getCarbonMoney() {
+		return carbonMoney;
+	}
+
+	public void setCarbonMoney(BigDecimal carbonMoney) {
+		this.carbonMoney = carbonMoney;
+	}
 
 	public String getUserCode() {
 		return userCode;

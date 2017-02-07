@@ -41,8 +41,155 @@ public class TOrder extends BaseModel {
 
 	private String address;
 
+	/**
+	 * ==============新加字段 start ===============
+	 */
+
+	/**
+	 * 应付款
+	 */
+	private BigDecimal checkPayMoney;
+
+	/**
+	 * 炭币
+	 */
+	private BigDecimal carbonMoney;
+
+	/**
+	 * 优惠券
+	 */
+	private String couponCodes;
+	/**
+	 * 购买人编码
+	 */
+	private String buyerCode;
+	/**
+	 * 购买人手机号
+	 */
+	private String buyerMobile;
+	/**
+	 * 微信支付时客户端IP地址
+	 */
+	private String payIp;
+	/**
+	 * 设备的唯一标识
+	 */
+	private String uniqid;
+
+	/**
+	 * app版本信息
+	 */
+	private String appVision;
+
+	/**
+	 * 手机操作系统
+	 */
+	private String os;
+
+	/**
+	 * 发票类型
+	 */
+	private String invoiceType;
+
+	/**
+	 * 发票内容
+	 */
+	private String invoiceContent;
+
+	/**
+	 * ==============新加字段 end ===============
+	 */
+
 	public String getHousesCode() {
 		return housesCode;
+	}
+
+	public BigDecimal getCheckPayMoney() {
+		return checkPayMoney;
+	}
+
+	public void setCheckPayMoney(BigDecimal checkPayMoney) {
+		this.checkPayMoney = checkPayMoney;
+	}
+
+	public BigDecimal getCarbonMoney() {
+		return carbonMoney;
+	}
+
+	public void setCarbonMoney(BigDecimal carbonMoney) {
+		this.carbonMoney = carbonMoney;
+	}
+
+	public String getCouponCodes() {
+		return couponCodes;
+	}
+
+	public void setCouponCodes(String couponCodes) {
+		this.couponCodes = couponCodes;
+	}
+
+	public String getBuyerCode() {
+		return buyerCode;
+	}
+
+	public void setBuyerCode(String buyerCode) {
+		this.buyerCode = buyerCode;
+	}
+
+	public String getBuyerMobile() {
+		return buyerMobile;
+	}
+
+	public void setBuyerMobile(String buyerMobile) {
+		this.buyerMobile = buyerMobile;
+	}
+
+	public String getPayIp() {
+		return payIp;
+	}
+
+	public void setPayIp(String payIp) {
+		this.payIp = payIp;
+	}
+
+	public String getUniqid() {
+		return uniqid;
+	}
+
+	public void setUniqid(String uniqid) {
+		this.uniqid = uniqid;
+	}
+
+	public String getAppVision() {
+		return appVision;
+	}
+
+	public void setAppVision(String appVision) {
+		this.appVision = appVision;
+	}
+
+	public String getOs() {
+		return os;
+	}
+
+	public void setOs(String os) {
+		this.os = os;
+	}
+
+	public String getInvoiceType() {
+		return invoiceType;
+	}
+
+	public void setInvoiceType(String invoiceType) {
+		this.invoiceType = invoiceType;
+	}
+
+	public String getInvoiceContent() {
+		return invoiceContent;
+	}
+
+	public void setInvoiceContent(String invoiceContent) {
+		this.invoiceContent = invoiceContent;
 	}
 
 	public void setHousesCode(String housesCode) {

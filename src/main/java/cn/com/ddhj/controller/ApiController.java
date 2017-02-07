@@ -259,7 +259,7 @@ public class ApiController extends BaseClass {
 			BaseResult result = orderService.updateByCode(entity, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_affirm".equals(api.getApiTarget())) {
-			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"));
+			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"),api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 订单数量
