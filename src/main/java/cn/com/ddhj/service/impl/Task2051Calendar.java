@@ -37,8 +37,8 @@ public class Task2051Calendar implements Callable<JSONObject>{
 		String key = "6b773a4dceca6afd793098e116f647de";
 		Map<String, String> param = new HashMap<String, String>(); 		 
 		param.put("key", key);
-		String date = today.split("-")[0] + "-" + Integer.valueOf(today.split("-")[1]) + "-" + today.split("-")[2]; // 2016-2-27  
-		param.put("date", date);
+//		String date = today.split("-")[0] + "-" + Integer.valueOf(today.split("-")[1]) + "-" + Integer.valueOf( today.split("-")[2] ); // 2016-2-27  
+		param.put("date", today); 
 		String responseJson = ""; 
 		try {
 			responseJson = PureNetUtil.post(url , param);

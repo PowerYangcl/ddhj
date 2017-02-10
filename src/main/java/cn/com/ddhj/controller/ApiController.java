@@ -9,16 +9,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -102,10 +106,18 @@ public class ApiController extends BaseClass {
 	private TUserLoginMapper userLoginMapper;
 	@Autowired
 	private ITUserStepService stepService;
+	
+	private WebApplicationContext webApplicationContext;
+	private ServletContext application;
 
 	@RequestMapping("api")
 	@ResponseBody
-	public JSONObject api(BaseAPI api, HttpSession session, HttpServletRequest request) {
+	public JSONObject api(BaseAPI api, HttpSession session, HttpServletRequest request) { 
+        if(webApplicationContext == null){  // 创建全局缓存 - Yangcl 
+        	webApplicationContext = ContextLoader.getCurrentWebApplicationContext(); 
+        	application = webApplicationContext.getServletContext(); 
+        }
+        
 		JSONObject obj = JSONObject.parseObject(api.getApiInput());
 		if ("user_register".equals(api.getApiTarget())) {
 			// 用户注册
@@ -240,7 +252,7 @@ public class ApiController extends BaseClass {
 			System.out.println("2050号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;
 		}else if ("2051".equals(api.getApiTarget())){      // 万年历接口  
-			JSONObject result_ = estateEnvService.perpetualCalendar(session);
+			JSONObject result_ = estateEnvService.perpetualCalendar(application); 
 			return result_;
 		}
 		

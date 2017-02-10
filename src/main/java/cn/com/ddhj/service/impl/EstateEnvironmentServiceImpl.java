@@ -18,10 +18,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
@@ -865,14 +867,15 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 * @date 2016年12月27日 上午10:17:54 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject perpetualCalendar(HttpSession s){
+	public JSONObject perpetualCalendar(ServletContext application){
 		JSONObject result = new JSONObject();
 		result.put("code", 0);
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		String today = format.format(new Date());
+		today = today.split("-")[0] + "-" + Integer.valueOf(today.split("-")[1]) + "-" + Integer.valueOf( today.split("-")[2] );
 		JSONObject calendar = null;
-		Object o = s.getAttribute("perpetual_calendar");  //  null ;
+		Object o = application.getAttribute("perpetual_calendar");  //  null ;
 		if(o != null){
 			calendar = JSONObject.parseObject(String.valueOf( o ));
 		}
@@ -893,14 +896,15 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 					result.putAll(cale);
 					result.putAll(holiday); 
 				}else{
+					String today_ = format.format(new Date());
 					result.put("flag", false); //  标识字段，如果为false 则代表聚合请求失败，给的是假数据，再次请求的时候会作为判断依据
 					result.put("avoid", "上班、写代码、做文案、挤公交");  // 开市.纳采.订盟.作灶.造庙.造船.经络
 					result.put("animalsYear", "猫");  // 猴
-					result.put("weekday", this.weekday(today));  // 星期六 
+					result.put("weekday", this.weekday(today_));  // 星期六 
 					result.put("suit", "看电影、逛街、逗女友、吃大餐");  //  嫁娶.冠笄.祭祀.祈福.求嗣.雕刻.开光.安香.出行.入学.修造.动土.竖柱.上梁.造屋.起基.安门.出火.移徙.入宅.掘井.造畜椆栖.安葬.破土.除服.成服
 					result.put("lunarYear", "东汉末年");  // 丙申年 
 					result.put("lunar", "七月初七");  // 十一月廿六
-					result.put("date", today );  // 2016-12-24
+					result.put("date", today_ );  // 2016-12-24 
 					result.put("holidayName", "");  //  元旦
 					result.put("holidayFestival", "");  // 2017-1-1
 					result.put("holidayDesc", "");  // 1月1日放假，1月2日（星期一）补休，共3天。
@@ -911,7 +915,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 				e.printStackTrace();
 			}
 			System.out.println(result.toJSONString()); 
-			s.setAttribute("perpetual_calendar", result.toJSONString());  
+			application.setAttribute("perpetual_calendar", result.toJSONString());  
 		}else{
 			return calendar;  // 数据存在直接取缓存中的信息 
 		}
