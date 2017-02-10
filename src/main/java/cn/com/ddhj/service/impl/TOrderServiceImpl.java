@@ -22,11 +22,13 @@ import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
+import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
@@ -57,6 +59,8 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	private TUserMapper userMapper;
 	@Autowired
 	private TReportMapper reportMapper;
+	@Autowired
+	private TUserCarbonOperationMapper carbonOperationMapper;
 
 	@Override
 	public TOrderResult findEntityToPage(TOrderDto dto, String userToken, HttpServletRequest request) {
@@ -152,6 +156,20 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				result.setResultCode(0);
 				result.setResultMessage("创建订单成功");
 				result.setCode(code);
+				/**
+				 * 如果使用炭币添加炭币使用日志<br>
+				 * 2017-02-09 zhy<br>
+				 */
+				TUserCarbonOperation carbonOperation = new TUserCarbonOperation();
+				carbonOperation.setUuid(WebHelper.getInstance().genUuid());
+				carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+				carbonOperation.setUserCode(user.getUserCode());
+				carbonOperation.setOperationType("DC170208100003");
+				carbonOperation.setOperationTypeChild("DC170208100007");
+				carbonOperation.setCarbonSum(BigDecimal.TEN);
+				carbonOperation.setCreateUser(user.getUserCode());
+				carbonOperation.setCreateTime(DateUtil.getSysDateTime());
+				carbonOperationMapper.insertSelective(carbonOperation);
 			} else {
 				result.setResultCode(-1);
 				result.setResultMessage("无效用户");

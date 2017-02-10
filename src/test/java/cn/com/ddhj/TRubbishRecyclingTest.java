@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.TRubbishRecyclingDto;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.model.TRubbishRecycling;
@@ -15,7 +16,7 @@ import cn.com.ddhj.service.ITRubbishRecyclingService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring/spring.xml", "classpath:spring/spring-mybatis.xml" })
-public class TRubbishRecyclingTest {
+public class TRubbishRecyclingTest  extends BaseTest{
 
 	@Autowired
 	private TRubbishRecyclingMapper mapper;
