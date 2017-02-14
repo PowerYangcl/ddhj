@@ -14,7 +14,17 @@ public class TUserCarbonOperation extends BaseModel {
 
 	private String operationTypeChild;
 
+	private String operationTypeChildName;
+
 	private BigDecimal carbonSum;
+
+	public String getOperationTypeChildName() {
+		return operationTypeChildName;
+	}
+
+	public void setOperationTypeChildName(String operationTypeChildName) {
+		this.operationTypeChildName = operationTypeChildName;
+	}
 
 	public String getCode() {
 		return code;

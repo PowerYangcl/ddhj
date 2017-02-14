@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.impl.user;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -19,9 +20,13 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserStepDto;
+import cn.com.ddhj.helper.PropHelper;
+import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.mapper.user.TUserStepMapper;
 import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserStep;
 import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
@@ -43,6 +48,8 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	private TUserStepMapper mapper;
 	@Autowired
 	private TUserMapper userMapper;
+	@Autowired
+	private TUserCarbonOperationMapper carbonOperationMapper;
 
 	/**
 	 * 
@@ -83,7 +90,6 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						list.add(entity);
 					}
 					Collections.sort(list, new Comparator<TUserStep>() {
-
 						@Override
 						public int compare(TUserStep s1, TUserStep s2) {
 							return s1.getCreateDate().compareTo(s2.getCreateDate());
@@ -98,7 +104,6 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						} else if (i == list.size() - 1) {
 							endDate = list.get(i).getCreateDate();
 						}
-
 					}
 					// 根据设备识别码和时间段删除原有数据
 					TUserStepDto dto = new TUserStepDto();
@@ -107,9 +112,21 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 					dto.setStartDate(startDate);
 					mapper.deletByEquipmentCode(dto);
 					// 批量添加数据到计步表
-					int flag = mapper.batchInstart(list);
+					int flag = mapper.batchInsert(list);
 					if (flag > 0) {
 						result.setResultCode(0);
+						/**
+						 * 汇总兑换碳币数量,同步到t_user表中
+						 */
+						List<TUser> carbonUsers = userCarbonList(list);
+						for (TUser uCarbon : carbonUsers) {
+							userMapper.updateCarbonByUserCode(uCarbon);
+						}
+						/**
+						 * 同步到碳币操作日志表
+						 */
+						List<TUserCarbonOperation> operations = carbonOperationData(carbonUsers);
+						carbonOperationMapper.batchInsert(operations);
 						result.setResultMessage("同步成功");
 					} else {
 						result.setResultCode(-1);
@@ -313,18 +330,73 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	 * 
 	 * @return
 	 */
-	public static int getCurrentMonthDay(Calendar cal) {
+	private static int getCurrentMonthDay(Calendar cal) {
 		cal.set(Calendar.DATE, 1);
 		cal.roll(Calendar.DATE, -1);
 		int maxDate = cal.get(Calendar.DATE);
 		return maxDate;
 	}
 
-	public static void main(String[] args) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) - 14, cal.get(Calendar.DAY_OF_MONTH));
-		System.out.println(cal.get(Calendar.MONTH));
-		System.out.println(DateUtil.dateTimeToString(cal.getTime()));
+	/**
+	 * 
+	 * 方法: userCarbonList <br>
+	 * 描述: 获取用户碳币信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年2月13日 下午4:27:58
+	 * 
+	 * @param steps
+	 * @return
+	 */
+	private static List<TUser> userCarbonList(List<TUserStep> steps) {
+		List<TUser> users = new ArrayList<TUser>();
+		Map<String, BigDecimal> map = new HashMap<String, BigDecimal>();
+		if (steps != null && steps.size() > 0) {
+			for (TUserStep step : steps) {
+				if (StringUtils.isNotBlank(step.getUserCode())) {
+					TUser user = new TUser();
+					user.setUserCode(step.getUserCode());
+					// 获取碳币
+					BigDecimal carbonMoney = BigDecimal
+							.valueOf(Double.valueOf(PropHelper.getValue("carbon_exchange_ratio")) * step.getStep());
+					/**
+					 * 判断在map中是否已存在userCode，如果存在获取已存储的碳币值与获取碳币值相加后重新存储
+					 */
+					if (map.containsKey(step.getUserCode())) {
+						carbonMoney = map.get(step.getUserCode()).add(carbonMoney);
+						map.remove(step.getUserCode());
+						map.put(step.getUserCode(), carbonMoney);
+					} else {
+						map.put(step.getUserCode(), carbonMoney);
+					}
+				}
+			}
+
+			/**
+			 * 遍历map获取用户同步步数兑换的碳币
+			 */
+			for (Map.Entry<String, BigDecimal> entry : map.entrySet()) {
+				TUser user = new TUser();
+				user.setUserCode(entry.getKey());
+				user.setCarbonMoney(entry.getValue());
+				users.add(user);
+			}
+
+		}
+		return users;
+	}
+
+	private static List<TUserCarbonOperation> carbonOperationData(List<TUser> users) {
+		List<TUserCarbonOperation> list = new ArrayList<TUserCarbonOperation>();
+		for (TUser user : users) {
+			TUserCarbonOperation entity = new TUserCarbonOperation();
+			entity.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+			entity.setUserCode(user.getUserCode());
+			entity.setOperationType("DC170208100002");
+			entity.setOperationTypeChild("DC170208100004");
+			entity.setCreateUser(user.getUserCode());
+			entity.setCarbonSum(user.getCarbonMoney());
+			list.add(entity);
+		}
+		return list;
 	}
 }

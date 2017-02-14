@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.impl.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,7 @@ import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
+import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserCarbonOperationService;
 
@@ -95,15 +97,15 @@ public class TUserCarbonOperationServiceImpl
 				 * 碳币收入信息
 				 */
 				dto.setOperationType("DC170208100002");
-				List<TUserCarbonOperation> incomeCarbon = mapper.findCarbonOperationByTime(dto);
+				List<TUserCarbonOperation> incomeCarbon = mapper.findCarbonOperationByDate(dto);
 				if (incomeCarbon != null && incomeCarbon.size() > 0) {
 					result.setIncomeCarbon(incomeCarbon);
 				}
 				/**
 				 * 碳币支出信息
 				 */
-				dto.setOperationType("DC170208100002");
-				List<TUserCarbonOperation> expendCarbon = mapper.findCarbonOperationByTime(dto);
+				dto.setOperationType("DC170208100003");
+				List<TUserCarbonOperation> expendCarbon = mapper.findCarbonOperationByDate(dto);
 				if (expendCarbon != null && expendCarbon.size() > 0) {
 					result.setExpendCarbon(expendCarbon);
 				}
@@ -116,6 +118,42 @@ public class TUserCarbonOperationServiceImpl
 			result.setResultMessage("用户未登录");
 		}
 
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: getCarbonOperationByType <br>
+	 * 
+	 * @param userToken
+	 * @param type
+	 * @return
+	 * @see cn.com.ddhj.service.user.ITUserCarbonOperationService#getCarbonOperationByType(java.lang.String,
+	 *      java.lang.String)
+	 */
+	@Override
+	public CarbonTypeDetailResult getCarbonOperationByType(String userToken, String type) {
+		CarbonTypeDetailResult result = new CarbonTypeDetailResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		List<TUserCarbonOperation> list = null;
+		if (login != null) {
+			TUser user = userMapper.findTUserByUuid(login.getUserToken());
+			if (user != null) {
+				TUserCarbonOperationDto dto = new TUserCarbonOperationDto();
+				dto.setUserCode(user.getUserCode());
+				dto.setOperationTypeChild(type);
+				list = mapper.findCarbonOperationByTime(dto);
+				if (list != null && list.size() > 0) {
+					result.setList(list);
+					result.setResultCode(0);
+					result.setResultMessage("获取数据成功");
+				} else {
+					result.setList(new ArrayList<TUserCarbonOperation>());
+					result.setResultCode(-1);
+					result.setResultMessage("查询数据为空");
+				}
+			}
+		}
 		return result;
 	}
 

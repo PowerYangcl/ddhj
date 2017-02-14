@@ -25,7 +25,7 @@ public interface TUserStepMapper extends BaseMapper<TUserStep, TUserStepDto> {
 	 * @param list
 	 * @return
 	 */
-	int batchInstart(List<TUserStep> list);
+	int batchInsert(List<TUserStep> list);
 
 	/**
 	 * 

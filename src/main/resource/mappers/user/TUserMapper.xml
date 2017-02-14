@@ -228,18 +228,14 @@
 		where
 		id = #{id}
 	</delete>
+	<!-- 根据用户编码修改用户的碳币数量 2017-02-13 zhy -->
+	<update id="updateCarbonByUserCode" parameterType="cn.com.ddhj.model.user.TUser">
+		update t_user
+		<set>
+			carbon_money = #{carbonMoney,jdbcType=DECIMAL}
+		</set>
+		<where>
+			user_code = #{userCode,jdbcType=VARCHAR}
+		</where>
+	</update>
 </mapper>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -10,6 +10,8 @@
 			jdbcType="VARCHAR" />
 		<result column="operation_type_child" property="operationTypeChild"
 			jdbcType="VARCHAR" />
+		<result column="operation_type_child_name" property="operationTypeChildName"
+			jdbcType="VARCHAR" />
 		<result column="carbon_sum" property="carbonSum" jdbcType="DECIMAL" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
@@ -55,9 +57,35 @@
 			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</trim>
 	</insert>
-
+	<insert id="batchInsert" parameterType="cn.com.ddhj.model.user.TUserCarbonOperation">
+		insert into t_user_carbon_operation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			`code`,
+			user_code,
+			operation_type,
+			operation_type_child,
+			carbon_sum,
+			create_user,
+			create_time,
+		</trim>
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix="values (" suffix=")" suffixOverrides=",">
+				#{item.uuid,jdbcType=VARCHAR},
+				#{item.code,jdbcType=VARCHAR},
+				#{item.userCode,jdbcType=VARCHAR},
+				#{item.operationType,jdbcType=VARCHAR},
+				#{item.operationTypeChild,jdbcType=VARCHAR},
+				#{item.carbonSum,jdbcType=DECIMAL},
+				#{item.createUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			</trim>
+		</foreach>
+	</insert>
 	<!-- 根据时间查询交易详情 2017-02-10 zhy -->
-	<select id="findCarbonOperationByTime" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"
+	<select id="findCarbonOperationByDate" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"
 		resultMap="BaseResultMap">
 		SELECT
 		DATE(create_time) AS create_time,
@@ -75,6 +103,31 @@
 		INTERVAL 1 MONTH)
 		GROUP BY
 		DATE(create_time)
+	</select>
+	<!-- 根据时间查询交易详情 2017-02-10 zhy -->
+	<select id="findCarbonOperationByTime" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"
+		resultMap="BaseResultMap">
+		SELECT
+		create_time,
+		(
+		SELECT
+		`name`
+		FROM
+		sys_define_code
+		WHERE
+		`code` = operation_type_child
+		) AS operation_type_child_name,
+		carbon_sum
+		FROM
+		t_user_carbon_operation
+		WHERE
+		user_code =
+		#{userCode,jdbcType=VARCHAR}
+		AND operation_type_child
+		=#{operationTypeChild,jdbcType=VARCHAR}
+		AND create_time >
+		DATE_SUB(CURDATE(),
+		INTERVAL 1 MONTH)
 	</select>
 	<!-- 根据收支细分类型汇总交易记录 2017-02-10 zhy -->
 	<select id="getCarbonOperationSum" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"

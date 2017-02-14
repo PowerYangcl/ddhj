@@ -16,7 +16,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +43,8 @@ import cn.com.ddhj.model.TPayment;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
+import cn.com.ddhj.result.carbon.CarbonDetailResult;
+import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
 import cn.com.ddhj.result.order.OrderAddResult;
@@ -68,6 +69,7 @@ import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.impl.TPaymentServiceImpl;
 import cn.com.ddhj.service.user.ITMessageService;
+import cn.com.ddhj.service.user.ITUserCarbonOperationService;
 import cn.com.ddhj.service.user.ITUserLpFollowService;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.service.user.ITUserService;
@@ -106,18 +108,19 @@ public class ApiController extends BaseClass {
 	private TUserLoginMapper userLoginMapper;
 	@Autowired
 	private ITUserStepService stepService;
-	
+	@Autowired
+	private ITUserCarbonOperationService userCarbonOperationserivce;
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
 
 	@RequestMapping("api")
 	@ResponseBody
-	public JSONObject api(BaseAPI api, HttpSession session, HttpServletRequest request) { 
-        if(webApplicationContext == null){  // 创建全局缓存 - Yangcl 
-        	webApplicationContext = ContextLoader.getCurrentWebApplicationContext(); 
-        	application = webApplicationContext.getServletContext(); 
-        }
-        
+	public JSONObject api(BaseAPI api, HttpSession session, HttpServletRequest request) {
+		if (webApplicationContext == null) { // 创建全局缓存 - Yangcl
+			webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
+			application = webApplicationContext.getServletContext();
+		}
+
 		JSONObject obj = JSONObject.parseObject(api.getApiInput());
 		if ("user_register".equals(api.getApiTarget())) {
 			// 用户注册
@@ -236,27 +239,26 @@ public class ApiController extends BaseClass {
 			long end = System.currentTimeMillis();
 			System.out.println("2048号接口总共耗时：" + +(end - start) + " 毫秒");
 			return null;
-		}else if ("2049".equals(api.getApiTarget())) { // 地区环境接口
-			long start = System.currentTimeMillis(); 
+		} else if ("2049".equals(api.getApiTarget())) { // 地区环境接口
+			long start = System.currentTimeMillis();
 			estateEnvService.resyncWaterEnviroment();
 			long end = System.currentTimeMillis();
 			System.out.println("2049号接口总共耗时：" + +(end - start) + " 毫秒");
 			return null;
-		}else if ("2050".equals(api.getApiTarget())) { //  
-			long start = System.currentTimeMillis(); 
-			String city = obj.getString("city"); 		// "北京市" 
-			String area = obj.getString("area");    // "通州区" 
-			String type = obj.getString("type");      // "A" |"B"
-			JSONObject result_ = estateEnvService.getFutureSevenAqi(city , area , type);  
+		} else if ("2050".equals(api.getApiTarget())) { //
+			long start = System.currentTimeMillis();
+			String city = obj.getString("city"); // "北京市"
+			String area = obj.getString("area"); // "通州区"
+			String type = obj.getString("type"); // "A" |"B"
+			JSONObject result_ = estateEnvService.getFutureSevenAqi(city, area, type);
 			long end = System.currentTimeMillis();
 			System.out.println("2050号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;
-		}else if ("2051".equals(api.getApiTarget())){      // 万年历接口  
-			JSONObject result_ = estateEnvService.perpetualCalendar(application); 
+		} else if ("2051".equals(api.getApiTarget())) { // 万年历接口
+			JSONObject result_ = estateEnvService.perpetualCalendar(application);
 			return result_;
 		}
-		
-		
+
 		// 订单相关
 		else if ("order_add".equals(api.getApiTarget())) {
 			TOrder entity = obj.toJavaObject(TOrder.class);
@@ -271,7 +273,7 @@ public class ApiController extends BaseClass {
 			BaseResult result = orderService.updateByCode(entity, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_affirm".equals(api.getApiTarget())) {
-			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"),api.getUserToken());
+			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"), api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 订单数量
@@ -365,7 +367,26 @@ public class ApiController extends BaseClass {
 		else if ("step_sync".equals(api.getApiTarget())) {
 			BaseResult result = stepService.batchInsert(api.getApiInput());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} else {
+		}
+		/**
+		 * ================= 碳币相关 start ======================
+		 */
+		// 获取用户碳币交易详情
+		else if ("user_carbon_detail".equals(api.getApiTarget())) {
+			CarbonDetailResult result = userCarbonOperationserivce.getCarbonOperationDetail(api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 根据碳币类型查询交易明细
+		else if ("user_carbon_type_detail".equals(api.getApiTarget())) {
+			JSONObject param = JSONObject.parseObject(api.getApiInput());
+			CarbonTypeDetailResult result = userCarbonOperationserivce.getCarbonOperationByType(api.getUserToken(),
+					param.getString("type"));
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		/**
+		 * ================= 碳币相关 end ======================
+		 */
+		else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(-1);
 			result.setResultMessage("调用接口失败");

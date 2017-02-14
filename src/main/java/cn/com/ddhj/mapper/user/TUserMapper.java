@@ -2,7 +2,6 @@ package cn.com.ddhj.mapper.user;
 
 import java.util.List;
 
-
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.user.TUser;
@@ -75,25 +74,22 @@ public interface TUserMapper extends BaseMapper<TUser, TUserDto> {
 	 * @return
 	 */
 	List<TUser> findUserAll(TUserDto dto);
-	
-	
-	public TUser getUserInfo(String uuid); 
-	
+
+	public TUser getUserInfo(String uuid);
+
 	public Integer updateUserInfo(TUserDto dto);
 
-	public Integer  deleteOne(Integer id); 
+	public Integer deleteOne(Integer id);
+
+	/**
+	 * 
+	 * 方法: updateCarbonByUserCode <br>
+	 * 描述: 根据用户编码修改用户的碳币数量 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年2月13日 下午2:24:27
+	 * 
+	 * @param user
+	 * @return
+	 */
+	int updateCarbonByUserCode(TUser user);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

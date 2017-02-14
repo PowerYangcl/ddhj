@@ -57,7 +57,7 @@
 		where equipment_code = #{equipmentCode,jdbcType=VARCHAR}
 	</update>
 	<!-- 批量同步计步数据 -->
-	<insert id="batchInstart" parameterType="list">
+	<insert id="batchInsert" parameterType="list">
 		insert into t_user_step
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			uuid,
