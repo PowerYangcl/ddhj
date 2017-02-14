@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -85,8 +86,13 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						entity.setEquipmentCode(equipmentCode);
 						entity.setStep(obj.getInteger("step"));
 						entity.setCreateDate(obj.getString("date"));
+						entity.setCreateTime(DateUtil.getSysDateTime());
+						entity.setUpdateTime(DateUtil.getSysDateTime());
 						entity.setIsBinding(isBinding);
 						entity.setUserCode(userCode);
+						if (StringUtils.isNotBlank(userCode)) {
+							entity.setIsSync(1);
+						}
 						list.add(entity);
 					}
 					Collections.sort(list, new Comparator<TUserStep>() {
@@ -175,6 +181,38 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			result.setResultMessage("设备编码为空");
 		}
 
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: syncStepDataToCarbon <br>
+	 * 
+	 * @return
+	 * @see cn.com.ddhj.service.user.ITUserStepService#syncStepDataToCarbon()
+	 */
+	@Override
+	public BaseResult syncStepDataToCarbon() {
+		BaseResult result = new BaseResult();
+		try {
+			List<TUserStep> steps = mapper.findStepDataIsNotSync();
+			if (steps != null && steps.size() > 0) {
+				List<TUser> list = userCarbonList(steps);
+				for (TUser tUser : list) {
+					userMapper.updateCarbonByUserCode(tUser);
+				}
+				List<TUserCarbonOperation> operations = carbonOperationData(list);
+				carbonOperationMapper.batchInsert(operations);
+				result.setResultCode(0);
+				result.setResultMessage("同步成功");
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("同步数据为空");
+			}
+		} catch (Exception e) {
+			result.setResultCode(-1);
+			result.setResultMessage(e.getMessage());
+		}
 		return result;
 	}
 
@@ -351,13 +389,13 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		List<TUser> users = new ArrayList<TUser>();
 		Map<String, BigDecimal> map = new HashMap<String, BigDecimal>();
 		if (steps != null && steps.size() > 0) {
+			String carbon_exchange_ratio = PropHelper.getValue("carbon_exchange_ratio");
 			for (TUserStep step : steps) {
 				if (StringUtils.isNotBlank(step.getUserCode())) {
 					TUser user = new TUser();
 					user.setUserCode(step.getUserCode());
 					// 获取碳币
-					BigDecimal carbonMoney = BigDecimal
-							.valueOf(Double.valueOf(PropHelper.getValue("carbon_exchange_ratio")) * step.getStep());
+					BigDecimal carbonMoney = BigDecimal.valueOf(Double.valueOf(carbon_exchange_ratio) * step.getStep());
 					/**
 					 * 判断在map中是否已存在userCode，如果存在获取已存储的碳币值与获取碳币值相加后重新存储
 					 */
@@ -385,6 +423,16 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		return users;
 	}
 
+	/**
+	 * 
+	 * 方法: carbonOperationData <br>
+	 * 描述: 整理用户步数兑换碳币信息到操作日志表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年2月14日 上午10:29:45
+	 * 
+	 * @param users
+	 * @return
+	 */
 	private static List<TUserCarbonOperation> carbonOperationData(List<TUser> users) {
 		List<TUserCarbonOperation> list = new ArrayList<TUserCarbonOperation>();
 		for (TUser user : users) {

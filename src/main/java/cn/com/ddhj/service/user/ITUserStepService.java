@@ -32,4 +32,15 @@ public interface ITUserStepService extends IBaseService<TUserStep, TUserStepDto>
 	 * @return
 	 */
 	UserStepResult findUserStepData(String equipmentCode);
+
+	/**
+	 * 
+	 * 方法: syncStepDataToCarbon <br>
+	 * 描述: 同步用户步数兑换炭币更新用户碳币信息及操作日志 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年2月14日 上午10:31:32
+	 * 
+	 * @return
+	 */
+	BaseResult syncStepDataToCarbon();
 }

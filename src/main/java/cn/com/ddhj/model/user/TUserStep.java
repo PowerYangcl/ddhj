@@ -15,11 +15,21 @@ public class TUserStep extends BaseModel {
 
 	private Integer step;
 
+	private Integer isSync;
+
 	private String createDate;
 
 	private Integer isBinding;
 
 	private String userCode;
+
+	public Integer getIsSync() {
+		return isSync;
+	}
+
+	public void setIsSync(Integer isSync) {
+		this.isSync = isSync;
+	}
 
 	public Integer getStep() {
 		return step;

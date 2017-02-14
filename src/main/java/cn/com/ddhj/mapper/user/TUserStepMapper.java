@@ -62,4 +62,25 @@ public interface TUserStepMapper extends BaseMapper<TUserStep, TUserStepDto> {
 	 * @return
 	 */
 	int deletByEquipmentCode(TUserStepDto dto);
+
+	/**
+	 * 
+	 * 方法: findStepDataIsNotSync <br>
+	 * 描述: 查询所有未同步兑换碳币数据信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年2月14日 上午10:43:22
+	 * 
+	 * @return
+	 */
+	List<TUserStep> findStepDataIsNotSync();
+	
+	/**
+	 * 
+	 * 方法: updateSyncByUserCode <br>
+	 * 描述: TODO <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年2月14日 上午10:55:41
+	 * @return
+	 */
+	int updateSyncByUserCode(TUserStep entity);
 }

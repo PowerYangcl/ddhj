@@ -7,7 +7,10 @@
 		<result column="equipment_code" property="equipmentCode"
 			jdbcType="VARCHAR" />
 		<result column="step" property="step" jdbcType="INTEGER" />
+		<result column="is_sync" property="isSync" jdbcType="INTEGER" />
 		<result column="create_date" property="createDate" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 		<result column="is_binding" property="isBinding" jdbcType="INTEGER" />
 		<result column="user_code" property="userCode" jdbcType="VARCHAR" />
 	</resultMap>
@@ -16,7 +19,18 @@
 		create_date,
 		'%Y-%m-%d'
 		) AS
-		create_date, is_binding,
+		create_date,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
+		update_time,
+		is_binding,
 		user_code
 	</sql>
 	<insert id="insertSelective" parameterType="cn.com.ddhj.model.user.TUserStep">
@@ -26,6 +40,8 @@
 			equipment_code,
 			step,
 			create_date,
+			create_time,
+			update_time,
 			<if test="isBinding != null">
 				is_binding,
 			</if>
@@ -37,7 +53,12 @@
 			#{uuid,jdbcType=VARCHAR},
 			#{equipmentCode,jdbcType=VARCHAR},
 			#{step,jdbcType=INTEGER},
-			#{createDate,jdbcType=TIMESTAMP},
+			STR_TO_DATE(
+			#{createDate,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 			<if test="isBinding != null">
 				#{isBinding,jdbcType=INTEGER},
 			</if>
@@ -53,6 +74,8 @@
 			is_binding = #{isBinding,jdbcType=INTEGER},
 			user_code =
 			#{userCode,jdbcType=VARCHAR},
+			update_date = STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 		</set>
 		where equipment_code = #{equipmentCode,jdbcType=VARCHAR}
 	</update>
@@ -64,6 +87,8 @@
 			equipment_code,
 			step,
 			create_date,
+			create_time
+			update_time,
 			is_binding,
 			user_code,
 		</trim>
@@ -74,7 +99,12 @@
 				#{item.uuid,jdbcType=VARCHAR},
 				#{item.equipmentCode,jdbcType=VARCHAR},
 				#{item.step,jdbcType=INTEGER},
-				#{item.createDate,jdbcType=TIMESTAMP},
+				#{item.createDate,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.createTime,jdbcType=VARCHAR},'%Y-%m-%d
+				%H:%i:%s'),
+				STR_TO_DATE(
+				#{item.updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 				#{item.isBinding,jdbcType=INTEGER},
 				#{item.userCode,jdbcType=VARCHAR},
 			</trim>
@@ -116,4 +146,20 @@
 			STR_TO_DATE(#{endDate,jdbcType=VARCHAR},'%Y-%m-%d')
 		</where>
 	</delete>
+	<!-- 修改兑换碳币同步状态为已同步 -->
+	<update id="updateSyncByUserCode" parameterType="cn.com.ddhj.model.user.TUserStep">
+		update
+		t_user_step set is_sync = 1,
+		update_time = STR_TO_DATE(
+		#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		where userCode =
+		#{userCode,jdbcType=VARCHAR}
+	</update>
+	<!-- 查询所有未同步兑换碳币数据信息 2017-02-14 zhy -->
+	<select id="findStepDataIsNotSync" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_user_step
+		where is_sync = 0
+	</select>
 </mapper>

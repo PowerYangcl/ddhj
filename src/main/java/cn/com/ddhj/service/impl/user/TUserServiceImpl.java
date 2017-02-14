@@ -81,6 +81,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 						step.setEquipmentCode(dto.getEquipmentCode());
 						step.setUserCode(user.getUserCode());
 						step.setIsBinding(1);
+						step.setUpdateTime(DateUtil.getSysDateTime());
 						stepMapper.updateByEquipmentCode(step);
 					}
 					result.setResultCode(0);
