@@ -69,9 +69,10 @@
 			create_user,
 			create_time,
 		</trim>
+		values
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<trim prefix=" (" suffix=")" suffixOverrides=",">
 				#{item.uuid,jdbcType=VARCHAR},
 				#{item.code,jdbcType=VARCHAR},
 				#{item.userCode,jdbcType=VARCHAR},

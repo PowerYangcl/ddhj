@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -126,6 +125,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						 */
 						List<TUser> carbonUsers = userCarbonList(list);
 						for (TUser uCarbon : carbonUsers) {
+							uCarbon.setUpdateTime(DateUtil.getSysDateTime());
 							userMapper.updateCarbonByUserCode(uCarbon);
 						}
 						/**
@@ -199,6 +199,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			if (steps != null && steps.size() > 0) {
 				List<TUser> list = userCarbonList(steps);
 				for (TUser tUser : list) {
+					tUser.setUpdateTime(DateUtil.getSysDateTime());
 					userMapper.updateCarbonByUserCode(tUser);
 				}
 				List<TUserCarbonOperation> operations = carbonOperationData(list);
@@ -210,6 +211,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 				result.setResultMessage("同步数据为空");
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			result.setResultCode(-1);
 			result.setResultMessage(e.getMessage());
 		}
@@ -396,15 +398,18 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 					user.setUserCode(step.getUserCode());
 					// 获取碳币
 					BigDecimal carbonMoney = BigDecimal.valueOf(Double.valueOf(carbon_exchange_ratio) * step.getStep());
-					/**
-					 * 判断在map中是否已存在userCode，如果存在获取已存储的碳币值与获取碳币值相加后重新存储
-					 */
-					if (map.containsKey(step.getUserCode())) {
-						carbonMoney = map.get(step.getUserCode()).add(carbonMoney);
-						map.remove(step.getUserCode());
-						map.put(step.getUserCode(), carbonMoney);
-					} else {
-						map.put(step.getUserCode(), carbonMoney);
+					carbonMoney = carbonMoney.setScale(2, BigDecimal.ROUND_HALF_UP);
+					if (carbonMoney.compareTo(BigDecimal.ZERO) == 1) {
+						/**
+						 * 判断在map中是否已存在userCode，如果存在获取已存储的碳币值与获取碳币值相加后重新存储
+						 */
+						if (map.containsKey(step.getUserCode())) {
+							carbonMoney = map.get(step.getUserCode()).add(carbonMoney);
+							map.remove(step.getUserCode());
+							map.put(step.getUserCode(), carbonMoney);
+						} else {
+							map.put(step.getUserCode(), carbonMoney);
+						}
 					}
 				}
 			}
@@ -433,15 +438,17 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	 * @param users
 	 * @return
 	 */
-	private static List<TUserCarbonOperation> carbonOperationData(List<TUser> users) {
+	private List<TUserCarbonOperation> carbonOperationData(List<TUser> users) {
 		List<TUserCarbonOperation> list = new ArrayList<TUserCarbonOperation>();
 		for (TUser user : users) {
 			TUserCarbonOperation entity = new TUserCarbonOperation();
+			entity.setUuid(WebHelper.getInstance().genUuid());
 			entity.setCode(WebHelper.getInstance().getUniqueCode("LC"));
 			entity.setUserCode(user.getUserCode());
 			entity.setOperationType("DC170208100002");
 			entity.setOperationTypeChild("DC170208100004");
 			entity.setCreateUser(user.getUserCode());
+			entity.setCreateTime(DateUtil.getSysDateTime());
 			entity.setCarbonSum(user.getCarbonMoney());
 			list.add(entity);
 		}
