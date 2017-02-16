@@ -233,7 +233,7 @@
 	<update id="updateCarbonByUserCode" parameterType="cn.com.ddhj.model.user.TUser">
 		update t_user
 		<set>
-			carbon_money = #{carbonMoney,jdbcType=DECIMAL},
+			carbon_money = carbon_money + #{carbonMoney,jdbcType=DECIMAL},
 			update_time =
 			STR_TO_DATE(
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')

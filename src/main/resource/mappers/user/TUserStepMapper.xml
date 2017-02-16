@@ -87,7 +87,7 @@
 			equipment_code,
 			step,
 			create_date,
-			create_time
+			create_time,
 			update_time,
 			is_binding,
 			user_code,
