@@ -188,6 +188,7 @@
 		pay_code,
 		o.`status` AS
 		`status`,
+		o.carbon_money,
 		r.title,
 		r.pic AS pic,
 		r.image AS image,

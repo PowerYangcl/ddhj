@@ -16,8 +16,26 @@ import cn.com.ddhj.model.report.TReport;
 public class OrderAffirmResult extends BaseResult {
 
 	private List<TReport> reportList;
+	/**
+	 * 支付金额
+	 */
 	private BigDecimal payMoney;
+	/**
+	 * 碳币使用数量
+	 */
 	private BigDecimal carbonMoney;
+	/**
+	 * 碳币兑换人民币比例
+	 */
+	private BigDecimal carbonToMoneyRatio;
+
+	public BigDecimal getCarbonToMoneyRatio() {
+		return carbonToMoneyRatio;
+	}
+
+	public void setCarbonToMoneyRatio(BigDecimal carbonToMoneyRatio) {
+		this.carbonToMoneyRatio = carbonToMoneyRatio;
+	}
 
 	public BigDecimal getCarbonMoney() {
 		return carbonMoney;

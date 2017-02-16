@@ -19,6 +19,7 @@ import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TOrderDto;
+import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
@@ -140,36 +141,45 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				/**
 				 * 判断炭币是否与应付金额相同，如果金额相同，订单状态为已支付未下载
 				 */
-				if (entity.getCheckPayMoney().compareTo(entity.getCarbonMoney()) == 0) {
-					entity.setStatus(1);
+				BigDecimal carbonMoney = entity.getCarbonMoney().setScale(2, BigDecimal.ROUND_HALF_UP);
+				if (carbonMoney.compareTo(BigDecimal.ZERO) > 0) {
+					entity.setCarbonMoney(carbonMoney);
+					String carbon_money_ratio = PropHelper.getValue("carbon_money_ratio");
+					BigDecimal carbonToMoney = carbonMoney
+							.multiply(BigDecimal.valueOf(Double.valueOf(carbon_money_ratio)));
+					if (entity.getCheckPayMoney().compareTo(carbonToMoney) == 0) {
+						entity.setStatus(1);
+					}
 				}
 				mapper.insertSelective(entity);
-				/**
-				 * 如果使用了炭币，扣除炭币
-				 */
-				TUser updateCarbonMoneyUser = new TUser();
-				updateCarbonMoneyUser.setUserCode(user.getUserCode());
-				updateCarbonMoneyUser.setCarbonMoney(user.getCarbonMoney().subtract(entity.getCarbonMoney()));
-				updateCarbonMoneyUser.setUpdateUser(user.getUserCode());
-				updateCarbonMoneyUser.setUpdateTime(DateUtil.getSysDateTime());
-				userMapper.updateByCode(updateCarbonMoneyUser);
+				if (carbonMoney.compareTo(BigDecimal.ZERO) > 0) {
+					/**
+					 * 如果使用了炭币，扣除炭币
+					 */
+					TUser updateCarbonMoneyUser = new TUser();
+					updateCarbonMoneyUser.setUserCode(user.getUserCode());
+					updateCarbonMoneyUser.setCarbonMoney(user.getCarbonMoney().subtract(entity.getCarbonMoney()));
+					updateCarbonMoneyUser.setUpdateUser(user.getUserCode());
+					updateCarbonMoneyUser.setUpdateTime(DateUtil.getSysDateTime());
+					userMapper.updateByCode(updateCarbonMoneyUser);
+					/**
+					 * 如果使用炭币添加炭币使用日志<br>
+					 * 2017-02-09 zhy<br>
+					 */
+					TUserCarbonOperation carbonOperation = new TUserCarbonOperation();
+					carbonOperation.setUuid(WebHelper.getInstance().genUuid());
+					carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+					carbonOperation.setUserCode(user.getUserCode());
+					carbonOperation.setOperationType("DC170208100003");
+					carbonOperation.setOperationTypeChild("DC170208100007");
+					carbonOperation.setCarbonSum(entity.getCarbonMoney());
+					carbonOperation.setCreateUser(user.getUserCode());
+					carbonOperation.setCreateTime(DateUtil.getSysDateTime());
+					carbonOperationMapper.insertSelective(carbonOperation);
+				}
 				result.setResultCode(0);
 				result.setResultMessage("创建订单成功");
 				result.setCode(code);
-				/**
-				 * 如果使用炭币添加炭币使用日志<br>
-				 * 2017-02-09 zhy<br>
-				 */
-				TUserCarbonOperation carbonOperation = new TUserCarbonOperation();
-				carbonOperation.setUuid(WebHelper.getInstance().genUuid());
-				carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
-				carbonOperation.setUserCode(user.getUserCode());
-				carbonOperation.setOperationType("DC170208100003");
-				carbonOperation.setOperationTypeChild("DC170208100007");
-				carbonOperation.setCarbonSum(BigDecimal.TEN);
-				carbonOperation.setCreateUser(user.getUserCode());
-				carbonOperation.setCreateTime(DateUtil.getSysDateTime());
-				carbonOperationMapper.insertSelective(carbonOperation);
 			} else {
 				result.setResultCode(-1);
 				result.setResultMessage("无效用户");
@@ -229,7 +239,9 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		if (login != null) {
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
+				String carbon_money_ratio = PropHelper.getValue("carbon_money_ratio");
 				result.setCarbonMoney(user.getCarbonMoney());
+				result.setCarbonToMoneyRatio(BigDecimal.valueOf(Double.valueOf(carbon_money_ratio)));
 				if (codes != null && !"".equals(codes)) {
 					try {
 						List<String> list = Arrays.asList(codes.split(","));
