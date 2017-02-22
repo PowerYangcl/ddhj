@@ -165,7 +165,9 @@ public class Task1032Rubbish implements Callable<Map<String , String>> {
 					msg = "500m以内";
 					score = (Integer.valueOf(level_.split("@")[1]) + Integer.valueOf(score)) + "" ;  
 					level_ = "高压电";
-				} 
+				}else{
+					level_ = value;
+				}
 			}
 			
 		}
