@@ -21,7 +21,7 @@ public interface IEstateEnvironmentService {
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject apiAreaEnv(String position , String city);
+	public JSONObject apiAreaEnv(String position , String city , ServletContext application);
 	
 
 	/**
@@ -35,7 +35,7 @@ public interface IEstateEnvironmentService {
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEnvScore(String position , String city , String radius);
+	public JSONObject apiEnvScore(String position , String city , String radius , ServletContext application);
 	
 	
 	

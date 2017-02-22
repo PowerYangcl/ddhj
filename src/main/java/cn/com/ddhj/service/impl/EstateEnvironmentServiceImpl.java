@@ -34,6 +34,7 @@ import cn.com.ddhj.dto.CityAqiData;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TChemicalPlantMapper;
 import cn.com.ddhj.mapper.TCityWeatherForecastMapper;
+import cn.com.ddhj.mapper.THighVoltageMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.mapper.TWaterEnviromentMapper;
@@ -52,6 +53,7 @@ import cn.com.ddhj.service.IEstateInfoService;
 import cn.com.ddhj.service.ILongitudeLatitudeService;
 import cn.com.ddhj.service.IWeatherAreaSupportService;
 import cn.com.ddhj.util.CommonUtil;
+import cn.com.ddhj.util.DCacheEnum;
 import cn.com.ddhj.util.DoctorScoreUtil;
 import cn.com.ddhj.util.PureNetUtil;
 
@@ -100,6 +102,9 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	private TChemicalPlantMapper chemicalMapper; // 污染源-化工厂
 	
 	@Resource
+	private THighVoltageMapper highVoltageMapper;  // 高压线路 辐射污染  
+	
+	@Resource
 	private TWaterEnviromentMapper waterEnvMapper;  // 水质量信息
 	
 	@Resource
@@ -114,7 +119,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject apiAreaEnv(String position , String city) {
+	public JSONObject apiAreaEnv(String position , String city , ServletContext application) {
 		JSONObject result = new JSONObject();
 		if(StringUtils.isAnyBlank(position)){
 			result.put("resultCode", -1); 
@@ -157,6 +162,8 @@ long start = System.currentTimeMillis();
 	        rub.setPosition(position);
 	        rub.setMapper(rubbishMapper);
 	        rub.setChemicalMapper(chemicalMapper); 
+	        rub.setApplication(application);
+	        rub.setHighVoltageMapper(highVoltageMapper); 
 	        Future<Map<String , String>> rubFuture = executor.submit(rub);
 	        
 	        Task1032Weather tw_ = new Task1032Weather();
@@ -289,6 +296,10 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 	/**
 	 * @descriptions 环境综合评分接口|1032
 	 *
+	 * @test
+	 * 	http://stockwyz.xicp.net/ddhj/api.htm?apiTarget=1032&api_key=appfamilyhas&apiInput=%7b%22position%22%3a%2239.91488908%2c116.40387397%22%2c%22city%22%3a%22%e5%8c%97%e4%ba%ac%22%2c%22radius%22%3a2000%7d&api_timespan=2017-02-16+15%3a28%3a25&userToken=f32639fa4e494bec9d188c44417077c1&api_secret=6e832b4938e1c9d361cd0e0c6093e09b
+	 * 	http://localhost:8080/ddhj/api.htm?apiTarget=1032&api_key=appfamilyhas&apiInput=%7b%22position%22%3a%2239.91488908%2c116.40387397%22%2c%22city%22%3a%22%e5%8c%97%e4%ba%ac%22%2c%22radius%22%3a2000%7d&api_timespan=2017-02-16+15%3a28%3a25&userToken=f32639fa4e494bec9d188c44417077c1&api_secret=6e832b4938e1c9d361cd0e0c6093e09b
+	 * 
 	 * @param position|经纬度逗号分隔
 	 * @param title | 地产名称
 	 * @param city |当前城市名称 如：北京，注意不是北京市
@@ -297,7 +308,7 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEnvScore(String position , String city , String radius){
+	public JSONObject apiEnvScore(String position , String city , String radius , ServletContext application){
 		JSONObject result = new JSONObject();
 		if(StringUtils.isAnyBlank(position , city)){
 			result.put("resultCode", -1); 
@@ -328,6 +339,8 @@ long start = System.currentTimeMillis();
 	        rub.setPosition(position);
 	        rub.setMapper(rubbishMapper);
 	        rub.setChemicalMapper(chemicalMapper); 
+	        rub.setApplication(application);
+	        rub.setHighVoltageMapper(highVoltageMapper); 
 	        Future<Map<String , String>> rubFuture = executor.submit(rub);
 	        
 	        Task1032Estate est = new Task1032Estate();
@@ -875,7 +888,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		String today = format.format(new Date());
 		today = today.split("-")[0] + "-" + Integer.valueOf(today.split("-")[1]) + "-" + Integer.valueOf( today.split("-")[2] );
 		JSONObject calendar = null;
-		Object o = application.getAttribute("perpetual_calendar");  //  null ;
+		Object o = application.getAttribute(DCacheEnum.perpetual_calendar.toString());  //  null ;
 		if(o != null){
 			calendar = JSONObject.parseObject(String.valueOf( o ));
 		}
@@ -915,7 +928,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 				e.printStackTrace();
 			}
 			System.out.println(result.toJSONString()); 
-			application.setAttribute("perpetual_calendar", result.toJSONString());  
+			application.setAttribute(DCacheEnum.perpetual_calendar.toString(), result.toJSONString());  
 		}else{
 			return calendar;  // 数据存在直接取缓存中的信息 
 		}

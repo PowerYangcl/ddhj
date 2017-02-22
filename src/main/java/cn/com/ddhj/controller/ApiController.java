@@ -210,7 +210,7 @@ public class ApiController extends BaseClass {
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			String radius = obj.getString("radius");
-			JSONObject result_ = estateEnvService.apiEnvScore(position, city, radius);
+			JSONObject result_ = estateEnvService.apiEnvScore(position, city, radius , application);
 			long end = System.currentTimeMillis();
 			System.out.println("1032号接口总共耗时：" + (end - start) + " 毫秒");
 			return result_;
@@ -229,7 +229,7 @@ public class ApiController extends BaseClass {
 			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
-			JSONObject result_ = estateEnvService.apiAreaEnv(position, city);
+			JSONObject result_ = estateEnvService.apiAreaEnv(position, city , application);
 			long end = System.currentTimeMillis();
 			System.out.println("1025号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;
