@@ -9,7 +9,7 @@ import cn.com.ddhj.base.BaseResult;
  * 作者: zhy<br>
  * 时间: 2016年10月3日 下午9:29:54
  */
-public class PDFReportResult extends BaseResult {
+public class CreateReportResult extends BaseResult {
 
 	private String path;
 

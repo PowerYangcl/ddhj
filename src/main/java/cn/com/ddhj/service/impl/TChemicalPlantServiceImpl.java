@@ -1,5 +1,8 @@
 package cn.com.ddhj.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +26,18 @@ public class TChemicalPlantServiceImpl extends BaseServiceImpl<TChemicalPlant, T
 	@Autowired
 	private TChemicalPlantMapper mapper;
 
+	/**
+	 * 
+	 * 方法: getChemical <br>
+	 * @param city
+	 * @param lat
+	 * @param lng
+	 * @return 
+	 * @see cn.com.ddhj.service.ITChemicalPlantService#getChemical(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	@Override
-	public int chemicalLevel(String city, String lat, String lng) {
+	public Map<String, String> getChemical(String city, String lat, String lng) {
+		Map<String, String> map = new HashMap<String, String>();
 		int level = 1;
 		TChemicalPlantDto dto = new TChemicalPlantDto();
 		dto.setCity(city);
@@ -34,11 +47,13 @@ public class TChemicalPlantServiceImpl extends BaseServiceImpl<TChemicalPlant, T
 		if (model != null) {
 			Double ll = CommonUtil.getDistanceFromLL(Double.valueOf(dto.getLat()), Double.valueOf(dto.getLng()),
 					Double.valueOf(model.getLat()), Double.valueOf(model.getLng()));
+			map.put("distance", String.valueOf(ll));
 			if (ll > 1000) {
 				level = 2;
 			}
 		}
-		return level;
+		map.put("level", String.valueOf(level));
+		return map;
 	}
 
 	private TChemicalPlant getTChemicalPlant(TChemicalPlantDto dto) {

@@ -1,5 +1,8 @@
 package cn.com.ddhj.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,7 +89,8 @@ public class TRubbishRecyclingServiceImpl
 	 * @see cn.com.ddhj.service.ITRubbishRecyclingService#getRubbishLevel(java.lang.Double)
 	 */
 	@Override
-	public Integer getRubbishLevel(String city, String lat, String lng) {
+	public Map<String, String> getRubbish(String city, String lat, String lng) {
+		Map<String, String> map = new HashMap<String,String>();
 		Integer level = 1;
 		TRubbishRecyclingDto dto = new TRubbishRecyclingDto();
 		dto.setCity(city);
@@ -94,13 +98,17 @@ public class TRubbishRecyclingServiceImpl
 		dto.setLng(lng);
 		Double distance = this.getDistance(dto);
 		if (distance != null) {
+			map.put("distance", String.valueOf(distance));
 			if (distance > 300 && distance <= 1000) {
 				level = 2;
 			} else if (distance <= 300) {
 				level = 3;
 			}
+		}else{
+			map.put("distance", "0.00");
 		}
-		return level;
+		map.put("level", String.valueOf(level));
+		return map;
 	}
 
 }

@@ -1,5 +1,7 @@
 package cn.com.ddhj.service;
 
+import java.util.Map;
+
 import cn.com.ddhj.dto.TRubbishRecyclingDto;
 import cn.com.ddhj.model.TRubbishRecycling;
 
@@ -39,11 +41,12 @@ public interface ITRubbishRecyclingService extends IBaseService<TRubbishRecyclin
 	/**
 	 * 
 	 * 方法: getRubbishLevel <br>
-	 * 描述: 获取垃圾回收设施级别 <br>
+	 * 描述: 获取垃圾回收设施级别和距离 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月4日 下午12:26:56
 	 * @param distance
 	 * @return
 	 */
-	Integer getRubbishLevel(String city,String lat,String lng);
+	Map<String, String> getRubbish(String city,String lat,String lng);
+	
 }

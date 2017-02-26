@@ -46,7 +46,7 @@ import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserLpFollow;
-import cn.com.ddhj.result.report.PDFReportResult;
+import cn.com.ddhj.result.report.CreateReportResult;
 import cn.com.ddhj.result.report.TReportDataResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
@@ -57,6 +57,7 @@ import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.CommonUtil;
 import cn.com.ddhj.util.DateUtil;
+import cn.com.ddhj.util.PPTUtil;
 import cn.com.ddhj.util.PdfUtil;
 
 /**
@@ -161,7 +162,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult insert(TReport entity, String path) {
 		BaseResult result = new BaseResult();
 		String code = WebHelper.getInstance().getUniqueCode("R");
-		PDFReportResult pdfResult = createPDF(code, entity.getHousesCode(), path, null);
+		CreateReportResult pdfResult = createPDF(code, entity.getHousesCode(), path, null);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -189,7 +190,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Override
 	public BaseResult updateByCode(TReport entity, String path) {
 		BaseResult result = new BaseResult();
-		PDFReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path, null);
+		CreateReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path, null);
 		pdfResult.setResultCode(0);
 		if (pdfResult.getResultCode() == 0) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -270,10 +271,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (list != null && list.size() > 0) {
 			// 生成pdf环境报告
 			for (int i = 0; i < list.size(); i++) {
-				PDFReportResult pdfResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/",
+				CreateReportResult createResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/",
 						this.getCityAirLevel());
-				if (pdfResult.getResultCode() == 0) {
-					list.get(i).setPath(pdfResult.getPath());
+				if (createResult.getResultCode() == 0) {
+					list.get(i).setPath(createResult.getPath());
 				}
 			}
 			boolean flag = false;
@@ -304,8 +305,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return result;
 	}
 
-	public PDFReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir) {
-		PDFReportResult result = new PDFReportResult();
+	public CreateReportResult createPDF(String code, String housesCode, String path, JSONArray cityAir) {
+		CreateReportResult result = new CreateReportResult();
 		try {
 			File file = new File(path);
 			if (!file.exists()) {
@@ -372,13 +373,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			Integer rubbishLevel = 1;
 			if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
 					&& StringUtils.isNotBlank(lp.getLng())) {
-				rubbishLevel = rubbishService.getRubbishLevel(lp.getCity(), lp.getLat(), lp.getLng());
+				Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
+				rubbishLevel = Integer.valueOf(rubbish.get("level"));
 			}
 			// 化工厂
 			Integer chemicalLevel = 1;
 			if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
 					&& StringUtils.isNotBlank(lp.getLng())) {
-				chemicalLevel = chemicalService.chemicalLevel(lp.getCity(), lp.getLat(), lp.getLng());
+				Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(), lp.getLng());
+				chemicalLevel = Integer.valueOf(chemical.get("level"));
 			}
 			// 噪音等级
 			int nosieLevel = getNoiseLevel(lp);
@@ -513,13 +516,13 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Override
 	public BaseResult createReport(TReportDto dto, String path, SysUser user) {
 		BaseResult result = new BaseResult();
-		// 查询报告是否已存在,获取报告的
+		// 查询报告是否已存在,获取报告
 		List<String> lpCodes = new ArrayList<String>();
 		lpCodes.add(dto.getLpCode());
 		TReport report = mapper.findReportByLpCodeAndLevelCode(lpCodes);
 		if (report != null) {
 			// 如果存在，根据等级生成新的环境报告
-			PDFReportResult createResult = createPDF(report.getCode(), dto.getLpCode(), path, null);
+			CreateReportResult createResult = createPDF(report.getCode(), dto.getLpCode(), path, null);
 			result.setResultCode(createResult.getResultCode());
 			result.setResultMessage(createResult.getResultMessage());
 			report.setUpdateTime(DateUtil.getSysDateTime());
@@ -540,7 +543,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			result.setResultMessage("楼盘不能为空");
 		} else {
 			String code = WebHelper.getInstance().getUniqueCode("R");
-			PDFReportResult createResult = createPDF(code, entity.getHousesCode(), path, null);
+			CreateReportResult createResult = createPDF(code, entity.getHousesCode(), path, null);
 			if (createResult.getResultCode() == 0) {
 				entity.setCode(code);
 				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -611,7 +614,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						if (StringUtils.isNotBlank(date)) {
 							if (entity != null) {
 								codes.add(entity.getCode());
-								PDFReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
+								CreateReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
 								entity.setPath(result.getPath());
 								entity.setReportDate(date);
 								entity.setUpdateUser("system");
@@ -622,7 +625,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							} else {
 								String code = WebHelper.getInstance().getUniqueCode("R");
 								codes.add(code);
-								PDFReportResult result = createPDF(code, lp.getCode(), path, null);
+								CreateReportResult result = createPDF(code, lp.getCode(), path, null);
 								entity = new TReport();
 								entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 								entity.setCode(code);
@@ -693,6 +696,40 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 	/**
 	 * 
+	 * 方法: createPPT <br>
+	 * 描述: 创建ppt格式环境报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年2月26日 上午12:29:32
+	 * 
+	 * @param code
+	 * @param lpCode
+	 * @param cityAir
+	 * @return
+	 */
+	@Override
+	public CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir) {
+		if (cityAir == null) {
+			cityAir = this.getCityAirLevel();
+		}
+		CreateReportResult result = new CreateReportResult();
+		Map<String, String> map = getReportParam(code, lpCode, cityAir);
+		System.out.println("-------------->");
+		System.out.println(map);
+		System.out.println("-------------->");
+		String path = PPTUtil.instance().createReport(map, code);
+		if (StringUtils.isNotBlank(path)) {
+			result.setResultCode(0);
+			result.setResultMessage("生成报告成功");
+			result.setPath(path);
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("生成报告错误");
+		}
+		return result;
+	}
+
+	/**
+	 * 
 	 * 方法: getCityAirLevel <br>
 	 * 描述: 查询楼盘城市列表的空气质量和水质量等级 <br>
 	 * 作者: zhy<br>
@@ -706,13 +743,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (citys != null && citys.size() > 0) {
 			for (int i = 0; i < citys.size(); i++) {
 				if (StringUtils.isNotBlank(citys.get(i))) {
-					int air = cityAirService.getAQILevel(citys.get(i));
-					JSONObject obj = new JSONObject();
-					obj.put("air", air);
-					JSONObject cityLevel = new JSONObject();
-					cityLevel.put("city", citys.get(i));
-					cityLevel.put("level", obj);
-					array.add(cityLevel);
+					array.add(cityAirService.getAQILevel(citys.get(i)));
 				}
 			}
 		}
@@ -1026,4 +1057,89 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		}
 		return level;
 	}
+
+	private Map<String, String> getReportParam(String reportCode, String lpCode, JSONArray airArray) {
+		Map<String, String> map = new HashMap<String, String>();
+		// 根据lpCode获取地产楼盘信息
+		TLandedProperty lp = lpMapper.selectByCode(lpCode);
+		if (lp != null) {
+			JSONObject air = null;
+			for (int i = 0; i < airArray.size(); i++) {
+				JSONObject obj = airArray.getJSONObject(i);
+				if (StringUtils.equals(obj.getString("city"), lp.getCity())) {
+					air = obj;
+					break;
+				}
+			}
+			// 获取空气AQI指数和等级
+			if (air != null) {
+				map.put("air.index", air.getString("AQI"));
+				map.put("air.level", air.getString("level"));
+			} else {
+				map.put("air.index", "0");
+				map.put("air.level", "0");
+			}
+			// 噪音数值和等级
+			int noiseLevel = getNoiseLevel(lp);
+			map.put("noise.index", getNoiseIndex(noiseLevel));
+			map.put("noise.level", String.valueOf(noiseLevel));
+			// 水质等级
+			map.put("water.level", String.valueOf(waterEnv(lp)));
+			// 土壤等级
+			map.put("soil.level", "2");
+			// 污染源和距离
+			// 垃圾场
+			Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
+			String rubbishStr = "垃圾场：等级为" + rubbish.get("level") + "级，距离小区" + rubbish.get("distance") + "米";
+			// 化工厂
+			Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(), lp.getLng());
+			String chemicalStr = "化工厂：等级为" + chemical.get("level") + "级，距离小区" + chemical.get("distance") + "米";
+			map.put("sourceOfPollution", rubbishStr + "；" + chemicalStr);
+			// 辐射源距离
+			map.put("sourceOfRadiation.distance", "1000");
+			// 容积率
+			try {
+				map.put("volume.index", Double.valueOf(lp.getVolumeRate()).toString());
+			} catch (Exception e) {
+				map.put("volume.index", "0.00");
+			}
+			// 危险品存放距离
+			map.put("hazardousArticle.distance", "1000");
+			// 获取绿地率数值
+			if (StringUtils.isNotBlank(lp.getGreeningRate())) {
+				map.put("afforest.index", lp.getGreeningRate());
+			} else {
+				map.put("afforest.index", "0.00%");
+			}
+
+		}
+		return map;
+	}
+
+	/**
+	 * 
+	 * 方法: getNoiseIndex <br>
+	 * 描述: 根据噪音等级获取噪音数值 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年2月25日 下午11:51:11
+	 * 
+	 * @param noiseLevel
+	 * @return
+	 */
+	private String getNoiseIndex(Integer noiseLevel) {
+		String index = "0/0";
+		if (noiseLevel == 0) {
+			index = "50/40";
+		} else if (noiseLevel == 1) {
+			index = "55/45";
+		} else if (noiseLevel == 2) {
+			index = "60/50";
+		} else if (noiseLevel == 3) {
+			index = "65/55";
+		} else if (noiseLevel == 4) {
+			index = "70/60";
+		}
+		return index;
+	}
+
 }

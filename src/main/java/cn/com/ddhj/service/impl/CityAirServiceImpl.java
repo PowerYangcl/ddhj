@@ -258,7 +258,9 @@ public class CityAirServiceImpl implements ICityAirService {
 	 * @see cn.com.ddhj.service.ICityAirService#getAQILevel()
 	 */
 	@Override
-	public Integer getAQILevel(String cityName) {
+	public JSONObject getAQILevel(String cityName) {
+		JSONObject cityAir = new JSONObject();
+		cityAir.put("name", cityName);
 		Integer level = 1;
 		JSONObject air = getCityAir(cityName);
 		if (air != null) {
@@ -266,6 +268,7 @@ public class CityAirServiceImpl implements ICityAirService {
 			if (result != null && result.size() > 0) {
 				JSONObject citynow = JSONObject.parseObject(result.getJSONObject(0).getString("citynow"));
 				Integer aqi = citynow.getInteger("AQI");
+				cityAir.put("aqi", aqi);
 				if (aqi >= 50 && aqi <= 100) {
 					level = 2;
 				} else if (aqi >= 101 && aqi <= 150) {
@@ -277,9 +280,10 @@ public class CityAirServiceImpl implements ICityAirService {
 				} else if (aqi > 301) {
 					level = 6;
 				}
+				cityAir.put("level", level);
 			}
 		}
-		return level;
+		return cityAir;
 	}
 
 	/**
