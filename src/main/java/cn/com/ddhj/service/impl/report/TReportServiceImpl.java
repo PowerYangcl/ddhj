@@ -709,13 +709,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Override
 	public CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir) {
 		if (cityAir == null) {
-			cityAir = this.getCityAirLevel();
+			//cityAir = this.getCityAirLevel();
 		}
 		CreateReportResult result = new CreateReportResult();
 		Map<String, String> map = getReportParam(code, lpCode, cityAir);
-		System.out.println("-------------->");
-		System.out.println(map);
-		System.out.println("-------------->");
 		String path = PPTUtil.instance().createReport(map, code);
 		if (StringUtils.isNotBlank(path)) {
 			result.setResultCode(0);
@@ -1063,14 +1060,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		// 根据lpCode获取地产楼盘信息
 		TLandedProperty lp = lpMapper.selectByCode(lpCode);
 		if (lp != null) {
+			map.put("lp.name", lp.getTitle());
 			JSONObject air = null;
-			for (int i = 0; i < airArray.size(); i++) {
-				JSONObject obj = airArray.getJSONObject(i);
-				if (StringUtils.equals(obj.getString("city"), lp.getCity())) {
-					air = obj;
-					break;
-				}
-			}
+//			for (int i = 0; i < airArray.size(); i++) {
+//				JSONObject obj = airArray.getJSONObject(i);
+//				if (StringUtils.equals(obj.getString("city"), lp.getCity())) {
+//					air = obj;
+//					break;
+//				}
+//			}
 			// 获取空气AQI指数和等级
 			if (air != null) {
 				map.put("air.index", air.getString("AQI"));
