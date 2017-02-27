@@ -35,6 +35,7 @@ public class TReportController {
 
 	@RequestMapping("index")
 	public String index() {
+		System.out.println("------>");
 		return "jsp/report/index";
 	}
 

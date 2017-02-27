@@ -12,7 +12,7 @@ import cn.com.ddhj.result.order.SysOrderDataResult;
 import cn.com.ddhj.service.ITOrderService;
 
 @Controller
-@RequestMapping("order")
+@RequestMapping("order/")
 public class TOrderController {
 
 	@Autowired
