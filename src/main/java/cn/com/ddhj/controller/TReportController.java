@@ -23,7 +23,7 @@ import cn.com.ddhj.service.report.ITReportLevelService;
 import cn.com.ddhj.service.report.ITReportService;
 
 @Controller
-@RequestMapping("report/")
+@RequestMapping("sys/report/")
 public class TReportController {
 
 	@Autowired
@@ -35,7 +35,6 @@ public class TReportController {
 
 	@RequestMapping("index")
 	public String index() {
-		System.out.println("------>");
 		return "jsp/report/index";
 	}
 
@@ -102,6 +101,7 @@ public class TReportController {
 		model.addAttribute("rl", rl);
 		return "jsp/report/edit";
 	}
+
 	@RequestMapping("edit")
 	@ResponseBody
 	public BaseResult edit(TReport entity, HttpServletRequest request) {
