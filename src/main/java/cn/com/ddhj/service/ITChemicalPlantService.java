@@ -1,5 +1,7 @@
 package cn.com.ddhj.service;
 
+import java.util.Map;
+
 import cn.com.ddhj.dto.TChemicalPlantDto;
 import cn.com.ddhj.model.TChemicalPlant;
 
@@ -12,5 +14,16 @@ import cn.com.ddhj.model.TChemicalPlant;
  */
 public interface ITChemicalPlantService extends IBaseService<TChemicalPlant, TChemicalPlantDto> {
 
-	int chemicalLevel(String city, String lat, String lng);
+	/**
+	 * 
+	 * 方法: getChemical <br>
+	 * 描述: 获取化工厂等级和距离 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年2月26日 上午12:04:35
+	 * @param city
+	 * @param lat
+	 * @param lng
+	 * @return
+	 */
+	Map<String, String> getChemical(String city, String lat, String lng);
 }

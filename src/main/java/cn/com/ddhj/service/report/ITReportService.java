@@ -2,11 +2,14 @@ package cn.com.ddhj.service.report;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSONArray;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.system.SysUser;
+import cn.com.ddhj.result.report.CreateReportResult;
 import cn.com.ddhj.result.report.TReportDataResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
@@ -140,4 +143,5 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 */
 	void batchCreateReport();
 
+	public CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir);
 }

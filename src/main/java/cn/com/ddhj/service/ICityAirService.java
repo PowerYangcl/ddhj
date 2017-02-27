@@ -81,7 +81,7 @@ public interface ICityAirService {
 	 * 
 	 * @return
 	 */
-	Integer getAQILevel(String cityName);
+	public JSONObject getAQILevel(String cityName);
 	
 	public CityAqi getCityAqi(String cityName);
 	
