@@ -18,6 +18,10 @@ import org.apache.poi.hslf.model.Slide;
 import org.apache.poi.hslf.model.TextRun;
 import org.apache.poi.hslf.usermodel.SlideShow;
 
+import com.artofsolving.jodconverter.DocumentConverter;
+import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
+import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
+import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;
@@ -79,7 +83,8 @@ public class PPTUtil {
 			out = new FileOutputStream(new File(path));
 			_slideShow.write(out);
 			out.close();
-			convertPPTToPDF(reportName, path);
+			// convertPPTToPDF(reportName, path);
+			pptToPdf(path, reportName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -131,5 +136,45 @@ public class PPTUtil {
 		pdfDocument.close();
 		pdfWriter.close();
 		System.out.println("Powerpoint file converted to PDF successfully");
+	}
+
+	public boolean pptToPdf(String sourceFile, String reportName) {
+		boolean flag = false;
+		OpenOfficeConnection connection = null;
+		String path = OUT_REPORT_PDF_PATH + reportName + ".pdf";
+		try {
+			File inputFile = new File(sourceFile);
+			if (!inputFile.exists()) {
+				return flag;
+			}
+			// 如果目标路径不存在, 则新建该路径
+			File outputFile = new File(path);
+			if (!outputFile.getParentFile().exists()) {
+				outputFile.getParentFile().mkdirs();
+			}
+			// 这里是OpenOffice的安装目录
+			String OpenOffice_HOME = "C:\\Program Files (x86)\\OpenOffice 4";
+			// 如果从文件中读取的URL地址最后一个字符不是 '\'，则添加'\'
+			if (OpenOffice_HOME.charAt(OpenOffice_HOME.length() - 1) != '\\') {
+				OpenOffice_HOME += "\\";
+			}
+			// 启动OpenOffice的服务
+			String command = OpenOffice_HOME
+					+ "program\\soffice.exe -headless -accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
+			Runtime.getRuntime().exec(command);
+			// connect to an OpenOffice.org instance running on port 8100
+			connection = new SocketOpenOfficeConnection(8100);
+			connection.connect();
+			// convert
+			DocumentConverter converter = new OpenOfficeDocumentConverter(connection);
+			converter.convert(inputFile, outputFile);
+			flag = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null)
+				connection.disconnect();
+		}
+		return flag;
 	}
 }
