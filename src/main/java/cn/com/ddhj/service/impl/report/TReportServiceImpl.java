@@ -530,7 +530,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		TReport report = mapper.findReportByLpCodeAndLevelCode(lpCodes);
 		if (report != null) {
 			// 如果存在，根据等级生成新的环境报告
-			CreateReportResult createResult = createPDF(report.getCode(), dto.getLpCode(), path, null);
+			CreateReportResult createResult = createPPT(report.getCode(), dto.getLpCode(), null);
 			result.setResultCode(createResult.getResultCode());
 			result.setResultMessage(createResult.getResultMessage());
 			report.setUpdateTime(DateUtil.getSysDateTime());

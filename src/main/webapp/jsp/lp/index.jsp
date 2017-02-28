@@ -37,7 +37,7 @@
 	}
 	
 	function createReport(val){
-		var url_ = '${basePath}report/create.htm';
+		var url_ = '${basePath}sys/report/create.htm';
 		var type_ = 'post';
 		var data_ = {"lpCode":val,"levelCode":"RL161006100001"};
 		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));

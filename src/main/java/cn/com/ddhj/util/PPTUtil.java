@@ -1,11 +1,5 @@
 package cn.com.ddhj.util;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,12 +17,6 @@ import com.artofsolving.jodconverter.DocumentConverter;
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
 
 
 /**
@@ -42,10 +30,13 @@ public class PPTUtil {
 
 	private static PPTUtil self;
 
-	private final static String TEMPLATE_FILE = "/opt/ddhj/report/ppt/template/report.ppt";
-	private final static String OUT_REPORT_PPT_PATH = "/opt/ddhj/report/ppt/";
-	private final static String OUT_REPORT_PDF_PATH = "/opt/ddhj/report/pdf/";
+//	private final static String TEMPLATE_FILE = "/opt/ddhj/report/ppt/template/report.ppt";
+//	private final static String OUT_REPORT_PPT_PATH = "/opt/ddhj/report/ppt/";
+//	private final static String OUT_REPORT_PDF_PATH = "/opt/ddhj/report/pdf/";
 
+	private final static String TEMPLATE_FILE = "E:/report/ppt//template/report.ppt";
+	private final static String OUT_REPORT_PPT_PATH = "E:/report/ppt/";
+	private final static String OUT_REPORT_PDF_PATH = "E:/report/pdf/";
 	public static PPTUtil instance() {
 		if (self == null) {
 			synchronized (PPTUtil.class) {
@@ -88,7 +79,7 @@ public class PPTUtil {
 			out = new FileOutputStream(new File(path));
 			_slideShow.write(out);
 			out.close();
-			//pptToPdf(path, reportName);
+			pptToPdf(path, reportName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -101,45 +92,6 @@ public class PPTUtil {
 			}
 		}
 		return path;
-	}
-
-	public static void convertPPTToPDF(String reportName, String filePath) throws Exception {
-		String path = OUT_REPORT_PDF_PATH + reportName + ".pdf";
-		FileInputStream inputStream = new FileInputStream(filePath);
-		double zoom = 2;
-		AffineTransform at = new AffineTransform();
-		at.setToScale(zoom, zoom);
-		Document pdfDocument = new Document();
-		PdfWriter pdfWriter = PdfWriter.getInstance(pdfDocument, new FileOutputStream(new File(path)));
-		PdfPTable table = new PdfPTable(1);
-		pdfWriter.open();
-		pdfDocument.open();
-		Dimension pgsize = null;
-		Image slideImage = null;
-		BufferedImage img = null;
-		SlideShow ppt = new SlideShow(inputStream);
-		inputStream.close();
-		pgsize = ppt.getPageSize();
-		Slide slide[] = ppt.getSlides();
-		pdfDocument.setPageSize(new Rectangle((float) pgsize.getWidth(), (float) pgsize.getHeight()));
-		pdfWriter.open();
-		pdfDocument.open();
-		for (int i = 0; i < slide.length; i++) {
-			img = new BufferedImage((int) Math.ceil(pgsize.width * zoom), (int) Math.ceil(pgsize.height * zoom),
-					BufferedImage.TYPE_INT_RGB);
-			Graphics2D graphics = img.createGraphics();
-			graphics.setTransform(at);
-			graphics.setPaint(Color.white);
-			graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height));
-			slide[i].draw(graphics);
-			graphics.getPaint();
-			slideImage = Image.getInstance(img, null);
-			table.addCell(new PdfPCell(slideImage, true));
-		}
-		pdfDocument.add(table);
-		pdfDocument.close();
-		pdfWriter.close();
-		System.out.println("Powerpoint file converted to PDF successfully");
 	}
 
 	public boolean pptToPdf(String sourceFile, String reportName) {
@@ -157,16 +109,15 @@ public class PPTUtil {
 				outputFile.getParentFile().mkdirs();
 			}
 			// 这里是OpenOffice的安装目录
-//			String OpenOffice_HOME = "C:\\Program Files (x86)\\OpenOffice 4";
-			String OpenOffice_HOME = "/opt/openoffice4/";
+			String OpenOffice_HOME = "C:\\Program Files (x86)\\OpenOffice 4";
+//			String OpenOffice_HOME = "/opt/openoffice4/";
 			// 如果从文件中读取的URL地址最后一个字符不是 '\'，则添加'\'
 			if (OpenOffice_HOME.charAt(OpenOffice_HOME.length() - 1) != '\\') {
 				OpenOffice_HOME += "\\";
 			}
 			// 启动OpenOffice的服务
-//			String command = OpenOffice_HOME
-//					+ "program\\soffice.exe -headless-accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
-			String command = OpenOffice_HOME+"soffice -headless-accept=\"socket,host=127.0.0.1,port=8100;urp;\"-nofirststartwizard";
+			String command = OpenOffice_HOME+ "program\\soffice.exe -headless-accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
+//			String command = OpenOffice_HOME+"soffice -headless-accept=\"socket,host=127.0.0.1,port=8100;urp;\"-nofirststartwizard";
 			Runtime.getRuntime().exec(command);
 			// connect to an OpenOffice.org instance running on port 8100
 			connection = new SocketOpenOfficeConnection(8100);
