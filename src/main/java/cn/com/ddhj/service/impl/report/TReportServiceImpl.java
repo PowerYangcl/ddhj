@@ -709,10 +709,11 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Override
 	public CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir) {
 		if (cityAir == null) {
-			 cityAir = this.getCityAirLevel();
+			cityAir = this.getCityAirLevel();
 		}
 		CreateReportResult result = new CreateReportResult();
-		Map<String, String> map = getReportParam(code, lpCode, cityAir);
+		List<TReportEnvironmentLevel> list = levelMapper.findTReportEnvironmentLevelAll();
+		Map<String, String> map = getReportParam(code, lpCode, cityAir, list);
 		String path = PPTUtil.instance().createReport(map, code);
 		if (StringUtils.isNotBlank(path)) {
 			result.setResultCode(0);
@@ -758,7 +759,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * @return
 	 */
 	private Integer getNoiseLevel(TLandedProperty lp) {
-		int level = 0;
+		int level = 1;
 		if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
 			Double lat = Double.valueOf(lp.getLat());
 			Double lng = Double.valueOf(lp.getLng());
@@ -1055,7 +1056,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		return level;
 	}
 
-	private Map<String, String> getReportParam(String reportCode, String lpCode, JSONArray airArray) {
+	private Map<String, String> getReportParam(String reportCode, String lpCode, JSONArray airArray,
+			List<TReportEnvironmentLevel> list) {
 		Map<String, String> map = new HashMap<String, String>();
 		// 根据lpCode获取地产楼盘信息
 		TLandedProperty lp = lpMapper.selectByCode(lpCode);
@@ -1070,74 +1072,161 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				}
 			}
 			// 获取空气AQI指数和等级
+			int airLevel = 1;
 			if (air != null) {
-				map.put("air.index", air.getString("AQI"));
-				map.put("air.level", air.getString("level"));
-			} else {
-				map.put("air.index", "0");
-				map.put("air.level", "0");
+				airLevel = Integer.valueOf(air.getString("level"));
 			}
+			map.put("air.level", String.valueOf(airLevel));			
 			// 噪音数值和等级
 			int noiseLevel = getNoiseLevel(lp);
-			map.put("noise.index", getNoiseIndex(noiseLevel));
 			map.put("noise.level", String.valueOf(noiseLevel));
 			// 水质等级
-			map.put("water.level", String.valueOf(waterEnv(lp)));
+			int waterLevel = waterEnv(lp);
+			map.put("water.level", String.valueOf(waterLevel));
 			// 土壤等级
-			map.put("soil.level", "2");
+			int soilLevel = 2;
+			map.put("soil.level", String.valueOf(soilLevel));
 			// 污染源和距离
 			// 垃圾场
 			Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
-			String rubbishStr = "垃圾场：等级为" + rubbish.get("level") + "级，距离小区" + rubbish.get("distance") + "米";
+			Double rubbishDistance = BigDecimal.valueOf((Double.valueOf(rubbish.get("distance")) / 1000)).setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
+			String rubbishStr = "垃圾场：等级为" + rubbish.get("level") + "级，距离小区"
+					+ rubbishDistance + "公里";
 			// 化工厂
 			Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(), lp.getLng());
-			String chemicalStr = "化工厂：等级为" + chemical.get("level") + "级，距离小区" + chemical.get("distance") + "米";
-			map.put("sourceOfPollution", rubbishStr + "；" + chemicalStr);
-			// 辐射源距离
-			map.put("sourceOfRadiation.distance", "1000");
-			// 容积率
-			try {
-				map.put("volume.index", Double.valueOf(lp.getVolumeRate()).toString());
-			} catch (Exception e) {
-				map.put("volume.index", "0.00");
-			}
-			// 危险品存放距离
-			map.put("hazardousArticle.distance", "1000");
-			// 获取绿地率数值
-			if (StringUtils.isNotBlank(lp.getGreeningRate())) {
-				map.put("afforest.index", lp.getGreeningRate());
+			Double chemicalDistance = BigDecimal.valueOf((Double.valueOf(chemical.get("distance")) / 1000)).setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
+			String chemicalStr = "化工厂：等级为" + chemical.get("level") + "级，距离小区"
+					+ chemicalDistance + "公里";
+			/**
+			 * 垃圾场和化工厂取离小区最近的
+			 */
+			String sourceOfPollutionType = "";
+			Integer sourceOfPollutionLevel = 0;
+			if (Double.valueOf(rubbish.get("distance")) < Double.valueOf(chemical.get("distance"))) {
+				map.put("sourceOfPollution", rubbishStr);
+				map.put("sourceOfPollution.typeName", "垃圾场");
+				sourceOfPollutionType = "rubbish";
+				sourceOfPollutionLevel = Integer.valueOf(rubbish.get("level"));
 			} else {
-				map.put("afforest.index", "0.00%");
+				map.put("sourceOfPollution", chemicalStr);
+				map.put("sourceOfPollution.typeName", "化工厂");
+				sourceOfPollutionType = "chemical";
+				sourceOfPollutionLevel = Integer.valueOf(chemical.get("level"));
 			}
+			map.put("sourceOfPollution.level", String.valueOf(sourceOfPollutionLevel));
+			map.put("sourceOfPollution.type", sourceOfPollutionType);
+			// 辐射源距离
+			int sourceOfRadiationLevel = 1;
+			map.put("sourceOfRadiation.level", String.valueOf(sourceOfRadiationLevel));
+			// 容积率
+			int volumeLevel = 1;
+			try {
+				double volumeRate = Double.valueOf(lp.getVolumeRate());
+				if (volumeRate > 3 && volumeRate < 5) {
+					volumeLevel = 2;
+				} else if (volumeRate > 5) {
+					volumeLevel = 3;
+				}
 
+			} catch (Exception e) {
+				volumeLevel = 1;
+			}
+			map.put("volume.level", String.valueOf(volumeLevel));
+			// 危险品存放等级
+			int hazardousArticleLevel = 1;
+			map.put("hazardousArticle.level", String.valueOf(hazardousArticleLevel));
+			// 获取绿地率数值
+			int afforestLevel = 1;
+			if (StringUtils.isNotBlank(lp.getGreeningRate())) {
+				String greenRateStr = StringUtils.substring(lp.getGreeningRate(), 0, lp.getGreeningRate().indexOf("%"));
+				try {
+					if (Double.valueOf(greenRateStr) > 25 && Double.valueOf(greenRateStr) < 30) {
+						afforestLevel = 2;
+					} else if (Double.valueOf(greenRateStr) < 25) {
+						afforestLevel = 3;
+					}
+				} catch (Exception e) {
+					afforestLevel = 1;
+				}
+			}
+			map.put("afforest.level", String.valueOf(afforestLevel));
+			/**
+			 * 获取环境描述信息
+			 */
+			for (TReportEnvironmentLevel t : list) {
+				if (StringUtils.equals(t.getType(), "noise")) {
+					if (noiseLevel == t.getLevel()) {
+						/**
+						 * 噪音污染数值和描述
+						 */
+						map.put("noise.index", t.getValue());
+						map.put("noise.comment", t.getContent());
+					}
+				} else if (StringUtils.equals(t.getType(), "water")) {
+					if (waterLevel == t.getLevel()) {
+						/**
+						 * 水质量数值和描述
+						 */
+						map.put("water.index", t.getValue());
+						map.put("water.comment", t.getContent());
+					}
+				} else if (StringUtils.equals(t.getType(), "air")) {
+					if (airLevel == t.getLevel()) {
+						/**
+						 * 空气质量数值和描述
+						 */
+						map.put("air.index", t.getValue());
+						map.put("air.comment", t.getContent());
+					}
+				} else if (StringUtils.equals(t.getType(), "soil")) {
+					if (soilLevel == t.getLevel()) {
+						/**
+						 * 土壤数值和面搜
+						 */
+						map.put("soil.index", t.getValue());
+						map.put("soil.comment", t.getContent());
+					}
+				} else if (StringUtils.equals(t.getType(), "afforest")) {
+					if (afforestLevel == t.getLevel()) {
+						/**
+						 * 绿化率数值和描述
+						 */
+						map.put("afforest.index", t.getValue());
+						map.put("afforest.comment", t.getContent());
+					}
+				} else if (StringUtils.equals(t.getType(), "volume")) {
+					if (volumeLevel == t.getLevel()) {
+						/**
+						 * 容积率数值和描述
+						 */
+						map.put("volume.index", t.getValue());
+						map.put("volume.comment", t.getContent());
+					}
+				} else if (StringUtils.equals(t.getType(), sourceOfPollutionType)) {
+					if (sourceOfPollutionLevel == t.getLevel()) {
+						map.put("sourceOfPollution.index", t.getValue());
+						map.put("sourceOfPollution.comment", t.getContent());
+					}
+				} else if (StringUtils.equals(t.getType(), "hazardousArticle")) {
+					if (hazardousArticleLevel == t.getLevel()) {
+						/**
+						 * 危险品存放数值和描述
+						 */
+						map.put("hazardousArticle.index", t.getValue());
+						map.put("hazardousArticle.comment", t.getContent());
+					}
+				} else if (StringUtils.equals(t.getType(), "sourceOfRadiation")) {
+					/**
+					 * 辐射源数值和描述
+					 */
+					if (sourceOfRadiationLevel == t.getLevel()) {
+						map.put("sourceOfRadiation.index", t.getValue());
+						map.put("sourceOfRadiation.comment", t.getContent());
+					}
+				}
+			}
 		}
+		System.out.println(JSON.toJSON(map));
 		return map;
 	}
-
-	/**
-	 * 
-	 * 方法: getNoiseIndex <br>
-	 * 描述: 根据噪音等级获取噪音数值 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2017年2月25日 下午11:51:11
-	 * 
-	 * @param noiseLevel
-	 * @return
-	 */
-	private String getNoiseIndex(Integer noiseLevel) {
-		String index = "0/0";
-		if (noiseLevel == 0) {
-			index = "50/40";
-		} else if (noiseLevel == 1) {
-			index = "55/45";
-		} else if (noiseLevel == 2) {
-			index = "60/50";
-		} else if (noiseLevel == 3) {
-			index = "65/55";
-		} else if (noiseLevel == 4) {
-			index = "70/60";
-		}
-		return index;
-	}
-
 }

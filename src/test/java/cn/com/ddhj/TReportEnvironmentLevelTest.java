@@ -237,20 +237,50 @@ public class TReportEnvironmentLevelTest extends BaseTest {
 
 	@Test
 	public void insert2() {
-		TReportEnvironmentLevel chemical = new TReportEnvironmentLevel();
-		chemical.setCreateUser("system");
-		chemical.setCode(WebHelper.getInstance().getUniqueCode("TL"));
-		chemical.setLevel(0);
-		chemical.setType("chemical");
-		chemical.setContent("目前您您所在的小区距离化工厂大于 1000 米，潜在风险较小。");
-		service.insertSelective(chemical);
-
-		TReportEnvironmentLevel chemical2 = new TReportEnvironmentLevel();
-		chemical2.setCreateUser("system");
-		chemical2.setCode(WebHelper.getInstance().getUniqueCode("TL"));
-		chemical2.setLevel(1);
-		chemical2.setType("chemical");
-		chemical2.setContent("目前您您所在的小区距离化工厂小于 1000 米，潜在风险较高。");
-		service.insertSelective(chemical2);
+//		TReportEnvironmentLevel chemical = new TReportEnvironmentLevel();
+//		chemical.setCreateUser("system");
+//		chemical.setCode(WebHelper.getInstance().getUniqueCode("TL"));
+//		chemical.setLevel(1);
+//		chemical.setType("chemical");
+//		chemical.setContent("目前您您所在的小区距离化工厂大于 1000 米，潜在风险较小。");
+//		service.insertSelective(chemical);
+//
+//		TReportEnvironmentLevel chemical2 = new TReportEnvironmentLevel();
+//		chemical2.setCreateUser("system");
+//		chemical2.setCode(WebHelper.getInstance().getUniqueCode("TL"));
+//		chemical2.setLevel(2);
+//		chemical2.setType("chemical");
+//		chemical2.setContent("目前您您所在的小区距离化工厂小于 1000 米，潜在风险较高。");
+//		service.insertSelective(chemical2);
+//		
+		/**
+		 * 危险品
+		 */
+//		TReportEnvironmentLevel hazardousArticle = new TReportEnvironmentLevel();
+//		hazardousArticle.setCreateUser("system");
+//		hazardousArticle.setCode(WebHelper.getInstance().getUniqueCode("TL"));
+//		hazardousArticle.setLevel(1);
+//		hazardousArticle.setType("hazardousArticle");
+//		hazardousArticle.setContent("危险品存放距离大于3公里。");
+//		service.insertSelective(hazardousArticle);
+		
+		/**
+		 * 高压电辐射
+		 */
+		TReportEnvironmentLevel highVoltageRadiation = new TReportEnvironmentLevel();
+		highVoltageRadiation.setCreateUser("system");
+		highVoltageRadiation.setCode(WebHelper.getInstance().getUniqueCode("TL"));
+		highVoltageRadiation.setLevel(1);
+		highVoltageRadiation.setType("sourceOfRadiation");
+		highVoltageRadiation.setContent("高压电辐射距您1公里以外，属于安全距离");
+		service.insertSelective(highVoltageRadiation);
+		
+		TReportEnvironmentLevel highVoltageRadiation2 = new TReportEnvironmentLevel();
+		highVoltageRadiation2.setCreateUser("system");
+		highVoltageRadiation2.setCode(WebHelper.getInstance().getUniqueCode("TL"));
+		highVoltageRadiation2.setLevel(2);
+		highVoltageRadiation2.setType("sourceOfRadiation");
+		highVoltageRadiation2.setContent("高压电辐射距您小于500米，对您的身体健康存在潜在风险。");
+		service.insertSelective(highVoltageRadiation2);
 	}
 }

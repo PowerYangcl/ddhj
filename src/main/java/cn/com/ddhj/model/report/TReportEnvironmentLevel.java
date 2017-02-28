@@ -17,7 +17,17 @@ public class TReportEnvironmentLevel extends BaseModel {
 
 	private Integer level;
 
+	private String value;
+
 	private String content;
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
 
 	public String getContent() {
 		return content;
