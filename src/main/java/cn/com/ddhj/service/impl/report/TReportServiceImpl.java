@@ -1072,12 +1072,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (lp != null) {
 			map.put("lp.name", lp.getTitle());
 			JSONObject air = null;
-			for (int i = 0; i < airArray.size(); i++) {
-				JSONObject obj = airArray.getJSONObject(i);
-				if (StringUtils.equals(obj.getString("city"), lp.getCity())) {
-					air = obj;
-					break;
-				}
+			if(airArray != null){
+				for (int i = 0; i < airArray.size(); i++) {
+					JSONObject obj = airArray.getJSONObject(i);
+					if (StringUtils.equals(obj.getString("city"), lp.getCity())) {
+						air = obj;
+						break;
+					}
+				}				
 			}
 			// 获取空气AQI指数和等级
 			int airLevel = 1;
