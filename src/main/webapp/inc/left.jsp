@@ -66,7 +66,7 @@
                         </li>
                         <li id="li-7">
                         	<a href="${basePath}example/addInfoPage.do">成交管理</a>
-                        </li>
+                        </li> 
                     </ul>
                 </li>
             </ul>
