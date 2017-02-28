@@ -1203,6 +1203,9 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						map.put("volume.comment", t.getContent());
 					}
 				} else if (StringUtils.equals(t.getType(), sourceOfPollutionType)) {
+					/**
+					 * 污染源
+					 */
 					if (sourceOfPollutionLevel == t.getLevel()) {
 						map.put("sourceOfPollution.index", t.getValue());
 						map.put("sourceOfPollution.comment", t.getContent());
@@ -1226,7 +1229,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				}
 			}
 		}
-		System.out.println(JSON.toJSON(map));
 		return map;
 	}
 }

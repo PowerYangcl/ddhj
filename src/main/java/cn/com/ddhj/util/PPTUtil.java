@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hslf.HSLFSlideShow;
 import org.apache.poi.hslf.model.Slide;
 import org.apache.poi.hslf.model.TextRun;
+import org.apache.poi.hslf.usermodel.RichTextRun;
 import org.apache.poi.hslf.usermodel.SlideShow;
 
 import com.artofsolving.jodconverter.DocumentConverter;
@@ -65,17 +66,34 @@ public class PPTUtil {
 			for (Slide slide : slides) {
 				TextRun[] textRuns = slide.getTextRuns();
 				for (TextRun textRun : textRuns) {
-					String text = textRun.getText();
-					if (StringUtils.substringsBetween(text, "${", "}") != null) {
-						String[] keys = StringUtils.substringsBetween(text, "${", "}");
-						for (String key : keys) {
-							if (StringUtils.isNotBlank(key)) {
-								String value = map.get(key);
-								text = StringUtils.replace(text, "${" + key + "}", value);
+//					String text = textRun.getText();
+//					if (StringUtils.substringsBetween(text, "${", "}") != null) {
+//						String[] keys = StringUtils.substringsBetween(text, "${", "}");
+//						for (String key : keys) {
+//							if (StringUtils.isNotBlank(key)) {
+//								String value = map.get(key);
+//								text = StringUtils.replace(text, "${" + key + "}", value);
+//							}
+//						}
+//					}
+//					textRun.setText(text);
+					RichTextRun[] richs = textRun.getRichTextRuns();
+					for (RichTextRun richTextRun : richs) {
+						String text = richTextRun.getRawText();
+						if (StringUtils.substringsBetween(text, "${", "}") != null) {
+							String[] keys = StringUtils.substringsBetween(text, "${", "}");
+							for (String key : keys) {
+								if (StringUtils.isNotBlank(key)) {
+									String value = map.get(key);
+									text = StringUtils.replace(text, "${" + key + "}", value);
+									richTextRun.setFontName("微软雅黑");
+									richTextRun.setFontSize(14);
+									richTextRun.setBold(true);
+									richTextRun.setText(text);
+								}
 							}
 						}
 					}
-					textRun.setText(text);
 				}
 			}
 			path = OUT_REPORT_PPT_PATH + reportName + ".ppt";
@@ -83,7 +101,7 @@ public class PPTUtil {
 			_slideShow.write(out);
 			out.close();
 			// convertPPTToPDF(reportName, path);
-			pptToPdf(path, reportName);
+			// pptToPdf(path, reportName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
