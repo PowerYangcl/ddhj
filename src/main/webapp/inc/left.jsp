@@ -50,7 +50,23 @@
                         <li id="li-1"><a href="${basePath}user/index.htm">用户管理</a></li>
                         <li id="li-2"><a href="${basePath}order/index.htm">订单管理</a></li>
                         <li id="li-3"><a href="${basePath}lp/index.htm">楼盘管理</a></li>
-                        <li id="li-4"><a href="${basePath}sys/report/index.htm">报告管理</a></li>
+                        <li id="li-4"><a href="${basePath}report/index.htm">报告管理</a></li> 
+                    </ul>
+                </li>
+                
+                <li class="current">
+                    <a href="#example" class="inbox">交易管理</a>
+                    <span class="arrow"></span>
+                    <ul id="example">
+                    	<li id="li-5">
+                        	<a href="${basePath}example/addInfoPage.do">标的管理</a>
+                        </li> 
+                        <li id="li-6">
+                        	<a href="${basePath}example/addInfoPage.do">委托管理</a>
+                        </li>
+                        <li id="li-7">
+                        	<a href="${basePath}example/addInfoPage.do">成交管理</a>
+                        </li> 
                     </ul>
                 </li>
             </ul>
