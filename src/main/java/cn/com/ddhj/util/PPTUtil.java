@@ -117,7 +117,7 @@ public class PPTUtil {
 			}
 			// 启动OpenOffice的服务
 //			String command = OpenOffice_HOME+ "program\\soffice.exe -headless-accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
-			String command = OpenOffice_HOME+"soffice -headless-accept=\"socket,host=127.0.0.1,port=8100;urp;\"-nofirststartwizard";
+			String command = OpenOffice_HOME+"program\\soffice -headless-accept=\"socket,host=127.0.0.1,port=8100;urp;\"-nofirststartwizard";
 			Runtime.getRuntime().exec(command);
 			// connect to an OpenOffice.org instance running on port 8100
 			connection = new SocketOpenOfficeConnection(8100);
