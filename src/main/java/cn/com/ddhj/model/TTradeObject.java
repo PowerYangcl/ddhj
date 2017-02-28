@@ -3,7 +3,7 @@ package cn.com.ddhj.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class TTtradeObject {
+public class TTradeObject {
     private Integer id;
 
     private String uuid;
