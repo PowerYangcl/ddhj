@@ -97,37 +97,28 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, TLand
 	 * @return
 	 */
 	List<TLandedProperty> findLpAllByCoord(TLandedPropertyDto dto);
-	
+
 	/**
 	 * @description: 取出全部地产信息
 	 * 
 	 * @return
-	 * @author Yangcl 
-	 * @date 2016年10月18日 下午5:15:13 
+	 * @author Yangcl
+	 * @date 2016年10月18日 下午5:15:13
 	 * @version 1.0.0.1
 	 */
 	List<TLandedProperty> selectAllEstateInfo();
-	
-	
+
 	Integer batchUpdateScore(List<TLandedProperty> list);
+
+	/**
+	 * 
+	 * 方法: findScoreLessThanLpCount <br>
+	 * 描述: 获取一定范围内环境综合评分小于当前楼盘的总数 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年2月28日 下午6:14:42
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	Integer findScoreLessThanLpCount(TLandedPropertyDto dto);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

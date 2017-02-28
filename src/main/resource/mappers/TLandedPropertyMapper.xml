@@ -33,7 +33,7 @@
 		<result column="overview" property="overview" jdbcType="LONGVARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, uuid, code, title, total, city, completion,
+		id, uuid, code, title, total, city, completion,score,
 		propertyType,
 		propertyCompany, price,
 		volumeRate, propertyCosts,
@@ -450,9 +450,25 @@
 			AND
 			(lp.lng BETWEEN
 			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
+			<if test="score != null">
+				AND score = #{score,jdbcType=DOUBLE}
+			</if>
 		</where>
 	</select>
-
+	<!-- 获取一定范围内环境综合评分小于当前楼盘的总数 2017-02-28 zhy -->
+	<select id="findScoreLessThanLpCount" parameterType="cn.com.ddhj.dto.TLandedPropertyDto" resultType="java.lang.Integer">
+		SELECT count(1) FROM t_landed_property AS lp
+		<where>
+			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND
+			#{maxLat,jdbcType=VARCHAR})
+			AND
+			(lp.lng BETWEEN
+			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
+			<if test="score != null">
+				<![CDATA[ AND score &lt; #{score,jdbcType=DOUBLE} ]]>     
+			</if>
+		</where>
+	</select>
 	<!-- 取出全部地产信息 - Yangcl -->
 	<select id="selectAllEstateInfo" resultMap="BaseResultMap">
 		select

@@ -226,7 +226,11 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		TReportSelResult result = new TReportSelResult();
 		TReport report = mapper.selectByCode(code);
 		if (report != null) {
-			List<String> housesCodes = this.getLpCodes();
+			List<String> housesCodes = new ArrayList<String>();
+			TLandedProperty lp = lpMapper.selectByCode(report.getHousesCode());
+			if (StringUtils.isNotBlank(lp.getLat()) && StringUtils.isNotBlank(lp.getLng())) {
+				housesCodes = this.getLpCodes(Double.valueOf(lp.getLat()), Double.valueOf(lp.getLng()), 10 * 1000);
+			}
 			List<TReport> list = new ArrayList<TReport>();
 			/**
 			 * 如果楼盘编码不在限制楼盘列表中，获取所有报告，如果存在，只获取普通的环境报告
@@ -437,7 +441,11 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			// 如果楼盘不为空
 			List<TReport> list = mapper.findReportByHousesCode(lpCode);
 			List<TReport> reports = new ArrayList<TReport>();
-			if (this.getLpCodes().contains(lpCode)) {
+			List<String> lpCodes = new ArrayList<String>();
+			if (StringUtils.isNotBlank(lp.getLat()) && StringUtils.isNotBlank(lp.getLng())) {
+				lpCodes = this.getLpCodes(Double.valueOf(lp.getLat()), Double.valueOf(lp.getLng()), 10 * 1000);
+			}
+			if (lpCodes.contains(lpCode)) {
 				for (TReport r : list) {
 					if ("RL161006100001".equals(r.getLevelCode())) {
 						reports.add(r);
@@ -833,9 +841,9 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * 
 	 * @return
 	 */
-	private List<String> getLpCodes() {
+	private List<String> getLpCodes(double lat, double lng, int raidus) {
 		List<String> codes = new ArrayList<String>();
-		double[] r = CommonUtil.getAround(39.9659730000, 116.3325020000, 10 * 1000);
+		double[] r = CommonUtil.getAround(lat, lng, raidus);
 		TLandedPropertyDto dto = new TLandedPropertyDto();
 		dto.setMinLat(r[0]);
 		dto.setMinLng(r[1]);
@@ -1076,7 +1084,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (air != null) {
 				airLevel = Integer.valueOf(air.getString("level"));
 			}
-			map.put("air.level", String.valueOf(airLevel));			
+			map.put("air.level", String.valueOf(airLevel));
 			// 噪音数值和等级
 			int noiseLevel = getNoiseLevel(lp);
 			map.put("noise.level", String.valueOf(noiseLevel));
@@ -1089,27 +1097,29 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			// 污染源和距离
 			// 垃圾场
 			Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
-			Double rubbishDistance = BigDecimal.valueOf((Double.valueOf(rubbish.get("distance")) / 1000)).setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
-			String rubbishStr = "垃圾场：等级为" + rubbish.get("level") + "级，距离小区"
-					+ rubbishDistance + "公里";
+			Double rubbishDistance = BigDecimal.valueOf((Double.valueOf(rubbish.get("distance")) / 1000))
+					.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+			String rubbishStr = "垃圾场：等级为" + rubbish.get("level") + "级，距离小区" + rubbishDistance + "公里";
 			// 化工厂
 			Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(), lp.getLng());
-			Double chemicalDistance = BigDecimal.valueOf((Double.valueOf(chemical.get("distance")) / 1000)).setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
-			String chemicalStr = "化工厂：等级为" + chemical.get("level") + "级，距离小区"
-					+ chemicalDistance + "公里";
+			Double chemicalDistance = BigDecimal.valueOf((Double.valueOf(chemical.get("distance")) / 1000))
+					.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+			String chemicalStr = "化工厂：等级为" + chemical.get("level") + "级，距离小区" + chemicalDistance + "公里";
 			/**
 			 * 垃圾场和化工厂取离小区最近的
 			 */
 			String sourceOfPollutionType = "";
 			Integer sourceOfPollutionLevel = 0;
-			if (Double.valueOf(rubbish.get("distance")) < Double.valueOf(chemical.get("distance"))) {
+			if (rubbishDistance.doubleValue() < chemicalDistance.doubleValue()) {
 				map.put("sourceOfPollution", rubbishStr);
 				map.put("sourceOfPollution.typeName", "垃圾场");
+				map.put("sourceOfPollution.distance", rubbishDistance.doubleValue() + "公里");
 				sourceOfPollutionType = "rubbish";
 				sourceOfPollutionLevel = Integer.valueOf(rubbish.get("level"));
 			} else {
 				map.put("sourceOfPollution", chemicalStr);
 				map.put("sourceOfPollution.typeName", "化工厂");
+				map.put("sourceOfPollution.distance", chemicalDistance.doubleValue() + "公里");
 				sourceOfPollutionType = "chemical";
 				sourceOfPollutionLevel = Integer.valueOf(chemical.get("level"));
 			}
@@ -1228,6 +1238,21 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					}
 				}
 			}
+			/**
+			 * 获取一定范围内环境综合评分小于当前楼盘的总数<br>
+			 * 2017-02-28 zhy
+			 */
+			int count = 0;
+			if (StringUtils.isNotBlank(lp.getLat()) && StringUtils.isNotBlank(lp.getLng())) {
+				double[] r = CommonUtil.getAround(Double.valueOf(lp.getLat()), Double.valueOf(lp.getLng()), 2000);
+				TLandedPropertyDto dto = new TLandedPropertyDto();
+				dto.setMinLat(r[0]);
+				dto.setMinLng(r[1]);
+				dto.setMaxLat(r[2]);
+				dto.setMaxLng(r[3]);
+				count = lpMapper.findScoreLessThanLpCount(dto);
+			}
+			map.put("lp.lesscount", String.valueOf(count));
 		}
 		return map;
 	}

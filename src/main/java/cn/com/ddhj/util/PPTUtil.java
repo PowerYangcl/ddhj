@@ -30,6 +30,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+
 /**
  * 
  * 类: PPTUtil <br>
@@ -66,17 +67,6 @@ public class PPTUtil {
 			for (Slide slide : slides) {
 				TextRun[] textRuns = slide.getTextRuns();
 				for (TextRun textRun : textRuns) {
-//					String text = textRun.getText();
-//					if (StringUtils.substringsBetween(text, "${", "}") != null) {
-//						String[] keys = StringUtils.substringsBetween(text, "${", "}");
-//						for (String key : keys) {
-//							if (StringUtils.isNotBlank(key)) {
-//								String value = map.get(key);
-//								text = StringUtils.replace(text, "${" + key + "}", value);
-//							}
-//						}
-//					}
-//					textRun.setText(text);
 					RichTextRun[] richs = textRun.getRichTextRuns();
 					for (RichTextRun richTextRun : richs) {
 						String text = richTextRun.getRawText();
@@ -86,22 +76,19 @@ public class PPTUtil {
 								if (StringUtils.isNotBlank(key)) {
 									String value = map.get(key);
 									text = StringUtils.replace(text, "${" + key + "}", value);
-									richTextRun.setFontName("微软雅黑");
-									richTextRun.setFontSize(14);
-									richTextRun.setBold(true);
 									richTextRun.setText(text);
 								}
 							}
 						}
 					}
+
 				}
 			}
 			path = OUT_REPORT_PPT_PATH + reportName + ".ppt";
 			out = new FileOutputStream(new File(path));
 			_slideShow.write(out);
 			out.close();
-			// convertPPTToPDF(reportName, path);
-			// pptToPdf(path, reportName);
+			//pptToPdf(path, reportName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
