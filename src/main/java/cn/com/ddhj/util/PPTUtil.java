@@ -42,9 +42,9 @@ public class PPTUtil {
 
 	private static PPTUtil self;
 
-	private final static String TEMPLATE_FILE = "E:/report/ppt/template/report.ppt";
-	private final static String OUT_REPORT_PPT_PATH = "E:/report/ppt/";
-	private final static String OUT_REPORT_PDF_PATH = "E:/report/pdf/";
+	private final static String TEMPLATE_FILE = "/opt/ddhj/report/ppt/template/report.ppt";
+	private final static String OUT_REPORT_PPT_PATH = "/opt/ddhj/report/ppt/";
+	private final static String OUT_REPORT_PDF_PATH = "/opt/ddhj/report/pdf/";
 
 	public static PPTUtil instance() {
 		if (self == null) {
@@ -157,18 +157,16 @@ public class PPTUtil {
 				outputFile.getParentFile().mkdirs();
 			}
 			// 这里是OpenOffice的安装目录
-			String OpenOffice_HOME = "C:\\Program Files (x86)\\OpenOffice 4";
-			// String OpenOffice_HOME = "/opt/openoffice4/";
+//			String OpenOffice_HOME = "C:\\Program Files (x86)\\OpenOffice 4";
+			String OpenOffice_HOME = "/opt/openoffice4/";
 			// 如果从文件中读取的URL地址最后一个字符不是 '\'，则添加'\'
 			if (OpenOffice_HOME.charAt(OpenOffice_HOME.length() - 1) != '\\') {
 				OpenOffice_HOME += "\\";
 			}
 			// 启动OpenOffice的服务
-			String command = OpenOffice_HOME
-					+ "program\\soffice.exe -headless-accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
-			// String command = OpenOffice_HOME+"soffice -headless
-			// -accept=\"socket,host=127.0.0.1,port=8100;urp;\"
-			// -nofirststartwizard";
+//			String command = OpenOffice_HOME
+//					+ "program\\soffice.exe -headless-accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
+			String command = OpenOffice_HOME+"soffice -headless-accept=\"socket,host=127.0.0.1,port=8100;urp;\"-nofirststartwizard";
 			Runtime.getRuntime().exec(command);
 			// connect to an OpenOffice.org instance running on port 8100
 			connection = new SocketOpenOfficeConnection(8100);
