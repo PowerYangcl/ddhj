@@ -185,6 +185,9 @@ public class TReportTest extends BaseTest {
 
 	@Test
 	public void batchCreateReport() {
-		service.batchCreateReport();
+		//service.batchCreateReport();
+		String code="R161009100013";
+		String lpCode = "LP161004101472";
+		service.createPPT(code, lpCode, null,null);
 	}
 }

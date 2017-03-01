@@ -716,7 +716,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			cityAir = this.getCityAirLevel();
 		}
 		CreateReportResult result = new CreateReportResult();
-		if (list.isEmpty()) {
+		if (list == null) {
 			list = levelMapper.findTReportEnvironmentLevelAll();
 		}
 		Map<String, String> map = getReportParam(code, lpCode, cityAir, list);
