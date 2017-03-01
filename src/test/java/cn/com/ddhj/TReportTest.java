@@ -22,7 +22,6 @@ import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
-import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.DateUtil;
@@ -186,9 +185,6 @@ public class TReportTest extends BaseTest {
 
 	@Test
 	public void batchCreateReport() {
-		//service.batchCreateReport();
-		String code="R161009100013";
-		String lpCode = "LP161004101472";
-		service.createPPT(code, lpCode, null);
+		service.batchCreateReport();
 	}
 }

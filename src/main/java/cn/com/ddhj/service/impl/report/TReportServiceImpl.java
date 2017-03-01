@@ -530,7 +530,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		TReport report = mapper.findReportByLpCodeAndLevelCode(lpCodes);
 		if (report != null) {
 			// 如果存在，根据等级生成新的环境报告
-			CreateReportResult createResult = createPPT(report.getCode(), dto.getLpCode(), null);
+			CreateReportResult createResult = createPPT(report.getCode(), dto.getLpCode(), null, null);
 			result.setResultCode(createResult.getResultCode());
 			result.setResultMessage(createResult.getResultMessage());
 			report.setUpdateTime(DateUtil.getSysDateTime());
@@ -590,6 +590,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (StringUtils.isNoneBlank(lock)) {
 				// 获取报告列表
 				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
+				// 环境等级
+				List<TReportEnvironmentLevel> elList = levelMapper.findTReportEnvironmentLevelAll();
 				// 需要添加的报告列表
 				List<TReport> insertData = new ArrayList<TReport>();
 				// 需要编辑的报告列表
@@ -597,6 +599,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				// 存储日志信息
 				List<TReportLog> logData = new ArrayList<TReportLog>();
 				List<String> codes = new ArrayList<String>();
+				// 获取城市空气质量列表
 				String path = "/opt/ddhj/";
 				JSONArray cityAir = this.getCityAirLevel();
 				if (lpList != null && lpList.size() > 0) {
@@ -622,7 +625,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						if (StringUtils.isNotBlank(date)) {
 							if (entity != null) {
 								codes.add(entity.getCode());
-								CreateReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
+//								CreateReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
+								CreateReportResult result = createPPT(entity.getCode(), lp.getCode(), cityAir, elList);
 								entity.setPath(result.getPath());
 								entity.setReportDate(date);
 								entity.setUpdateUser("system");
@@ -661,6 +665,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							logData.add(log);
 						}
 					}
+					/**
+					 * 批量修改报告的最后生成时间
+					 */
+					mapper.updateReportTime();
 					// 批量添加日志到日志表
 					if (logData != null && logData.size() > 0) {
 						// rLogMapper.batchInsertLog(logData);
@@ -678,19 +686,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						mapper.importReportFormTmp();
 						mapper.delReportTmp();
 					}
-					// 将临时文件pdf生成带水印的报告
-					if (codes != null && codes.size() > 0) {
-						for (int i = 0; i < codes.size(); i++) {
-							File file = new File(path + "report/temp/" + codes.get(i) + ".pdf");
-							if (file.exists()) {
-								PdfUtil.instance().createWatermark(path, codes.get(i));
-							}
-						}
-					}
-					/**
-					 * 批量修改报告的最后生成时间
-					 */
-					mapper.updateReportTime();
 				}
 			}
 		} catch (Exception e) {
@@ -715,12 +710,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * @return
 	 */
 	@Override
-	public CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir) {
+	public CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir,
+			List<TReportEnvironmentLevel> list) {
 		if (cityAir == null) {
 			cityAir = this.getCityAirLevel();
 		}
 		CreateReportResult result = new CreateReportResult();
-		List<TReportEnvironmentLevel> list = levelMapper.findTReportEnvironmentLevelAll();
+		if (list.isEmpty()) {
+			list = levelMapper.findTReportEnvironmentLevelAll();
+		}
 		Map<String, String> map = getReportParam(code, lpCode, cityAir, list);
 		String path = PPTUtil.instance().createReport(map, code);
 		if (StringUtils.isNotBlank(path)) {
@@ -1072,14 +1070,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (lp != null) {
 			map.put("lp.name", lp.getTitle());
 			JSONObject air = null;
-			if(airArray != null){
+			if (airArray != null) {
 				for (int i = 0; i < airArray.size(); i++) {
 					JSONObject obj = airArray.getJSONObject(i);
 					if (StringUtils.equals(obj.getString("city"), lp.getCity())) {
 						air = obj;
 						break;
 					}
-				}				
+				}
 			}
 			// 获取空气AQI指数和等级
 			int airLevel = 1;

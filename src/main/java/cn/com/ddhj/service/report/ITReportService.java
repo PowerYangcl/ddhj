@@ -8,6 +8,7 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.model.report.TReport;
+import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.result.report.CreateReportResult;
 import cn.com.ddhj.result.report.TReportDataResult;
@@ -143,5 +144,17 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 */
 	void batchCreateReport();
 
-	public CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir);
+	/**
+	 * 
+	 * 方法: createPPT <br>
+	 * 描述: 生成ppt格式环境报告，并转换为pdf报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年3月1日 下午1:41:15
+	 * @param code
+	 * @param lpCode
+	 * @param cityAir
+	 * @param list
+	 * @return
+	 */
+	CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir,List<TReportEnvironmentLevel> list);
 }

@@ -18,6 +18,8 @@ import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 
+import cn.com.ddhj.base.BaseClass;
+
 /**
  * 
  * 类: PPTUtil <br>
@@ -25,7 +27,7 @@ import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConv
  * 作者: zhy<br>
  * 时间: 2017年2月25日 下午3:48:44
  */
-public class PPTUtil {
+public class PPTUtil extends BaseClass{
 
 	private static PPTUtil self;
 
@@ -51,6 +53,8 @@ public class PPTUtil {
 	}
 
 	public String createReport(Map<String, String> map, String reportName) {
+		getLogger().logInfo("开始生成报告，报告名称:"+reportName);
+		long start = System.currentTimeMillis();
 		String path = "";
 		FileOutputStream out = null;
 		try {
@@ -94,6 +98,8 @@ public class PPTUtil {
 				e.printStackTrace();
 			}
 		}
+		long end = System.currentTimeMillis();
+		getLogger().logInfo("生成报告结束，结束时间:"+((end-start)/1000)+"s");
 		return path;
 	}
 
