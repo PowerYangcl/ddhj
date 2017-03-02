@@ -38,12 +38,23 @@ public class PPTUtil extends BaseClass {
 //	private final static String TEMPLATE_FILE = "E:/report/ppt//template/report.ppt";
 //	private final static String OUT_REPORT_PPT_PATH = "E:/report/ppt/";
 //	private final static String OUT_REPORT_PDF_PATH = "E:/report/pdf/";
+	
+	private final static String OpenOffice_HOME = "/opt/openoffice4/program/ ";
+	private static Process process;
 
 	public static PPTUtil instance() {
 		if (self == null) {
 			synchronized (PPTUtil.class) {
 				if (self == null)
 					self = new PPTUtil();
+				
+				String command = OpenOffice_HOME + "soffice.bin -headless -accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
+				try {
+					process = Runtime.getRuntime().exec(command);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		return self;
@@ -120,20 +131,12 @@ public class PPTUtil extends BaseClass {
 //			if (OpenOffice_HOME.charAt(OpenOffice_HOME.length() - 1) != '\\') {
 //				OpenOffice_HOME += "\\";
 //			}
-			String OpenOffice_HOME = "/opt/openoffice4/program/ ";
-			// 启动OpenOffice的服务
-//			String command = OpenOffice_HOME
-//					+ "program\\soffice.exe -headless -accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
-			String command = OpenOffice_HOME + "soffice.bin -headless -accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
-			Process pro = Runtime.getRuntime().exec(command);
-			// connect to an OpenOffice.org instance running on port 8100
+			// convert
 			connection = new SocketOpenOfficeConnection(8100);
 			connection.connect();
-			// convert
 			DocumentConverter converter = new OpenOfficeDocumentConverter(connection);
 			converter.convert(inputFile, outputFile);
-			// close the connection
-			pro.destroy();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -141,5 +144,10 @@ public class PPTUtil extends BaseClass {
 				connection.disconnect();
 		}
 		return flag;
+	}
+	
+	public void release() {
+		if(process != null)
+			process.destroy();
 	}
 }

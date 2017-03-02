@@ -382,6 +382,26 @@ public class ApiController extends BaseClass {
 			CarbonTypeDetailResult result = userCarbonOperationserivce.getCarbonOperationByType(api.getUserToken(),
 					param.getString("type"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		} 
+		//交易相关
+		else if("trade_place_order".equals(api.getApiTarget())) {
+			//委托下单接口
+			return null;
+		} else if("trade_query_order".equals(api.getApiTarget())) {
+			//查询委托接口
+			return null;
+		} else if("trade_cancel_order".equals(api.getApiTarget())) {
+			//查询委托接口
+			return null;
+		} else if("trade_query_deal".equals(api.getApiTarget())) {
+			//查询成交接口
+			return null;
+		} else if("trade_query_position".equals(api.getApiTarget())) {
+			//查询用户持仓接口
+			return null;
+		} else if("trade_query_tobject".equals(api.getApiTarget())) {
+			//查询交易标的接口
+			return null;
 		}
 		/**
 		 * ================= 碳币相关 end ======================
