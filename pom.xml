@@ -25,7 +25,7 @@
 		<jackson.version>1.9.13</jackson.version>
 		<fastjson.version>1.2.16</fastjson.version>
 		<junit.version>4.12</junit.version>
-		<poi.version>3.8</poi.version>
+		<poi.version>3.15</poi.version>
 	</properties>
 
 	<dependencies>

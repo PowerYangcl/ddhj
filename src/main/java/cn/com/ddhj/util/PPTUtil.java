@@ -1,17 +1,21 @@
 package cn.com.ddhj.util;
 
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hslf.HSLFSlideShow;
-import org.apache.poi.hslf.model.Slide;
-import org.apache.poi.hslf.model.TextRun;
-import org.apache.poi.hslf.usermodel.RichTextRun;
-import org.apache.poi.hslf.usermodel.SlideShow;
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hslf.usermodel.HSLFShape;
+import org.apache.poi.hslf.usermodel.HSLFSlide;
+import org.apache.poi.hslf.usermodel.HSLFSlideShow;
+import org.apache.poi.hslf.usermodel.HSLFTextBox;
+import org.apache.poi.sl.usermodel.AutoShape;
+import org.apache.poi.sl.usermodel.Line;
+import org.apache.poi.ss.usermodel.Picture;
 
 import com.artofsolving.jodconverter.DocumentConverter;
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
@@ -31,24 +35,25 @@ public class PPTUtil extends BaseClass {
 
 	private static PPTUtil self;
 
-	private final static String TEMPLATE_FILE = "/opt/ddhj/report/ppt/template/report.ppt";
-	private final static String OUT_REPORT_PPT_PATH = "/opt/ddhj/report/ppt/";
-	private final static String OUT_REPORT_PDF_PATH = "/opt/ddhj/report/pdf/";
+//	private final static String TEMPLATE_FILE = "/opt/ddhj/report/ppt/template/report.ppt";
+//	private final static String OUT_REPORT_PPT_PATH = "/opt/ddhj/report/ppt/";
+//	private final static String OUT_REPORT_PDF_PATH = "/opt/ddhj/report/pdf/";
+//	private final static String OpenOffice_HOME = "/opt/openoffice4/program/soffice.bin";
 
-//	private final static String TEMPLATE_FILE = "E:/report/ppt//template/report.ppt";
-//	private final static String OUT_REPORT_PPT_PATH = "E:/report/ppt/";
-//	private final static String OUT_REPORT_PDF_PATH = "E:/report/pdf/";
+	private final static String TEMPLATE_FILE = "E:/report/ppt//template/report.ppt";
+	private final static String OUT_REPORT_PPT_PATH = "E:/report/ppt/";
+	private final static String OUT_REPORT_PDF_PATH = "E:/report/pdf/";
+	private final static String OpenOffice_HOME = "D:/app/OpenOffice4/program/soffice.exe ";
 	
-	private final static String OpenOffice_HOME = "/opt/openoffice4/program/ ";
 	private static Process process;
-
+	 
 	public static PPTUtil instance() {
 		if (self == null) {
 			synchronized (PPTUtil.class) {
 				if (self == null)
 					self = new PPTUtil();
 				
-				String command = OpenOffice_HOME + "soffice.bin -headless -accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
+				String command = OpenOffice_HOME + " -headless -accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
 				try {
 					process = Runtime.getRuntime().exec(command);
 				} catch (IOException e) {
@@ -68,33 +73,96 @@ public class PPTUtil extends BaseClass {
 		try {
 			File file = new File(TEMPLATE_FILE);
 			HSLFSlideShow _hslf = new HSLFSlideShow(new FileInputStream(file));
-			SlideShow _slideShow = new SlideShow(_hslf);
-			Slide[] slides = _slideShow.getSlides();
-			for (Slide slide : slides) {
-				TextRun[] textRuns = slide.getTextRuns();
-				for (TextRun textRun : textRuns) {
-					RichTextRun[] richs = textRun.getRichTextRuns();
-					for (RichTextRun richTextRun : richs) {
-						String text = richTextRun.getRawText();
+//			SlideShow _slideShow = new SlideShow(_hslf);
+			List<HSLFSlide> slideList = _hslf.getSlides();
+			for(HSLFSlide slide: slideList) {
+				List<HSLFShape> shapeList = slide.getShapes();
+				for(HSLFShape shape : shapeList) {
+					shape.getAnchor().getWidth();
+					shape.getShapeName();
+					if (shape instanceof Line) {  
+	                    Line line = (Line) shape;  
+	                    // work with Line  
+	                } else if (shape instanceof HSLFTextBox) {  
+	                	HSLFTextBox tb = (HSLFTextBox) shape;  
+	                    tb.getText();
+						String text = tb.getText();
 						if (StringUtils.substringsBetween(text, "${", "}") != null) {
 							String[] keys = StringUtils.substringsBetween(text, "${", "}");
 							for (String key : keys) {
 								if (StringUtils.isNotBlank(key)) {
 									String value = map.get(key);
 									text = StringUtils.replace(text, "${" + key + "}", value);
-									richTextRun.setText(text);
+									tb.setText(text);
 								}
 							}
 						}
-					}
-
+						
+	                    // work with TextBox  
+	                } else if (shape instanceof Picture) {  
+	                    Picture pic = (Picture) shape;  
+	                    // work with Picture  
+	                } else if (shape instanceof AutoShape) {  
+	                    AutoShape as = (AutoShape) shape; 
+	                    String a = as.getText();
+	                    System.out.println(a);
+	                    if(a.equals("f1") || a.equals("f2") || a.equals("f3") || a.equals("f4") || a.equals("f5") || a.equals("f6")
+	                    		|| a.equals("f7") || a.equals("f8")) {
+	                    	double x = as.getAnchor().getX();
+	                    	double y = as.getAnchor().getY();
+	                    	double height = as.getAnchor().getHeight();
+//	                    	as.getAnchor().setRect(x, y, 50, height);
+	                    	Rectangle r = new Rectangle();
+	                    	r.setRect(x, y, 50, height);
+	                    	as.setAnchor(r);
+	                    }
+	                    
+	                }  
+					
 				}
+				
 			}
+
 			path = OUT_REPORT_PPT_PATH + reportName + ".ppt";
 			out = new FileOutputStream(new File(path));
-			_slideShow.write(out);
+			_hslf.write(out);
 			out.close();
 			pptToPdf(path, reportName);
+			
+//			File file = new File(TEMPLATE_FILE);
+//			HSLFSlideShow _hslf = new HSLFSlideShow(new FileInputStream(file));
+//			SlideShow _slideShow = new SlideShow(_hslf);
+//			Slide[] slides = _slideShow.getSlides();
+//			for (Slide slide : slides) {
+//				Shape[] shapes = slide.getShapes();
+//				for(Shape s : shapes) {
+//					Dimension d =s.getAnchor().getSize();
+//					System.out.println(d);
+//				}
+//				TextRun[] textRuns = slide.getTextRuns();
+//				for (TextRun textRun : textRuns) {
+//					RichTextRun[] richs = textRun.getRichTextRuns();
+//					for (RichTextRun richTextRun : richs) {
+//						String text = richTextRun.getRawText();
+//						if (StringUtils.substringsBetween(text, "${", "}") != null) {
+//							String[] keys = StringUtils.substringsBetween(text, "${", "}");
+//							for (String key : keys) {
+//								if (StringUtils.isNotBlank(key)) {
+//									String value = map.get(key);
+//									text = StringUtils.replace(text, "${" + key + "}", value);
+//									richTextRun.setText(text);
+//								}
+//							}
+//						}
+//					}
+//
+//				}
+//			}
+//			path = OUT_REPORT_PPT_PATH + reportName + ".ppt";
+//			out = new FileOutputStream(new File(path));
+//			_slideShow.write(out);
+//			out.close();
+//			pptToPdf(path, reportName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
