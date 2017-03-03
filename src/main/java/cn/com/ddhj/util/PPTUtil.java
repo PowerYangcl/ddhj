@@ -85,7 +85,6 @@ public class PPTUtil extends BaseClass {
 	                    // work with Line  
 	                } else if (shape instanceof HSLFTextBox) {  
 	                	HSLFTextBox tb = (HSLFTextBox) shape;  
-	                    tb.getText();
 						String text = tb.getText();
 						if (StringUtils.substringsBetween(text, "${", "}") != null) {
 							String[] keys = StringUtils.substringsBetween(text, "${", "}");
@@ -96,27 +95,61 @@ public class PPTUtil extends BaseClass {
 									tb.setText(text);
 								}
 							}
-						}
-						
-	                    // work with TextBox  
+						} else if(text.equals("fp1")) {
+							//空气百分比
+	                    	double percent = Double.parseDouble(map.get("air.level.percent"));
+	                    	String percentStr = (int)(percent * 100) + "%";
+	                    	tb.setText(percentStr);
+						} else if(text.equals("fp2")) {
+							
+						} else if(text.equals("fp3")) {
+							
+						} else if(text.equals("fp4")) {
+							
+						} else if(text.equals("fp5")) {
+							
+						} else if(text.equals("fp6")) {
+							
+						} else if(text.equals("fp7")) {
+							
+						} else if(text.equals("fp8")) {
+							
+						}  
 	                } else if (shape instanceof Picture) {  
 	                    Picture pic = (Picture) shape;  
 	                    // work with Picture  
 	                } else if (shape instanceof AutoShape) {  
 	                    AutoShape as = (AutoShape) shape; 
-	                    String a = as.getText();
-	                    System.out.println(a);
-	                    if(a.equals("f1") || a.equals("f2") || a.equals("f3") || a.equals("f4") || a.equals("f5") || a.equals("f6")
-	                    		|| a.equals("f7") || a.equals("f8")) {
-	                    	double x = as.getAnchor().getX();
-	                    	double y = as.getAnchor().getY();
-	                    	double height = as.getAnchor().getHeight();
-//	                    	as.getAnchor().setRect(x, y, 50, height);
-	                    	Rectangle r = new Rectangle();
-	                    	r.setRect(x, y, 50, height);
-	                    	as.setAnchor(r);
+	                    String name = as.getText();
+	                    double x = as.getAnchor().getX();
+                    	double y = as.getAnchor().getY();
+                    	double width = as.getAnchor().getWidth();
+                    	double height = as.getAnchor().getHeight();
+                    	System.out.println(name);
+	                    if(name.equals("f1")) {
+	                    	//空气
+	                    	double percent = Double.parseDouble(map.get("air.level.percent"));
+	                    	width = percent * width;
+	                    	as.setText("");
+	                    } else if(name.equals("f2")) {
+	                    	//水质
+	                    } else if(name.equals("f3")) {
+	                    	//噪音
+	                    } else if(name.equals("f4")) {
+	                    	//土壤
+	                    } else if(name.equals("f5")) {
+	                    	//污染源
+	                    } else if(name.equals("f6")) {
+	                    	//辐射源
+	                    } else if(name.equals("f7")) {
+	                    	//容积率
+	                    } else if(name.equals("f8")) {
+	                    	//绿地率
 	                    }
 	                    
+	                    Rectangle r = new Rectangle();
+                    	r.setRect(x, y, width, height);
+                    	as.setAnchor(r);
 	                }  
 					
 				}

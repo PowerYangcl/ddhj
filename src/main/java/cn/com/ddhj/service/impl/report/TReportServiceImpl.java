@@ -1085,6 +1085,11 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				airLevel = Integer.valueOf(air.getString("level"));
 			}
 			map.put("air.level", String.valueOf(airLevel));
+			//空气进度条旁边显示的百分比
+			map.put("air.level", "6");
+        	double tmp = Double.parseDouble(map.get("air.level"));
+        	map.put("air.level.percent", String.valueOf((1 + (1 - tmp) / 5.0)));
+			
 			// 噪音数值和等级
 			int noiseLevel = getNoiseLevel(lp);
 			map.put("noise.level", String.valueOf(noiseLevel));
