@@ -2,6 +2,7 @@ package cn.com.ddhj.service.impl.report;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,6 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
@@ -1085,21 +1087,29 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				airLevel = Integer.valueOf(air.getString("level"));
 			}
 			map.put("air.level", String.valueOf(airLevel));
-			//空气进度条旁边显示的百分比
-			map.put("air.level", "6");
+			//空气进度条旁边显示的百分比(一共6级,1级最好)
         	double tmp = Double.parseDouble(map.get("air.level"));
-        	map.put("air.level.percent", String.valueOf((1 + (1 - tmp) / 5.0)));
+        	map.put("air.level.percent", String.valueOf((1 + (1 - tmp) / 6.0)));
 			
-			// 噪音数值和等级
+			// 噪音数值和等级(一共3级,1级最好)
 			int noiseLevel = getNoiseLevel(lp);
 			map.put("noise.level", String.valueOf(noiseLevel));
-			// 水质等级
+			tmp = Double.parseDouble(map.get("noise.level"));
+			map.put("noise.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
+			
+			// 水质等级(一共3级,1级最好)
 			int waterLevel = waterEnv(lp);
 			map.put("water.level", String.valueOf(waterLevel));
-			// 土壤等级
+			tmp = Double.parseDouble(map.get("water.level"));
+			map.put("water.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
+			
+			// 土壤等级(一共3级,1级最好)
 			int soilLevel = 2;
 			map.put("soil.level", String.valueOf(soilLevel));
-			// 污染源和距离
+			tmp = Double.parseDouble(map.get("soil.level"));
+			map.put("soil.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
+			
+			// 污染源和距离(一共3级,1级最好)
 			// 垃圾场
 			Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
 			Double rubbishDistance = BigDecimal.valueOf((Double.valueOf(rubbish.get("distance")) / 1000))
@@ -1130,10 +1140,16 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 			map.put("sourceOfPollution.level", String.valueOf(sourceOfPollutionLevel));
 			map.put("sourceOfPollution.type", sourceOfPollutionType);
+			tmp = Double.parseDouble(map.get("sourceOfPollution.level"));
+			map.put("sourceOfPollution.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
+			
 			// 辐射源距离
 			int sourceOfRadiationLevel = 1;
 			map.put("sourceOfRadiation.level", String.valueOf(sourceOfRadiationLevel));
-			// 容积率
+			tmp = Double.parseDouble(map.get("sourceOfRadiation.level"));
+			map.put("sourceOfRadiation.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
+			
+			// 容积率(一共3级,1级最好)
 			int volumeLevel = 1;
 			try {
 				double volumeRate = Double.valueOf(lp.getVolumeRate());
@@ -1147,9 +1163,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				volumeLevel = 1;
 			}
 			map.put("volume.level", String.valueOf(volumeLevel));
+			tmp = Double.parseDouble(map.get("volume.level"));
+			map.put("volume.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
+			
 			// 危险品存放等级
 			int hazardousArticleLevel = 1;
 			map.put("hazardousArticle.level", String.valueOf(hazardousArticleLevel));
+			
+			
 			// 获取绿地率数值
 			int afforestLevel = 1;
 			if (StringUtils.isNotBlank(lp.getGreeningRate())) {
@@ -1165,6 +1186,18 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				}
 			}
 			map.put("afforest.level", String.valueOf(afforestLevel));
+			if (StringUtils.isNotBlank(lp.getGreeningRate())) {
+				String percent = StringUtils.substringBefore(lp.getGreeningRate(), "%");
+				if(StringUtils.isNoneBlank(percent)) {
+					tmp = Double.parseDouble(percent) / 100.0;
+					map.put("afforest.level.percent", String.valueOf(tmp));
+				}
+			} 
+			if(map.get("afforest.level.percent") == null) {
+				tmp = Double.parseDouble(map.get("afforest.level"));
+				map.put("afforest.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
+			}
+			
 			/**
 			 * 获取环境描述信息
 			 */

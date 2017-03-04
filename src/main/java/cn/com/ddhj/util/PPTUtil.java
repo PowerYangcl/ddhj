@@ -40,10 +40,10 @@ public class PPTUtil extends BaseClass {
 //	private final static String OUT_REPORT_PDF_PATH = "/opt/ddhj/report/pdf/";
 //	private final static String OpenOffice_HOME = "/opt/openoffice4/program/soffice.bin";
 
-	private final static String TEMPLATE_FILE = "E:/report/ppt//template/report.ppt";
-	private final static String OUT_REPORT_PPT_PATH = "E:/report/ppt/";
-	private final static String OUT_REPORT_PDF_PATH = "E:/report/pdf/";
-	private final static String OpenOffice_HOME = "D:/app/OpenOffice4/program/soffice.exe ";
+	private final static String TEMPLATE_FILE = "D:/report/ppt/template/report.ppt";
+	private final static String OUT_REPORT_PPT_PATH = "D:/report/ppt/";
+	private final static String OUT_REPORT_PDF_PATH = "D:/report/pdf/";
+	private final static String OpenOffice_HOME = "D:/app/OpenOffice413/program/soffice.exe ";
 	
 	private static Process process;
 	 
@@ -92,6 +92,10 @@ public class PPTUtil extends BaseClass {
 								if (StringUtils.isNotBlank(key)) {
 									String value = map.get(key);
 									text = StringUtils.replace(text, "${" + key + "}", value);
+									if(key.equals("air.level") || key.equals("water.level") 
+											|| key.equals("soil.level") || key.equals("noise.level")) {
+										text += "级";
+									}
 									tb.setText(text);
 								}
 							}
@@ -101,19 +105,40 @@ public class PPTUtil extends BaseClass {
 	                    	String percentStr = (int)(percent * 100) + "%";
 	                    	tb.setText(percentStr);
 						} else if(text.equals("fp2")) {
-							
+							//水质百分比
+							double percent = Double.parseDouble(map.get("water.level.percent"));
+	                    	String percentStr = (int)(percent * 100) + "%";
+	                    	tb.setText(percentStr);
 						} else if(text.equals("fp3")) {
-							
+							//噪音百分比
+							double percent = Double.parseDouble(map.get("noise.level.percent"));
+	                    	String percentStr = (int)(percent * 100) + "%";
+	                    	tb.setText(percentStr);
 						} else if(text.equals("fp4")) {
-							
+							//土壤
+							double percent = Double.parseDouble(map.get("soil.level.percent"));
+	                    	String percentStr = (int)(percent * 100) + "%";
+	                    	tb.setText(percentStr);
 						} else if(text.equals("fp5")) {
-							
+							//污染源
+							double percent = Double.parseDouble(map.get("sourceOfPollution.level.percent"));
+	                    	String percentStr = (int)(percent * 100) + "%";
+	                    	tb.setText(percentStr);
 						} else if(text.equals("fp6")) {
-							
+							//辐射源
+							double percent = Double.parseDouble(map.get("sourceOfRadiation.level.percent"));
+	                    	String percentStr = (int)(percent * 100) + "%";
+	                    	tb.setText(percentStr);
 						} else if(text.equals("fp7")) {
-							
+							//容积率
+							double percent = Double.parseDouble(map.get("volume.level.percent"));
+	                    	String percentStr = (int)(percent * 100) + "%";
+	                    	tb.setText(percentStr);
 						} else if(text.equals("fp8")) {
-							
+							//绿地率
+							double percent = Double.parseDouble(map.get("afforest.level.percent"));
+	                    	String percentStr = (int)(percent * 100) + "%";
+	                    	tb.setText(percentStr);
 						}  
 	                } else if (shape instanceof Picture) {  
 	                    Picture pic = (Picture) shape;  
@@ -133,18 +158,39 @@ public class PPTUtil extends BaseClass {
 	                    	as.setText("");
 	                    } else if(name.equals("f2")) {
 	                    	//水质
+	                    	double percent = Double.parseDouble(map.get("water.level.percent"));
+	                    	width = percent * width;
+	                    	as.setText("");
 	                    } else if(name.equals("f3")) {
 	                    	//噪音
+	                    	double percent = Double.parseDouble(map.get("noise.level.percent"));
+	                    	width = percent * width;
+	                    	as.setText("");
 	                    } else if(name.equals("f4")) {
 	                    	//土壤
+	                    	double percent = Double.parseDouble(map.get("soil.level.percent"));
+	                    	width = percent * width;
+	                    	as.setText("");
 	                    } else if(name.equals("f5")) {
 	                    	//污染源
+	                    	double percent = Double.parseDouble(map.get("sourceOfPollution.level.percent"));
+	                    	width = percent * width;
+	                    	as.setText("");
 	                    } else if(name.equals("f6")) {
 	                    	//辐射源
+	                    	double percent = Double.parseDouble(map.get("sourceOfRadiation.level.percent"));
+	                    	width = percent * width;
+	                    	as.setText("");
 	                    } else if(name.equals("f7")) {
 	                    	//容积率
+	                    	double percent = Double.parseDouble(map.get("volume.level.percent"));
+	                    	width = percent * width;
+	                    	as.setText("");
 	                    } else if(name.equals("f8")) {
 	                    	//绿地率
+	                    	double percent = Double.parseDouble(map.get("afforest.level.percent"));
+	                    	width = percent * width;
+	                    	as.setText("");
 	                    }
 	                    
 	                    Rectangle r = new Rectangle();
