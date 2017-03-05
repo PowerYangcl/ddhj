@@ -639,7 +639,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							} else {
 								String code = WebHelper.getInstance().getUniqueCode("R");
 								codes.add(code);
-								CreateReportResult result = createPDF(code, lp.getCode(), path, null);
+								CreateReportResult result = createPPT(code, lp.getCode(), cityAir, elList);
 								entity = new TReport();
 								entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 								entity.setCode(code);
