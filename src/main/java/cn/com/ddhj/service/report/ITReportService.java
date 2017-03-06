@@ -142,7 +142,7 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月26日 下午10:33:04
 	 */
-	void batchCreateReport();
+	int batchCreateReport();
 
 	/**
 	 * 

@@ -28,7 +28,7 @@ public class TChemicalPlantServiceImpl extends BaseServiceImpl<TChemicalPlant, T
 
 	/**
 	 * 
-	 * 方法: getChemical <br>
+	 * 方法: getChemical (一共两级,1级最好)<br>
 	 * @param city
 	 * @param lat
 	 * @param lng
@@ -38,7 +38,7 @@ public class TChemicalPlantServiceImpl extends BaseServiceImpl<TChemicalPlant, T
 	@Override
 	public Map<String, String> getChemical(String city, String lat, String lng) {
 		Map<String, String> map = new HashMap<String, String>();
-		int level = 1;
+		int level = 2;
 		TChemicalPlantDto dto = new TChemicalPlantDto();
 		dto.setCity(city);
 		dto.setLat(lat);
@@ -49,7 +49,7 @@ public class TChemicalPlantServiceImpl extends BaseServiceImpl<TChemicalPlant, T
 					Double.valueOf(model.getLat()), Double.valueOf(model.getLng()));
 			map.put("distance", String.valueOf(ll));
 			if (ll > 1000) {
-				level = 2;
+				level = 1;
 			}
 		}
 		map.put("level", String.valueOf(level));

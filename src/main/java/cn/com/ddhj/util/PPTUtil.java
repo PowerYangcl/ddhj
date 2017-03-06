@@ -150,7 +150,6 @@ public class PPTUtil extends BaseClass {
                     	double y = as.getAnchor().getY();
                     	double width = as.getAnchor().getWidth();
                     	double height = as.getAnchor().getHeight();
-                    	System.out.println(name);
 	                    if(name.equals("f1")) {
 	                    	//空气
 	                    	double percent = Double.parseDouble(map.get("air.level.percent"));
@@ -199,7 +198,6 @@ public class PPTUtil extends BaseClass {
 	                }  
 					
 				}
-				
 			}
 
 			path = OUT_REPORT_PPT_PATH + reportName + ".ppt";
@@ -207,41 +205,6 @@ public class PPTUtil extends BaseClass {
 			_hslf.write(out);
 			out.close();
 			pptToPdf(path, reportName);
-			
-//			File file = new File(TEMPLATE_FILE);
-//			HSLFSlideShow _hslf = new HSLFSlideShow(new FileInputStream(file));
-//			SlideShow _slideShow = new SlideShow(_hslf);
-//			Slide[] slides = _slideShow.getSlides();
-//			for (Slide slide : slides) {
-//				Shape[] shapes = slide.getShapes();
-//				for(Shape s : shapes) {
-//					Dimension d =s.getAnchor().getSize();
-//					System.out.println(d);
-//				}
-//				TextRun[] textRuns = slide.getTextRuns();
-//				for (TextRun textRun : textRuns) {
-//					RichTextRun[] richs = textRun.getRichTextRuns();
-//					for (RichTextRun richTextRun : richs) {
-//						String text = richTextRun.getRawText();
-//						if (StringUtils.substringsBetween(text, "${", "}") != null) {
-//							String[] keys = StringUtils.substringsBetween(text, "${", "}");
-//							for (String key : keys) {
-//								if (StringUtils.isNotBlank(key)) {
-//									String value = map.get(key);
-//									text = StringUtils.replace(text, "${" + key + "}", value);
-//									richTextRun.setText(text);
-//								}
-//							}
-//						}
-//					}
-//
-//				}
-//			}
-//			path = OUT_REPORT_PPT_PATH + reportName + ".ppt";
-//			out = new FileOutputStream(new File(path));
-//			_slideShow.write(out);
-//			out.close();
-//			pptToPdf(path, reportName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

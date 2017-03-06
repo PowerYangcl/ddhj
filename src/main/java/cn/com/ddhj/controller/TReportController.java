@@ -73,6 +73,26 @@ public class TReportController {
 		String path = request.getSession().getServletContext().getRealPath("");
 		return service.createReport(dto, path, user);
 	}
+	
+	/**
+	 * 
+	 * 方法: createPDF <br>
+	 * 描述: 根据楼盘编码更新报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2016年10月22日 下午8:54:30
+	 * 
+	 * @param dto
+	 * @param request
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("createAll")
+	@ResponseBody
+	public BaseResult createAllPDF(TReportDto dto, HttpServletRequest request, HttpSession session) {
+		BaseResult result = new BaseResult();
+		result.setResultCode(service.batchCreateReport());
+		return result;
+	}
 
 	@RequestMapping("addindex")
 	public String addIndex(String lpCode, ModelMap model) {

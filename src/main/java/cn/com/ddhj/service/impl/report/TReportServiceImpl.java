@@ -584,7 +584,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * @see cn.com.ddhj.service.report.ITReportService#batchCreateReport()
 	 */
 	@Override
-	public void batchCreateReport() {
+	public int batchCreateReport() {
+		int reCode = 1;
 		Long start = System.currentTimeMillis();
 		String lock = "";
 		try {
@@ -692,11 +693,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			reCode = 0;
 		} finally {
 			WebHelper.getInstance().unLock(lock);
 		}
 		Long end = System.currentTimeMillis();
 		getLogger().logInfo("定时执行时间为:" + (end - start));
+		return reCode;
+		
 	}
 
 	/**
