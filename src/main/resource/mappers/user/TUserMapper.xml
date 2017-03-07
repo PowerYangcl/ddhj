@@ -55,7 +55,7 @@
 			phone,
 			password,
 			<if test="carbonMoney != null">
-				carbon_money
+				carbon_money,
 			</if>
 			<if test="nickName != null">
 				nick_name,
@@ -95,11 +95,9 @@
 				#{isLogin,jdbcType=INTEGER},
 			</if>
 			#{createUser,jdbcType=VARCHAR},
-			STR_TO_DATE(
-			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'), 
 			#{updateUser,jdbcType=VARCHAR},
-			STR_TO_DATE(
-			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</trim>
 	</insert>
 	<update id="updateByCode" parameterType="cn.com.ddhj.model.user.TUser">
