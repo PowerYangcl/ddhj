@@ -40,10 +40,10 @@ public class PPTUtil extends BaseClass {
 //	private final static String OUT_REPORT_PDF_PATH = "/opt/ddhj/report/pdf/";
 //	private final static String OpenOffice_HOME = "/opt/openoffice4/program/soffice.bin";
 
-	private final static String TEMPLATE_FILE = "D:/report/ppt/template/report.ppt";
-	private final static String OUT_REPORT_PPT_PATH = "D:/report/ppt/";
-	private final static String OUT_REPORT_PDF_PATH = "D:/report/pdf/";
-	private final static String OpenOffice_HOME = "D:/app/OpenOffice413/program/soffice.exe ";
+	private final static String TEMPLATE_FILE = "e:/report/ppt/template/report.ppt";
+	private final static String OUT_REPORT_PPT_PATH = "e:/report/ppt/";
+	private final static String OUT_REPORT_PDF_PATH = "e:/report/pdf/";
+	private final static String OpenOffice_HOME = "d:/app/OpenOffice4/program/soffice.exe ";
 	
 	private static Process process;
 	 
@@ -53,7 +53,7 @@ public class PPTUtil extends BaseClass {
 				if (self == null)
 					self = new PPTUtil();
 				
-				String command = OpenOffice_HOME + " -headless -accept=\"socket,host=127.0.0.1,port=8100;urp;\" -nofirststartwizard";
+				String command = OpenOffice_HOME + " -headless -accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
 				try {
 					process = Runtime.getRuntime().exec(command);
 				} catch (IOException e) {
