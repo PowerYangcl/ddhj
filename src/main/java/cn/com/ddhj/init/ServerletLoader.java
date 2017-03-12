@@ -7,6 +7,7 @@ import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import cn.com.ddhj.service.impl.system.LockServiceImpl;
 import cn.com.ddhj.util.SpringCtxUtil;
 
 /**
@@ -48,6 +49,9 @@ public class ServerletLoader {
 				servletContext.log(servletContext.getRealPath(""));
 
 				servletContext.log("Initializing HJY web core finished");
+				
+				LockServiceImpl service = SpringCtxUtil.getBean(LockServiceImpl.class);
+				service.clearLock();
 			} catch (RuntimeException ex) {
 				bFlagSuccess = false;
 				servletContext.log("Error occurs in initializing HJY web core" + ex.getMessage());

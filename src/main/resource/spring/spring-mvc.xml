@@ -92,11 +92,28 @@
 		<!-- 修改为每周六晚上00:00运行定时任务 -->
 		<property name="cronExpression" value="0 00 23 ? * SAT"></property>
 	</bean>
+	
+	<!-- 抓取中国碳交易网的行情数据 -->
+	<bean name="carbonDealData" class="cn.com.ddhj.job.CarbonDealData" />
+	<bean id="quartzCarbonDealData"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="carbonDealData"></property>
+		<property name="targetMethod" value="grab"></property>
+		<!-- 设定多个job不会并发运行 -->
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="carbonDealDataTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="quartzCarbonDealData" />
+		<!-- 每分钟运行定时任务 -->
+		<property name="cronExpression" value="0 1 * * * ?"></property>
+	</bean>
 	<bean name="quartzScheduler"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<ref bean="quartzTrigger" />
+				<!-- ref bean="quartzTrigger" / -->
+				<ref bean="carbonDealDataTrigger" />
 				<!--
 					<ref bean="createReportTrigger" /> 
 				 -->

@@ -15,13 +15,14 @@ import cn.com.ddhj.util.SpringCtxUtil;
  * 作者: zhy<br>
  * 时间: 2016年10月31日 上午9:17:39
  */
-@WebListener
+//@WebListener
 public class ClearLockListener extends ServerletLoader implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		LockServiceImpl service = SpringCtxUtil.getBean(LockServiceImpl.class);
-		service.clearLock();
+		//这个类先于ServerletListener被调用就报空指针，把下面的代码拿到ServerletListener中
+//		LockServiceImpl service = SpringCtxUtil.getBean(LockServiceImpl.class);
+//		service.clearLock();
 	}
 
 	@Override

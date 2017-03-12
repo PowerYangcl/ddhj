@@ -1,9 +1,11 @@
 package cn.com.ddhj.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import cn.com.ddhj.base.BaseClass;
+import cn.com.ddhj.service.ITradeService;
 
 @Controller
 @RequestMapping("trade/")
@@ -28,4 +30,11 @@ public class TradeController extends BaseClass {
 //		//查询交易标的接口
 //		return null;
 //	}
+	@Autowired
+	private ITradeService tradeService;
+	
+	@RequestMapping("grab")
+	public void grab() {
+		tradeService.grabDealData("http://k.tanjiaoyi.com:8080/KDataController/getHouseDatasInAverage.do?jsoncallback=abc&lcnK=7b56aba5e6e2b29d01587bf76dd3aa95&brand=TAN&_=1489330729677");
+	}
 }
