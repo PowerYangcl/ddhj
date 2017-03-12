@@ -106,7 +106,7 @@
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="quartzCarbonDealData" />
 		<!-- 每分钟运行定时任务 -->
-		<property name="cronExpression" value="0 1 * * * ?"></property>
+		<property name="cronExpression" value="0 0 12 * * ?"></property>
 	</bean>
 	<bean name="quartzScheduler"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
