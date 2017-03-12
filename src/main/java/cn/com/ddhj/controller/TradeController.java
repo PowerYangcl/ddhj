@@ -10,6 +10,11 @@ import cn.com.ddhj.service.ITradeService;
 @Controller
 @RequestMapping("trade/")
 public class TradeController extends BaseClass {
+	@RequestMapping("placeOrder")
+	public String placeOrder() {
+		return "";
+	}
+	
 //	//交易相关
 //	else if("trade_place_order".equals(api.getApiTarget())) {
 //		//委托下单接口

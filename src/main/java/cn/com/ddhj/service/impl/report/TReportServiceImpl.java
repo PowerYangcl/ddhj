@@ -603,7 +603,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				List<TReportLog> logData = new ArrayList<TReportLog>();
 				List<String> codes = new ArrayList<String>();
 				// 获取城市空气质量列表
-				String path = "/opt/ddhj/";
+				
 				JSONArray cityAir = this.getCityAirLevel();
 				if (lpList != null && lpList.size() > 0) {
 					// 根据楼盘列表获取报告列表
@@ -725,15 +725,21 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		if (list == null) {
 			list = levelMapper.findTReportEnvironmentLevelAll();
 		}
-		Map<String, String> map = getReportParam(code, lpCode, cityAir, list);
-		String path = PPTUtil.instance().createReport(map, code);
-		if (StringUtils.isNotBlank(path)) {
-			result.setResultCode(0);
-			result.setResultMessage("生成报告成功");
-			result.setPath(path);
-		} else {
-			result.setResultCode(-1);
-			result.setResultMessage("生成报告错误");
+		try {
+			Map<String, String> map = getReportParam(code, lpCode, cityAir, list);
+			String path = PPTUtil.instance().createReport(map, code);
+			System.out.println(lpCode + " generate success. path:" + path);
+			getLogger().logDebug(lpCode + "generate success. path:" + path);
+			if (StringUtils.isNotBlank(path)) {
+				result.setResultCode(0);
+				result.setResultMessage("生成报告成功");
+				result.setPath(path);
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("生成报告错误");
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 		return result;
 	}
@@ -1121,7 +1127,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			String rubbishStr = "垃圾场：等级为" + rubbish.get("level") + "级，距离小区" + rubbishDistance + "公里";
 			// 化工厂
 			Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(), lp.getLng());
-			Double chemicalDistance = BigDecimal.valueOf((Double.valueOf(chemical.get("distance")) / 1000))
+			String distance = chemical.get("distance") == null ? "10000" : chemical.get("distance");
+			Double chemicalDistance = BigDecimal.valueOf((Double.valueOf(distance) / 1000))
 					.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 			String chemicalStr = "化工厂：等级为" + chemical.get("level") + "级，距离小区" + chemicalDistance + "公里";
 			/**

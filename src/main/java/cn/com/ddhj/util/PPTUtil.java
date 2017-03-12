@@ -35,15 +35,15 @@ public class PPTUtil extends BaseClass {
 
 	private static PPTUtil self;
 
-//	private final static String TEMPLATE_FILE = "/opt/ddhj/report/ppt/template/report.ppt";
-//	private final static String OUT_REPORT_PPT_PATH = "/opt/ddhj/report/ppt/";
-//	private final static String OUT_REPORT_PDF_PATH = "/opt/ddhj/report/pdf/";
-//	private final static String OpenOffice_HOME = "/opt/openoffice4/program/soffice.bin";
+	private final static String TEMPLATE_FILE = "/opt/ddhj/report/ppt/template/report.ppt";
+	private final static String OUT_REPORT_PPT_PATH = "/opt/ddhj/report/ppt/";
+	private final static String OUT_REPORT_PDF_PATH = "/opt/ddhj/report/pdf/";
+	private final static String OpenOffice_HOME = "/opt/openoffice4/program/soffice.bin";
 
-	private final static String TEMPLATE_FILE = "D:/report/ppt/template/report.ppt";
-	private final static String OUT_REPORT_PPT_PATH = "D:/report/ppt/";
-	private final static String OUT_REPORT_PDF_PATH = "D:/report/pdf/";
-	private final static String OpenOffice_HOME = "D:/app/OpenOffice413/program/soffice.exe ";
+//	private final static String TEMPLATE_FILE = "e:/report/ppt/template/report.ppt";
+//	private final static String OUT_REPORT_PPT_PATH = "e:/report/ppt/";
+//	private final static String OUT_REPORT_PDF_PATH = "e:/report/pdf/";
+//	private final static String OpenOffice_HOME = "d:/app/OpenOffice4/program/soffice.exe ";
 	
 	private static Process process;
 	 

@@ -61,7 +61,7 @@ public class TReportController {
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月22日 下午8:54:30
 	 * 
-	 * @param dto
+	 * @param 0
 	 * @param request
 	 * @param session
 	 * @return
