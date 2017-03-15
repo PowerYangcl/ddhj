@@ -1,7 +1,9 @@
-package cn.com.ddhj.model;
+package cn.com.ddhj.model.trade;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import cn.com.ddhj.model.BaseModel;
 
 /**
  * 
@@ -16,7 +18,7 @@ public class TTradeDeal extends BaseModel {
 
     private String cityName;
 
-    private Date dealDate;
+    private String dealDate;
 
     private BigDecimal openPrice;
 
@@ -48,13 +50,13 @@ public class TTradeDeal extends BaseModel {
         this.cityName = cityName == null ? null : cityName.trim();
     }
 
-    public Date getDealDate() {
-        return dealDate;
-    }
+	public String getDealDate() {
+		return dealDate;
+	}
 
-    public void setDealDate(Date dealDate) {
-        this.dealDate = dealDate;
-    }
+	public void setDealDate(String dealDate) {
+		this.dealDate = dealDate;
+	}
 
 	public BigDecimal getOpenPrice() {
 		return openPrice;

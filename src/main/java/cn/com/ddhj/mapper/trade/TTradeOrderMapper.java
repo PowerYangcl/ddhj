@@ -1,9 +1,10 @@
-package cn.com.ddhj.mapper;
+package cn.com.ddhj.mapper.trade;
 
 import java.util.List;
 
-import cn.com.ddhj.dto.TTradeOrderDto;
-import cn.com.ddhj.model.TTradeOrder;
+import cn.com.ddhj.dto.trade.TTradeOrderDto;
+import cn.com.ddhj.mapper.BaseMapper;
+import cn.com.ddhj.model.trade.TTradeOrder;
 
 /**
  * 

@@ -1,4 +1,4 @@
-package cn.com.ddhj.model;
+package cn.com.ddhj.model.trade;
 
 import java.math.BigDecimal;
 import java.util.Date;

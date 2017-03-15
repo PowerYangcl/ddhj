@@ -1,4 +1,4 @@
-package cn.com.ddhj.mapper;
+package cn.com.ddhj.mapper.trade;
 
 /**
  * 

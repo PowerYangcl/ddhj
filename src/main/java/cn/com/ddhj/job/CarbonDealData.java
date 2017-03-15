@@ -6,7 +6,7 @@ import cn.com.ddhj.service.ITradeService;
 
 /**
  * 类: CarbonDealData <br>
- * 描述:  从<br>
+ * 描述: 从中国碳币交易网定时抓取数据<br>
  * 作者: zht<br>
  * 时间: 2017年3月12日
  */

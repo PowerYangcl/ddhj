@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.com.ddhj.mapper.TTradeDealMapper">
-  <resultMap id="BaseResultMap" type="cn.com.ddhj.model.TTradeDeal">
+<mapper namespace="cn.com.ddhj.mapper.trade.TTradeDealMapper">
+  <resultMap id="BaseResultMap" type="cn.com.ddhj.model.trade.TTradeDeal">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
     <result column="city_id" jdbcType="VARCHAR" property="cityId" />
@@ -34,7 +34,7 @@
     delete from t_trade_deal
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="cn.com.ddhj.model.TTradeDeal">
+  <insert id="insert" parameterType="cn.com.ddhj.model.trade.TTradeDeal">
     insert into t_trade_deal (id, uuid, city_id, 
       city_name, deal_date, open_price, 
       high_price, low_price, close_price, 
@@ -48,7 +48,7 @@
       #{createUser,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="cn.com.ddhj.model.TTradeDeal">
+  <insert id="insertSelective" parameterType="cn.com.ddhj.model.trade.TTradeDeal">
     insert into t_trade_deal
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -151,7 +151,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="cn.com.ddhj.model.TTradeDeal">
+  <update id="updateByPrimaryKeySelective" parameterType="cn.com.ddhj.model.trade.TTradeDeal">
     update t_trade_deal
     <set>
       <if test="uuid != null">
@@ -202,7 +202,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="cn.com.ddhj.model.TTradeDeal">
+  <update id="updateByPrimaryKey" parameterType="cn.com.ddhj.model.trade.TTradeDeal">
     update t_trade_deal
     set uuid = #{uuid,jdbcType=VARCHAR},
       city_id = #{cityId,jdbcType=VARCHAR},
@@ -222,10 +222,34 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   
-  <delete id="deleteByCityAndDealDate" parameterType="cn.com.ddhj.model.TTradeDeal">
+  <delete id="deleteByCityAndDealDate" parameterType="cn.com.ddhj.model.trade.TTradeDeal">
     delete from t_trade_deal
     <where>
     	city_id = #{cityId,jdbcType=INTEGER} and deal_date = #{dealDate, jdbcType=TIMESTAMP}
     </where>  
   </delete>
+  <select id="queryDealsByCityId" parameterType="cn.com.ddhj.dto.trade.TTradeDealDto" resultMap="BaseResultMap">
+    select 
+	    city_id, city_name,DATE_FORMAT(deal_date,'%Y-%m-%d') as deal_date,
+	    open_price,close_price,high_price,low_price,deal_price,deal_num,deal_amount
+    from t_trade_deal
+    <where>
+    	1=1 
+     	<if test="cityId != null">
+		   AND city_id=#{cityId,jdbcType=VARCHAR}
+		</if>
+    </where>
+    order by deal_date desc 
+    limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+  </select>
+  <select id="queryDealsByCityIdCount" parameterType="cn.com.ddhj.dto.TOrderDto" resultType="java.lang.Integer">
+    select count(*)
+    from t_trade_deal
+    <where>
+     	1=1
+     	<if test="cityId != null">
+		   AND city_id=#{cityId,jdbcType=VARCHAR}
+		</if>
+    </where>
+  </select>
 </mapper>

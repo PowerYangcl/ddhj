@@ -32,6 +32,7 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.dto.user.TMessageDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
@@ -54,6 +55,8 @@ import cn.com.ddhj.result.order.OrderTotal;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
+import cn.com.ddhj.result.trade.TradeCityResult;
+import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.result.tuser.FollowResult;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.MessageData;
@@ -67,18 +70,19 @@ import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITCityService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
+import cn.com.ddhj.service.ITradeService;
 import cn.com.ddhj.service.impl.TPaymentServiceImpl;
+import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
+import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
+import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
+import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
+import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.service.user.ITMessageService;
 import cn.com.ddhj.service.user.ITUserCarbonOperationService;
 import cn.com.ddhj.service.user.ITUserLpFollowService;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.service.user.ITUserStepService;
-import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
-import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
-import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
-import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
-import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.DateUtil;
 
 @Controller
@@ -110,6 +114,9 @@ public class ApiController extends BaseClass {
 	private ITUserStepService stepService;
 	@Autowired
 	private ITUserCarbonOperationService userCarbonOperationserivce;
+	@Autowired
+	private ITradeService tradeService;
+	
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
 
@@ -383,6 +390,15 @@ public class ApiController extends BaseClass {
 					param.getString("type"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} 
+		else if("trade_city".equals(api.getApiTarget())) {
+			TradeCityResult result =  tradeService.queryAllTradeCity();
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		} 
+		else if("trade_deals".equals(api.getApiTarget())) {
+			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
+			TradeDealResult result =  tradeService.queryDealsByCityId(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		/**
 		 * ================= 碳币相关 end ======================
 		 */

@@ -1,6 +1,8 @@
-package cn.com.ddhj.model;
+package cn.com.ddhj.model.trade;
 
 import com.sun.star.bridge.oleautomation.Decimal;
+
+import cn.com.ddhj.model.BaseModel;
 
 /**
  * 
