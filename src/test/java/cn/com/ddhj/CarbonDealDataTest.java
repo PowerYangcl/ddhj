@@ -14,6 +14,7 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.model.trade.TTradeOrder;
+import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
@@ -73,6 +74,12 @@ public class CarbonDealDataTest extends BaseTest {
 		TTradeDealDto dto = new TTradeDealDto();
 		dto.setCityId(objectCode);
 		TradePriceAvaiAmountResult result = service.getCurrentPriceAndAvailableAmount(dto, "2aa3530a3361472b91e236caae8a6d10");
+		System.out.println(JSON.toJSON(result));
+	}
+	
+	@Test
+	public void getUserBalance() {
+		TradeBalanceResult result = service.getUserBalance("2aa3530a3361472b91e236caae8a6d10");
 		System.out.println(JSON.toJSON(result));
 	}
 }

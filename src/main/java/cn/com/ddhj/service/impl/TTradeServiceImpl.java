@@ -33,6 +33,7 @@ import cn.com.ddhj.model.trade.TTradeDeal;
 import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
+import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
@@ -170,58 +171,65 @@ public class TTradeServiceImpl implements ITradeService {
 	public BaseResult sendTradeOrder(TTradeOrder order, String userToken) {
 		BaseResult result = new BaseResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
-		if (login != null) {
-			TUser user = userMapper.findTUserByUuid(login.getUserToken());
-			if (user != null) {
-				if(order != null) {
-					String createTime = format.format(new Date());
-					order.setOrderCode(WebHelper.getInstance().getUniqueCode("DD"));
-					order.setCreateTime(createTime);
-					order.setCreateUser(user.getUserCode());
-					order.setUserCode(user.getUserCode());
-					order.setStatus(1);
-					order.setUuid(UUID.randomUUID().toString().replace("-", ""));
-					int success = tradeOrderMapper.insertSelective(order);
-					if(success == 1) {
-						//根据用户编号和委托标的查询该用户该标的的持仓记录
-						TTradeBalanceDto balanceDto = new TTradeBalanceDto();
-						balanceDto.setObjectCode(order.getObjectCode());
-						balanceDto.setUserCode(order.getUserCode());
-						TTradeBalance balance = tradeBalanceMapper.selectByUserCodeAndObjCode(balanceDto);
-						if(balance == null) {
-							balance = new TTradeBalance();
-							balance.setUuid(UUID.randomUUID().toString().replace("-", ""));
-							balance.setObjectCode(order.getObjectCode());
-							balance.setPrice(order.getPrice());
-							balance.setAmount(order.getAmount());
-							balance.setUserCode(order.getUserCode());
-							//多头持仓,目前暂不支持空头
-							balance.setBuySell("B");
-							balance.setCreateTime(createTime);
-							balance.setCreateUser(order.getUserCode());
-							tradeBalanceMapper.insertSelective(balance);
-						} else {
-							balance = calculateBalance(balance, order, user.getUserCode());
-							tradeBalanceMapper.updateByPrimaryKey(balance);
-						}
-						result.setResultCode(1);
-						result.setResultMessage("委托成功");
-					} else {
-						result.setResultCode(-1);
-						result.setResultMessage("委托失败");
-					}
-				} else {
-					result.setResultCode(-1);
-					result.setResultMessage("委托数据为空,无法报盘");
-				}
-			} else {
-				result.setResultCode(-1);
-				result.setResultMessage("用户不存在");
-			}
-		} else {
+		
+		if (login == null) {
 			result.setResultCode(-1);
 			result.setResultMessage("用户未登录");
+			return result;
 		}
+		
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if (user == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户不存在");
+			return result;
+		}
+		
+		if(order == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("委托数据为空,无法报盘");
+			return result;
+		}
+		
+		String createTime = format.format(new Date());
+		order.setOrderCode(WebHelper.getInstance().getUniqueCode("DD"));
+		order.setCreateTime(createTime);
+		order.setCreateUser(user.getUserCode());
+		order.setUserCode(user.getUserCode());
+		order.setStatus(1);
+		order.setUuid(UUID.randomUUID().toString().replace("-", ""));
+		int success = tradeOrderMapper.insertSelective(order);
+		if(success == 1) {
+			//根据用户编号和委托标的查询该用户该标的的持仓记录
+			TTradeBalanceDto balanceDto = new TTradeBalanceDto();
+			balanceDto.setObjectCode(order.getObjectCode());
+			balanceDto.setUserCode(order.getUserCode());
+			List<TTradeBalance> balanceList = tradeBalanceMapper.selectByUserCodeAndObjCode(balanceDto);
+			TTradeBalance balance = null;
+			if(balanceList == null || balanceList.isEmpty()) {
+				balance = new TTradeBalance();
+				balance.setUuid(UUID.randomUUID().toString().replace("-", ""));
+				balance.setObjectCode(order.getObjectCode());
+				balance.setPrice(order.getPrice());
+				balance.setAmount(order.getAmount());
+				balance.setUserCode(order.getUserCode());
+				//多头持仓,目前暂不支持空头
+				balance.setBuySell("B");
+				balance.setCreateTime(createTime);
+				balance.setCreateUser(order.getUserCode());
+				tradeBalanceMapper.insertSelective(balance);
+			} else {
+				balance = balanceList.get(0);
+				balance = calculateBalance(balance, order, user.getUserCode());
+				tradeBalanceMapper.updateByPrimaryKey(balance);
+			}
+			result.setResultCode(1);
+			result.setResultMessage("委托成功");
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("委托失败");
+		}
+		
 		return result;
 	}
 	
@@ -286,15 +294,16 @@ public class TTradeServiceImpl implements ITradeService {
 		if(dealList != null && !dealList.isEmpty()) {
 			//标的现价和计算可买数量
 			TTradeDeal tradeDeal = dealList.get(0);
-			BigDecimal buyAmount = actualMoney.divide(tradeDeal.getClosePrice());
+			BigDecimal buyAmount = actualMoney.divide(tradeDeal.getClosePrice(), 0, BigDecimal.ROUND_DOWN);
 			result.setBuyAmount(buyAmount.intValue());
 			result.setCurrentPrice(tradeDeal.getClosePrice());
 			//查询用户当前标的持仓数,为可卖数
 			TTradeBalanceDto balanceDto = new TTradeBalanceDto();
 			balanceDto.setUserCode(user.getUserCode());
 			balanceDto.setObjectCode(dto.getCityId());
-			TTradeBalance tradeBalance = tradeBalanceMapper.selectByUserCodeAndObjCode(balanceDto);
-			if(tradeBalance != null) {
+			List<TTradeBalance> balanceList = tradeBalanceMapper.selectByUserCodeAndObjCode(balanceDto);
+			if(balanceList != null && !balanceList.isEmpty()) {
+				TTradeBalance tradeBalance = balanceList.get(0);
 				result.setSellAmount(tradeBalance.getAmount());
 			} else {
 				result.setSellAmount(0);
@@ -303,6 +312,30 @@ public class TTradeServiceImpl implements ITradeService {
 			result.setResultCode(-1);
 			result.setResultMessage("未查询到指定的交易标的");
 		}
+		return result;
+	}
+
+	@Override
+	public TradeBalanceResult getUserBalance(String userToken) {
+		TradeBalanceResult result = new TradeBalanceResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if(login == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户未登录");
+			return result;
+		}
+		
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if(user == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户不存在");
+			return result;
+		}
+		
+		TTradeBalanceDto dto = new TTradeBalanceDto();
+		dto.setUserCode(user.getUserCode());
+		List<TTradeBalance> balanceList = tradeBalanceMapper.selectByUserCodeAndObjCode(dto);
+		result.setObjects(balanceList);
 		return result;
 	}
 }

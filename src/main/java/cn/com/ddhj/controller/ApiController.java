@@ -56,6 +56,7 @@ import cn.com.ddhj.result.order.OrderTotal;
 import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
+import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
@@ -415,6 +416,11 @@ public class ApiController extends BaseClass {
 			TradePriceAvaiAmountResult result = tradeService.getCurrentPriceAndAvailableAmount(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
+		//查询当前用户持仓
+		else if("trade_balance".equals(api.getApiTarget())) {
+			TradeBalanceResult result = tradeService.getUserBalance(api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		} 
 		
 		/**
 		 * ================= 碳币相关 end ======================

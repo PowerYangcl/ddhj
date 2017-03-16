@@ -3,6 +3,7 @@ package cn.com.ddhj.service;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.model.trade.TTradeOrder;
+import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
@@ -76,5 +77,17 @@ public interface ITradeService {
 	 * @return
 	 */
 	public TradePriceAvaiAmountResult getCurrentPriceAndAvailableAmount(TTradeDealDto dto, String userToken);
+	
+	/**
+	 * 
+	 * 方法: getUserBalance<br>
+	 * 描述: 获取指定用户的持仓信息<br>
+	 * 作者: 海涛<br>
+	 * 时间: 2017年3月16日 下午2:41:00
+	 * 
+	 * @param 
+	 * @return
+	 */
+	public TradeBalanceResult getUserBalance(String userToken);
 	
 }

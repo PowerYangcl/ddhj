@@ -1,5 +1,7 @@
 package cn.com.ddhj.mapper.trade;
 
+import java.util.List;
+
 import cn.com.ddhj.dto.trade.TTradeBalanceDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.trade.TTradeBalance;
@@ -47,5 +49,5 @@ public interface TTradeBalanceMapper extends BaseMapper<TTradeBalance, TTradeBal
      * @param 
      * @return
      */
-    TTradeBalance selectByUserCodeAndObjCode(TTradeBalanceDto record);
+    List<TTradeBalance> selectByUserCodeAndObjCode(TTradeBalanceDto record);
 }
