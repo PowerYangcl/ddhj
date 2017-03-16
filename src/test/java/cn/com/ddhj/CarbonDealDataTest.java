@@ -1,5 +1,7 @@
 package cn.com.ddhj;
 
+import java.math.BigDecimal;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +10,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSON;
 
+import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
+import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.service.ITradeService;
@@ -39,5 +43,27 @@ public class CarbonDealDataTest extends BaseTest {
 		dto.setPageSize(100);
 		TradeDealResult result = service.queryDealsByCityId(dto);
 		System.out.println(JSON.toJSON(result));
+	}
+	
+	@Test
+	public void sendTradeOrder() {
+		TTradeOrder order = new TTradeOrder();
+		order.setBuySell("B");
+		order.setAmount(1000);
+		order.setPrice(new BigDecimal(10.5));
+		order.setObjectCode("aae0171545b0ad680145b0ad68ee0000");
+		BaseResult result = service.sendTradeOrder(order, "2aa3530a3361472b91e236caae8a6d10");
+		System.out.println(JSON.toJSON(result));
+	}
+	
+	@Test
+	public void sendTradeOrderSell() {
+		TTradeOrder orderSell = new TTradeOrder();
+		orderSell.setBuySell("C");
+		orderSell.setAmount(500);
+		orderSell.setPrice(new BigDecimal(10.5));
+		orderSell.setObjectCode("aae0171545b0ad680145b0ad68ee0000");
+		BaseResult resultSell = service.sendTradeOrder(orderSell, "2aa3530a3361472b91e236caae8a6d10");
+		System.out.println(JSON.toJSON(resultSell));
 	}
 }

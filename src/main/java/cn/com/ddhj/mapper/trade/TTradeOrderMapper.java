@@ -27,4 +27,17 @@ public interface TTradeOrderMapper extends BaseMapper<TTradeOrder, TTradeOrderDt
 	 * @return
 	 */
 	List<TTradeOrder> selectByUserCode(String userCode);
+	
+	/**
+	 * 
+	 * 方法: insertSelective 
+	 * 参数: order:交易订单实体类
+	 * 描述: 插入用户所有的委托单,有买和卖两种
+	 * 作者: zht
+	 * 时间: 2017年3月8日 下午11:42:06 
+	 * 
+	 * @param userCode
+	 * @return
+	 */
+	int insertSelective(TTradeOrder order);
 }

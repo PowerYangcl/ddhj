@@ -65,16 +65,4 @@ public interface TTradeDealMapper extends BaseMapper<TTradeDeal, TTradeDealDto> 
      * @return
      */
     Integer queryDealsByCityIdCount(TTradeDealDto dto);
-    
-//    /**
-//     * 
-//     * 方法: queryDealsByDefault<br>
-//     * 描述: 查询<br>
-//     * 作者: zht<br>
-//     * 时间: 2017年3月15日 下午8:59:52
-//     * 
-//     * @param 
-//     * @return
-//     */
-//    List<TTradeDeal> queryDealsByDefault(TTradeDealDto dto);
 }

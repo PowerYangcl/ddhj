@@ -41,6 +41,7 @@ import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TPayment;
+import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
@@ -397,6 +398,11 @@ public class ApiController extends BaseClass {
 		else if("trade_deals".equals(api.getApiTarget())) {
 			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
 			TradeDealResult result =  tradeService.queryDealsByCityId(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		} 
+		else if("trade_send_order".equals(api.getApiTarget())) {
+			TTradeOrder tradeOrder = obj.toJavaObject(TTradeOrder.class);
+			BaseResult result =  tradeService.sendTradeOrder(tradeOrder, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**

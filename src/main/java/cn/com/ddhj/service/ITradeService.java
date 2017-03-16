@@ -1,6 +1,8 @@
 package cn.com.ddhj.service;
 
+import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
+import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
 
@@ -48,4 +50,17 @@ public interface ITradeService {
 	 * @return
 	 */
 	public TradeDealResult queryDealsByCityId(TTradeDealDto dto);
+	
+	/**
+	 * 
+	 * 方法: sendTradeOrder<br>
+	 * 描述: 接受用户的委买和委卖单<br>
+	 * 作者: zht<br>
+	 * 时间: 2017年3月16日 上午12:34:57
+	 * 
+	 * @param 
+	 * @return
+	 */
+	public BaseResult sendTradeOrder(TTradeOrder order, String userToken);
+	
 }

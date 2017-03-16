@@ -1,6 +1,6 @@
 package cn.com.ddhj.model.trade;
 
-import com.sun.star.bridge.oleautomation.Decimal;
+import java.math.BigDecimal;
 
 import cn.com.ddhj.model.BaseModel;
 
@@ -24,6 +24,11 @@ public class TTradeOrder extends BaseModel {
 	private String objectCode;
 	
 	/**
+	 * 买或卖.B买.S卖
+	 */
+	private String buySell;
+	
+	/**
 	 * 客户编号
 	 */
 	private String userCode;
@@ -31,7 +36,7 @@ public class TTradeOrder extends BaseModel {
 	/**
 	 * 委托单价
 	 */
-	private Decimal price;
+	private BigDecimal price;
 	
 	/**
 	 * 委托数量
@@ -67,11 +72,11 @@ public class TTradeOrder extends BaseModel {
 		this.userCode = userCode;
 	}
 
-	public Decimal getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 
-	public void setPrice(Decimal price) {
+	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 
@@ -90,4 +95,13 @@ public class TTradeOrder extends BaseModel {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
+
+	public String getBuySell() {
+		return buySell;
+	}
+
+	public void setBuySell(String buySell) {
+		this.buySell = buySell;
+	}
+	
 }

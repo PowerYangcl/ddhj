@@ -15,15 +15,21 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.dto.trade.TTradeBalanceDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
+import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.trade.TTradeBalanceMapper;
 import cn.com.ddhj.mapper.trade.TTradeCityMapper;
 import cn.com.ddhj.mapper.trade.TTradeDealMapper;
 import cn.com.ddhj.mapper.trade.TTradeMapper;
+import cn.com.ddhj.mapper.trade.TTradeOrderMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
-import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.trade.TTradeBalance;
 import cn.com.ddhj.model.trade.TTradeCity;
 import cn.com.ddhj.model.trade.TTradeDeal;
+import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.trade.TradeCityResult;
@@ -43,19 +49,23 @@ public class TTradeServiceImpl implements ITradeService {
 
 	@Autowired
 	private TTradeMapper mapper;
-	
+	@Autowired
+	private TTradeBalanceMapper tradeBalanceMapper;
 	@Autowired
 	private TTradeDealMapper tradeDealMapper;
 	@Autowired
 	private TTradeCityMapper tradeCityMapper;
 	@Autowired
+	private TTradeOrderMapper tradeOrderMapper;
+	@Autowired
 	private TUserLoginMapper loginMapper;
 	@Autowired
 	private TUserMapper userMapper;	
 	
+	private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	@Override
 	public int grabDealData(String url) {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		JSONObject result = getCarbonDealData(url);
 		if(result != null) {
 			Set<String> keys = result.keySet();
@@ -153,5 +163,89 @@ public class TTradeServiceImpl implements ITradeService {
 		result.setRepList(dealList);
 		return result;
 	}
+
+	@Override
+	public BaseResult sendTradeOrder(TTradeOrder order, String userToken) {
+		BaseResult result = new BaseResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if (login != null) {
+			TUser user = userMapper.findTUserByUuid(login.getUserToken());
+			if (user != null) {
+				if(order != null) {
+					String createTime = format.format(new Date());
+					order.setOrderCode(WebHelper.getInstance().getUniqueCode("DD"));
+					order.setCreateTime(createTime);
+					order.setCreateUser(user.getUserCode());
+					order.setUserCode(user.getUserCode());
+					order.setStatus(1);
+					order.setUuid(UUID.randomUUID().toString().replace("-", ""));
+					int success = tradeOrderMapper.insertSelective(order);
+					if(success == 1) {
+						//根据用户编号和委托标的查询该用户该标的的持仓记录
+						TTradeBalanceDto balanceDto = new TTradeBalanceDto();
+						balanceDto.setObjectCode(order.getObjectCode());
+						balanceDto.setUserCode(order.getUserCode());
+						TTradeBalance balance = tradeBalanceMapper.selectByUserCodeAndObjCode(balanceDto);
+						if(balance == null) {
+							balance = new TTradeBalance();
+							balance.setUuid(UUID.randomUUID().toString().replace("-", ""));
+							balance.setObjectCode(order.getObjectCode());
+							balance.setPrice(order.getPrice());
+							balance.setAmount(order.getAmount());
+							balance.setUserCode(order.getUserCode());
+							//多头持仓,目前暂不支持空头
+							balance.setBuySell("B");
+							balance.setCreateTime(createTime);
+							balance.setCreateUser(order.getUserCode());
+							tradeBalanceMapper.insertSelective(balance);
+						} else {
+							balance = calculateBalance(balance, order, user.getUserCode());
+							tradeBalanceMapper.updateByPrimaryKey(balance);
+						}
+						result.setResultCode(1);
+						result.setResultMessage("委托成功");
+					} else {
+						result.setResultCode(-1);
+						result.setResultMessage("委托失败");
+					}
+				} else {
+					result.setResultCode(-1);
+					result.setResultMessage("委托数据为空,无法报盘");
+				}
+			} else {
+				result.setResultCode(-1);
+				result.setResultMessage("用户不存在");
+			}
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("用户未登录");
+		}
+		return result;
+	}
 	
+	/**
+	 * 
+	 * 方法: calculateBalance<br>
+	 * 描述: 用户已有某标的的持仓根据用户委托单计算该标的的均价<br>
+	 * 作者: 海涛<br>
+	 * 时间: 2017年3月16日 上午9:40:41
+	 * 
+	 * @param 
+	 * @return
+	 */
+	private TTradeBalance calculateBalance(TTradeBalance balance, TTradeOrder order, String userCode) {
+		if(order.getBuySell().equals("B")) {
+			//委买单
+			BigDecimal total = balance.getPrice().multiply(BigDecimal.valueOf(balance.getAmount())).add(order.getPrice().multiply(BigDecimal.valueOf(order.getAmount())));
+			BigDecimal avgPrice = total.divide(BigDecimal.valueOf(balance.getAmount() + order.getAmount()));
+			balance.setPrice(avgPrice);
+			balance.setAmount(balance.getAmount() + order.getAmount());
+			balance.setUpdateTime(format.format(new Date()));
+			balance.setUpdateUser(userCode);
+		} else {
+			//委卖单
+			balance.setAmount(balance.getAmount() - order.getAmount());
+		}
+		return balance;
+	}
 }
