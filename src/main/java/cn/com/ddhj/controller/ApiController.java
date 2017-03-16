@@ -58,6 +58,7 @@ import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
+import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
 import cn.com.ddhj.result.tuser.FollowResult;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.MessageData;
@@ -391,20 +392,30 @@ public class ApiController extends BaseClass {
 					param.getString("type"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} 
+		// 查询支持碳交易的城市列表
 		else if("trade_city".equals(api.getApiTarget())) {
 			TradeCityResult result =  tradeService.queryAllTradeCity();
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} 
+		}
+		//按城市ID/全国(cityId为空)分页查询碳交易行情
 		else if("trade_deals".equals(api.getApiTarget())) {
 			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
 			TradeDealResult result =  tradeService.queryDealsByCityId(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} 
+		//用户委托买/卖
 		else if("trade_send_order".equals(api.getApiTarget())) {
 			TTradeOrder tradeOrder = obj.toJavaObject(TTradeOrder.class);
 			BaseResult result =  tradeService.sendTradeOrder(tradeOrder, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
+		//查询用户在某个标的上的可买,可卖,现价
+		else if("trade_deal_price_amount".equals(api.getApiTarget())) {
+			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
+			TradePriceAvaiAmountResult result = tradeService.getCurrentPriceAndAvailableAmount(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		
 		/**
 		 * ================= 碳币相关 end ======================
 		 */

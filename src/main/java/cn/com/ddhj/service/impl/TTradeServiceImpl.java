@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.trade.TTradeBalanceDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
+import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.trade.TTradeBalanceMapper;
 import cn.com.ddhj.mapper.trade.TTradeCityMapper;
@@ -34,6 +35,7 @@ import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
+import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
 import cn.com.ddhj.service.ITradeService;
 import cn.com.ddhj.util.PureNetUtil;
 
@@ -247,5 +249,60 @@ public class TTradeServiceImpl implements ITradeService {
 			balance.setAmount(balance.getAmount() - order.getAmount());
 		}
 		return balance;
+	}
+
+	@Override
+	public TradePriceAvaiAmountResult getCurrentPriceAndAvailableAmount(TTradeDealDto dto, String userToken) {
+		TradePriceAvaiAmountResult result = new TradePriceAvaiAmountResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if(login == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户未登录");
+			return result;
+		}
+		
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if(user == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户不存在");
+			return result;
+		}
+		
+		if(StringUtils.isBlank(dto.getObjectCode())) {
+			result.setResultCode(-1);
+			result.setResultMessage("查询交易标的参数为空");
+			return result;
+		}
+		/////////////////////////
+		dto.setCityId(dto.getObjectCode());
+		/////////////////////////
+		BigDecimal carbonMoney = user.getCarbonMoney();
+		String ratio = PropHelper.getValue("carbon_money_ratio");
+		BigDecimal actualMoney = carbonMoney.multiply(BigDecimal.valueOf(Double.valueOf(ratio)));
+		dto.setPageIndex(0);
+		dto.setPageSize(1);
+		dto.setStart(dto.getPageIndex() * dto.getPageSize());
+		List<TTradeDeal> dealList = tradeDealMapper.queryDealsByCityId(dto);
+		if(dealList != null && !dealList.isEmpty()) {
+			//标的现价和计算可买数量
+			TTradeDeal tradeDeal = dealList.get(0);
+			BigDecimal buyAmount = actualMoney.divide(tradeDeal.getClosePrice());
+			result.setBuyAmount(buyAmount.intValue());
+			result.setCurrentPrice(tradeDeal.getClosePrice());
+			//查询用户当前标的持仓数,为可卖数
+			TTradeBalanceDto balanceDto = new TTradeBalanceDto();
+			balanceDto.setUserCode(user.getUserCode());
+			balanceDto.setObjectCode(dto.getCityId());
+			TTradeBalance tradeBalance = tradeBalanceMapper.selectByUserCodeAndObjCode(balanceDto);
+			if(tradeBalance != null) {
+				result.setSellAmount(tradeBalance.getAmount());
+			} else {
+				result.setSellAmount(0);
+			}
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("未查询到指定的交易标的");
+		}
+		return result;
 	}
 }

@@ -16,6 +16,7 @@ import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
+import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
 import cn.com.ddhj.service.ITradeService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -65,5 +66,13 @@ public class CarbonDealDataTest extends BaseTest {
 		orderSell.setObjectCode("aae0171545b0ad680145b0ad68ee0000");
 		BaseResult resultSell = service.sendTradeOrder(orderSell, "2aa3530a3361472b91e236caae8a6d10");
 		System.out.println(JSON.toJSON(resultSell));
+	}
+	@Test
+	public void getCurrentPriceAndAvailableAmount() {
+		String objectCode = "aae0171545b0ad680145b0ad68ee0000";
+		TTradeDealDto dto = new TTradeDealDto();
+		dto.setCityId(objectCode);
+		TradePriceAvaiAmountResult result = service.getCurrentPriceAndAvailableAmount(dto, "2aa3530a3361472b91e236caae8a6d10");
+		System.out.println(JSON.toJSON(result));
 	}
 }
