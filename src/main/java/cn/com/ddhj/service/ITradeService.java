@@ -2,10 +2,12 @@ package cn.com.ddhj.service;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
+import cn.com.ddhj.dto.trade.TTradeOrderDto;
 import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
+import cn.com.ddhj.result.trade.TradeOrderResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
 
 /**
@@ -66,6 +68,7 @@ public interface ITradeService {
 	public BaseResult sendTradeOrder(TTradeOrder order, String userToken);
 	
 	
+	
 	/**
 	 * 
 	 * 方法: getCurrentPriceAndAvailableAmount<br>
@@ -89,5 +92,17 @@ public interface ITradeService {
 	 * @return
 	 */
 	public TradeBalanceResult getUserBalance(String userToken);
+	
+	/**
+	 * 
+	 * 方法: getUserTradeOrder<br>
+	 * 描述: 获取指定用户的委托(成交)信息<br>
+	 * 作者: 海涛<br>
+	 * 时间: 2017年3月16日 下午2:41:00
+	 * 
+	 * @param 
+	 * @return
+	 */
+	public TradeOrderResult getUserTradeOrder(TTradeOrderDto dto, String userToken);
 	
 }

@@ -4,6 +4,13 @@ import java.math.BigDecimal;
 
 import cn.com.ddhj.base.BaseResult;
 
+/**
+ * 
+ * 类: TradePriceAvaiAmountResult <br>
+ * 描述: 按userCode和objectCode查询交易品种的当前价格,用户可买数(用户碳币和标的市价计算),可卖数（用户有此品种持仓时)<br>
+ * 作者: 海涛<br>
+ * 时间: 2017年3月16日
+ */
 public class TradePriceAvaiAmountResult extends BaseResult {
 	private String objectCode;
 	private BigDecimal currentPrice;

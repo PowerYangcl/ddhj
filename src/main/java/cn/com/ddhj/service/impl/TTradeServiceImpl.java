@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.trade.TTradeBalanceDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
+import cn.com.ddhj.dto.trade.TTradeOrderDto;
 import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.trade.TTradeBalanceMapper;
@@ -36,6 +37,7 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
+import cn.com.ddhj.result.trade.TradeOrderResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
 import cn.com.ddhj.service.ITradeService;
 import cn.com.ddhj.util.PureNetUtil;
@@ -338,4 +340,28 @@ public class TTradeServiceImpl implements ITradeService {
 		result.setObjects(balanceList);
 		return result;
 	}
+
+	@Override
+	public TradeOrderResult getUserTradeOrder(TTradeOrderDto dto, String userToken) {
+		TradeOrderResult result = new TradeOrderResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if(login == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户未登录");
+			return result;
+		}
+		
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if(user == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户不存在");
+			return result;
+		}
+		
+		dto.setUserCode(user.getUserCode());
+		List<TTradeOrder> orderList = tradeOrderMapper.selectUserTradeOrder(dto);
+		result.setOrders(orderList);
+		return result;
+	}
+
 }

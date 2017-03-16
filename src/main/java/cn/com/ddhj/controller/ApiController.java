@@ -33,6 +33,7 @@ import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
+import cn.com.ddhj.dto.trade.TTradeOrderDto;
 import cn.com.ddhj.dto.user.TMessageDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
@@ -59,6 +60,7 @@ import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
+import cn.com.ddhj.result.trade.TradeOrderResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
 import cn.com.ddhj.result.tuser.FollowResult;
 import cn.com.ddhj.result.tuser.LoginResult;
@@ -420,7 +422,18 @@ public class ApiController extends BaseClass {
 		else if("trade_balance".equals(api.getApiTarget())) {
 			TradeBalanceResult result = tradeService.getUserBalance(api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} 
+		}
+		//查询用户委托(成交)
+		else if("trade_query_order".equals(api.getApiTarget())) {
+			TTradeOrderDto dto = null;
+			if(obj != null) {
+				dto = obj.toJavaObject(TTradeOrderDto.class);
+			} else {
+				dto = new TTradeOrderDto();
+			}
+			TradeOrderResult result = tradeService.getUserTradeOrder(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		
 		/**
 		 * ================= 碳币相关 end ======================

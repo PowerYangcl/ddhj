@@ -26,7 +26,7 @@ public interface TTradeOrderMapper extends BaseMapper<TTradeOrder, TTradeOrderDt
 	 * @param userCode
 	 * @return
 	 */
-	List<TTradeOrder> selectByUserCode(String userCode);
+	List<TTradeOrder> selectUserTradeOrder(TTradeOrderDto dto);
 	
 	/**
 	 * 

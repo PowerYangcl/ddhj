@@ -161,4 +161,18 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectUserTradeOrder" parameterType="cn.com.ddhj.dto.trade.TTradeOrderDto" resultMap="BaseResultMap">
+  	select 
+  		 order_code, object_code, buy_sell, user_code, price, amount, status, DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') as create_time   
+  	from t_trade_order 
+  	<where>
+  		user_code=#{userCode,jdbcType=VARCHAR} 
+  		<if test="beginDate != null">
+        	and create_time&gt;=#{beginDate,jdbcType=TIMESTAMP} 
+      	</if>     	
+      	<if test="endDate != null">
+        	and create_time&lt;=#{endDate,jdbcType=TIMESTAMP}
+      	</if>
+  	</where>
+  </select>
 </mapper>
