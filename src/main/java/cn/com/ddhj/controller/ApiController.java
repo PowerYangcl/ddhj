@@ -285,9 +285,10 @@ public class ApiController extends BaseClass {
 			}
 			Integer pageIndex = obj.getInteger("pageIndex");  
 			Integer pageSize = obj.getInteger("pageSize");
-//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "year" , "2017" , "");  
-//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "quarter" , "2" , "2017");   
-//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "month" , "2017-01" , "");   
+			
+//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "year" , "2017" , "" ,  0 , 10);  
+//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "quarter" , "2" , "2017" ,  0 , 10);   
+//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "month" , "2017-01" , "" ,  0 , 10);   
 			
 			JSONObject result_ = estateEnvService.landedScoreAverage(city , type , date , year , pageIndex , pageSize);   
 			return result_;
