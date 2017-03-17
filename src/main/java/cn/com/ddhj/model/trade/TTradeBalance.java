@@ -6,15 +6,26 @@ import cn.com.ddhj.model.BaseModel;
 
 public class TTradeBalance extends BaseModel {
 
+	//持仓标的编码
     private String objectCode;
 
+    //用户编码
     private String userCode;
 
+    //持仓标的的均价
     private BigDecimal price;
 
+    //B:多头 S:空头
     private String buySell;
 
+    //持仓数量
     private Integer amount;
+    
+    //持仓标的的最新价
+    private BigDecimal lastPrice;
+    
+    //持仓标的的盈亏
+    private BigDecimal profitLoss;
 
     public String getObjectCode() {
         return objectCode;
@@ -55,4 +66,21 @@ public class TTradeBalance extends BaseModel {
     public void setAmount(Integer amount) {
         this.amount = amount;
     }
+
+	public BigDecimal getLastPrice() {
+		return lastPrice;
+	}
+
+	public void setLastPrice(BigDecimal lastPrice) {
+		this.lastPrice = lastPrice;
+	}
+
+	public BigDecimal getProfitLoss() {
+		return profitLoss;
+	}
+
+	public void setProfitLoss(BigDecimal profitLoss) {
+		this.profitLoss = profitLoss;
+	}
+    
 }

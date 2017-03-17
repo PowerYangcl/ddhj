@@ -15,9 +15,6 @@
   <sql id="Base_Column_List">
     id, uuid, object_code, user_code, price, buy_sell, amount, create_time, update_time
   </sql>
-  <sql id="Base_Column_List_1">
-    object_code, user_code, price, buy_sell, amount 
-  </sql>  
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
@@ -140,7 +137,7 @@
   
   <select id="selectByUserCodeAndObjCode" parameterType="cn.com.ddhj.dto.trade.TTradeBalanceDto" resultMap="BaseResultMap">
     select 
-    <include refid="Base_Column_List_1" />
+    <include refid="Base_Column_List" />
     from t_trade_balance
     <where>
     	1=1

@@ -24,7 +24,6 @@ import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.trade.TTradeBalanceMapper;
 import cn.com.ddhj.mapper.trade.TTradeCityMapper;
 import cn.com.ddhj.mapper.trade.TTradeDealMapper;
-import cn.com.ddhj.mapper.trade.TTradeMapper;
 import cn.com.ddhj.mapper.trade.TTradeOrderMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
@@ -51,9 +50,6 @@ import cn.com.ddhj.util.PureNetUtil;
  */
 @Service
 public class TTradeServiceImpl implements ITradeService {
-
-	@Autowired
-	private TTradeMapper mapper;
 	@Autowired
 	private TTradeBalanceMapper tradeBalanceMapper;
 	@Autowired
@@ -337,6 +333,22 @@ public class TTradeServiceImpl implements ITradeService {
 		TTradeBalanceDto dto = new TTradeBalanceDto();
 		dto.setUserCode(user.getUserCode());
 		List<TTradeBalance> balanceList = tradeBalanceMapper.selectByUserCodeAndObjCode(dto);
+		if(balanceList != null && !balanceList.isEmpty()) {
+			for(TTradeBalance balance : balanceList) {
+				Integer amount = balance.getAmount();
+				String objectCode = balance.getObjectCode();
+				//持仓价
+				BigDecimal price = balance.getPrice();
+				//查询持仓标的最新价格
+				TTradeDealDto ddt = new TTradeDealDto();
+				ddt.setCityId(objectCode);
+				TTradeDeal newDeal = getObjectNewPrice(ddt);
+				balance.setLastPrice(newDeal.getClosePrice());
+				//查询持仓标的的盈亏
+				BigDecimal profitLoss = newDeal.getClosePrice().subtract(price).multiply(BigDecimal.valueOf(amount)).setScale(2, BigDecimal.ROUND_DOWN);
+				balance.setProfitLoss(profitLoss);
+			}
+		}
 		result.setObjects(balanceList);
 		return result;
 	}
@@ -362,6 +374,18 @@ public class TTradeServiceImpl implements ITradeService {
 		List<TTradeOrder> orderList = tradeOrderMapper.selectUserTradeOrder(dto);
 		result.setOrders(orderList);
 		return result;
+	}
+	
+	private TTradeDeal getObjectNewPrice(TTradeDealDto dto) {
+		TTradeDeal tradeDeal = null;
+		dto.setPageIndex(0);
+		dto.setPageSize(1);
+		dto.setStart(dto.getPageIndex() * dto.getPageSize());
+		List<TTradeDeal> dealList = tradeDealMapper.queryDealsByCityId(dto);
+		if(dealList != null && !dealList.isEmpty()) {
+			tradeDeal = dealList.get(0);
+		}
+		return tradeDeal;
 	}
 
 }
