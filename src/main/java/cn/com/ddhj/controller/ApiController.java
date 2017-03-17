@@ -38,6 +38,7 @@ import cn.com.ddhj.dto.user.TMessageDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
+import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
@@ -433,7 +434,17 @@ public class ApiController extends BaseClass {
 			}
 			TradeOrderResult result = tradeService.getUserTradeOrder(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		}
+		} 
+		//换算接口(碳币冲值)
+		else if("exchange_money".equals(api.getApiTarget())) {
+			String carbonMoney = obj.getString("carbonMoney");
+			String result = "{money:0.0}";
+			if(StringUtils.isNotBlank(carbonMoney)) {
+				String ratio = PropHelper.getValue("carbon_money_ratio");
+				result = "{money:" + String.format("%.2f", Double.parseDouble(carbonMoney) * Double.valueOf(ratio)) + "}";
+			}
+			return JSONObject.parseObject(result);
+		} 
 		
 		/**
 		 * ================= 碳币相关 end ======================
