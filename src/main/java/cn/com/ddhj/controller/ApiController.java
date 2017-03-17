@@ -269,6 +269,20 @@ public class ApiController extends BaseClass {
 		} else if ("2051".equals(api.getApiTarget())) { // 万年历接口
 			JSONObject result_ = estateEnvService.perpetualCalendar(application);
 			return result_;
+		}else if ("2052".equals(api.getApiTarget())) { // t_landed_score 楼盘综合评分统计接口
+			String city = obj.getString("city"); // "北京"
+			String type = obj.getString("type"); //  year：按年份平均|quarter：按季度平均|month：按月份平均  
+			String date = obj.getString("date"); //  2016                          1|2|3|4                         2016-01     
+			String year = "";
+			if(type.equals("year")){
+				year = obj.getString("year");
+			}
+//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "year" , "2017" , "");  
+//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "quarter" , "2" , "2017");   
+//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "month" , "2017-01" , "");   
+			
+			JSONObject result_ = estateEnvService.landedScoreAverage(city , type , date , year);   
+			return result_;
 		}
 
 		// 订单相关
