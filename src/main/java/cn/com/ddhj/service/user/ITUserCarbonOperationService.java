@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.user;
 
+import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
 import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
@@ -76,4 +77,9 @@ public interface ITUserCarbonOperationService extends IBaseService<TUserCarbonOp
 	 * @returnint
 	 */
 	 int updateRechargeRec(TOrderRecharge rec);
+	 
+	 /**
+	  * 
+	  */
+	 BaseResult insertSelective(TUserCarbonOperation carbonOperation);
 }

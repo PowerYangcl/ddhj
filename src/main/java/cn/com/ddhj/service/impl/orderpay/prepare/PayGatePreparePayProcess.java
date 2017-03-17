@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.fastjson.JSON;
 
 import cn.com.ddhj.mapper.TOrderMapper;
+import cn.com.ddhj.mapper.TOrderRechargeMapper;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.service.impl.orderpay.PaymentChannel;
 import cn.com.ddhj.service.impl.orderpay.config.PayGateConfig;
 import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
@@ -26,23 +28,40 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 
 	@Autowired
 	private TOrderMapper orderMapper;
+	@Autowired
+	private TOrderRechargeMapper rechargeMapper;
 	
 	@Override
 	protected R doProcess(I input) {
 		R result = getResult();
 		String bigOrderCode = input.bigOrderCode;
+		BigDecimal payPrice = null;
+		
+		boolean rechargeOrder = false;
 		TOrder order = orderMapper.selectByCode(bigOrderCode);
+		if(order != null) {
+			payPrice = order.getPayPrice();
+		} else {
+			TOrderRecharge rorder = rechargeMapper.selectByOrderCode(bigOrderCode);
+			payPrice = rorder.getPayPrice();
+			rechargeOrder = true;
+		}
 
 		Map<String,String> param = createPayGateParam(input);
 		
 		param.put("c_mid", XmasPayConfig.getPayGateMid());
 		param.put("c_order", bigOrderCode);
 		//modify XXX
-		param.put("c_orderamount", String.valueOf(order.getPayPrice()));
+		param.put("c_orderamount", String.valueOf(payPrice));
 		param.put("c_ymd", DateFormatUtils.format(new Date(), "yyyyMMdd"));
 		param.put("c_moneytype", "1");
 		param.put("c_retflag", "1");
-		param.put("c_returl", XmasPayConfig.getPayGateReturnUrl());
+		if(rechargeOrder) {
+			param.put("c_returl", XmasPayConfig.getPayGateReturnUrlForRecharge());
+		} else {
+			param.put("c_returl", XmasPayConfig.getPayGateReturnUrl());
+		}
+		
 		param.put("notifytype", "1");
 		param.put("c_version", "v2.0");
 		
@@ -58,7 +77,12 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 			param.put("c_reurl", input.reurl);
 			param.put("c_retflag", "2");
 		} else {
-			param.put("c_reurl", XmasPayConfig.getPayGateDefaultReURL());
+			if(rechargeOrder) {
+				param.put("c_reurl", XmasPayConfig.getPayGateDefaultReURLForRecharge());
+			} else {
+				param.put("c_reurl", XmasPayConfig.getPayGateDefaultReURL());
+			}
+			
 			param.put("c_retflag", "2");
 		}
 		

@@ -10,8 +10,10 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cn.com.ddhj.mapper.TOrderMapper;
+import cn.com.ddhj.mapper.TOrderRechargeMapper;
 import cn.com.ddhj.mapper.TPaymentMapper;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.service.impl.orderpay.AbstractPaymentProcess;
 import cn.com.ddhj.service.impl.orderpay.config.OrderConfig;
 
@@ -23,6 +25,8 @@ public abstract class NotifyPayProcess<I extends NotifyPayProcess.PaymentInput, 
 
 	@Autowired
 	private TOrderMapper orderMapper;
+	@Autowired
+	private TOrderRechargeMapper rechargeMapper;
 	
 	@Autowired
 	private TPaymentMapper paymentMapper;
@@ -52,15 +56,23 @@ public abstract class NotifyPayProcess<I extends NotifyPayProcess.PaymentInput, 
 			return warpResult(input,result);
 		}
 		
+		BigDecimal dueMoney = new BigDecimal(0.0);
 		TOrder order = orderMapper.selectByCode(StringUtils.trimToEmpty(notify.bigOrderCode));
 		if(order == null){
-			result.setResultCode(0);
-			result.setResultMessage("订单不存在: "+notify.bigOrderCode);
-			return warpResult(input,result);
+			TOrderRecharge rorder = rechargeMapper.selectByOrderCode(notify.bigOrderCode);
+			if(rorder == null) {
+				result.setResultCode(0);
+				result.setResultMessage("订单不存在: "+notify.bigOrderCode);
+				return warpResult(input,result);
+			} else {
+				dueMoney = rorder.getPayPrice() == null ? new BigDecimal(0.0) : rorder.getPayPrice();
+			}
+		} else {
+			dueMoney = order.getPayPrice() == null ? new BigDecimal(0.0) : order.getPayPrice();
 		}
 		
 		BigDecimal payedMoney = new BigDecimal(notify.payedMoney);
-		BigDecimal dueMoney = order.getPayPrice() == null ? new BigDecimal(0.0) : order.getPayPrice();
+		
 		
 		// 校验金额
 		if((payedMoney.compareTo(dueMoney) != 0)){

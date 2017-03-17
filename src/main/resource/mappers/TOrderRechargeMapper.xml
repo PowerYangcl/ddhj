@@ -179,6 +179,6 @@
     select 
     <include refid="Base_Column_List" />
     from t_order_recharge
-    where buyer_code = #{buyer_code,jdbcType=VARCHAR}
+    where code = #{orderCode,jdbcType=VARCHAR}
   </select>
 </mapper>

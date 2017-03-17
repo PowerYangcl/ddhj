@@ -1,17 +1,16 @@
 package cn.com.ddhj.service.impl.orderpay.prepare;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cn.com.ddhj.mapper.TOrderMapper;
+import cn.com.ddhj.mapper.TOrderRechargeMapper;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.service.impl.orderpay.AbstractPaymentProcess;
 import cn.com.ddhj.service.impl.orderpay.PaymentChannel;
-import cn.com.ddhj.service.impl.orderpay.config.OrderConfig;
 
 /**
  * 请求支付网关获取支付信息基类
@@ -21,6 +20,8 @@ public abstract class PreparePayProcess<I extends PreparePayProcess.PaymentInput
 
 	@Autowired
 	private TOrderMapper orderMapper;
+	@Autowired
+	private TOrderRechargeMapper rechargeMapper;
 	
 	@Override
 	public R process(I input) {
@@ -61,29 +62,57 @@ public abstract class PreparePayProcess<I extends PreparePayProcess.PaymentInput
 		
 		TOrder order = orderMapper.selectByCode(bigOrderCode);
 		if(order == null){
-			result.setResultCode(0);
-			result.setResultMessage("订单不存在[ "+bigOrderCode+"]");
-			return result;
+			//查询充值订单
+			TOrderRecharge rorder = rechargeMapper.selectByOrderCode(bigOrderCode);
+			if(rorder == null) {
+				result.setResultCode(0);
+				result.setResultMessage("订单不存在[ "+bigOrderCode+"]");
+				return result;
+			} else {
+				if(rorder.getStatus() == 1) {
+					result.setResultCode(0);
+					result.setResultMessage("订单已支付");
+					return result;
+				}
+				
+				if(rorder.getStatus() == 2){
+					result.setResultCode(0);
+					result.setResultMessage("订单已取消");
+					return result;
+				}
+				
+				if(rorder.getStatus() == 3){
+					result.setResultCode(0);
+					result.setResultMessage("订单已充值");
+					return result;
+				}
+				
+				if(rorder.getPayPrice() == null || rorder.getPayPrice().compareTo(new BigDecimal(0.0)) <= 0) {
+					result.setResultCode(0);
+					result.setResultMessage("订单支付金额小于等于0.0");
+					return result;
+				}
+			}
+			
+		} else {
+			if(order.getStatus() == 1){
+				result.setResultCode(0);
+				result.setResultMessage("订单已支付");
+				return result;
+			}
+			
+			if(order.getStatus() == 2){
+				result.setResultCode(0);
+				result.setResultMessage("订单已取消");
+				return result;
+			}
+			
+			if(order.getPayPrice() == null || order.getPayPrice().compareTo(new BigDecimal(0.0)) <= 0) {
+				result.setResultCode(0);
+				result.setResultMessage("订单支付金额小于等于0.0");
+				return result;
+			}
 		}
-		
-		if(order.getStatus() == 1){
-			result.setResultCode(0);
-			result.setResultMessage("订单已支付");
-			return result;
-		}
-		
-		if(order.getStatus() == 2){
-			result.setResultCode(0);
-			result.setResultMessage("订单已取消");
-			return result;
-		}
-		
-		if(order.getPayPrice() == null || order.getPayPrice().compareTo(new BigDecimal(0.0)) <= 0) {
-			result.setResultCode(0);
-			result.setResultMessage("订单支付金额小于等于0.0");
-			return result;
-		}
-
 		return null;
 	}
 	

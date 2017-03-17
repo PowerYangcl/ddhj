@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TOrderRechargeMapper;
@@ -213,5 +214,17 @@ public class TUserCarbonOperationServiceImpl
 	
 	public int updateRechargeRec(TOrderRecharge rec) {
 		return rechargeMapper.updateByPrimaryKey(rec);
+	}
+	
+	public BaseResult insertSelective(TUserCarbonOperation carbonOperation) {
+		BaseResult result = new BaseResult();
+		int success =  mapper.insertSelective(carbonOperation);
+		if(success == 1) {
+			result.setResultCode(1);
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("插入碳币购买记录失败");
+		}
+		return result;
 	}
 }

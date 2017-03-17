@@ -64,6 +64,7 @@ public class XmasPayConfig{
 	 * @return
 	 */
 	public static String getPayGateReturnUrlForRecharge() {
+//		return "http://stockwyz.xicp.net/ddhj/payNotifyForRecharge.htm";
 		return "http://api.sys.ecomapit.com/ddhj/payNotifyForRecharge.htm";
 	}
 //	
@@ -75,6 +76,17 @@ public class XmasPayConfig{
 //////		return config.bConfig("xmaspay.paygate_reurl");
 //		return "http://ddhj.eplans.cn/orderlist.html";
 		return "http://www.ecomapit.com/orderlist.html";
+	}
+	
+//	
+//	/**
+//	 * 默认返回为支付网关的跳转地址
+//	 * @return
+//	 */
+	public static String getPayGateDefaultReURLForRecharge(){
+//////		return config.bConfig("xmaspay.paygate_reurl");
+//		return "http://ddhj.eplans.cn/result.html";
+		return "http://www.ecomapit.com/result.html";
 	}
 //	
 //	/**

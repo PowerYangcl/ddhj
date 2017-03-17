@@ -81,7 +81,7 @@
 			</if>
 			#{amount,jdbcType=DECIMAL},
 			#{ymd,jdbcType=VARCHAR},
-			#{money_type,jdbcType=VARCHAR},
+			#{moneyType,jdbcType=VARCHAR},
 			#{dealtime,jdbcType=VARCHAR},
 			#{succmark,jdbcType=VARCHAR},
 			<if test="cause != null">

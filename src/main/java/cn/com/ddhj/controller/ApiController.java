@@ -39,6 +39,7 @@ import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
 import cn.com.ddhj.helper.PropHelper;
+import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
@@ -46,6 +47,7 @@ import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.TPayment;
 import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
@@ -603,35 +605,40 @@ public class ApiController extends BaseClass {
 			name = names.nextElement();
 			notifyParam.put(name, StringUtils.trimToEmpty(request.getParameter(name)));
 		}
-		//更新用户充值记录状态为已支付
-		String orderCode = notifyParam.get("c_order");
-		TOrderRecharge rechargeRec = userCarbonOperService.selectRechargeRecByOrderCode(orderCode);
-		rechargeRec.setStatus(new Integer(1));
-		userCarbonOperService.updateRechargeRec(rechargeRec);
-		
-		//更新用户碳币
-		TUser user = new TUser();
-		user.setUserCode(rechargeRec.getBuyerCode());
-		user = userService.selectByEntity(user);
-		user.setCarbonMoney(user.getCarbonMoney().add(rechargeRec.getCarbonMoney()).setScale(2, BigDecimal.ROUND_DOWN));
-		
-		//更新用户充值记录状态为已支付
-		rechargeRec.setStatus(new Integer(3));
-		userCarbonOperService.updateRechargeRec(rechargeRec);
+
 		
 		PayGateNotifyPayProcess.PaymentResult result = PayServiceSupport.payGateNotify(notifyParam);
 		TPayment entity = new TPayment();
 		entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 		if (result.getResultCode() == PaymentResult.SUCCESS) {
-			TOrder order = new TOrder();
-			order.setCode(result.notify.bigOrderCode);
-			order.setStatus(1);
-			order.setUpdateUser("paygate");
-			order.setUpdateTime(DateUtil.getSysDateTime());
-			orderService.updateByCode(order);
+			//更新用户充值记录状态为已支付
+			String orderCode = notifyParam.get("c_order");
+			TOrderRecharge rechargeRec = userCarbonOperService.selectRechargeRecByOrderCode(orderCode);
+			
+			//更新用户碳币
+			TUser user = new TUser();
+			user.setUserCode(rechargeRec.getBuyerCode());
+			user = userService.selectByCode(user.getUserCode());
+			user.setCarbonMoney(user.getCarbonMoney().add(rechargeRec.getCarbonMoney()).setScale(2, BigDecimal.ROUND_DOWN));
+			
+			//更新用户充值记录状态为已支付
+			rechargeRec.setStatus(new Integer(3));
+			userCarbonOperService.updateRechargeRec(rechargeRec);
+			
+			//增加碳币购买记录
+			TUserCarbonOperation carbonOperation = new TUserCarbonOperation();
+			carbonOperation.setUuid(WebHelper.getInstance().genUuid());
+			carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+			carbonOperation.setUserCode(user.getUserCode());
+			carbonOperation.setOperationType("DC170208100006");
+			carbonOperation.setOperationTypeChild("DC170208100006");
+			carbonOperation.setCarbonSum(rechargeRec.getCarbonMoney());
+			carbonOperation.setCreateUser(user.getUserCode());
+			carbonOperation.setCreateTime(DateUtil.getSysDateTime());
+			userCarbonOperationserivce.insertSelective(carbonOperation);
 
 			// TODO 支付成功则插入日志记录：paymentService TPayment
-			entity.setOrderCode(order.getCode());
+			entity.setOrderCode(orderCode);
 			entity.setMid(notifyParam.get("c_mid"));
 			entity.setAmount(BigDecimal.valueOf(Double.valueOf(notifyParam.get("c_orderamount"))));
 			entity.setYmd(notifyParam.get("c_ymd"));
@@ -651,7 +658,10 @@ public class ApiController extends BaseClass {
 			entity.setCause("支付宝调用失败");
 		}
 		paymentService.insertSelective(entity);
-
+		
+		if(StringUtils.equals(result.reURL, XmasPayConfig.getPayGateDefaultReURL())) {
+			result.reURL = XmasPayConfig.getPayGateDefaultReURLForRecharge();
+		}
 		StringBuilder build = new StringBuilder();
 		build.append("<result>1</result><reURL>" + result.reURL + "</reURL>");
 		if (result.getResultCode() != PaymentResult.SUCCESS) {
