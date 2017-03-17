@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.impl;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,6 +37,7 @@ import cn.com.ddhj.mapper.TChemicalPlantMapper;
 import cn.com.ddhj.mapper.TCityWeatherForecastMapper;
 import cn.com.ddhj.mapper.THighVoltageMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
+import cn.com.ddhj.mapper.TLandedScoreMapper;
 import cn.com.ddhj.mapper.TRubbishRecyclingMapper;
 import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
@@ -46,6 +48,7 @@ import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TRubbishRecycling;
 import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.model.report.TReport;
+import cn.com.ddhj.result.LandedScoreResult;
 import cn.com.ddhj.result.estateInfo.EData;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.IEstateEnvironmentService;
@@ -109,6 +112,11 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	
 	@Resource
 	private TCityWeatherForecastMapper cityWeatherForecastMapper; // 【7*24小时城市天气空气质量预报】
+	
+	@Resource
+	private TLandedScoreMapper landedScoreMapper;
+	
+	
 	/**
 	 * @descriptions 地区环境接口|1025
 	 *
@@ -639,7 +647,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 */
 	public void resyncEstateScore(){ 
 		List<String> clist = new ArrayList<String>();
-		clist.add("北京");
+//		clist.add("北京");
 		clist.add("天津");
 		
 		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
@@ -714,7 +722,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 				mapgroup.put(count, nestateList.subList(count*size, nestateList.size())); 
 			}
 			for (Map.Entry<Integer, List<TLandedProperty>> entry : mapgroup.entrySet()) {
-				Task2048LandedPropertyUpdate lpu = new Task2048LandedPropertyUpdate(entry.getValue(), lrMapper);
+				Task2048LandedPropertyUpdate lpu = new Task2048LandedPropertyUpdate(entry.getValue(), lrMapper , landedScoreMapper);
 				executor.submit(lpu);
 			}
 			
@@ -934,6 +942,80 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		}
 		
 		return result;
+	}
+	
+	
+	/**
+	 * @description: 楼盘分数平局值统计
+	 * 
+	 * @param city "北京"
+	 * @param type year：按年份平均|quarter：按季度平均|month：按月份平均  
+	 * @param date      2016                     1|2|3|4                        2016-01     
+	 * 
+	 * @author Yangcl 
+	 * @date 2017年3月17日 下午6:33:48 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject landedScoreAverage(String city, String type, String date_ , String year) {
+		JSONObject result = new JSONObject();
+		result.put("code", 0);
+		try {
+			String startTime = "";
+			String endTime = "";
+			if(type.equals("year")){ 
+				startTime = date_ + "-01-01 00:00:00" ;  // this.getFormatDate(date_ , ""); 
+				endTime = date_ + "-12-31 23:59:59" ;   
+			}else if(type.equals("quarter")){
+				if(date_.equals("1")){ 
+					startTime = year +"-01-01 00:00:00";   
+					endTime = year +"-03-31 23:59:59";  
+				}else if(date_.equals("2")){
+					startTime = year +"-04-01 00:00:00";   
+					endTime = year +"-06-30 23:59:59";  
+				}else if(date_.equals("3")){
+					startTime = year +"-07-01 00:00:00";   
+					endTime = year +"-09-30 23:59:59";  
+				}else {
+					startTime = year +"-10-01 00:00:00";     
+					endTime = year +"-12-31 23:59:59";  
+				}
+			}else{  // month  
+				startTime = date_ + "-01 00:00:00";   
+				endTime = this.dateCount(startTime, 1); 
+			}
+			
+			Map<String , String> param = new HashMap<String , String>();  // 保存数据库查询条件
+			param.put("city", city);
+			param.put("startTime", startTime);
+			param.put("endTime", endTime); 
+			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(param);
+			if(list != null && list.size() != 0){
+				result.put("data", list);
+			}else{
+				result.put("code", 2);  // 无数据 
+			}
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+			result.put("code", 1);  // 系统异常
+		}
+		return result;
+	}
+
+	
+	/**
+	 * @描述: 当前月份加减
+	 * @作者: Yangcl
+	 * @时间: 2015-11-09
+	 * @param date 当前日期
+	 * @param flag 当前月份加减 1,2,3,-1,-2,-3 等  
+	 */
+	public String dateCount(String date , int flag) throws ParseException{ 
+		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-01 00:00:00");  
+	    Calendar calendar = Calendar.getInstance();       // 日历对象
+	    calendar.setTime(sdf.parse(date));       // 设置当前日期
+	    calendar.add(Calendar.MONTH ,  flag); // 月份减一 或 加一  
+	    return  sdf.format(calendar.getTime());   
 	}
 	
 	

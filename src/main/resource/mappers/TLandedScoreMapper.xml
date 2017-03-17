@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TLandedScoreMapper">
+
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TLandedScore">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="score" property="score" jdbcType="DOUBLE" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+			*
+		from 
+			t_landed_score
+		where 
+			id = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<resultMap id="LandedScoreResultMap" type="cn.com.ddhj.result.LandedScoreResult">
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" /> 
+	</resultMap>
+	<select id="findLandedScoreAverage" resultMap="LandedScoreResultMap" parameterType="java.util.Map">
+		select  
+				sum(s.score)/count(*) as scoreavg ,
+				s.`code`  
+		from 
+				t_landed_score  s
+		where 
+				s.city = #{city , jdbcType=VARCHAR}
+		and  s.create_time between #{startTime , jdbcType=VARCHAR}  and #{endTime , jdbcType=VARCHAR}
+		group by s.`code` 
+		order by scoreavg desc 
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_landed_score where id = #{id,jdbcType=INTEGER}
+	</delete>
+
+
+	
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TLandedScore">
+		insert into t_landed_score
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="uuid != null">
+				uuid,
+			</if>
+			<if test="code != null">
+				code,
+			</if>
+			<if test="city != null">
+				city ,
+			</if>
+			<if test="score != null">
+				score,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="uuid != null">
+				#{uuid,jdbcType=VARCHAR},
+			</if>
+			<if test="code != null">
+				#{code,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				#{city , jdbcType=VARCHAR}, 
+			</if>
+			<if test="score != null">
+				#{score,jdbcType=DOUBLE},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="cn.com.ddhj.model.TLandedScore">
+		update t_landed_score
+		<set>
+			<if test="uuid != null">
+				uuid = #{uuid,jdbcType=VARCHAR},
+			</if>
+			<if test="code != null">
+				code = #{code,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				city = #{city , jdbcType=VARCHAR},  
+			</if>
+			<if test="score != null">
+				score = #{score,jdbcType=DOUBLE},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>
