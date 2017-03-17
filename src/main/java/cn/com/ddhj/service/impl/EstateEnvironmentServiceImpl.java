@@ -32,6 +32,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.dto.CityAqi;
 import cn.com.ddhj.dto.CityAqiData;
+import cn.com.ddhj.dto.LandedScoreAverageDto;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TChemicalPlantMapper;
 import cn.com.ddhj.mapper.TCityWeatherForecastMapper;
@@ -956,7 +957,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 * @date 2017年3月17日 下午6:33:48 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject landedScoreAverage(String city, String type, String date_ , String year) {
+	public JSONObject landedScoreAverage(String city, String type, String date_ , String year , Integer pageIndex ,  Integer pageSize) {
 		JSONObject result = new JSONObject();
 		result.put("code", 0);
 		try {
@@ -983,12 +984,13 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 				startTime = date_ + "-01 00:00:00";   
 				endTime = this.dateCount(startTime, 1); 
 			}
-			
-			Map<String , String> param = new HashMap<String , String>();  // 保存数据库查询条件
-			param.put("city", city);
-			param.put("startTime", startTime);
-			param.put("endTime", endTime); 
-			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(param);
+			LandedScoreAverageDto dto = new LandedScoreAverageDto(); 	// 保存数据库查询条件
+			dto.setCity(city);
+			dto.setStartTime(startTime);
+			dto.setEndTime(endTime);
+			dto.setPageIndex(pageIndex);
+			dto.setPageSize(pageSize);
+			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(dto);
 			if(list != null && list.size() != 0){
 				result.put("data", list);
 			}else{
@@ -1352,8 +1354,6 @@ class Estate implements Comparable{
 	}
 
 }
-
-
  
 
 

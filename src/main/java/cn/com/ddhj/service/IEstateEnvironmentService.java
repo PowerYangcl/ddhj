@@ -86,7 +86,7 @@ public interface IEstateEnvironmentService {
 	public JSONObject perpetualCalendar(ServletContext application);
 
 
-	public JSONObject landedScoreAverage(String city, String type, String date, String year); 
+	public JSONObject landedScoreAverage(String city, String type, String date, String year , Integer pageIndex ,  Integer pageSize); 
 }
 
 
