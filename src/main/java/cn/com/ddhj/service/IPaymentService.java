@@ -6,4 +6,6 @@ import cn.com.ddhj.model.TPayment;
 
 public interface IPaymentService extends IBaseService<TPayment, TPaymentDto> {
 	BaseResult insertSelective(TPayment entity, String userToken);
+	
+	BaseResult insertSelective(TPayment entity);
 }

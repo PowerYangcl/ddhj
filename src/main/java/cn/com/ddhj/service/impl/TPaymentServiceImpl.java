@@ -58,6 +58,18 @@ public class TPaymentServiceImpl extends BaseServiceImpl<TPayment, TPaymentMappe
 //		}
 		return result;
 	}
+	
+	@Override
+	public BaseResult insertSelective(TPayment entity) {
+		BaseResult result = new BaseResult();
+		int success = mapper.insertSelective(entity);
+		if(success == 1) {
+			result.setResultCode(1);
+		} else {
+			result.setResultCode(-1);
+		}
+		return result;	
+	}
 
 	@Override
 	public BaseResult updateByCode(TPayment entity) {

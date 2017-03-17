@@ -42,12 +42,14 @@ import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.TPayment;
 import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
+import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
@@ -122,6 +124,9 @@ public class ApiController extends BaseClass {
 	private ITUserCarbonOperationService userCarbonOperationserivce;
 	@Autowired
 	private ITradeService tradeService;
+	@Autowired
+	private ITUserCarbonOperationService userCarbonOperService;
+	
 	
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
@@ -445,7 +450,18 @@ public class ApiController extends BaseClass {
 			}
 			return JSONObject.parseObject(result);
 		} 
-		
+		//创建碳币充值订单
+		else if("carbon_money_order".equals(api.getApiTarget())) {
+			TOrderRecharge recharge = obj.toJavaObject(TOrderRecharge.class);	
+			CarbonRechargeResult result = userCarbonOperService.carbonRecharge(api.getUserToken(), recharge);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//创建充值网关支付参数
+		else if("r".equals(api.getApiTarget())) {
+			TOrderRecharge recharge = obj.toJavaObject(TOrderRecharge.class);	
+			CarbonRechargeResult result = userCarbonOperService.carbonRecharge(api.getUserToken(), recharge);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		/**
 		 * ================= 碳币相关 end ======================
 		 */
@@ -477,7 +493,7 @@ public class ApiController extends BaseClass {
 
 		}
 	}
-
+	
 	@RequestMapping("payNotify")
 	@ResponseBody
 	public String payNotify(HttpServletRequest request, HttpServletResponse response) {
@@ -535,5 +551,98 @@ public class ApiController extends BaseClass {
 		}
 		return build.toString();
 	}
+	
+	@RequestMapping("rechargePay/{orderCode}/{payType}")
+	public String rechargePay(@PathVariable("orderCode") String orderCode, @PathVariable("payType") String payType,
+			HttpServletRequest request, HttpServletResponse response) {
+		String openID = request.getParameter("openID");
+		String returnUrl = request.getParameter("returnUrl");
+		OrderPayResult result = orderService.orderPay(openID, orderCode, payType, returnUrl);
+		//将支付回调接口换成充值回调接口 
+		if(result.getRedirectUrl().contains(XmasPayConfig.getPayGateReturnUrl())) {
+			String newUrl = result.getRedirectUrl().replace(XmasPayConfig.getPayGateReturnUrl(), XmasPayConfig.getPayGateReturnUrlForRecharge());
+			result.setRedirectUrl(newUrl);
+		}
+		
+		if (StringUtils.isEmpty(result.getErrorMsg())) {
+			return result.getRedirectUrl();
+		} else {
+			String errMsg = "";
+			try {
+				errMsg = URLEncoder.encode(result.getErrorMsg(), "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "redirect:" + XmasPayConfig.getPayGateDefaultReURL() + "?errorMsg=" + errMsg;
 
+		}
+	}
+	
+	@RequestMapping("payNotifyForRecharge")
+	@ResponseBody
+	public String payNotifyForRecharge(HttpServletRequest request, HttpServletResponse response) {
+		Enumeration<String> names = request.getParameterNames();
+		Map<String, String> notifyParam = new HashMap<String, String>();
+		String name;
+		while (names.hasMoreElements()) {
+			name = names.nextElement();
+			notifyParam.put(name, StringUtils.trimToEmpty(request.getParameter(name)));
+		}
+		//更新用户充值记录状态为已支付
+		String orderCode = notifyParam.get("c_order");
+		TOrderRecharge rechargeRec = userCarbonOperService.selectRechargeRecByOrderCode(orderCode);
+		rechargeRec.setStatus(new Integer(1));
+		userCarbonOperService.updateRechargeRec(rechargeRec);
+		
+		//更新用户碳币
+		TUser user = new TUser();
+		user.setUserCode(rechargeRec.getBuyerCode());
+		user = userService.selectByEntity(user);
+		user.setCarbonMoney(user.getCarbonMoney().add(rechargeRec.getCarbonMoney()).setScale(2, BigDecimal.ROUND_DOWN));
+		
+		//更新用户充值记录状态为已支付
+		rechargeRec.setStatus(new Integer(3));
+		userCarbonOperService.updateRechargeRec(rechargeRec);
+		
+		PayGateNotifyPayProcess.PaymentResult result = PayServiceSupport.payGateNotify(notifyParam);
+		TPayment entity = new TPayment();
+		entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+		if (result.getResultCode() == PaymentResult.SUCCESS) {
+			TOrder order = new TOrder();
+			order.setCode(result.notify.bigOrderCode);
+			order.setStatus(1);
+			order.setUpdateUser("paygate");
+			order.setUpdateTime(DateUtil.getSysDateTime());
+			orderService.updateByCode(order);
+
+			// TODO 支付成功则插入日志记录：paymentService TPayment
+			entity.setOrderCode(order.getCode());
+			entity.setMid(notifyParam.get("c_mid"));
+			entity.setAmount(BigDecimal.valueOf(Double.valueOf(notifyParam.get("c_orderamount"))));
+			entity.setYmd(notifyParam.get("c_ymd"));
+			entity.setMoneyType("人民币");
+			entity.setDealtime(notifyParam.get("dealtime"));
+			entity.setSuccmark("success");
+			entity.setMemo1(notifyParam.get("bankorderid")); //
+			entity.setMemo2(notifyParam.get("c_transnum")); //
+			entity.setSignstr(notifyParam.get("c_signstr"));
+			entity.setPaygate(notifyParam.get("c_paygate"));
+			entity.setCreateUser(rechargeRec.getBuyerCode());
+
+		} else {
+			// TODO 支付失败则插入日志记录：paymentService
+			entity.setOrderCode(result.notify.bigOrderCode);
+			entity.setSuccmark("false");
+			entity.setCause("支付宝调用失败");
+		}
+		paymentService.insertSelective(entity);
+
+		StringBuilder build = new StringBuilder();
+		build.append("<result>1</result><reURL>" + result.reURL + "</reURL>");
+		if (result.getResultCode() != PaymentResult.SUCCESS) {
+			build.append("<msg>").append(result.getResultMessage()).append("</msg>");
+		}
+		return build.toString();		
+	}
 }

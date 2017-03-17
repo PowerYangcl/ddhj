@@ -283,7 +283,8 @@ public class TTradeServiceImpl implements ITradeService {
 		dto.setCityId(dto.getObjectCode());
 		/////////////////////////
 		BigDecimal carbonMoney = user.getCarbonMoney();
-		String ratio = PropHelper.getValue("carbon_money_ratio");
+//		String ratio = PropHelper.getValue("carbon_money_ratio");
+		String ratio = "1000";
 		BigDecimal actualMoney = carbonMoney.multiply(BigDecimal.valueOf(Double.valueOf(ratio)));
 		dto.setPageIndex(0);
 		dto.setPageSize(1);

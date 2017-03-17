@@ -1,20 +1,27 @@
 package cn.com.ddhj.service.impl.user;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
+import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.TOrderRechargeMapper;
 import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
+import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
+import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserCarbonOperationService;
@@ -37,7 +44,10 @@ public class TUserCarbonOperationServiceImpl
 	private TUserLoginMapper loginMapper;
 	@Autowired
 	private TUserMapper userMapper;
+	@Autowired
+	private TOrderRechargeMapper rechargeMapper;
 
+	private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	/**
 	 * 
 	 * 方法: getCarbonOperationDetail <br>
@@ -157,4 +167,51 @@ public class TUserCarbonOperationServiceImpl
 		return result;
 	}
 
+	/**
+	 * 用户充值碳币
+	 */
+	@Override
+	public CarbonRechargeResult carbonRecharge(String userToken, TOrderRecharge recharge) {
+		CarbonRechargeResult result = new CarbonRechargeResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if(login == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户未登录");
+			return result;
+		}
+		
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if(user == null) {
+			result.setResultCode(-1);
+			result.setResultMessage("用户不存在");
+			return result;
+		}
+		
+		//Recharge order
+		String rechargeOrder = WebHelper.getInstance().getUniqueCode("RO");
+		recharge.setCode(rechargeOrder);
+		recharge.setBuyerCode(user.getUserCode());
+		recharge.setCreateTime(format.format(new Date()));
+		recharge.setCreateUser(user.getUserCode());
+		recharge.setStatus(new Integer(0));
+		recharge.setUuid(UUID.randomUUID().toString().replace("-", ""));
+		int success = rechargeMapper.insertSelective(recharge);
+		if(success ==1) {
+			result.setOrderCode(rechargeOrder);
+			result.setResultCode(1);
+			result.setResultMessage("创建充值订单成功");
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("创建充值订单失败");
+		}
+		return result;
+	}
+	
+	public TOrderRecharge selectRechargeRecByOrderCode(String orderCode) {
+		return rechargeMapper.selectByOrderCode(orderCode);
+	}
+	
+	public int updateRechargeRec(TOrderRecharge rec) {
+		return rechargeMapper.updateByPrimaryKey(rec);
+	}
 }

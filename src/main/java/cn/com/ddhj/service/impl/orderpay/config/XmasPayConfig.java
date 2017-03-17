@@ -52,6 +52,20 @@ public class XmasPayConfig{
 //		return "http://stockwyz.xicp.net/ddhj/payNotify.htm";
 		return "http://api.sys.ecomapit.com/ddhj/payNotify.htm";
 	}
+	
+	/**
+	 * 
+	 * 方法: getPayGateReturnUrlForRecharge<br>
+	 * 描述: 配置用户充值后,网关回调通知接口<br>
+	 * 作者: 海涛<br>
+	 * 时间: 2017年3月17日 下午7:46:14
+	 * 
+	 * @param 
+	 * @return
+	 */
+	public static String getPayGateReturnUrlForRecharge() {
+		return "http://api.sys.ecomapit.com/ddhj/payNotifyForRecharge.htm";
+	}
 //	
 //	/**
 //	 * 默认返回为支付网关的跳转地址
