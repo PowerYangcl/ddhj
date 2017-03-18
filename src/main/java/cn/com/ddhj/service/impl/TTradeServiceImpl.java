@@ -24,6 +24,7 @@ import cn.com.ddhj.mapper.trade.TTradeBalanceMapper;
 import cn.com.ddhj.mapper.trade.TTradeCityMapper;
 import cn.com.ddhj.mapper.trade.TTradeDealMapper;
 import cn.com.ddhj.mapper.trade.TTradeOrderMapper;
+import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.trade.TTradeBalance;
@@ -31,6 +32,7 @@ import cn.com.ddhj.model.trade.TTradeCity;
 import cn.com.ddhj.model.trade.TTradeDeal;
 import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
@@ -38,6 +40,7 @@ import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.result.trade.TradeOrderResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
 import cn.com.ddhj.service.ITradeService;
+import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.PureNetUtil;
 
 /**
@@ -61,6 +64,8 @@ public class TTradeServiceImpl implements ITradeService {
 	private TUserLoginMapper loginMapper;
 	@Autowired
 	private TUserMapper userMapper;	
+	@Autowired
+	private TUserCarbonOperationMapper userCarbonOperMapper;
 	
 	private static final Double ratio = new Double(1000);
 	
@@ -250,14 +255,36 @@ public class TTradeServiceImpl implements ITradeService {
 				BigDecimal consumeCarbon = order.getPrice().multiply(BigDecimal.valueOf(order.getAmount())).divide(BigDecimal.valueOf(ratio)).setScale(2, BigDecimal.ROUND_DOWN);
 				remainCarbon = user.getCarbonMoney().subtract(consumeCarbon).setScale(2,  BigDecimal.ROUND_DOWN);
 				if(remainCarbon.compareTo(BigDecimal.valueOf(0)) == -1) {
-					remainCarbon = BigDecimal.valueOf(0);
+					remainCarbon = BigDecimal.ZERO;
 				}
+				//记录用户碳币操作记录
+				TUserCarbonOperation entity = new TUserCarbonOperation();
+				entity.setUuid(WebHelper.getInstance().genUuid());
+				entity.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+				entity.setUserCode(user.getUserCode());
+				entity.setOperationType("DC170208100003");
+				entity.setOperationTypeChild("DC170208100009");
+				entity.setCarbonSum(consumeCarbon);
+				entity.setCreateUser(user.getUserCode());
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				userCarbonOperMapper.insertSelective(entity);
 			} else if(order.getBuySell().equals("S")) {
 				//委卖增加用户碳币数
 				BigDecimal earnCarbon = order.getPrice().multiply(BigDecimal.valueOf(order.getAmount())).divide(BigDecimal.valueOf(ratio)).setScale(2, BigDecimal.ROUND_DOWN);
 				remainCarbon = user.getCarbonMoney().add(earnCarbon).setScale(2, BigDecimal.ROUND_DOWN);
+				//记录用户碳币操作记录
+				TUserCarbonOperation entity = new TUserCarbonOperation();
+				entity.setUuid(WebHelper.getInstance().genUuid());
+				entity.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+				entity.setUserCode(user.getUserCode());
+				entity.setOperationType("DC170208100002");
+				entity.setOperationTypeChild("DC170208100010");
+				entity.setCarbonSum(earnCarbon);
+				entity.setCreateUser(user.getUserCode());
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				userCarbonOperMapper.insertSelective(entity);				
 			}
-			
+	
 			if(remainCarbon != null) {
 				user.setCarbonMoney(remainCarbon);
 				userMapper.updateByCode(user);

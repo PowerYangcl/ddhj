@@ -130,6 +130,8 @@
 		DATE_SUB(CURDATE(),
 		INTERVAL 1 MONTH)
 		ORDER BY create_time ASC
+		limit
+		#{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
 	<!-- 根据收支细分类型汇总交易记录 2017-02-10 zhy -->
 	<select id="getCarbonOperationSum" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"
