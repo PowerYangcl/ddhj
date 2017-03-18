@@ -19,7 +19,6 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.trade.TTradeBalanceDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.dto.trade.TTradeOrderDto;
-import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.trade.TTradeBalanceMapper;
 import cn.com.ddhj.mapper.trade.TTradeCityMapper;
@@ -62,6 +61,8 @@ public class TTradeServiceImpl implements ITradeService {
 	private TUserLoginMapper loginMapper;
 	@Autowired
 	private TUserMapper userMapper;	
+	
+	private static final Double ratio = new Double(1000);
 	
 	private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -188,6 +189,27 @@ public class TTradeServiceImpl implements ITradeService {
 			result.setResultMessage("委托数据为空,无法报盘");
 			return result;
 		}
+		//根据委托标的的现价计算当前用户可买或可卖数
+		TTradeDealDto dealDto = new TTradeDealDto();
+		dealDto.setObjectCode(order.getObjectCode());
+		TradePriceAvaiAmountResult avaiResult = this.getCurrentPriceAndAvailableAmount(dealDto, userToken);
+		if(order.getBuySell().equals("B")) {
+			if(order.getAmount().compareTo(avaiResult.getBuyAmount()) > 0) {
+				result.setResultCode(-1);
+				result.setResultMessage("委买量超过最大可买量");
+				return result;
+			}
+		} else if(order.getBuySell().equals("S")) {
+			if(order.getAmount().compareTo(avaiResult.getSellAmount()) > 0) {
+				result.setResultCode(-1);
+				result.setResultMessage("委卖量超过最大可卖量");
+				return result;
+			}
+		} else {
+			result.setResultCode(-1);
+			result.setResultMessage("只能买入或卖出,委托类型不合法!");
+			return result;
+		}
 		
 		String createTime = format.format(new Date());
 		order.setOrderCode(WebHelper.getInstance().getUniqueCode("DD"));
@@ -221,6 +243,26 @@ public class TTradeServiceImpl implements ITradeService {
 				balance = calculateBalance(balance, order, user.getUserCode());
 				tradeBalanceMapper.updateByPrimaryKey(balance);
 			}
+			
+			BigDecimal remainCarbon = null;
+			if(order.getBuySell().equals("B")) {
+				//委买,减扣用户碳币数
+				BigDecimal consumeCarbon = order.getPrice().multiply(BigDecimal.valueOf(order.getAmount())).divide(BigDecimal.valueOf(ratio)).setScale(2, BigDecimal.ROUND_DOWN);
+				remainCarbon = user.getCarbonMoney().subtract(consumeCarbon).setScale(2,  BigDecimal.ROUND_DOWN);
+				if(remainCarbon.compareTo(BigDecimal.valueOf(0)) == -1) {
+					remainCarbon = BigDecimal.valueOf(0);
+				}
+			} else if(order.getBuySell().equals("S")) {
+				//委卖增加用户碳币数
+				BigDecimal earnCarbon = order.getPrice().multiply(BigDecimal.valueOf(order.getAmount())).divide(BigDecimal.valueOf(ratio)).setScale(2, BigDecimal.ROUND_DOWN);
+				remainCarbon = user.getCarbonMoney().add(earnCarbon).setScale(2, BigDecimal.ROUND_DOWN);
+			}
+			
+			if(remainCarbon != null) {
+				user.setCarbonMoney(remainCarbon);
+				userMapper.updateByCode(user);
+			}
+			
 			result.setResultCode(1);
 			result.setResultMessage("委托成功");
 		} else {
@@ -284,8 +326,7 @@ public class TTradeServiceImpl implements ITradeService {
 		/////////////////////////
 		BigDecimal carbonMoney = user.getCarbonMoney();
 //		String ratio = PropHelper.getValue("carbon_money_ratio");
-		String ratio = "1000";
-		BigDecimal actualMoney = carbonMoney.multiply(BigDecimal.valueOf(Double.valueOf(ratio)));
+		BigDecimal actualMoney = carbonMoney.multiply(BigDecimal.valueOf(ratio));
 		dto.setPageIndex(0);
 		dto.setPageSize(1);
 		dto.setStart(dto.getPageIndex() * dto.getPageSize());
