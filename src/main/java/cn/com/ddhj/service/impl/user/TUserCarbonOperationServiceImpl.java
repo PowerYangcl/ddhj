@@ -95,9 +95,14 @@ public class TUserCarbonOperationServiceImpl
 							result.setExchangeGift(model.getCarbonSum());
 						} else if (StringUtils.equals("DC170208100009", model.getOperationTypeChild())) {
 							/**
-							 * 开户炒碳
+							 * 炒碳支出
 							 */
-							result.setSpeculateCarbon(model.getCarbonSum());
+							result.setSpendForCarbonDeal(model.getCarbonSum());
+						} else if (StringUtils.equals("DC170208100010", model.getOperationTypeChild())) {
+							/**
+							 * 炒碳收入
+							 */
+							result.setInComeFormCarbonDeal(model.getCarbonSum());
 						}
 					}
 				} else {
@@ -143,7 +148,7 @@ public class TUserCarbonOperationServiceImpl
 	 *      java.lang.String)
 	 */
 	@Override
-	public CarbonTypeDetailResult getCarbonOperationByType(String userToken, String type) {
+	public CarbonTypeDetailResult getCarbonOperationByType(String userToken, String type, Integer pageIndex, Integer pageSize) {
 		CarbonTypeDetailResult result = new CarbonTypeDetailResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		List<TUserCarbonOperation> list = null;
@@ -153,6 +158,8 @@ public class TUserCarbonOperationServiceImpl
 				TUserCarbonOperationDto dto = new TUserCarbonOperationDto();
 				dto.setUserCode(user.getUserCode());
 				dto.setOperationTypeChild(type);
+				dto.setStart(pageIndex * pageSize);
+				dto.setPageSize(pageSize);
 				list = mapper.findCarbonOperationByTime(dto);
 				if (list != null && list.size() > 0) {
 					result.setList(list);

@@ -37,9 +37,14 @@ public class CarbonDetailResult extends BaseResult {
 	 */
 	private BigDecimal exchangeGift = BigDecimal.ZERO;
 	/**
-	 * 开户炒碳
+	 * 炒碳支出
 	 */
-	private BigDecimal speculateCarbon = BigDecimal.ZERO;
+	private BigDecimal spendForCarbonDeal = BigDecimal.ZERO;
+	/**
+	 * 炒碳支出
+	 */
+	private BigDecimal inComeFormCarbonDeal = BigDecimal.ZERO;
+	
 
 	/**
 	 * 碳币收入
@@ -91,12 +96,20 @@ public class CarbonDetailResult extends BaseResult {
 		this.exchangeGift = exchangeGift;
 	}
 
-	public BigDecimal getSpeculateCarbon() {
-		return speculateCarbon;
+	public BigDecimal getSpendForCarbonDeal() {
+		return spendForCarbonDeal;
 	}
 
-	public void setSpeculateCarbon(BigDecimal speculateCarbon) {
-		this.speculateCarbon = speculateCarbon;
+	public void setSpendForCarbonDeal(BigDecimal spendForCarbonDeal) {
+		this.spendForCarbonDeal = spendForCarbonDeal;
+	}
+
+	public BigDecimal getInComeFormCarbonDeal() {
+		return inComeFormCarbonDeal;
+	}
+
+	public void setInComeFormCarbonDeal(BigDecimal inComeFormCarbonDeal) {
+		this.inComeFormCarbonDeal = inComeFormCarbonDeal;
 	}
 
 	public List<TUserCarbonOperation> getIncomeCarbon() {

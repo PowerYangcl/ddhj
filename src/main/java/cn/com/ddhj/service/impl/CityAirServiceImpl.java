@@ -413,7 +413,8 @@ public class CityAirServiceImpl implements ICityAirService {
 		JSONObject res = new JSONObject();
 
 		JSONObject obj = this.getCityWeather(city);
-		if (obj.getString("reason").equals("successed!")) {
+//		if (obj.getString("reason").equals("successed!")) {
+		if (StringUtils.contains(obj.getString("reason"), "查询成功")) {
 			JSONObject result = JSONObject.parseObject(obj.getString("result"));
 			JSONObject data = JSONObject.parseObject(result.getString("data"));
 			JSONObject realtime = JSONObject.parseObject(data.getString("realtime"));

@@ -417,7 +417,7 @@ public class ApiController extends BaseClass {
 		else if ("user_carbon_type_detail".equals(api.getApiTarget())) {
 			JSONObject param = JSONObject.parseObject(api.getApiInput());
 			CarbonTypeDetailResult result = userCarbonOperationserivce.getCarbonOperationByType(api.getUserToken(),
-					param.getString("type"));
+					param.getString("type"), param.getInteger("pageIndex"), param.getInteger("pageSize"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} 
 		// 查询支持碳交易的城市列表
@@ -633,7 +633,7 @@ public class ApiController extends BaseClass {
 			carbonOperation.setUuid(WebHelper.getInstance().genUuid());
 			carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
 			carbonOperation.setUserCode(user.getUserCode());
-			carbonOperation.setOperationType("DC170208100006");
+			carbonOperation.setOperationType("DC170208100003");
 			carbonOperation.setOperationTypeChild("DC170208100006");
 			carbonOperation.setCarbonSum(rechargeRec.getCarbonMoney());
 			carbonOperation.setCreateUser(user.getUserCode());
