@@ -648,7 +648,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 */
 	public void resyncEstateScore(){ 
 		List<String> clist = new ArrayList<String>();
-//		clist.add("北京");
+		clist.add("北京");
 		clist.add("天津");
 		
 		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
