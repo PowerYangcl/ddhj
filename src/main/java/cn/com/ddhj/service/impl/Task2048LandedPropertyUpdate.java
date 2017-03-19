@@ -38,6 +38,7 @@ public class Task2048LandedPropertyUpdate implements Callable<Integer> {
 				ls.setCreateTime(new Date());
 				ls.setCity(e.getCity());  
 				landedScoreMapper.insertSelective(ls);
+				System.out.println("Task2048LandedPropertyUpdate -> TLandedScore insert already! ");
 			}
 		} catch (Exception e) {
 			e.printStackTrace(); 
