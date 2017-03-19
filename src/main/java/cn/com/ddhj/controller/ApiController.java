@@ -282,7 +282,7 @@ public class ApiController extends BaseClass {
 			String type = obj.getString("type"); //  year：按年份平均|quarter：按季度平均|month：按月份平均  
 			String date = obj.getString("date"); //  2016                          1|2|3|4                         2016-01     
 			String year = "";
-			if(type.equals("year")){
+			if(type.equals("quarter")){
 				year = obj.getString("year");
 			}
 			Integer pageIndex = obj.getInteger("pageIndex");  

@@ -28,14 +28,24 @@
 	</resultMap>
 	<select id="findLandedScoreAverage" resultMap="LandedScoreResultMap" parameterType="cn.com.ddhj.dto.LandedScoreAverageDto">
 		select  
-				sum(s.score)/count(*) as scoreavg ,
-				s.`code`  
+				sum(ls.score)/count(*) as scoreavg ,
+				ls.`code`  ,
+				lp.title,
+				lp.addressFull,
+				lp.total,
+				lp.propertyCompany,
+				lp.propertyType,
+				lp.bus,
+				lp.lat,
+				lp.lng,
+				lp.images,
+				lp.overview
 		from 
-				t_landed_score  s
+				t_landed_score  ls left join t_landed_property lp on lp.code = ls.code
 		where 
-				 s.city = #{city , jdbcType=VARCHAR}
-		and  s.create_time between #{startTime , jdbcType=VARCHAR}  and #{endTime , jdbcType=VARCHAR}
-		group by s.`code` 
+				 ls.city = #{city , jdbcType=VARCHAR}
+		and  ls.create_time between #{startTime , jdbcType=VARCHAR}  and #{endTime , jdbcType=VARCHAR}
+		group by ls.`code` 
 		order by scoreavg desc limit #{pageIndex , jdbcType=VARCHAR} , #{pageSize , jdbcType=VARCHAR} 
 	</select>
 	
