@@ -120,6 +120,10 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	
 	/**
 	 * @descriptions 地区环境接口|1025
+	 * @test
+	 * 	http://api.sys.ecomapit.com/ddhj/api.htm?apiTarget=1025&api_key=appfamilyhas&apiInput=%7b%22position%22%3a%2239.91488908%2c116.40387397%22%2c%22city%22%3a%22%E5%8C%97%E4%BA%AC%22%2c%22radius%22%3a2000%2c%22pageIndex%22%3a0%7d&api_timespan=2017-03-23+17%3a27%3a20&api_secret=6e4d37dbc6b5d7a02c853b7dd0495b64
+	 * 	
+	 * 	http://localhost:8080/ddhj/api.htm?apiTarget=1025&api_key=appfamilyhas&apiInput=%7b%22position%22%3a%2239.91488908%2c116.40387397%22%2c%22city%22%3a%22%e5%8c%97%e4%ba%ac%22%2c%22radius%22%3a2000%2c%22pageIndex%22%3a0%7d&api_timespan=2017-03-23+17%3a27%3a20&api_secret=6e4d37dbc6b5d7a02c853b7dd0495b64
 	 *
 	 * @param position
 	 * @param city |当前城市名称 如：北京，注意不是北京市
@@ -278,6 +282,7 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 				result.put("humidity", tw.getString("humidity"));
 				result.put("temperature", tw.getString("temperature"));
 				result.put("updateTime", tw.getString("updateTime"));  
+				result.put("pm25", tw.getString("pm25"));   
 				result.put("weather", weather); 
 				result.put("weatherId", weatherId);
 				result.put("windpower", windpower); 
@@ -285,6 +290,21 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 				result.put("tempmax", tempmax); 
 				result.put("tiptitle", tiptitle); 
 				result.put("tiptime", tiptime); 
+				
+				// 明日数据 tw
+				JSONObject futureData = new JSONObject();
+				JSONObject objFuture = JSONObject.parseObject(result_.getString("future")); 
+				JSONObject tomorrow = JSONObject.parseObject(objFuture.getString("day_" + this.getNextDate(new Date(), "yyyyMMdd")));   
+				if(tomorrow != null){
+					futureData.put("futureTemperature", tw.getString("futureTemperature"));  
+					futureData.put("futureHumidity", "0");
+					futureData.put("wind", tomorrow.getString("wind")); 
+					futureData.put("weather", tomorrow.getString("weather")); 
+					futureData.put("weatherId", JSONObject.parseObject(tomorrow.getString("weather_id")));     
+					futureData.put("pm25", tw.getString("pm25"));  //  今日pm2.5数据，但无法取得明日的数据 
+				}
+				result.put("futureData", futureData);  
+				
 				result.put("resultCode", 0); 
 				result.put("resultMessage", "SUCCESS"); 
 				return result;
@@ -1192,6 +1212,16 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		 return formatter.format(date);
 	}
 
+	// "yyyyMMdd"
+	private String getNextDate(Date date , String formate_){  
+		 Calendar calendar = new GregorianCalendar();
+		 calendar.setTime(date);
+		 calendar.add(calendar.DATE , 1);//把日期往后增加一天.整数往后推,负数往前移动
+		 date=calendar.getTime(); //这个时间就是日期往后推一天的结果 
+		 SimpleDateFormat formatter = new SimpleDateFormat(formate_);
+		 
+		 return formatter.format(date);
+	}
 }
 
 

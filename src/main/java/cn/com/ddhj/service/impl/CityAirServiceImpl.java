@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -450,6 +451,21 @@ public class CityAirServiceImpl implements ICityAirService {
 			res.put("wind", wind_); // 东南风/2级
 			res.put("quality", quality); // 优|轻度污染
 			res.put("des", des); // 可正常活动。
+			res.put("pm25" , pm25_.getString("pm25"));  // 今日pm2.5数据，但无法取得明日的数据 
+			
+			res.put("futureTemperature", "");  // 第二天的温度
+			String nextDay = this.getNextDate(new Date());  
+			JSONArray weatherList = JSONObject.parseArray(data.getString("weather"));
+			for(int i = 0 ; i < weatherList.size(); i ++){
+				JSONObject future = weatherList.getJSONObject(i); 
+				if(future.getString("date").equals(nextDay)){
+					JSONObject subInfo = JSONObject.parseObject(future.getString("info"));
+					JSONArray arr = JSONObject.parseArray(subInfo.getString("day"));
+					String futureTemperature = arr.getString(2);  //arr.getJSONObject(2).toString();  
+					res.put("futureTemperature", futureTemperature);  
+				}
+			}
+			
 			return res;
 		}else{
 			if(obj.getString("code").equals("-1")){
@@ -466,4 +482,20 @@ public class CityAirServiceImpl implements ICityAirService {
 			return res;
 		}
 	}
+	
+	
+	private String getNextDate(Date date){
+		 Calendar calendar = new GregorianCalendar();
+		 calendar.setTime(date);
+		 calendar.add(calendar.DATE , 1);//把日期往后增加一天.整数往后推,负数往前移动
+		 date=calendar.getTime(); //这个时间就是日期往后推一天的结果 
+		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		 
+		 return formatter.format(date);
+	}
+	
+	
+	
+	
+	
 }
