@@ -132,7 +132,9 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						 * 同步到碳币操作日志表
 						 */
 						List<TUserCarbonOperation> operations = carbonOperationData(carbonUsers);
-						carbonOperationMapper.batchInsert(operations);
+						if(operations != null && operations.size()>0){
+							carbonOperationMapper.batchInsert(operations);							
+						}
 						result.setResultMessage("同步成功");
 					} else {
 						result.setResultCode(-1);
