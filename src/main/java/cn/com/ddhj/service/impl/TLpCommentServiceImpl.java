@@ -101,8 +101,12 @@ public class TLpCommentServiceImpl extends BaseServiceImpl<TLpComment, TLpCommen
 			result.setResultCode(0);
 			result.setResultMessage("查询评论成功");
 		} else {
+			result.setTotal(0);
+			result.setGoodTotal(0);
+			result.setMediumTotal(0);
+			result.setBadTotal(0);
 			result.setResultCode(-1);
-			result.setResultMessage("查询评论失败");
+			result.setResultMessage("此楼盘评论信息");
 		}
 		return result;
 	}
