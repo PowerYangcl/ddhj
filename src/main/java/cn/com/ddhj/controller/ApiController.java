@@ -128,8 +128,7 @@ public class ApiController extends BaseClass {
 	private ITradeService tradeService;
 	@Autowired
 	private ITUserCarbonOperationService userCarbonOperService;
-	
-	
+
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
 
@@ -230,7 +229,7 @@ public class ApiController extends BaseClass {
 			String position = obj.getString("position");
 			String city = obj.getString("city");
 			String radius = obj.getString("radius");
-			JSONObject result_ = estateEnvService.apiEnvScore(position, city, radius , application);
+			JSONObject result_ = estateEnvService.apiEnvScore(position, city, radius, application);
 			long end = System.currentTimeMillis();
 			System.out.println("1032号接口总共耗时：" + (end - start) + " 毫秒");
 			return result_;
@@ -249,7 +248,7 @@ public class ApiController extends BaseClass {
 			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
-			JSONObject result_ = estateEnvService.apiAreaEnv(position, city , application);
+			JSONObject result_ = estateEnvService.apiAreaEnv(position, city, application);
 			long end = System.currentTimeMillis();
 			System.out.println("1025号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;
@@ -277,22 +276,26 @@ public class ApiController extends BaseClass {
 		} else if ("2051".equals(api.getApiTarget())) { // 万年历接口
 			JSONObject result_ = estateEnvService.perpetualCalendar(application);
 			return result_;
-		}else if ("2052".equals(api.getApiTarget())) { // t_landed_score 楼盘综合评分统计接口
+		} else if ("2052".equals(api.getApiTarget())) { // t_landed_score
+														// 楼盘综合评分统计接口
 			String city = obj.getString("city"); // "北京"
-			String type = obj.getString("type"); //  year：按年份平均|quarter：按季度平均|month：按月份平均  
-			String date = obj.getString("date"); //  2016                          1|2|3|4                         2016-01     
+			String type = obj.getString("type"); // year：按年份平均|quarter：按季度平均|month：按月份平均
+			String date = obj.getString("date"); // 2016 1|2|3|4 2016-01
 			String year = "";
-			if(type.equals("quarter")){
+			if (type.equals("quarter")) {
 				year = obj.getString("year");
 			}
-			Integer pageIndex = obj.getInteger("pageIndex");  
+			Integer pageIndex = obj.getInteger("pageIndex");
 			Integer pageSize = obj.getInteger("pageSize");
-			
-//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "year" , "2017" , "" ,  0 , 10);  
-//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "quarter" , "2" , "2017" ,  0 , 10);   
-//			JSONObject result_ = estateEnvService.landedScoreAverage("天津" , "month" , "2017-01" , "" ,  0 , 10);   
-			
-			JSONObject result_ = estateEnvService.landedScoreAverage(city , type , date , year , pageIndex , pageSize);   
+
+			// JSONObject result_ = estateEnvService.landedScoreAverage("天津" ,
+			// "year" , "2017" , "" , 0 , 10);
+			// JSONObject result_ = estateEnvService.landedScoreAverage("天津" ,
+			// "quarter" , "2" , "2017" , 0 , 10);
+			// JSONObject result_ = estateEnvService.landedScoreAverage("天津" ,
+			// "month" , "2017-01" , "" , 0 , 10);
+
+			JSONObject result_ = estateEnvService.landedScoreAverage(city, type, date, year, pageIndex, pageSize);
 			return result_;
 		}
 
@@ -419,70 +422,85 @@ public class ApiController extends BaseClass {
 			CarbonTypeDetailResult result = userCarbonOperationserivce.getCarbonOperationByType(api.getUserToken(),
 					param.getString("type"), param.getInteger("pageIndex"), param.getInteger("pageSize"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} 
+		}
 		// 查询支持碳交易的城市列表
-		else if("trade_city".equals(api.getApiTarget())) {
-			TradeCityResult result =  tradeService.queryAllTradeCity();
+		else if ("trade_city".equals(api.getApiTarget())) {
+			TradeCityResult result = tradeService.queryAllTradeCity();
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//按城市ID/全国(cityId为空)分页查询碳交易行情
-		else if("trade_deals".equals(api.getApiTarget())) {
+		// 按城市ID/全国(cityId为空)分页查询碳交易行情
+		else if ("trade_deals".equals(api.getApiTarget())) {
 			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
-			TradeDealResult result =  tradeService.queryDealsByCityId(dto);
-			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} 
-		//用户委托买/卖
-		else if("trade_send_order".equals(api.getApiTarget())) {
-			TTradeOrder tradeOrder = obj.toJavaObject(TTradeOrder.class);
-			BaseResult result =  tradeService.sendTradeOrder(tradeOrder, api.getUserToken());
+			TradeDealResult result = tradeService.queryDealsByCityId(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//查询用户在某个标的上的可买,可卖,现价
-		else if("trade_deal_price_amount".equals(api.getApiTarget())) {
+		// 用户委托买/卖
+		else if ("trade_send_order".equals(api.getApiTarget())) {
+			TTradeOrder tradeOrder = obj.toJavaObject(TTradeOrder.class);
+			BaseResult result = tradeService.sendTradeOrder(tradeOrder, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 查询用户在某个标的上的可买,可卖,现价
+		else if ("trade_deal_price_amount".equals(api.getApiTarget())) {
 			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
 			TradePriceAvaiAmountResult result = tradeService.getCurrentPriceAndAvailableAmount(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//查询当前用户持仓
-		else if("trade_balance".equals(api.getApiTarget())) {
+		// 查询当前用户持仓
+		else if ("trade_balance".equals(api.getApiTarget())) {
 			TradeBalanceResult result = tradeService.getUserBalance(api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//查询用户委托(成交)
-		else if("trade_query_order".equals(api.getApiTarget())) {
+		// 查询用户委托(成交)
+		else if ("trade_query_order".equals(api.getApiTarget())) {
 			TTradeOrderDto dto = null;
-			if(obj != null) {
+			if (obj != null) {
 				dto = obj.toJavaObject(TTradeOrderDto.class);
 			} else {
 				dto = new TTradeOrderDto();
 			}
 			TradeOrderResult result = tradeService.getUserTradeOrder(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} 
-		//换算接口(碳币冲值)
-		else if("exchange_money".equals(api.getApiTarget())) {
+		}
+		// 换算接口(碳币冲值)
+		else if ("exchange_money".equals(api.getApiTarget())) {
 			String carbonMoney = obj.getString("carbonMoney");
 			String result = "{money:0.0}";
-			if(StringUtils.isNotBlank(carbonMoney)) {
+			if (StringUtils.isNotBlank(carbonMoney)) {
 				String ratio = PropHelper.getValue("carbon_money_ratio");
-				result = "{money:" + String.format("%.2f", Double.parseDouble(carbonMoney) * Double.valueOf(ratio)) + "}";
+				result = "{money:" + String.format("%.2f", Double.parseDouble(carbonMoney) * Double.valueOf(ratio))
+						+ "}";
 			}
 			return JSONObject.parseObject(result);
-		} 
-		//创建碳币充值订单
-		else if("carbon_money_order".equals(api.getApiTarget())) {
-			TOrderRecharge recharge = obj.toJavaObject(TOrderRecharge.class);	
+		}
+		// 创建碳币充值订单
+		else if ("carbon_money_order".equals(api.getApiTarget())) {
+			TOrderRecharge recharge = obj.toJavaObject(TOrderRecharge.class);
 			CarbonRechargeResult result = userCarbonOperService.carbonRecharge(api.getUserToken(), recharge);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//创建充值网关支付参数
-		else if("r".equals(api.getApiTarget())) {
-			TOrderRecharge recharge = obj.toJavaObject(TOrderRecharge.class);	
+		// 创建充值网关支付参数
+		else if ("r".equals(api.getApiTarget())) {
+			TOrderRecharge recharge = obj.toJavaObject(TOrderRecharge.class);
 			CarbonRechargeResult result = userCarbonOperService.carbonRecharge(api.getUserToken(), recharge);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**
 		 * ================= 碳币相关 end ======================
+		 */
+		/**
+		 * ================= 点点商城相关 start ======================
+		 */
+		// 创建订单
+		else if ("order_create".equals(api.getApiTarget())) {
+			return null;
+		} else if ("order_detail".equals(api.getApiTarget())) {
+			return null;
+		} else if ("address_update".equals(api.getApiTarget())) {
+			return null;
+		}
+		/**
+		 * ================= 点点商城相关 end ======================
 		 */
 		else {
 			BaseResult result = new BaseResult();
@@ -512,7 +530,7 @@ public class ApiController extends BaseClass {
 
 		}
 	}
-	
+
 	@RequestMapping("payNotify")
 	@ResponseBody
 	public String payNotify(HttpServletRequest request, HttpServletResponse response) {
@@ -570,19 +588,20 @@ public class ApiController extends BaseClass {
 		}
 		return build.toString();
 	}
-	
+
 	@RequestMapping("rechargePay/{orderCode}/{payType}")
 	public String rechargePay(@PathVariable("orderCode") String orderCode, @PathVariable("payType") String payType,
 			HttpServletRequest request, HttpServletResponse response) {
 		String openID = request.getParameter("openID");
 		String returnUrl = request.getParameter("returnUrl");
 		OrderPayResult result = orderService.orderPay(openID, orderCode, payType, returnUrl);
-		//将支付回调接口换成充值回调接口 
-		if(result.getRedirectUrl().contains(XmasPayConfig.getPayGateReturnUrl())) {
-			String newUrl = result.getRedirectUrl().replace(XmasPayConfig.getPayGateReturnUrl(), XmasPayConfig.getPayGateReturnUrlForRecharge());
+		// 将支付回调接口换成充值回调接口
+		if (result.getRedirectUrl().contains(XmasPayConfig.getPayGateReturnUrl())) {
+			String newUrl = result.getRedirectUrl().replace(XmasPayConfig.getPayGateReturnUrl(),
+					XmasPayConfig.getPayGateReturnUrlForRecharge());
 			result.setRedirectUrl(newUrl);
 		}
-		
+
 		if (StringUtils.isEmpty(result.getErrorMsg())) {
 			return result.getRedirectUrl();
 		} else {
@@ -597,7 +616,7 @@ public class ApiController extends BaseClass {
 
 		}
 	}
-	
+
 	@RequestMapping("payNotifyForRecharge")
 	@ResponseBody
 	public String payNotifyForRecharge(HttpServletRequest request, HttpServletResponse response) {
@@ -609,26 +628,26 @@ public class ApiController extends BaseClass {
 			notifyParam.put(name, StringUtils.trimToEmpty(request.getParameter(name)));
 		}
 
-		
 		PayGateNotifyPayProcess.PaymentResult result = PayServiceSupport.payGateNotify(notifyParam);
 		TPayment entity = new TPayment();
 		entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 		if (result.getResultCode() == PaymentResult.SUCCESS) {
-			//更新用户充值记录状态为已支付
+			// 更新用户充值记录状态为已支付
 			String orderCode = notifyParam.get("c_order");
 			TOrderRecharge rechargeRec = userCarbonOperService.selectRechargeRecByOrderCode(orderCode);
-			
-			//更新用户碳币
+
+			// 更新用户碳币
 			TUser user = new TUser();
 			user.setUserCode(rechargeRec.getBuyerCode());
 			user = userService.selectByCode(user.getUserCode());
-			user.setCarbonMoney(user.getCarbonMoney().add(rechargeRec.getCarbonMoney()).setScale(2, BigDecimal.ROUND_DOWN));
-			
-			//更新用户充值记录状态为已支付
+			user.setCarbonMoney(
+					user.getCarbonMoney().add(rechargeRec.getCarbonMoney()).setScale(2, BigDecimal.ROUND_DOWN));
+
+			// 更新用户充值记录状态为已支付
 			rechargeRec.setStatus(new Integer(3));
 			userCarbonOperService.updateRechargeRec(rechargeRec);
-			
-			//增加碳币购买记录
+
+			// 增加碳币购买记录
 			TUserCarbonOperation carbonOperation = new TUserCarbonOperation();
 			carbonOperation.setUuid(WebHelper.getInstance().genUuid());
 			carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
@@ -661,8 +680,8 @@ public class ApiController extends BaseClass {
 			entity.setCause("支付宝调用失败");
 		}
 		paymentService.insertSelective(entity);
-		
-		if(StringUtils.equals(result.reURL, XmasPayConfig.getPayGateDefaultReURL())) {
+
+		if (StringUtils.equals(result.reURL, XmasPayConfig.getPayGateDefaultReURL())) {
 			result.reURL = XmasPayConfig.getPayGateDefaultReURLForRecharge();
 		}
 		StringBuilder build = new StringBuilder();
@@ -670,6 +689,6 @@ public class ApiController extends BaseClass {
 		if (result.getResultCode() != PaymentResult.SUCCESS) {
 			build.append("<msg>").append(result.getResultMessage()).append("</msg>");
 		}
-		return build.toString();		
+		return build.toString();
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.com.ddhj.mapper.TUserAddresssMapper">
-	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TUserAddresss">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.product.TUserAddresss">
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
 		<result column="code" property="code" jdbcType="VARCHAR" />
@@ -11,154 +11,88 @@
 		<result column="street" property="street" jdbcType="VARCHAR" />
 		<result column="is_default" property="isDefault" jdbcType="INTEGER" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
-		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
-		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 	</resultMap>
-	
-	<select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	<sql id="Base_Column_List">
+		id, uuid, code, user_code, area_code, provinces, street,
+		is_default,
+		create_user,
+		DATE_FORMAT(create_time,'%Y-%m-%d
+		%H:%i:%s') as
+		create_time,
+		update_user,
+		DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s')
+		as
+		update_time
+	</sql>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
 		select
-			*
-		from 
-			t_user_addresss
-		where 
-			id = #{id,jdbcType=INTEGER}
+		<include refid="Base_Column_List" />
+		from t_user_addresss
+		where `code` = #{code,jdbcType=VARCHAR}
 	</select>
-	
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-		delete from t_user_addresss where id = #{id,jdbcType=INTEGER}
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from
+		t_user_addresss
+		where `code` = #{code,jdbcType=VARCHAR}
 	</delete>
-	
-	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TUserAddresss">
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.product.TUserAddresss">
 		insert into t_user_addresss
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				id,
-			</if>
-			<if test="uuid != null">
-				uuid,
-			</if>
-			<if test="code != null">
-				code,
-			</if>
-			<if test="userCode != null">
-				user_code,
-			</if>
-			<if test="areaCode != null">
-				area_code,
-			</if>
-			<if test="provinces != null">
-				provinces,
-			</if>
-			<if test="street != null">
-				street,
-			</if>
+			uuid,
+			`code`,
+			user_code,
+			area_code,
+			provinces,
+			street,
 			<if test="isDefault != null">
 				is_default,
 			</if>
-			<if test="createUser != null">
-				create_user,
-			</if>
-			<if test="createTime != null">
-				create_time,
-			</if>
-			<if test="updateUser != null">
-				update_user,
-			</if>
-			<if test="updateTime != null">
-				update_time,
-			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time,
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				#{id,jdbcType=INTEGER},
-			</if>
-			<if test="uuid != null">
-				#{uuid,jdbcType=VARCHAR},
-			</if>
-			<if test="code != null">
-				#{code,jdbcType=VARCHAR},
-			</if>
-			<if test="userCode != null">
-				#{userCode,jdbcType=VARCHAR},
-			</if>
-			<if test="areaCode != null">
-				#{areaCode,jdbcType=VARCHAR},
-			</if>
-			<if test="provinces != null">
-				#{provinces,jdbcType=VARCHAR},
-			</if>
-			<if test="street != null">
-				#{street,jdbcType=VARCHAR},
-			</if>
+			#{uuid,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			#{userCode,jdbcType=VARCHAR},
+			#{areaCode,jdbcType=VARCHAR},
+			#{provinces,jdbcType=VARCHAR},
+			#{street,jdbcType=VARCHAR},
 			<if test="isDefault != null">
 				#{isDefault,jdbcType=INTEGER},
 			</if>
-			<if test="createUser != null">
-				#{createUser,jdbcType=VARCHAR},
-			</if>
-			<if test="createTime != null">
-				#{createTime,jdbcType=TIMESTAMP},
-			</if>
-			<if test="updateUser != null">
-				#{updateUser,jdbcType=VARCHAR},
-			</if>
-			<if test="updateTime != null">
-				#{updateTime,jdbcType=TIMESTAMP},
-			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),
 		</trim>
 	</insert>
-	
-	
-	<update id="updateSelective" parameterType="cn.com.ddhj.model.TUserAddresss">
+	<update id="updateByPrimaryKeySelective" parameterType="cn.com.ddhj.model.product.TUserAddresss">
 		update t_user_addresss
 		<set>
-			<if test="uuid != null">
-				uuid = #{uuid,jdbcType=VARCHAR},
-			</if>
-			<if test="code != null">
-				code = #{code,jdbcType=VARCHAR},
-			</if>
-			<if test="userCode != null">
-				user_code = #{userCode,jdbcType=VARCHAR},
-			</if>
-			<if test="areaCode != null">
+			<if test="areaCode != null and areaCode != ''">
 				area_code = #{areaCode,jdbcType=VARCHAR},
 			</if>
-			<if test="provinces != null">
+			<if test="provinces != null and provinces !=''">
 				provinces = #{provinces,jdbcType=VARCHAR},
 			</if>
-			<if test="street != null">
+			<if test="street != null and street != ''">
 				street = #{street,jdbcType=VARCHAR},
 			</if>
 			<if test="isDefault != null">
 				is_default = #{isDefault,jdbcType=INTEGER},
 			</if>
-			<if test="createUser != null">
-				create_user = #{createUser,jdbcType=VARCHAR},
-			</if>
-			<if test="createTime != null">
-				create_time = #{createTime,jdbcType=TIMESTAMP},
-			</if>
-			<if test="updateUser != null">
-				update_user = #{updateUser,jdbcType=VARCHAR},
-			</if>
-			<if test="updateTime != null">
-				update_time = #{updateTime,jdbcType=TIMESTAMP},
-			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time =
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 		</set>
-		where id = #{id,jdbcType=INTEGER}
+		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
 </mapper>
-
-
-
-
-
-
-
-
-
-
-
-

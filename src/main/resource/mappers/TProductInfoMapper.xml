@@ -8,29 +8,45 @@
 		<result column="product_code" property="productCode" jdbcType="VARCHAR" />
 		<result column="product_name" property="productName" jdbcType="VARCHAR" />
 		<result column="main_pic_url" property="mainPicUrl" jdbcType="VARCHAR" />
-		<result column="current_price" property="currentPrice" jdbcType="INTEGER" />
+		<result column="current_price" property="currentPrice"
+			jdbcType="INTEGER" />
 		<result column="stock_num" property="stockNum" jdbcType="INTEGER" />
 		<result column="product_tip" property="productTip" jdbcType="VARCHAR" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
-		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
-		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 	</resultMap>
-	
-	
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	<sql id="Base_Column_List">
+		id, uuid, product_code, product_name, main_pic_url,
+		current_price,
+		stock_num, product_tip,
+		create_user,
+		DATE_FORMAT(create_time,'%Y-%m-%d
+		%H:%i:%s') as
+		create_time,
+		update_user,
+		DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s')
+		as
+		update_time
+	</sql>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
 		select
-			*
-		from 
-			t_product_info
-		where 
-			id = #{id,jdbcType=INTEGER}
+		<include refid="Base_Column_List" />
+		from
+		t_product_info
+		where
+		id =
+		#{id,jdbcType=INTEGER}
 	</select>
-	
+
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-		delete from t_product_info where id = #{id,jdbcType=INTEGER}
+		delete from
+		t_product_info where id = #{id,jdbcType=INTEGER}
 	</delete>
-	 
+
 	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TProductInfo">
 		insert into t_product_info
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -58,18 +74,10 @@
 			<if test="productTip != null">
 				product_tip,
 			</if>
-			<if test="createUser != null">
-				create_user,
-			</if>
-			<if test="createTime != null">
-				create_time,
-			</if>
-			<if test="updateUser != null">
-				update_user,
-			</if>
-			<if test="updateTime != null">
-				update_time,
-			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time,
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="id != null">
@@ -96,21 +104,15 @@
 			<if test="productTip != null">
 				#{productTip,jdbcType=VARCHAR},
 			</if>
-			<if test="createUser != null">
-				#{createUser,jdbcType=VARCHAR},
-			</if>
-			<if test="createTime != null">
-				#{createTime,jdbcType=TIMESTAMP},
-			</if>
-			<if test="updateUser != null">
-				#{updateUser,jdbcType=VARCHAR},
-			</if>
-			<if test="updateTime != null">
-				#{updateTime,jdbcType=TIMESTAMP},
-			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),
 		</trim>
 	</insert>
-	
+
 	<update id="updateSelective" parameterType="cn.com.ddhj.model.TProductInfo">
 		update t_product_info
 		<set>
@@ -135,22 +137,24 @@
 			<if test="productTip != null">
 				product_tip = #{productTip,jdbcType=VARCHAR},
 			</if>
-			<if test="createUser != null">
-				create_user = #{createUser,jdbcType=VARCHAR},
-			</if>
-			<if test="createTime != null">
-				create_time = #{createTime,jdbcType=TIMESTAMP},
-			</if>
-			<if test="updateUser != null">
-				update_user = #{updateUser,jdbcType=VARCHAR},
-			</if>
-			<if test="updateTime != null">
-				update_time = #{updateTime,jdbcType=TIMESTAMP},
-			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time =
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 		</set>
 		where id = #{id,jdbcType=INTEGER}
 	</update>
-	
+	<!-- 根据集合参数查询商品列表 -->
+	<select id="findProductsByList" parameterType="list" resultMap="BaseResultMap">
+		select product_code,current_price,stock_num from t_product_info
+		<where>
+			product_code in
+			<foreach collection="list" item="code" index="index" open="("
+				close=")" separator=",">
+				#{code,jdbcType=VARCHAR}
+			</foreach>
+		</where>
+	</select>
+
 </mapper>
 
 

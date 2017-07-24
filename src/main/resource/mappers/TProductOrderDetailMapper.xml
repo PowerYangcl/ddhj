@@ -1,113 +1,74 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.com.ddhj.mapper.TProductOrderDetailMapper">
-
-	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TProductOrderDetail">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.product.TProductOrderDetail">
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
 		<result column="order_code" property="orderCode" jdbcType="VARCHAR" />
 		<result column="product_code" property="productCode" jdbcType="VARCHAR" />
-		<result column="current_price" property="currentPrice" jdbcType="INTEGER" />
+		<result column="current_price" property="currentPrice"
+			jdbcType="INTEGER" />
 		<result column="buy_num" property="buyNum" jdbcType="INTEGER" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
-		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
-		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 	</resultMap>
-	
-	 
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	<sql id="Base_Column_List">
+		id, uuid, order_code, product_code, current_price, buy_num,
+		create_user,
+		DATE_FORMAT(create_time,'%Y-%m-%d
+		%H:%i:%s') as
+		create_time,
+		update_user,
+		DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s')
+		as
+		update_time
+	</sql>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
 		select
-			*
-		from 
-			t_product_order_detail
-		where 
-			id = #{id,jdbcType=INTEGER}
+		<include refid="Base_Column_List" />
+		from t_product_order_detail
+		where order_code =
+		#{orderCode,jdbcType=VARCHAR}
 	</select>
-	
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-		delete from t_product_order_detail where id = #{id,jdbcType=INTEGER}
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from
+		t_product_order_detail
+		where order_code = #{orderCode,jdbcType=VARCHAR}
 	</delete>
-	
-	
-	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TProductOrderDetail">
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.product.TProductOrderDetail">
 		insert into t_product_order_detail
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				id,
-			</if>
-			<if test="uuid != null">
-				uuid,
-			</if>
-			<if test="orderCode != null">
-				order_code,
-			</if>
-			<if test="productCode != null">
-				product_code,
-			</if>
-			<if test="currentPrice != null">
-				current_price,
-			</if>
-			<if test="buyNum != null">
-				buy_num,
-			</if>
-			<if test="createUser != null">
-				create_user,
-			</if>
-			<if test="createTime != null">
-				create_time,
-			</if>
-			<if test="updateUser != null">
-				update_user,
-			</if>
-			<if test="updateTime != null">
-				update_time,
-			</if>
+			uuid,
+			order_code,
+			product_code,
+			current_price,
+			buy_num,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				#{id,jdbcType=INTEGER},
-			</if>
-			<if test="uuid != null">
-				#{uuid,jdbcType=VARCHAR},
-			</if>
-			<if test="orderCode != null">
-				#{orderCode,jdbcType=VARCHAR},
-			</if>
-			<if test="productCode != null">
-				#{productCode,jdbcType=VARCHAR},
-			</if>
-			<if test="currentPrice != null">
-				#{currentPrice,jdbcType=INTEGER},
-			</if>
-			<if test="buyNum != null">
-				#{buyNum,jdbcType=INTEGER},
-			</if>
-			<if test="createUser != null">
-				#{createUser,jdbcType=VARCHAR},
-			</if>
-			<if test="createTime != null">
-				#{createTime,jdbcType=TIMESTAMP},
-			</if>
-			<if test="updateUser != null">
-				#{updateUser,jdbcType=VARCHAR},
-			</if>
-			<if test="updateTime != null">
-				#{updateTime,jdbcType=TIMESTAMP},
-			</if>
+			#{uuid,jdbcType=VARCHAR},
+			#{orderCode,jdbcType=VARCHAR},
+			#{productCode,jdbcType=VARCHAR},
+			#{currentPrice,jdbcType=INTEGER},
+			#{buyNum,jdbcType=INTEGER},
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),
 		</trim>
 	</insert>
-	
-	<update id="updateSelective" parameterType="cn.com.ddhj.model.TProductOrderDetail">
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.product.TProductOrderDetail">
 		update t_product_order_detail
 		<set>
-			<if test="uuid != null">
-				uuid = #{uuid,jdbcType=VARCHAR},
-			</if>
-			<if test="orderCode != null">
-				order_code = #{orderCode,jdbcType=VARCHAR},
-			</if>
-			<if test="productCode != null">
+			<if test="productCode != null and productCode != ''">
 				product_code = #{productCode,jdbcType=VARCHAR},
 			</if>
 			<if test="currentPrice != null">
@@ -116,46 +77,39 @@
 			<if test="buyNum != null">
 				buy_num = #{buyNum,jdbcType=INTEGER},
 			</if>
-			<if test="createUser != null">
-				create_user = #{createUser,jdbcType=VARCHAR},
-			</if>
-			<if test="createTime != null">
-				create_time = #{createTime,jdbcType=TIMESTAMP},
-			</if>
-			<if test="updateUser != null">
-				update_user = #{updateUser,jdbcType=VARCHAR},
-			</if>
-			<if test="updateTime != null">
-				update_time = #{updateTime,jdbcType=TIMESTAMP},
-			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time =
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 		</set>
-		where id = #{id,jdbcType=INTEGER}
+		where order_code = #{orderCode,jdbcType=VARCHAR}
 	</update>
+	<insert id="batchInsert" parameterType="list">
+		insert into t_product_order_detail(
+		uuid,
+		order_code,
+		product_code,
+		current_price,
+		buy_num,
+		create_user,
+		create_time,
+		update_user,
+		update_time)
+		values
+		<foreach collection="list" item="product" index="index"
+			separator=",">
+			(
+			#{uuid,jdbcType=VARCHAR},
+			#{orderCode,jdbcType=VARCHAR},
+			#{productCode,jdbcType=VARCHAR},
+			#{currentPrice,jdbcType=INTEGER},
+			#{buyNum,jdbcType=INTEGER},
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),
+			)
+		</foreach>
+	</insert>
 </mapper>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
