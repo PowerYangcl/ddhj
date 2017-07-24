@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.com.ddhj.mapper.TProductOrderDetailMapper">
-	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.product.TProductOrderDetail">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TProductOrderDetail">
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
 		<result column="order_code" property="orderCode" jdbcType="VARCHAR" />
@@ -13,6 +13,10 @@
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<collection property="product" ofType="cn.com.ddhj.model.TProductInfo">
+			<result column="product_name" property="productName" jdbcType="VARCHAR" />
+			<result column="main_pic_url" property="mainPicUrl" jdbcType="VARCHAR" />
+		</collection>
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, uuid, order_code, product_code, current_price, buy_num,
@@ -112,4 +116,21 @@
 			)
 		</foreach>
 	</insert>
+	<!-- 根据订单编码查询订单商品列表 -->
+	<select id="findOrderProductDetail" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		SELECT
+		od.product_code,
+		p.product_name,
+		p.main_pic_url,
+		od.buy_num,
+		od.current_price
+		FROM
+		t_product_order_detail AS od,
+		t_product_info AS p
+		WHERE
+		od.product_code = p.product_code
+		AND
+		od.order_code = #{orderCode,jdbcType=VARCHAR}
+	</select>
 </mapper>

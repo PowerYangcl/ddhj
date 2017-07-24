@@ -9,8 +9,8 @@ package cn.com.ddhj.base;
  */
 public class BaseResult {
 
-	private Integer resultCode;
-	private String resultMessage;
+	private Integer resultCode = 0;
+	private String resultMessage = "";
 
 	public Integer getResultCode() {
 		return resultCode;

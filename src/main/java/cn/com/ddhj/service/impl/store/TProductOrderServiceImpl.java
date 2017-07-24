@@ -18,6 +18,7 @@ import cn.com.ddhj.model.TProductOrder;
 import cn.com.ddhj.model.TProductOrderDetail;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.DataResult;
+import cn.com.ddhj.result.EntityResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductOrderService;
 
@@ -25,11 +26,24 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		implements ITProductOrderService {
 
 	@Autowired
+	private TProductOrderMapper mapper;
+
+	@Autowired
 	private TProductOrderDetailMapper detailMapper;
 
 	@Autowired
 	private TProductInfoMapper productMapper;
 
+	/**
+	 * 
+	 * 方法: createOrder <br>
+	 * 
+	 * @param dto
+	 * @param userToken
+	 * @return
+	 * @see cn.com.ddhj.service.store.ITProductOrderService#createOrder(cn.com.ddhj.dto.store.TProductOrderDto,
+	 *      java.lang.String)
+	 */
 	@Override
 	public BaseResult createOrder(TProductOrderDto dto, String userToken) {
 		// 验证商品是否存在，库存是否可用
@@ -62,6 +76,33 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			logger.logError(e.getMessage());
 			result.setResultCode(-1);
 			result.setResultMessage("创建订单失败，请联系技术人员");
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: findOrderDetailByCode <br>
+	 * 
+	 * @param orderCode
+	 * @return
+	 * @see cn.com.ddhj.service.store.ITProductOrderService#findOrderDetailByCode(java.lang.String)
+	 */
+	@Override
+	public EntityResult findOrderDetailByCode(String orderCode) {
+		EntityResult result = new EntityResult();
+		try {
+			TProductOrder order = mapper.findOrderDetailByCode(orderCode);
+			if (order != null) {
+				List<TProductOrderDetail> list = detailMapper.findOrderProductDetail(orderCode);
+				order.setDetails(list);
+			}
+			result.setResultCode(0);
+			result.setEntity(order);
+		} catch (Exception e) {
+			logger.logError(e.getMessage());
+			result.setResultCode(-1);
+			result.setResultMessage("获取订单详情失败，请联系技术人员");
 		}
 		return result;
 	}
