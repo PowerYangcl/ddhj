@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.alibaba.fastjson.JSON;
+
 import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.service.store.ITUserAddressService;
 import cn.com.ddhj.util.DateUtil;
@@ -42,6 +44,7 @@ public class TUserAddressTest {
 		entity.setProvinces("13tdsasdsa");
 		entity.setStreet("似懂非懂是的方式发生的发");
 		entity.setUpdateTime(DateUtil.getSysDateTime());
-		service.updateByCode(entity, "6a0a01f3378a459580b20ac89eada0fd");
+		System.out.println(JSON.toJSON(entity));
+//		service.updateByCode(entity, "6a0a01f3378a459580b20ac89eada0fd");
 	}
 }

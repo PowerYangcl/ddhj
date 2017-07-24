@@ -38,8 +38,9 @@ public class TProductOrderTest extends BaseTest {
 		product.setCurrentPrice(11);
 		list.add(product);
 		dto.setProductList(list);
-		BaseResult result = service.createOrder(dto, "6a0a01f3378a459580b20ac89eada0fd");
-		System.out.println(JSON.toJSON(result));
+		System.out.println(JSON.toJSON(dto));
+//		BaseResult result = service.createOrder(dto, "6a0a01f3378a459580b20ac89eada0fd");
+//		System.out.println(JSON.toJSON(result));
 	}
 
 	public void findOrderDetailByCode() {
