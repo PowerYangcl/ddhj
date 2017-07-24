@@ -23,6 +23,7 @@ public class SysUserTest extends BaseTest {
 	@Autowired
 	private SysUserMapper mapper;
 
+	@Test
 	public void insert() {
 		SysUser entity = new SysUser();
 		entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
@@ -44,7 +45,6 @@ public class SysUserTest extends BaseTest {
 		mapper.findSysUserForLogin(dto);
 	}
 
-	@Test
 	public void update() {
 		SysUser entity = new SysUser();
 		entity.setCode("SU161021100002");

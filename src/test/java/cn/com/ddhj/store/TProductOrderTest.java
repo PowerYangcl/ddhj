@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.alibaba.fastjson.JSON;
 
 import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.model.TProductInfo;
 import cn.com.ddhj.result.EntityResult;
@@ -19,7 +20,7 @@ import cn.com.ddhj.service.store.ITProductOrderService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring/spring.xml", "classpath:spring/spring-mybatis.xml" })
-public class TProductOrderTest {
+public class TProductOrderTest extends BaseTest {
 
 	@Autowired
 	private ITProductOrderService service;

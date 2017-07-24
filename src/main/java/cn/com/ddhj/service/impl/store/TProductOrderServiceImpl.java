@@ -77,8 +77,8 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 						detailMapper.batchInsert(orderDetails(dto.getProductList(), orderCode, userCode));
 					}
 				} else {
-					result.setResultCode(-1);
-					result.setResultMessage("用户不存在");
+					result.setResultCode(userResult.getResultCode());
+					result.setResultMessage(userResult.getResultMessage());
 				}
 			}
 		} catch (Exception e) {

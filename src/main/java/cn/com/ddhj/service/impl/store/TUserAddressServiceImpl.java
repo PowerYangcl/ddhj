@@ -39,8 +39,8 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 			entity.setUpdateUser(user.getUserCode());
 			result = super.updateByCode(entity);
 		} else {
-			result.setResultCode(-1);
-			result.setResultMessage("用户不存在");
+			result.setResultCode(userResult.getResultCode());
+			result.setResultMessage(userResult.getResultMessage());
 		}
 
 		return result;
