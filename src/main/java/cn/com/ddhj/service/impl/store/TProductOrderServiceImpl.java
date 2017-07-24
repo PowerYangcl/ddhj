@@ -2,13 +2,14 @@ package cn.com.ddhj.service.impl.store;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.store.TProductOrderDto;
-import cn.com.ddhj.helper.UserHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TProductInfoMapper;
 import cn.com.ddhj.mapper.TProductOrderDetailMapper;
@@ -19,14 +20,21 @@ import cn.com.ddhj.model.TProductOrderDetail;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
+import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductOrderService;
+import cn.com.ddhj.service.user.ITUserService;
+import cn.com.ddhj.util.DateUtil;
 
+@Service
 public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TProductOrderMapper, TProductOrderDto>
 		implements ITProductOrderService {
 
 	@Autowired
 	private TProductOrderMapper mapper;
+
+	@Autowired
+	private ITUserService userService;
 
 	@Autowired
 	private TProductOrderDetailMapper detailMapper;
@@ -50,13 +58,14 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		DataResult result = getProductList(dto.getProductList());
 		try {
 			if (result.getResultCode() == 0) {
-				TUser user = UserHelper.getInstance().getUser(userToken);
-				if (user != null) {
+				UserDataResult userResult = userService.getUser(userToken);
+				if (userResult.getResultCode() == 0) {
+					TUser user = userResult.getUser();
 					// 创建订单
 					String userCode = user.getUserCode();
 					String orderCode = WebHelper.getInstance().getUniqueCode("PD");
 					TProductOrder order = new TProductOrder();
-					order.setCode(WebHelper.getInstance().getUniqueCode("PD"));
+					order.setCode(orderCode);
 					order.setPayMoney(dto.getPayMoney());
 					order.setBuyerCode(userCode);
 					order.setBuyerPhone(user.getPhone());
@@ -73,7 +82,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 				}
 			}
 		} catch (Exception e) {
-			logger.logError(e.getMessage());
+			e.printStackTrace();
 			result.setResultCode(-1);
 			result.setResultMessage("创建订单失败，请联系技术人员");
 		}
@@ -99,8 +108,9 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			}
 			result.setResultCode(0);
 			result.setEntity(order);
+			result.setResultMessage("获取订单详情成功");
 		} catch (Exception e) {
-			logger.logError(e.getMessage());
+			e.printStackTrace();
 			result.setResultCode(-1);
 			result.setResultMessage("获取订单详情失败，请联系技术人员");
 		}
@@ -160,11 +170,13 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		List<TProductOrderDetail> list = new ArrayList<TProductOrderDetail>();
 		for (TProductInfo product : products) {
 			TProductOrderDetail entity = new TProductOrderDetail();
+			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 			entity.setOrderCode(orderCode);
 			entity.setProductCode(product.getProductCode());
 			entity.setBuyNum(product.getStockNum());
 			entity.setCurrentPrice(product.getCurrentPrice());
 			entity.setCreateUser(userCode);
+			entity.setCreateTime(DateUtil.getSysDateTime());
 			list.add(entity);
 		}
 		return list;

@@ -42,7 +42,7 @@
 		t_product_order_detail
 		where order_code = #{orderCode,jdbcType=VARCHAR}
 	</delete>
-	<insert id="insertSelective" parameterType="cn.com.ddhj.model.product.TProductOrderDetail">
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TProductOrderDetail">
 		insert into t_product_order_detail
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			uuid,
@@ -69,7 +69,7 @@
 			%H:%i:%s'),
 		</trim>
 	</insert>
-	<update id="updateByCode" parameterType="cn.com.ddhj.model.product.TProductOrderDetail">
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TProductOrderDetail">
 		update t_product_order_detail
 		<set>
 			<if test="productCode != null and productCode != ''">
@@ -102,17 +102,17 @@
 		<foreach collection="list" item="product" index="index"
 			separator=",">
 			(
-			#{uuid,jdbcType=VARCHAR},
-			#{orderCode,jdbcType=VARCHAR},
-			#{productCode,jdbcType=VARCHAR},
-			#{currentPrice,jdbcType=INTEGER},
-			#{buyNum,jdbcType=INTEGER},
-			#{createUser,jdbcType=VARCHAR},
-			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d
+			#{product.uuid,jdbcType=VARCHAR},
+			#{product.orderCode,jdbcType=VARCHAR},
+			#{product.productCode,jdbcType=VARCHAR},
+			#{product.currentPrice,jdbcType=INTEGER},
+			#{product.buyNum,jdbcType=INTEGER},
+			#{product.createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{product.createTime,jdbcType=VARCHAR},'%Y-%m-%d
 			%H:%i:%s'),
-			#{updateUser,jdbcType=VARCHAR},
-			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d
-			%H:%i:%s'),
+			#{product.createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{product.createTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s')
 			)
 		</foreach>
 	</insert>

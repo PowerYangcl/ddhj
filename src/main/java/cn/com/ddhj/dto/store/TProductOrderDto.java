@@ -1,6 +1,5 @@
 package cn.com.ddhj.dto.store;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import cn.com.ddhj.dto.BaseDto;

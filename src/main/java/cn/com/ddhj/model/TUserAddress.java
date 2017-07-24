@@ -1,6 +1,6 @@
 package cn.com.ddhj.model;
 
-public class TUserAddresss extends BaseModel {
+public class TUserAddress extends BaseModel {
 	private String code;
 	private String userCode;
 	private String name;

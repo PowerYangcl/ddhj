@@ -2,10 +2,10 @@ package cn.com.ddhj.service.store;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
-import cn.com.ddhj.model.TUserAddresss;
+import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.service.IBaseService;
 
-public interface ITUserAddresssService extends IBaseService<TUserAddresss, BaseDto> {
+public interface ITUserAddressService extends IBaseService<TUserAddress, BaseDto> {
 
 	/**
 	 * 
@@ -18,5 +18,5 @@ public interface ITUserAddresssService extends IBaseService<TUserAddresss, BaseD
 	 * @param userToken
 	 * @return
 	 */
-	BaseResult updateByCode(TUserAddresss entity, String userToken);
+	BaseResult updateByCode(TUserAddress entity, String userToken);
 }

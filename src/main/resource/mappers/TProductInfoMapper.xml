@@ -148,9 +148,9 @@
 		select product_code,current_price,stock_num from t_product_info
 		<where>
 			product_code in
-			<foreach collection="list" item="code" index="index" open="("
+			<foreach collection="list" item="product" index="index" open="("
 				close=")" separator=",">
-				#{code,jdbcType=VARCHAR}
+				#{product.productCode}
 			</foreach>
 		</where>
 	</select>

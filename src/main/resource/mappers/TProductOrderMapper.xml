@@ -14,7 +14,7 @@
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
-		<collection property="address" ofType="cn.com.ddhj.model.TUserAddresss">
+		<collection property="address" ofType="cn.com.ddhj.model.TUserAddress">
 			<result column="address_code" property="code" jdbcType="VARCHAR" />
 			<result column="name" property="name" jdbcType="VARCHAR" />
 			<result column="phone" property="phone" jdbcType="VARCHAR" />
@@ -47,7 +47,7 @@
 		t_product_order
 		where `code` = #{orderCode,jdbcType=VARCHAR}
 	</delete>
-	<insert id="insertSelective" parameterType="cn.com.ddhj.model.product.TProductOrder">
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TProductOrder">
 		insert into t_product_order
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			uuid,
@@ -78,7 +78,7 @@
 			%H:%i:%s'),
 		</trim>
 	</insert>
-	<update id="updateByCode" parameterType="cn.com.ddhj.model.product.TProductOrder">
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TProductOrder">
 		update t_product_order
 		<set>
 			<if test="payMoney != null">
@@ -117,7 +117,7 @@
 		ua.street
 		FROM
 		t_product_order AS o,
-		t_user_addresss AS ua
+		t_user_address AS ua
 		WHERE
 		o.address_code =
 		ua.`code`

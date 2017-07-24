@@ -12,7 +12,7 @@ public class TProductOrder extends BaseModel {
 
 	private List<TProductOrderDetail> details;
 
-	private TUserAddresss address;
+	private TUserAddress address;
 
 	public List<TProductOrderDetail> getDetails() {
 		return details;
@@ -22,11 +22,11 @@ public class TProductOrder extends BaseModel {
 		this.details = details;
 	}
 
-	public TUserAddresss getAddress() {
+	public TUserAddress getAddress() {
 		return address;
 	}
 
-	public void setAddress(TUserAddresss address) {
+	public void setAddress(TUserAddress address) {
 		this.address = address;
 	}
 
