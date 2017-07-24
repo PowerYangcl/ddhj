@@ -32,6 +32,7 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.dto.trade.TTradeOrderDto;
 import cn.com.ddhj.dto.user.TMessageDto;
@@ -45,11 +46,13 @@ import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.TPayment;
+import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
+import cn.com.ddhj.result.EntityResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
@@ -87,6 +90,8 @@ import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
 import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
 import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
 import cn.com.ddhj.service.report.ITReportService;
+import cn.com.ddhj.service.store.ITProductOrderService;
+import cn.com.ddhj.service.store.ITUserAddressService;
 import cn.com.ddhj.service.user.ITMessageService;
 import cn.com.ddhj.service.user.ITUserCarbonOperationService;
 import cn.com.ddhj.service.user.ITUserLpFollowService;
@@ -128,6 +133,10 @@ public class ApiController extends BaseClass {
 	private ITradeService tradeService;
 	@Autowired
 	private ITUserCarbonOperationService userCarbonOperService;
+	@Autowired
+	private ITProductOrderService productOrderService;
+	@Autowired
+	private ITUserAddressService userAddressService;
 
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
@@ -493,11 +502,21 @@ public class ApiController extends BaseClass {
 		 */
 		// 创建订单
 		else if ("order_create".equals(api.getApiTarget())) {
-			return null;
-		} else if ("order_detail".equals(api.getApiTarget())) {
-			return null;
-		} else if ("address_update".equals(api.getApiTarget())) {
-			return null;
+			TProductOrderDto dto = obj.toJavaObject(TProductOrderDto.class);
+			BaseResult result = productOrderService.createOrder(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 订单详情
+		else if ("order_detail".equals(api.getApiTarget())) {
+			String orderCode = obj.getString("orderCode");
+			EntityResult result = productOrderService.findOrderDetailByCode(orderCode);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 修改收货地址
+		else if ("address_update".equals(api.getApiTarget())) {
+			TUserAddress entity = obj.toJavaObject(TUserAddress.class);
+			BaseResult result = userAddressService.updateByCode(entity, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**
 		 * ================= 点点商城相关 end ======================
