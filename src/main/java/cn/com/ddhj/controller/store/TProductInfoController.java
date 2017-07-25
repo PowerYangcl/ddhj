@@ -8,13 +8,13 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.result.DataResult;
 
 @Controller
-@RequestMapping("/store/product/")
+@RequestMapping("store/product/")
 public class TProductInfoController {
 
 	
 	@RequestMapping("index")
 	public String index() {
-		return null;
+		return "/jsp/store/product/index";
 	}
 
 	@RequestMapping("data")
