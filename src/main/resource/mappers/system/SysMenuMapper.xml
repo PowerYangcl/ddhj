@@ -105,4 +105,15 @@
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
+	<select id="findEntityAll" resultMap="BaseResultMap"
+		parameterType="cn.com.ddhj.dto.system.SysMenuDto">
+		select
+		<include refid="Base_Column_List" />
+		from sys_menu
+		<where>
+			group_code = #{groupCode,jdbcType=VARCHAR}
+			and parent_code =
+			#{parentCode,jdbcType=VARCHAR}
+		</where>
+	</select>
 </mapper>

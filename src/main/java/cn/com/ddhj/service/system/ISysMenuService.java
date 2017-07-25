@@ -1,11 +1,18 @@
 package cn.com.ddhj.service.system;
 
 import java.util.List;
-import java.util.Map;
 
-public interface ISysMenuService {
+import cn.com.ddhj.dto.system.SysMenuDto;
+import cn.com.ddhj.model.system.SysMenu;
+import cn.com.ddhj.service.IBaseService;
 
-	List<Map<String, Object>> menu();
-	
-	List<Map<String, Object>> subMenu();
+public interface ISysMenuService extends IBaseService<SysMenu, SysMenuDto> {
+
+	/**
+	 * 根据菜单分组编码查询菜单列表
+	 * 
+	 * @param groupCode
+	 * @return
+	 */
+	List<SysMenu> menu(String groupCode);
 }

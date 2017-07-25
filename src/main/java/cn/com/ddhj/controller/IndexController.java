@@ -14,15 +14,13 @@ public class IndexController {
 
 	@RequestMapping("index")
 	public String index(ModelMap model) {
-		model.addAttribute("default", service.menu().get(0));
-		model.addAttribute("menu", service.menu());
+		model.addAttribute("menus", service.menu("SMG0001"));
 		return "/jsp/index/index";
 	}
 
 	@RequestMapping("subindex")
-	public String subIndex(ModelMap model, String menuCode) {
-		model.addAttribute("default", service.subMenu().get(0));
-		model.addAttribute("menu", service.subMenu());
+	public String subIndex(ModelMap model, String groupCode) {
+		model.addAttribute("menus", service.menu(groupCode));
 		return "/jsp/index/sub_index";
 	}
 }
