@@ -19,8 +19,8 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenu, SysMenuMapper, 
 	private SysMenuMapper mapper;
 
 	@Override
-	public List<SysMenu> menu(String groupCode) {
-		return getMenu(groupCode, "0");
+	public List<SysMenu> menu(String groupCode,String parentCode) {
+		return getMenu(groupCode,parentCode);
 	}
 
 	private List<SysMenu> getMenu(String groupCode, String parentCode) {

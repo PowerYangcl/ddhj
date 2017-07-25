@@ -12,7 +12,8 @@ public interface ISysMenuService extends IBaseService<SysMenu, SysMenuDto> {
 	 * 根据菜单分组编码查询菜单列表
 	 * 
 	 * @param groupCode
+	 * @param parentCode
 	 * @return
 	 */
-	List<SysMenu> menu(String groupCode);
+	List<SysMenu> menu(String groupCode, String parentCode);
 }

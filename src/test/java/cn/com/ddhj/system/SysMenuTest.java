@@ -23,7 +23,7 @@ public class SysMenuTest extends BaseTest {
 
 	@Test
 	public void menus() {
-		List<SysMenu> list = service.menu("SMG0001");
+		List<SysMenu> list = service.menu("SMG0001","0");
 		System.out.println(JSON.toJSON(list));
 	}
 }
