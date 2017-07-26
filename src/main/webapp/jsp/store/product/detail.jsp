@@ -14,7 +14,7 @@
 		<%@ include file="/inc/left.jsp" %>
       	<div class="centercontent tables">
 			<div id="contentwrapper" class="contentwrapper">
-				<table cellpadding="0" cellspacing="0" border="0" class="stdtable">
+				<table style="margin-top: 25px;border: 1px solid;" cellpadding="0" cellspacing="0" border="0" class="stdtable">
 					<tbody>
 						<tr>
 							<td>商品编码</td>
@@ -44,6 +44,10 @@
 									<c:otherwise>不可售</c:otherwise>
 								</c:choose>
 							</td>
+						</tr>
+						<tr>
+							<td>说明提示</td>
+							<td>${product.productTip }</td>
 						</tr>
 					</tbody>
 				</table>
