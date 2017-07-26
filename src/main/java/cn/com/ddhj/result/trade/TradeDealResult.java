@@ -1,7 +1,6 @@
 package cn.com.ddhj.result.trade;
 
 import cn.com.ddhj.base.PageResult;
-import cn.com.ddhj.model.trade.TTradeDeal;
 
 /**
  * 
@@ -10,6 +9,6 @@ import cn.com.ddhj.model.trade.TTradeDeal;
  * 作者: 海涛<br>
  * 时间: 2017年3月16日
  */
-public class TradeDealResult extends PageResult<TTradeDeal> {
+public class TradeDealResult extends PageResult {
 
 }

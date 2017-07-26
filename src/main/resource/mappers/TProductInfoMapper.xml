@@ -11,6 +11,8 @@
 		<result column="current_price" property="currentPrice"
 			jdbcType="INTEGER" />
 		<result column="stock_num" property="stockNum" jdbcType="INTEGER" />
+		<result column="flag_sellable" property="flagSellable"
+			jdbcType="INTEGER" />
 		<result column="product_tip" property="productTip" jdbcType="VARCHAR" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
@@ -20,7 +22,7 @@
 	<sql id="Base_Column_List">
 		id, uuid, product_code, product_name, main_pic_url,
 		current_price,
-		stock_num, product_tip,
+		stock_num,flag_sellable, product_tip,
 		create_user,
 		DATE_FORMAT(create_time,'%Y-%m-%d
 		%H:%i:%s') as
@@ -31,20 +33,18 @@
 		update_time
 	</sql>
 
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
-		parameterType="java.lang.Integer">
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
 		select
 		<include refid="Base_Column_List" />
 		from
 		t_product_info
-		where
-		id =
-		#{id,jdbcType=INTEGER}
+		where product_code = #{productCode,jdbcType=VARCHAR}
 	</select>
 
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from
-		t_product_info where id = #{id,jdbcType=INTEGER}
+		t_product_info where product_code = #{productCode,jdbcType=VARCHAR}
 	</delete>
 
 	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TProductInfo">
@@ -70,6 +70,9 @@
 			</if>
 			<if test="stockNum != null">
 				stock_num,
+			</if>
+			<if test="flagSellable != null">
+				flag_sellable,
 			</if>
 			<if test="productTip != null">
 				product_tip,
@@ -101,6 +104,9 @@
 			<if test="stockNum != null">
 				#{stockNum,jdbcType=INTEGER},
 			</if>
+			<if test="flagSellable != null">
+				#{flagSellable,jdbcType=INTEGER},
+			</if>
 			<if test="productTip != null">
 				#{productTip,jdbcType=VARCHAR},
 			</if>
@@ -113,15 +119,9 @@
 		</trim>
 	</insert>
 
-	<update id="updateSelective" parameterType="cn.com.ddhj.model.TProductInfo">
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TProductInfo">
 		update t_product_info
 		<set>
-			<if test="uuid != null">
-				uuid = #{uuid,jdbcType=VARCHAR},
-			</if>
-			<if test="productCode != null">
-				product_code = #{productCode,jdbcType=VARCHAR},
-			</if>
 			<if test="productName != null">
 				product_name = #{productName,jdbcType=VARCHAR},
 			</if>
@@ -134,6 +134,9 @@
 			<if test="stockNum != null">
 				stock_num = #{stockNum,jdbcType=INTEGER},
 			</if>
+			<if test="flagSellable != null">
+				flag_sellable = #{flagSellable,jdbcType=INTEGER},
+			</if>
 			<if test="productTip != null">
 				product_tip = #{productTip,jdbcType=VARCHAR},
 			</if>
@@ -141,7 +144,7 @@
 			update_time =
 			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 		</set>
-		where id = #{id,jdbcType=INTEGER}
+		where product_code = #{productCode,jdbcType=VARCHAR}
 	</update>
 	<!-- 根据集合参数查询商品列表 -->
 	<select id="findProductsByList" parameterType="list" resultMap="BaseResultMap">
@@ -154,7 +157,24 @@
 			</foreach>
 		</where>
 	</select>
-
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.store.TProductInfoDto"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from
+		t_product_info
+		<where>
+			1=1
+			<if test="productCode != null and productCode != ''">
+				and product_code = #{productName,jdbcType=VARCHAR}
+			</if>
+			<if test="productName != null and productName != ''">
+				and product_name like
+				CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+		order by create_time desc
+	</select>
 </mapper>
 
 

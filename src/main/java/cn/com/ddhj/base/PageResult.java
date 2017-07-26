@@ -2,6 +2,8 @@ package cn.com.ddhj.base;
 
 import java.util.List;
 
+import cn.com.ddhj.model.BaseModel;
+
 /**
  * 
  * 类: PageResult <br>
@@ -11,16 +13,16 @@ import java.util.List;
  * 
  * @param <T>
  */
-public class PageResult<T> extends BaseResult {
+public class PageResult extends BaseResult {
 
-	private List<T> repList;
+	private List<? extends BaseModel> repList;
 	private Integer repCount;
 
-	public List<T> getRepList() {
+	public List<? extends BaseModel> getRepList() {
 		return repList;
 	}
 
-	public void setRepList(List<T> repList) {
+	public void setRepList(List<? extends BaseModel> repList) {
 		this.repList = repList;
 	}
 

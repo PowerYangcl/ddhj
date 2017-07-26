@@ -42,9 +42,8 @@ public class SysUserController {
 	public SysUserLoginResult login(SysUserDto dto, HttpSession session) {
 		SysUserLoginResult result = service.login(dto);
 		if (result.getResultCode() == 0) {
-			session.setAttribute(result.getUser().getUuid(), result.getUser());
+			session.setAttribute("user", result.getUser());
 		}
-		System.out.println(JSONObject.toJSON(result));
 		return result;
 	}
 }

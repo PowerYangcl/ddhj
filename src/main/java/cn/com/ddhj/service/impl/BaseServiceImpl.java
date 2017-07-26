@@ -168,8 +168,8 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 	 * @see cn.com.ath.service.IBaseService#findEntityToPage(cn.com.ath.dto.BaseDto)
 	 */
 	@Override
-	public PageResult<T> findEntityToPage(DTO dto) {
-		PageResult<T> result = new PageResult<T>();
+	public PageResult findEntityToPage(DTO dto) {
+		PageResult result = new PageResult();
 		dto.setStart(dto.getPageIndex() * dto.getPageSize());
 		List<T> list = mapper.findEntityAll(dto);
 		int total = mapper.findEntityAllCount(dto);

@@ -87,5 +87,5 @@ public interface IBaseService<T extends BaseModel, DTO extends BaseDto> {
 	 * @param dto
 	 * @return
 	 */
-	PageResult<T> findEntityToPage(DTO dto);
+	PageResult findEntityToPage(DTO dto);
 }
