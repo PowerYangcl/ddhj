@@ -175,6 +175,33 @@
 		</where>
 		order by create_time desc
 	</select>
+	
+	
+	<resultMap id="getProductInfoMap" type="cn.com.ddhj.result.TProductInfoResult">
+		<result column="product_code" property="productCode" jdbcType="VARCHAR" />
+		<result column="product_name" property="productName" jdbcType="VARCHAR" />
+		<result column="main_pic_url" property="mainPicUrl" jdbcType="VARCHAR" />
+		<result column="current_price" property="currentPrice" jdbcType="INTEGER" />
+		<result column="stock_num" property="stockNum" jdbcType="INTEGER" />
+		<result column="flag_sellable" property="flagSellable" jdbcType="INTEGER" />
+		<result column="product_tip" property="productTip" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getProductInfo" parameterType="java.lang.String" resultMap="getProductInfoMap">
+		select 
+			i.product_code as productCode,
+			i.product_name as productName,
+			i.main_pic_url as mainPicUrl,
+			i.current_price as currentPrice,
+			i.stock_num as stockNum,
+			i.product_tip as productTip,
+			GROUP_CONCAT(p.pic_url order by p.id asc) as picUrls
+		from 
+			t_product_info i left join t_product_pic p on i.product_code = p.product_code
+		where
+			i.product_code  = #{productCode}
+	</select>
+	
+	
 </mapper>
 
 

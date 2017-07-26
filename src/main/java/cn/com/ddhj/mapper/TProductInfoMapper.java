@@ -4,6 +4,7 @@ import java.util.List;
 
 import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.model.TProductInfo;
+import cn.com.ddhj.result.TProductInfoResult;
 
 public interface TProductInfoMapper extends BaseMapper<TProductInfo, TProductInfoDto> {
 
@@ -18,4 +19,15 @@ public interface TProductInfoMapper extends BaseMapper<TProductInfo, TProductInf
 	 * @return
 	 */
 	List<TProductInfo> findProductsByList(List<TProductInfo> list);
+
+	/**
+	 * @description:根据product code 获取商品信息 
+	 * 
+	 * @param productCode
+	 * @return
+	 * @author Yangcl 
+	 * @date 2017年7月26日 下午3:08:54 
+	 * @version 1.0.0.1
+	 */
+	public TProductInfoResult getProductInfo(String productCode); 
 }
