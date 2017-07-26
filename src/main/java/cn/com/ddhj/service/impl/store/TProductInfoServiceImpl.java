@@ -3,6 +3,7 @@ package cn.com.ddhj.service.impl.store;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,22 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 
 	/**
 	 * @description: 获取商品详细信息
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=product_info&api_key=appfamilyhas&apiInput={%22productCode%22:%22801613242%22}
+	 * @返回参数如下：
+		 {
+		    "status": "success",
+		    "msg": "查询成功",
+		    "entity": {
+		        "productCode": "801613242",
+		        "productName": "测试0",
+		        "mainPicUrl": "default.jpg",
+		        "currentPrice": 89,
+		        "stockNum": 99,
+		        "productTip": "",
+		        "flagSellable": 0,
+		        "picUrls": "purl-1,purl-2,purl-3,purl-4,purl-5"
+		    }
+		}
 	 * 
 	 * @param productCode
 	 * @author Yangcl 
@@ -50,6 +67,11 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 	 */
 	public JSONObject getProductInfo(String productCode) {
 		JSONObject re = new JSONObject();
+		if(StringUtils.isBlank(productCode)){
+			re.put("status", "error");
+			re.put("msg", "商品编号不得为空");
+			return re;
+		}
 		TProductInfoResult e = mapper.getProductInfo(productCode);
 		if(e == null){
 			re.put("status", "error");
@@ -64,3 +86,26 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 	
  
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

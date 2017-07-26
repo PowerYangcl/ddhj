@@ -90,6 +90,7 @@ import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
 import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
 import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
 import cn.com.ddhj.service.report.ITReportService;
+import cn.com.ddhj.service.store.ITProductInfoService;
 import cn.com.ddhj.service.store.ITProductOrderService;
 import cn.com.ddhj.service.store.ITUserAddressService;
 import cn.com.ddhj.service.user.ITMessageService;
@@ -137,7 +138,9 @@ public class ApiController extends BaseClass {
 	private ITProductOrderService productOrderService;
 	@Autowired
 	private ITUserAddressService userAddressService;
-
+	@Autowired
+	private ITProductInfoService productInfoService;
+	
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
 
@@ -517,6 +520,11 @@ public class ApiController extends BaseClass {
 			TUserAddress entity = obj.toJavaObject(TUserAddress.class);
 			BaseResult result = userAddressService.updateByCode(entity, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 获取商品详细信息
+		else if ("product_info".equals(api.getApiTarget())){
+			String pcode = obj.getString("productCode"); 
+			return productInfoService.getProductInfo(pcode);
 		}
 		/**
 		 * ================= 点点商城相关 end ======================
