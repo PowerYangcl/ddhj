@@ -51,6 +51,9 @@
 						</tr>
 					</tbody>
 				</table>
+				<div style="margin: 10px;text-align: center;">
+					<button class="stdbtn btn_blue" onclick="window.open('index.htm','_self')">返回</button>
+				</div>
 			</div>
         </div>
 	</div>

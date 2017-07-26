@@ -166,7 +166,7 @@
 		<where>
 			1=1
 			<if test="productCode != null and productCode != ''">
-				and product_code = #{productName,jdbcType=VARCHAR}
+				and product_code = #{productCode,jdbcType=VARCHAR}
 			</if>
 			<if test="productName != null and productName != ''">
 				and product_name like

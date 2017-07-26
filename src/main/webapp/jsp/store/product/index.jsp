@@ -35,7 +35,7 @@
 					</div>
 					<div>
 						<p style="margin:5px 0px 0px 0px;">
-							<a href="addindex.htm" class="btn" style="width:100px;text-align: center;">添加</a>
+							<button onclick="window.open('addindex.htm','_self')" class="stdbtn" style="width:100px;text-align: center;">添加</button>
 						</p>
 					</div>
 				</div>

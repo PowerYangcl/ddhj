@@ -55,8 +55,9 @@
 							<input type="text" name="productTip" id="productTip" class="longinput" value="${product.productTip }"/>
 						</span>
 					</p>
-					<p class="stdformbutton">
-						<button type="button" class="submit radius2" onclick="Product.edit()">编辑</button>
+					<p class="stdformbutton" style="text-align:center;">
+						<button style="margin:10px;" type="button" class="stdbtn btn_blue" onclick="Product.edit()">编辑</button>
+						<button style="margin:10px;" type="button" class="stdbtn" onclick="window.open('index.htm','_self')">取消</button>
 					</p>
         		</form>
         	</div>
