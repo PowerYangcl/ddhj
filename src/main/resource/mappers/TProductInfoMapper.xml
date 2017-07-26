@@ -11,7 +11,8 @@
 		<result column="current_price" property="currentPrice"
 			jdbcType="INTEGER" />
 		<result column="stock_num" property="stockNum" jdbcType="INTEGER" />
-		<result column="flag_sellable" property="flagSellable" jdbcType="INTEGER" />
+		<result column="flag_sellable" property="flagSellable"
+			jdbcType="INTEGER" />
 		<result column="product_tip" property="productTip" jdbcType="VARCHAR" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
@@ -32,20 +33,18 @@
 		update_time
 	</sql>
 
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
-		parameterType="java.lang.Integer">
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
 		select
 		<include refid="Base_Column_List" />
 		from
 		t_product_info
-		where
-		id =
-		#{id,jdbcType=INTEGER}
+		where product_code = #{productCode,jdbcType=VARCHAR}
 	</select>
 
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from
-		t_product_info where id = #{id,jdbcType=INTEGER}
+		t_product_info where product_code = #{productCode,jdbcType=VARCHAR}
 	</delete>
 
 	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TProductInfo">
@@ -73,7 +72,7 @@
 				stock_num,
 			</if>
 			<if test="flagSellable != null">
-				flag_sellable
+				flag_sellable,
 			</if>
 			<if test="productTip != null">
 				product_tip,
@@ -120,15 +119,9 @@
 		</trim>
 	</insert>
 
-	<update id="updateSelective" parameterType="cn.com.ddhj.model.TProductInfo">
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TProductInfo">
 		update t_product_info
 		<set>
-			<if test="uuid != null">
-				uuid = #{uuid,jdbcType=VARCHAR},
-			</if>
-			<if test="productCode != null">
-				product_code = #{productCode,jdbcType=VARCHAR},
-			</if>
 			<if test="productName != null">
 				product_name = #{productName,jdbcType=VARCHAR},
 			</if>
@@ -151,7 +144,7 @@
 			update_time =
 			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 		</set>
-		where id = #{id,jdbcType=INTEGER}
+		where product_code = #{productCode,jdbcType=VARCHAR}
 	</update>
 	<!-- 根据集合参数查询商品列表 -->
 	<select id="findProductsByList" parameterType="list" resultMap="BaseResultMap">
@@ -173,12 +166,14 @@
 		<where>
 			1=1
 			<if test="productCode != null and productCode != ''">
-				and product_code = #{productName,jdbcType=VARCHAR}  
+				and product_code = #{productName,jdbcType=VARCHAR}
 			</if>
 			<if test="productName != null and productName != ''">
-				and product_name like CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
+				and product_name like
+				CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
 			</if>
 		</where>
+		order by create_time desc
 	</select>
 </mapper>
 

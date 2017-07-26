@@ -11,7 +11,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSON;
 
-import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.model.TProductInfo;
@@ -39,8 +38,9 @@ public class TProductOrderTest extends BaseTest {
 		list.add(product);
 		dto.setProductList(list);
 		System.out.println(JSON.toJSON(dto));
-//		BaseResult result = service.createOrder(dto, "6a0a01f3378a459580b20ac89eada0fd");
-//		System.out.println(JSON.toJSON(result));
+		// BaseResult result = service.createOrder(dto,
+		// "6a0a01f3378a459580b20ac89eada0fd");
+		// System.out.println(JSON.toJSON(result));
 	}
 
 	public void findOrderDetailByCode() {

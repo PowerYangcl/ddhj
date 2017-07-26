@@ -10,6 +10,7 @@ CREATE TABLE t_product_info (
 	current_price INT DEFAULT 0 COMMENT '当前价格(碳币)',
 	stock_num INT DEFAULT 0 COMMENT '库存',
 	product_tip VARCHAR (500) DEFAULT '' COMMENT '商品说明提示',
+	`flag_sellable` INT DEFAULT 0 COMMENT '是否可售 0 可售 1 不可售',
 	`create_user` VARCHAR (20) NOT NULL COMMENT '创建人',
 	`create_time` datetime NOT NULL COMMENT '创建时间',
 	`update_user` VARCHAR (20) NOT NULL COMMENT '最后修改人',
