@@ -57,34 +57,7 @@
             <ul class="headermenu">
                 <li class="current">
                     <!--示例：href="****\***.do"-->
-                    <a href="">
-                        导航栏1
-                    </a>
-                </li>
-                <li>
-                    <a href="">
-                        导航栏2
-                    </a>
-                </li>
-                <li>
-                    <a href="">
-                        导航栏3
-                    </a>
-                </li>
-                <li>
-                    <a href="">
-                        导航栏4
-                    </a>
-                </li>
-                <li>
-                    <a href="">
-                        导航栏5
-                    </a>
-                </li>
-                <li>
-                    <a href="">
-                        导航栏6
-                    </a>
+                    <a href="">点点环境</a>
                 </li>
             </ul>
         </div>	

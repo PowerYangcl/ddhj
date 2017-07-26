@@ -7,6 +7,15 @@ public class TProductInfo extends BaseModel {
 	private Integer currentPrice;
 	private Integer stockNum;
 	private String productTip;
+	private Integer flagSellable;
+
+	public Integer getFlagSellable() {
+		return flagSellable;
+	}
+
+	public void setFlagSellable(Integer flagSellable) {
+		this.flagSellable = flagSellable;
+	}
 
 	public String getProductCode() {
 		return productCode;

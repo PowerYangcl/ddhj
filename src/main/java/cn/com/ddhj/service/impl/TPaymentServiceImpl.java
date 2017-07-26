@@ -11,7 +11,6 @@ import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.TPayment;
 import cn.com.ddhj.model.user.TUser;
-import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.service.IPaymentService;
 import cn.com.ddhj.util.DateUtil;
 
@@ -96,7 +95,7 @@ public class TPaymentServiceImpl extends BaseServiceImpl<TPayment, TPaymentMappe
 	}
 
 	@Override
-	public PageResult<TPayment> findEntityToPage(TPaymentDto dto) {
+	public PageResult findEntityToPage(TPaymentDto dto) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -9,7 +9,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.alibaba.fastjson.JSON;
 
 import cn.com.ddhj.base.BaseTest;
-import cn.com.ddhj.base.PageResult;
 import cn.com.ddhj.dto.user.TMessageDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.model.user.TMessage;

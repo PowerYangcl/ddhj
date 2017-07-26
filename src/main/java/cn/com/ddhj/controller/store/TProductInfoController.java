@@ -1,17 +1,22 @@
 package cn.com.ddhj.controller.store;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.com.ddhj.base.BaseResult;
-import cn.com.ddhj.result.DataResult;
+import cn.com.ddhj.dto.store.TProductInfoDto;
+import cn.com.ddhj.result.PageResult;
+import cn.com.ddhj.service.store.ITProductInfoService;
 
 @Controller
 @RequestMapping("store/product/")
 public class TProductInfoController {
 
-	
+	@Autowired
+	private ITProductInfoService service;
+
 	@RequestMapping("index")
 	public String index() {
 		return "/jsp/store/product/index";
@@ -19,8 +24,8 @@ public class TProductInfoController {
 
 	@RequestMapping("data")
 	@ResponseBody
-	public DataResult data() {
-		return null;
+	public PageResult data(TProductInfoDto dto) {
+		return service.findDataPage(dto);
 	}
 
 	@RequestMapping("detail")
