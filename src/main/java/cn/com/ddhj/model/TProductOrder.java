@@ -4,6 +4,7 @@ import java.util.List;
 
 public class TProductOrder extends BaseModel {
 	private String code;
+	private String orderStatus; // order_status 订单状态 OS8866001下单成功 OS8866002下单未付款 OS8866003订单作废
 	private Integer payMoney;
 	private String buyerCode;
 	private String buyerPhone;
@@ -13,6 +14,14 @@ public class TProductOrder extends BaseModel {
 	private List<TProductOrderDetail> details;
 
 	private TUserAddress address;
+
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
 
 	public List<TProductOrderDetail> getDetails() {
 		return details;

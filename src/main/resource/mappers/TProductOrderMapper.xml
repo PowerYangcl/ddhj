@@ -5,6 +5,7 @@
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
 		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="order_status" property="orderStatus" jdbcType="VARCHAR" />
 		<result column="pay_money" property="payMoney" jdbcType="INTEGER" />
 		<result column="buyer_code" property="buyerCode" jdbcType="VARCHAR" />
 		<result column="buyer_phone" property="buyerPhone" jdbcType="VARCHAR" />
@@ -52,6 +53,7 @@
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			uuid,
 			`code`,
+			order_status,
 			pay_money,
 			buyer_code,
 			buyer_phone,
@@ -65,6 +67,7 @@
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			#{uuid,jdbcType=VARCHAR},
 			#{code,jdbcType=VARCHAR},
+			#{orderStatus,jdbcType=VARCHAR},
 			#{payMoney,jdbcType=INTEGER},
 			#{buyerCode,jdbcType=VARCHAR},
 			#{buyerPhone,jdbcType=VARCHAR},
@@ -81,6 +84,9 @@
 	<update id="updateByCode" parameterType="cn.com.ddhj.model.TProductOrder">
 		update t_product_order
 		<set>
+			<if test="orderStatus != null and orderStatus !=''">
+				order_status = #{orderStatus , jdbcType=VARCHAR}, 
+			</if>
 			<if test="payMoney != null">
 				pay_money = #{payMoney,jdbcType=INTEGER},
 			</if>
@@ -102,26 +108,39 @@
 		</set>
 		where `code` = #{orderCode,jdbcType=VARCHAR}
 	</update>
+	
 	<!-- 根据订单编码获取订单详情 -->
-	<select id="findOrderDetailByCode" parameterType="java.lang.String"
-		resultMap="BaseResultMap">
+	<select id="findOrderDetailByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
 		SELECT
-		o.`code`,
-		o.pay_money,
-		o.dispatching,
-		o.create_time,
-		ua.`code` AS address_code,
-		ua.`name`,
-		ua.phone,
-		ua.provinces,
-		ua.street
-		FROM
-		t_product_order AS o,
-		t_user_address AS ua
+			o.`code`,
+			o.order_status,
+			o.pay_money,
+			o.dispatching,
+			o.create_time,
+			ua.`code` AS address_code,
+			ua.`name`,
+			ua.phone,
+			ua.provinces,
+			ua.street
+			FROM
+			t_product_order AS o,
+			t_user_address AS ua
 		WHERE
-		o.address_code =
-		ua.`code`
+			o.address_code = ua.`code`
 		and
-		o.`code`=#{code,jdbcType=VARCHAR}
+			o.`code`=#{code,jdbcType=VARCHAR}
 	</select>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
