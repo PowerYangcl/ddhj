@@ -40,7 +40,14 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 	}
 	
 
-	@Override
+	/**
+	 * @description: 获取商品详细信息
+	 * 
+	 * @param productCode
+	 * @author Yangcl 
+	 * @date 2017年7月26日 下午3:34:47 
+	 * @version 1.0.0.1
+	 */
 	public JSONObject getProductInfo(String productCode) {
 		JSONObject re = new JSONObject();
 		TProductInfoResult e = mapper.getProductInfo(productCode);
