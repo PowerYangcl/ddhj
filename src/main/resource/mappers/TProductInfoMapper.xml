@@ -172,6 +172,13 @@
 				and product_name like
 				CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
 			</if>
+			<if test="flagSellable != null and flagSellable != -1">
+				and flag_Sellable = #{flagSellable,jdbcType=INTEGER}
+			</if>
+			<if test="stockNumFlag != null and stockNumFlag != ''">
+				and stock_num > 0
+			</if>
+			
 		</where>
 		order by create_time desc
 	</select>

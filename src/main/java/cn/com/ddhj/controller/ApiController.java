@@ -32,6 +32,7 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.dto.trade.TTradeOrderDto;
@@ -538,6 +539,16 @@ public class ApiController extends BaseClass {
 		// 删除收货地址
 		else if("delete_user_address".equals(api.getApiTarget())){
 			return userAddressService.deleteUserAddress(obj);
+		}
+		//商品列表
+		else if("product_list".equals(api.getApiTarget())) {
+			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);
+			//0 可售
+			dto.setFlagSellable(0);
+			//库存大于0
+			dto.setStockNumFlag("gt0");
+			BaseResult result = productInfoService.findDataPage(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**
 		 * ================= 点点商城相关 end ======================
