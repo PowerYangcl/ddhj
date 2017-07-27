@@ -1,10 +1,20 @@
 package cn.com.ddhj.service.impl.store;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.UUID;
+
+import javax.swing.text.html.parser.Entity;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TUserAddressMapper;
 import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.model.user.TUser;
@@ -19,6 +29,8 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 
 	@Autowired
 	private ITUserService userService;
+	@Autowired
+	private TUserAddressMapper mapper;
 
 	/**
 	 * 
@@ -46,4 +58,78 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		return result;
 	}
 
+	
+	
+	/**
+	 * @description: 添加用户收货地址
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=add_user_address&api_key=appfamilyhas&
+	 * apiInput={"userCode":"U161005100033","name":"出柜斌","phone":"15800002222","provinces":"天津市河西区鸭厂镇","street":"河东区成林庄道100号","isDefault":1}
+	 * @返回数据如下：
+		{
+		    "status": "success",
+		    "msg": "地址添加成功"
+		}
+	 * @param entity
+	 * @author Yangcl 
+	 * @date 2017年7月27日 下午2:52:00 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject addUserAddress(JSONObject e_) {
+		JSONObject re = new JSONObject();
+		TUserAddress e = null;
+		try {
+			e = e_.toJavaObject(TUserAddress.class);
+		} catch (Exception ex) {
+			re.put("status", "error");
+			re.put("msg", "地址信息解析错误");
+			return re;
+		}
+		if(e == null){
+			re.put("status", "error");
+			re.put("msg", "地址信息解析错误，有效数据为空");
+			return re;
+		}
+		
+		if(StringUtils.isAnyBlank(e.getUserCode() , e.getName() , e.getPhone() , e.getProvinces() , e.getStreet() , e.getIsDefault()==null ? "" :e.getIsDefault().toString())){
+			re.put("status", "error");
+			re.put("msg", "地址关键信息不得为空");
+			return re;
+		}
+		e.setUuid(UUID.randomUUID().toString().replace("-", "")); 
+		e.setCode(WebHelper.getInstance().getUniqueCode("AR")); 
+		e.setCreateUser(e.getUserCode());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String cdate = sdf.format(new Date());
+		e.setCreateTime(cdate);
+		e.setUpdateUser(e.getUserCode());
+		e.setUpdateTime(cdate);
+		
+		int flag = mapper.insertSelective(e);
+		if(flag == 1){
+			re.put("status", "success");
+			re.put("msg", "地址添加成功");
+		}else{
+			re.put("status", "error");
+			re.put("msg", "添加收货地址失败");
+		}
+		return re;
+	}
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

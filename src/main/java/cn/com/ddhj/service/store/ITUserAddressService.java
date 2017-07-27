@@ -1,5 +1,7 @@
 package cn.com.ddhj.service.store;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.model.TUserAddress;
@@ -19,4 +21,14 @@ public interface ITUserAddressService extends IBaseService<TUserAddress, BaseDto
 	 * @return
 	 */
 	BaseResult updateByCode(TUserAddress entity, String userToken);
+	
+	/**
+	 * @description: 添加用户收货地址
+	 * 
+	 * @param entity
+	 * @author Yangcl 
+	 * @date 2017年7月27日 下午2:52:00 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject addUserAddress(JSONObject entity);
 }

@@ -531,6 +531,10 @@ public class ApiController extends BaseClass {
 			String buyerCode = obj.getString("buyerCode"); 
 			return productOrderService.findProductOrderList(buyerCode);
 		}
+		// 新增收货地址
+		else if("add_user_address".equals(api.getApiTarget())){
+			return userAddressService.addUserAddress(obj); 
+		}
 		/**
 		 * ================= 点点商城相关 end ======================
 		 */
