@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.helper.WebHelper;
@@ -20,6 +22,7 @@ import cn.com.ddhj.model.TProductOrderDetail;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
+import cn.com.ddhj.result.ProductOrderResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductOrderService;
@@ -182,4 +185,83 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		return list;
 	}
 
+	/**
+	 * @description: 返回指定用户的订单列表信息 
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=product_order_list&api_key=appfamilyhas&apiInput={"buyerCode":"U161005100033"}
+	 * 
+	 * @返回参数如下：
+		 {    
+		    "status": "success",
+		    "msg": "查询成功",
+		    "buyerCode": "U161005100033",
+		    "list": [
+		        {
+		            "orderCode": "DD918342863587",
+		            "orderStatus": "OS8866001",
+		            "payMoney": 1500,
+		            "mobile": "15800000000",
+		            "productNames": "测试0,测试1",
+		            "mpurl": "http://image-family.huijia29e/31c4779dd7b57ccbf0b1aa.jpg,http://image-cd4d8.jpg"
+		        },
+		        {
+		            "orderCode": "DD918342863676",
+		            "orderStatus": "OS8866001",
+		            "payMoney": 1200,
+		            "mobile": "15800000000",
+		            "productNames": "测试2,测试3",
+		            "mpurl": "http://image-family.huij1618ccf58429aaec031ba998c4654.jpg,http://image-a7c2f712f.jpg"
+		        }
+		    ]
+		}
+	 * productNames 多个商品逗号分隔
+	 * mpurl 多个商品主图逗号分隔
+	 * 
+	 * @param buyerCode
+	 * @author Yangcl 
+	 * @date 2017年7月27日 上午11:05:19 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject findProductOrderList(String buyerCode) {
+		JSONObject re = new JSONObject();
+		if(StringUtils.isBlank(buyerCode)){
+			re.put("status", "error");
+			re.put("msg", "用户编号不得为空");
+			return re;
+		}
+		
+		List<ProductOrderResult> list = mapper.findProductOrderList(buyerCode);
+		if(list == null || list.size() == 0){
+			re.put("status", "error");
+			re.put("msg", "用户列表为空");
+			return re;
+		}
+		re.put("status", "success");
+		re.put("msg", "查询成功");
+		re.put("list", list);
+		re.put("buyerCode", buyerCode);
+		return re;
+	}
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
