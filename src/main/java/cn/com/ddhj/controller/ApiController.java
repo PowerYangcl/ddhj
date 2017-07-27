@@ -526,6 +526,23 @@ public class ApiController extends BaseClass {
 			String pcode = obj.getString("productCode"); 
 			return productInfoService.getProductInfo(pcode);
 		}
+		// 我的主页-商品订单-6.6.2.	商品订单列表
+		else if("product_order_list".equals(api.getApiTarget())){
+			/*
+			 select 
+				o.code as orderCode, 
+				o.order_status as orderStatus,
+				o.pay_money as payMoney,
+				o.buyer_phone as mobile,
+				GROUP_CONCAT(p.product_name) as productNames
+				GROUP_CONCAT(p.main_pic_url) as mpurl
+			from 
+				t_product_order o left join t_product_order_detail d on o.code = d.order_code left join t_product_info p on p.product_code = d.product_code
+			where 
+				o.buyer_code = 'U161005100033'
+			 */
+			return null;
+		}
 		/**
 		 * ================= 点点商城相关 end ======================
 		 */
