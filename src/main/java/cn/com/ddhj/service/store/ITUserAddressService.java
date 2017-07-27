@@ -31,4 +31,16 @@ public interface ITUserAddressService extends IBaseService<TUserAddress, BaseDto
 	 * @version 1.0.0.1
 	 */
 	public JSONObject addUserAddress(JSONObject entity);
+
+	/**
+	 * @description: 删除收货地址
+	 * 
+	 * @param obj
+	 * @return
+	 * @author Yangcl 
+	 * @date 2017年7月27日 下午3:27:57 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject deleteUserAddress(JSONObject obj);
+
 }

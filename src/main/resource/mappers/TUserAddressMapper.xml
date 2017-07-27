@@ -108,4 +108,31 @@
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
+	
+	<delete id="deleteUserAddress" parameterType="cn.com.ddhj.model.TUserAddress">
+		delete from t_user_address
+		where 
+			`code` = #{code , jdbcType=VARCHAR} 
+		and
+			user_code = #{userCode , jdbcType=VARCHAR} 
+	</delete>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

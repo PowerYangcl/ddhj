@@ -535,6 +535,10 @@ public class ApiController extends BaseClass {
 		else if("add_user_address".equals(api.getApiTarget())){
 			return userAddressService.addUserAddress(obj); 
 		}
+		// 删除收货地址
+		else if("delete_user_address".equals(api.getApiTarget())){
+			return userAddressService.deleteUserAddress(obj);
+		}
 		/**
 		 * ================= 点点商城相关 end ======================
 		 */

@@ -115,6 +115,46 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		return re;
 	}
 
+
+
+	/**
+	 * @description: 删除收货地址 
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=delete_user_address&api_key=appfamilyhas&apiInput={"userCode":"U161005100033","addrCode":"AR170727100004"}
+	 * @返回数据如下：
+		{
+		    "status": "success",
+		    "msg": "用户收货地址删除成功"
+		}
+	 * 
+	 * @param obj
+	 * @author Yangcl 
+	 * @date 2017年7月27日 下午3:28:30 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject deleteUserAddress(JSONObject obj) {
+		JSONObject re = new JSONObject();
+		String userCode = obj.getString("userCode"); 
+		String addrCode = obj.getString("addrCode"); 
+		if(StringUtils.isAnyBlank(userCode , addrCode)){
+			re.put("status", "error");
+			re.put("msg", "关键参数不得为空");
+			return re;
+		}
+		TUserAddress e = new TUserAddress();
+		e.setUserCode(userCode);
+		e.setCode(addrCode);
+		int flag = mapper.deleteUserAddress(e);
+		if(flag == 1){
+			re.put("status", "success");
+			re.put("msg", "用户收货地址删除成功");
+		}else{
+			re.put("status", "error");
+			re.put("msg", "用户收货地址删除失败");
+		}
+		
+		return re;
+	}
+
 }
 
 
