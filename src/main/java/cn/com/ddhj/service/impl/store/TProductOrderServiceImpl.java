@@ -232,7 +232,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		List<ProductOrderResult> list = mapper.findProductOrderList(buyerCode);
 		if(list == null || list.size() == 0){
 			re.put("status", "error");
-			re.put("msg", "用户列表为空");
+			re.put("msg", "用户订单列表为空");
 			return re;
 		}
 		re.put("status", "success");
