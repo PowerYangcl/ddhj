@@ -26,6 +26,8 @@ import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
 import cn.com.ddhj.result.ProductOrderResult;
+import cn.com.ddhj.result.order.ProductOrderApiResult;
+import cn.com.ddhj.result.order.ProductResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductOrderService;
@@ -394,22 +396,22 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			re.put("resultMessage", "用户订单列表为空");
 			return re;
 		}
-
-		List<ProductOrderModel> olist = new ArrayList<>();
-		for (ProductOrderResult r : list) {
-			ProductOrderModel m = new ProductOrderModel();
+		
+		List<ProductOrderApiResult> olist= new ArrayList<>();
+		for(ProductOrderResult r : list){
+			ProductOrderApiResult m = new ProductOrderApiResult();
 			m.setOrderCode(r.getOrderCode());
 			m.setOrderMoney(Double.valueOf(r.getPayMoney()));
 			m.setOrderStatus(r.getOrderStatus());
-
-			List<ProductModel> productList = new ArrayList<>();
+			
+			List<ProductResult> productList = new ArrayList<>();
 			String[] pnArr = r.getProductNames().split(",");
 			String[] mpArr = r.getMpurl().split(",");
 			String[] ppArr = r.getProductPrices().split(",");
 			String[] pcArr = r.getProductCode().split(",");
-			if (pnArr.length != 0) {
-				for (int i = 0; i < pnArr.length; i++) {
-					ProductModel p = new ProductModel();
+			if(pnArr.length != 0){
+				for(int i = 0 ; i < pnArr.length ; i ++){
+					ProductResult p = new ProductResult();
 					p.setProductCode(pcArr[i]);
 					p.setProductName(pnArr[i]);
 					p.setProductPrice(Double.valueOf(ppArr[i]));
@@ -429,81 +431,17 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 
 }
 
-class ProductOrderModel {
-	private String orderCode;
-	private Double orderMoney;
-	private String orderStatus; // order_status 订单状态 OS8866001下单成功
-								// OS8866002下单未付款 OS8866003订单作废
-	private List<ProductModel> productList;
+ 
 
-	public String getOrderCode() {
-		return orderCode;
-	}
 
-	public void setOrderCode(String orderCode) {
-		this.orderCode = orderCode;
-	}
 
-	public Double getOrderMoney() {
-		return orderMoney;
-	}
 
-	public void setOrderMoney(Double orderMoney) {
-		this.orderMoney = orderMoney;
-	}
 
-	public String getOrderStatus() {
-		return orderStatus;
-	}
 
-	public void setOrderStatus(String orderStatus) {
-		this.orderStatus = orderStatus;
-	}
 
-	public List<ProductModel> getProductList() {
-		return productList;
-	}
 
-	public void setProductList(List<ProductModel> productList) {
-		this.productList = productList;
-	}
-}
 
-class ProductModel {
-	private String productCode;
-	private String productName;
-	private String imgUrl;
-	private Double productPrice;
 
-	public String getProductCode() {
-		return productCode;
-	}
 
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
-	}
 
-	public String getProductName() {
-		return productName;
-	}
 
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
-
-	public String getImgUrl() {
-		return imgUrl;
-	}
-
-	public void setImgUrl(String imgUrl) {
-		this.imgUrl = imgUrl;
-	}
-
-	public Double getProductPrice() {
-		return productPrice;
-	}
-
-	public void setProductPrice(Double productPrice) {
-		this.productPrice = productPrice;
-	}
-}
