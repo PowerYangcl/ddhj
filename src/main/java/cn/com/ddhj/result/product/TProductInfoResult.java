@@ -1,4 +1,4 @@
-package cn.com.ddhj.result;
+package cn.com.ddhj.result.product;
 
 
 public class TProductInfoResult {

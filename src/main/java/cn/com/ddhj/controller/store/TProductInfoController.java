@@ -15,6 +15,7 @@ import cn.com.ddhj.model.TProductInfo;
 import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.result.PageResult;
 import cn.com.ddhj.service.store.ITProductInfoService;
+import cn.com.ddhj.util.Constant;
 
 @Controller
 @RequestMapping("store/product/")
@@ -56,7 +57,7 @@ public class TProductInfoController {
 			entity.setCreateUser(user.getCode());
 			result = service.insertSelective(entity);
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户尚未登录");
 		}
 		return result;
@@ -78,7 +79,7 @@ public class TProductInfoController {
 			entity.setUpdateUser(user.getCode());
 			result = service.updateByCode(entity);
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户尚未登录");
 		}
 		return result;
@@ -92,7 +93,7 @@ public class TProductInfoController {
 		if (user != null) {
 			result = service.deleteByCode(productCode);
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户尚未登录");
 		}
 		return result;

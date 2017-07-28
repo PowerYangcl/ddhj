@@ -40,6 +40,7 @@ import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.impl.orderpay.OrderPayProcess;
 import cn.com.ddhj.service.impl.orderpay.prepare.PayGatePreparePayProcess;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
 /**
@@ -84,20 +85,20 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 							order.setPath(basePath + order.getPath());
 						}
 					}
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_NULL);
 					result.setResultMessage("获取数据为空");
 					list = new ArrayList<TOrder>();
 				}
 				result.setRepList(list);
 				result.setRepCount(total);
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;
@@ -177,15 +178,15 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 					carbonOperation.setCreateTime(DateUtil.getSysDateTime());
 					carbonOperationMapper.insertSelective(carbonOperation);
 				}
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("创建订单成功");
 				result.setCode(code);
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("无效用户");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("无效用户");
 		}
 		return result;
@@ -211,14 +212,14 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				entity.setUpdateUser(user.getUserCode());
 				entity.setUpdateTime(DateUtil.getSysDateTime());
 				mapper.updateByCode(entity);
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("编辑订单成功");
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("无效用户");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("无效用户");
 		}
 		return result;
@@ -254,29 +255,29 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 									r.setLevelList(reportMapper.findReportByHousesCode(r.getHousesCode()));
 									payMoney += r.getPrice().doubleValue();
 								}
-								result.setResultCode(0);
+								result.setResultCode(Constant.RESULT_SUCCESS);
 								result.setResultMessage("获取环境报告成功");
 								result.setPayMoney(BigDecimal.valueOf(payMoney));
 								result.setReportList(reports);
 							} else {
-								result.setResultCode(-1);
+								result.setResultCode(Constant.RESULT_NULL);
 								result.setResultMessage("环境报告为空");
 							}
 						} else {
-							result.setResultCode(-1);
+							result.setResultCode(Constant.RESULT_ERROR);
 							result.setResultMessage("无效参数");
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
-						result.setResultCode(-1);
+						result.setResultCode(Constant.RESULT_ERROR);
 						result.setResultMessage("无效参数");
 					}
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("无效参数");
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
@@ -352,11 +353,11 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				int total = mapper.findEntityAllCount(dto);
 				result.setTotal(total);
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;
@@ -368,10 +369,10 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
 		List<Map<String, String>> list = mapper.findOrderAll(dto);
 		if (list != null && list.size() > 0) {
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
 			list = new ArrayList<Map<String, String>>();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("查询订单列表为空");
 		}
 		PageInfo<Map<String, String>> page = new PageInfo<Map<String, String>>(list);
@@ -384,10 +385,10 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		JSONObject result = new JSONObject();
 		Integer flag = mapper.deleteOne(id);
 		if (flag == 1) {
-			result.put("code", "1");
+			result.put("code", Constant.RESULT_SUCCESS);
 			result.put("msg", "删除成功");
 		} else {
-			result.put("code", 0);
+			result.put("code", Constant.RESULT_ERROR);
 			result.put("msg", "删除失败");
 		}
 

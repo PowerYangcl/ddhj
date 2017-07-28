@@ -20,6 +20,7 @@ import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.result.lp.TLandedPropertyDataResult;
 import cn.com.ddhj.service.ITLandedPropertyService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.PureNetUtil;
 
@@ -106,10 +107,10 @@ public class TLandedPropertyServiceImpl extends
 		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
 		List<TLandedProperty> list = mapper.findEntityAll(dto);
 		if (list != null && list.size() > 0) {
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
 			list = new ArrayList<TLandedProperty>();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("查询楼盘列表为空");
 		}
 		PageInfo<TLandedProperty> page = new PageInfo<TLandedProperty>(list);

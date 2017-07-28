@@ -22,6 +22,7 @@ import cn.com.ddhj.result.tuser.FollowResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserLpFollowService;
 import cn.com.ddhj.util.CommonUtil;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
 /**
@@ -66,24 +67,24 @@ public class TUserLpFollowServiceImpl extends BaseServiceImpl<TUserLpFollow, TUs
 				dto2.setUserCode(user.getUserCode());
 				int flag = mapper.deleteByLpCode(dto2);
 				if (flag >= 0) {
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("删除成功");
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("删除失败");
 				}
 			} else {
 				int flag = mapper.deleteByUserCode(user.getUserCode());
 				if (flag >= 0) {
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("删除成功");
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("删除失败");
 				}
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;
@@ -112,18 +113,18 @@ public class TUserLpFollowServiceImpl extends BaseServiceImpl<TUserLpFollow, TUs
 			if (mapper.findFollowIsExists(entity) == null) {
 				int flag = mapper.insertSelective(entity);
 				if (flag > 0) {
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("楼盘关注成功");
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("楼盘关注失败");
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("楼盘关注已存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;
@@ -162,22 +163,22 @@ public class TUserLpFollowServiceImpl extends BaseServiceImpl<TUserLpFollow, TUs
 						}
 						result.setList(list);
 						result.setTotal(lpMapper.findLpForUserCount(lpDto));
-						result.setResultCode(0);
+						result.setResultCode(Constant.RESULT_SUCCESS);
 						result.setResultMessage("获取关注楼盘列表成功");
 					} else {
-						result.setResultCode(-1);
+						result.setResultCode(Constant.RESULT_NULL);
 						result.setResultMessage("暂无关注楼盘");
 					}
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_NULL);
 					result.setResultMessage("暂无关注楼盘");
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;

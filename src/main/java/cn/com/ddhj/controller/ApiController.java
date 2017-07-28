@@ -32,6 +32,7 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.dto.trade.TTradeOrderDto;
@@ -63,6 +64,7 @@ import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.OrderTotal;
 import cn.com.ddhj.result.order.TOrderResult;
+import cn.com.ddhj.result.product.TPageProductListResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
@@ -99,6 +101,7 @@ import cn.com.ddhj.service.user.ITUserLpFollowService;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.service.user.ITUserStepService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
 @Controller
@@ -157,20 +160,20 @@ public class ApiController extends BaseClass {
 			// 用户注册
 			TUser entity = obj.toJavaObject(TUser.class);
 			RegisterResult result = userService.register(entity);
-			if (result.getResultCode() == 0) {
+			if (result.getResultCode() == Constant.RESULT_SUCCESS) {
 				session.setAttribute(result.getUserToken(), entity);
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result)); // 修正所有的返回值为JSONObject
 		} else if ("user_login".equals(api.getApiTarget())) {
 			TUserDto dto = obj.toJavaObject(TUserDto.class);
 			LoginResult result = userService.login(dto);
-			if (result.getResultCode() == 0) {
+			if (result.getResultCode() == Constant.RESULT_SUCCESS) {
 				session.setAttribute(result.getUserToken(), result.getUser());
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("user_logout".equals(api.getApiTarget())) {
 			BaseResult result = userService.logOut(obj.getString("userToken"));
-			if (result.getResultCode() == 0) {
+			if (result.getResultCode() == Constant.RESULT_SUCCESS) {
 				session.removeAttribute(obj.getString("userToken"));
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
@@ -216,7 +219,7 @@ public class ApiController extends BaseClass {
 		else if ("user_login_security".equals(api.getApiTarget())) {
 			TUser entity = obj.toJavaObject(TUser.class);
 			RegisterResult result = userService.loginBySecurityCode(entity);
-			if (result.getResultCode() == 0) {
+			if (result.getResultCode() == Constant.RESULT_SUCCESS) {
 				session.setAttribute(result.getUserToken(), entity);
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
@@ -538,12 +541,32 @@ public class ApiController extends BaseClass {
 		else if("delete_user_address".equals(api.getApiTarget())){
 			return userAddressService.deleteUserAddress(obj);
 		}
+		//商品列表
+		else if("product_list".equals(api.getApiTarget())) {
+			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);
+			//0 可售
+			dto.setFlagSellable(0);
+			//库存大于0
+			dto.setStockNumFlag("gt0");
+			TPageProductListResult result = productInfoService.findProductListPage(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//订单确认
+		else if("order_confirm".equals(api.getApiTarget())) {
+			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);
+			//0 可售
+			dto.setFlagSellable(0);
+			//库存大于0
+			dto.setStockNumFlag("gt0");
+			TPageProductListResult result = productInfoService.findProductListPage(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		/**
 		 * ================= 点点商城相关 end ======================
 		 */
 		else {
 			BaseResult result = new BaseResult();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("调用接口失败");
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}

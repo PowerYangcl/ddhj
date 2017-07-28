@@ -6,7 +6,8 @@ public class TProductInfoDto extends BaseDto {
 
 	private String productCode;
 	private String productName;
-	private Integer flagSellable;
+	private Integer flagSellable = -1;
+	private String stockNumFlag;
 
 	public String getProductCode() {
 		return productCode;
@@ -32,4 +33,11 @@ public class TProductInfoDto extends BaseDto {
 		this.flagSellable = flagSellable;
 	}
 
+	public String getStockNumFlag() {
+		return stockNumFlag;
+	}
+
+	public void setStockNumFlag(String stockNumFlag) {
+		this.stockNumFlag = stockNumFlag;
+	}
 }

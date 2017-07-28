@@ -19,6 +19,7 @@ import cn.com.ddhj.result.tuser.MessageSelResult;
 import cn.com.ddhj.result.tuser.MessageTotal;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITMessageService;
+import cn.com.ddhj.util.Constant;
 
 /**
  * 
@@ -58,20 +59,20 @@ public class TMessageServiceImpl extends BaseServiceImpl<TMessage, TMessageMappe
 				List<TMessage> list = mapper.findEntityAll(dto);
 				int total = mapper.findEntityAllCount(dto);
 				if (list != null && list.size() > 0) {
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_NULL);
 					result.setResultMessage("获取消息列表为空");
 					list = new ArrayList<TMessage>();
 				}
 				result.setRepList(list);
 				result.setRepCount(total);
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;
@@ -98,11 +99,11 @@ public class TMessageServiceImpl extends BaseServiceImpl<TMessage, TMessageMappe
 				int total = mapper.findEntityAllCount(dto);
 				result.setTotal(total);
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;
@@ -127,11 +128,11 @@ public class TMessageServiceImpl extends BaseServiceImpl<TMessage, TMessageMappe
 			if (user != null) {
 
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;
@@ -159,17 +160,17 @@ public class TMessageServiceImpl extends BaseServiceImpl<TMessage, TMessageMappe
 				result.setOuterCode(message.getOuterCode());
 				result.setTime(message.getCreateTime());
 				result.setType(message.getTypeName());
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("查询消息成功");
 				message.setIsRead(1);
 				message.setCode(code);
 				mapper.updateByCode(message);
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;

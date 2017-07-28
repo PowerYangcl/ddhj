@@ -14,30 +14,53 @@ import com.github.pagehelper.PageInfo;
 import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.mapper.TProductInfoMapper;
 import cn.com.ddhj.model.TProductInfo;
-import cn.com.ddhj.result.TProductInfoResult;
 import cn.com.ddhj.result.PageResult;
+import cn.com.ddhj.result.product.TPageProductListResult;
+import cn.com.ddhj.result.product.TProductInfoResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductInfoService;
+import cn.com.ddhj.util.Constant;
 
 @Service
 public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProductInfoMapper, TProductInfoDto> implements ITProductInfoService{
 	@Autowired
 	private TProductInfoMapper mapper;
 
+	/**
+	 * 查询商品列表.后台管理使用
+	 */
 	public PageResult findDataPage(TProductInfoDto dto) {
 		PageResult result = new PageResult();
 		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
 		List<TProductInfo> list = mapper.findEntityAll(dto);
 		if (list != null && list.size() > 0) {
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
 			list = new ArrayList<TProductInfo>();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("查询商品列表为空");
 		}
 		PageInfo<TProductInfo> page = new PageInfo<TProductInfo>(list);
 		result.setPage(page);
 		return result;
+	}
+	
+	/**
+	 * 查询商品列表.接口使用
+	 * @author zht
+	 * @param dto
+	 * @return
+	 */
+	public TPageProductListResult findProductListPage(TProductInfoDto dto) {
+		TPageProductListResult recResult = new TPageProductListResult();
+		PageResult result = findDataPage(dto);
+		if(result.getResultCode() > 0) {
+			recResult.setProductList(result.getPage().getList());
+			recResult.setRecCount(result.getPage().getTotal());
+		}
+		recResult.setResultCode(result.getResultCode());
+		recResult.setResultMessage(result.getResultMessage());
+		return recResult;
 	}
 	
 

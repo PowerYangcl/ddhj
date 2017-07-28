@@ -7,11 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONObject;
-
 import cn.com.ddhj.dto.system.SysUserDto;
 import cn.com.ddhj.result.system.SysUserLoginResult;
 import cn.com.ddhj.service.system.ISysUserService;
+import cn.com.ddhj.util.Constant;
 
 /**
  * 
@@ -41,7 +40,7 @@ public class SysUserController {
 	@ResponseBody
 	public SysUserLoginResult login(SysUserDto dto, HttpSession session) {
 		SysUserLoginResult result = service.login(dto);
-		if (result.getResultCode() == 0) {
+		if (result.getResultCode() == Constant.RESULT_SUCCESS) {
 			session.setAttribute("user", result.getUser());
 		}
 		return result;

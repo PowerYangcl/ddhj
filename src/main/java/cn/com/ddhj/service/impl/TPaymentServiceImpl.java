@@ -12,6 +12,7 @@ import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.TPayment;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.service.IPaymentService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
 @Service
@@ -30,7 +31,7 @@ public class TPaymentServiceImpl extends BaseServiceImpl<TPayment, TPaymentMappe
 		
 		TPayment p = mapper.selectByOrderCode(entity.getOrderCode());
 		if(p != null ){
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("订单已支付"); 
 			return result;
 		}
@@ -43,16 +44,16 @@ public class TPaymentServiceImpl extends BaseServiceImpl<TPayment, TPaymentMappe
 			entity.setUpdateUser(user.getUserCode());
 			entity.setUpdateTime(DateUtil.getSysDateTime());
 			mapper.payInsertSelective(entity);
-			result.setResultCode(1);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("记录支付成功");
 		}else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("无效用户");
 		}
 //		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 //		if (login != null) {
 //		} else {
-//			result.setResultCode(-1);
+//			result.setResultCode(Constant.RESULT_ERROR);
 //			result.setResultMessage("无效用户");
 //		}
 		return result;
@@ -63,9 +64,9 @@ public class TPaymentServiceImpl extends BaseServiceImpl<TPayment, TPaymentMappe
 		BaseResult result = new BaseResult();
 		int success = mapper.insertSelective(entity);
 		if(success == 1) {
-			result.setResultCode(1);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 		}
 		return result;	
 	}
