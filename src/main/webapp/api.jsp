@@ -21,7 +21,7 @@
 			data : $("#apiForm").serialize(),
 			success : function(data) {
 				data = JSON.parse(data);
-				if (data.resultCode == 0) {
+				if (data.resultCode == 1) {
 					alert(JSON.stringify(data));
 				} else {
 					alert("调用接口失败");

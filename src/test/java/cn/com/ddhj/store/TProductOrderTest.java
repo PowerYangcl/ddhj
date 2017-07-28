@@ -25,6 +25,7 @@ public class TProductOrderTest extends BaseTest {
 	@Autowired
 	private ITProductOrderService service;
 
+	@Test
 	public void createOrder() {
 		TProductOrderDto dto = new TProductOrderDto();
 		dto.setPayMoney(100);
@@ -41,9 +42,8 @@ public class TProductOrderTest extends BaseTest {
 		System.out.println(JSON.toJSON(result));
 	}
 
-	@Test
 	public void findOrderDetailByCode() {
-		EntityResult result = service.findOrderDetailByCode("PD170728100001");
+		EntityResult result = service.findOrderDetailByCode("PD170728100001","6a0a01f3378a459580b20ac89eada0fd");
 		System.out.println(JSON.toJSON(result));
 	}
 }

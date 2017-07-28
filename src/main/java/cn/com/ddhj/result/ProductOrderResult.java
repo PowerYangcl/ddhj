@@ -9,7 +9,7 @@ package cn.com.ddhj.result;
  */
 public class ProductOrderResult {
 	private String orderCode;
-	private String orderStatus; // order_status 订单状态 OS8866001下单成功 OS8866002下单未付款 OS8866003订单作废
+	private String orderStatus; // order_status 订单状态 8866001下单成功 8866002下单未付款 8866003订单作废
 	private Integer payMoney;
 	private String mobile;
 	private String productNames;
