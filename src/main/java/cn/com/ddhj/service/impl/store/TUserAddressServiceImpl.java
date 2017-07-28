@@ -132,7 +132,7 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 
 	/**
 	 * @description: 删除收货地址 
-	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=delete_user_address&api_key=appfamilyhas&apiInput={"addressID":"AR170727100004"}
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=address_del&api_key=appfamilyhas&apiInput={"addressID":"AR170727100004"}
 	 * @返回数据如下：
 		{
 		    "resultCode": 0,
