@@ -64,6 +64,7 @@ import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.OrderTotal;
 import cn.com.ddhj.result.order.TOrderResult;
+import cn.com.ddhj.result.product.TPageProductListResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
@@ -548,7 +549,17 @@ public class ApiController extends BaseClass {
 			dto.setFlagSellable(0);
 			//库存大于0
 			dto.setStockNumFlag("gt0");
-			BaseResult result = productInfoService.findDataPage(dto);
+			TPageProductListResult result = productInfoService.findProductListPage(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//订单确认
+		else if("order_confirm".equals(api.getApiTarget())) {
+			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);
+			//0 可售
+			dto.setFlagSellable(0);
+			//库存大于0
+			dto.setStockNumFlag("gt0");
+			TPageProductListResult result = productInfoService.findProductListPage(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**
