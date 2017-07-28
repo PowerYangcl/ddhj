@@ -4,7 +4,7 @@ import java.util.List;
 
 import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.model.TProductInfo;
-import cn.com.ddhj.result.TProductInfoResult;
+import cn.com.ddhj.result.product.TProductInfoResult;
 
 public interface TProductInfoMapper extends BaseMapper<TProductInfo, TProductInfoDto> {
 

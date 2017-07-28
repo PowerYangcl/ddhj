@@ -14,8 +14,8 @@ import com.github.pagehelper.PageInfo;
 import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.mapper.TProductInfoMapper;
 import cn.com.ddhj.model.TProductInfo;
-import cn.com.ddhj.result.TProductInfoResult;
 import cn.com.ddhj.result.PageResult;
+import cn.com.ddhj.result.product.TProductInfoResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductInfoService;
 
