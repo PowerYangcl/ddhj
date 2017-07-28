@@ -27,6 +27,7 @@ import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductOrderService;
 import cn.com.ddhj.service.user.ITUserService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
 @Service
@@ -60,9 +61,9 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		// 验证商品是否存在，库存是否可用
 		DataResult result = getProductList(dto.getProductList());
 		try {
-			if (result.getResultCode() == 0) {
+			if (result.getResultCode() == Constant.RESULT_SUCCESS) {
 				UserDataResult userResult = userService.getUser(userToken);
-				if (userResult.getResultCode() == 0) {
+				if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
 					TUser user = userResult.getUser();
 					// 创建订单
 					String userCode = user.getUserCode();
@@ -76,7 +77,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 					order.setAddressCode(dto.getAddressCode());
 					order.setCreateUser(userCode);
 					BaseResult insertResult = super.insertSelective(order);
-					if (insertResult.getResultCode() == 0) {
+					if (insertResult.getResultCode() == Constant.RESULT_SUCCESS) {
 						detailMapper.batchInsert(orderDetails(dto.getProductList(), orderCode, userCode));
 					}
 				} else {
@@ -86,7 +87,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("创建订单失败，请联系技术人员");
 		}
 		return result;
@@ -109,12 +110,12 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 				List<TProductOrderDetail> list = detailMapper.findOrderProductDetail(orderCode);
 				order.setDetails(list);
 			}
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setEntity(order);
 			result.setResultMessage("获取订单详情成功");
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("获取订单详情失败，请联系技术人员");
 		}
 		return result;
@@ -152,7 +153,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		if (stockError == 0) {
 			result.setData(list);
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("商品" + productCodes.substring(0, productCodes.length() - 1) + "库存不足");
 		}
 		return result;

@@ -23,6 +23,7 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
 import cn.com.ddhj.service.ITLpCommentService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
 /**
@@ -64,13 +65,13 @@ public class TLpCommentServiceImpl extends BaseServiceImpl<TLpComment, TLpCommen
 			double goodPercent = BigDecimal.valueOf(goodTotal)
 					.divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP).doubleValue();
 			result.setGoodPercent((int) (goodPercent * 100));
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setTotal(total);
 			result.setResultMessage("获取楼盘最新5条数据成功");
 		} else {
 			list = new ArrayList<TLpComment>();
 			result.setTotal(0);
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("暂无评价");
 			result.setGoodPercent(0);
 		}
@@ -98,14 +99,14 @@ public class TLpCommentServiceImpl extends BaseServiceImpl<TLpComment, TLpCommen
 			result.setGoodTotal(commnetTotal(dto.getLpCode(), 0));
 			result.setMediumTotal(commnetTotal(dto.getLpCode(), 1));
 			result.setBadTotal(commnetTotal(dto.getLpCode(), 2));
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("查询评论成功");
 		} else {
 			result.setTotal(0);
 			result.setGoodTotal(0);
 			result.setMediumTotal(0);
 			result.setBadTotal(0);
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("此楼盘评论信息");
 		}
 		return result;
@@ -152,19 +153,19 @@ public class TLpCommentServiceImpl extends BaseServiceImpl<TLpComment, TLpCommen
 				entity.setUpdateTime(entity.getCreateTime());
 				int flag = mapper.insertSelective(entity);
 				if (flag > 0) {
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("添加评论成功");
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("添加评论失败");
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 

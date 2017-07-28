@@ -10,6 +10,7 @@ import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.result.system.SysUserLoginResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.system.ISysUserService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.MD5Util;
 
 /**
@@ -41,15 +42,15 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser, SysUserMapper, 
 			dto.setPassword(MD5Util.md5Hex(dto.getPassword()));
 			SysUser user = mapper.findSysUserForLogin(dto);
 			if (user != null) {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("登录成功");
 				result.setUser(user);
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户名或密码为空");
 		}
 		return result;

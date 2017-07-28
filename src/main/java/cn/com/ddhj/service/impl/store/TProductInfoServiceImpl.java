@@ -18,6 +18,7 @@ import cn.com.ddhj.result.PageResult;
 import cn.com.ddhj.result.product.TProductInfoResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductInfoService;
+import cn.com.ddhj.util.Constant;
 
 @Service
 public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProductInfoMapper, TProductInfoDto> implements ITProductInfoService{
@@ -29,10 +30,10 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
 		List<TProductInfo> list = mapper.findEntityAll(dto);
 		if (list != null && list.size() > 0) {
-			result.setResultCode(1);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
 			list = new ArrayList<TProductInfo>();
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("查询商品列表为空");
 		}
 		PageInfo<TProductInfo> page = new PageInfo<TProductInfo>(list);

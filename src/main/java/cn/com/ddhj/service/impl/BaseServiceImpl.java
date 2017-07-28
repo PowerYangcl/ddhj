@@ -13,6 +13,7 @@ import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.BaseModel;
 import cn.com.ddhj.service.IBaseService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
 /**
@@ -55,15 +56,15 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 		try {
 			int flag = mapper.insertSelective(entity);
 			if (flag > 0) {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("添加成功");
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("添加失败");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("添加错误，请联系管理员");
 		}
 		return result;
@@ -87,15 +88,15 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 		try {
 			int flag = mapper.updateByCode(entity);
 			if (flag >= 0) {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("编辑成功");
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("编辑失败");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("编辑错误，请联系管理员");
 		}
 		return result;
@@ -130,15 +131,15 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 		try {
 			int flag = mapper.deleteByCode(code);
 			if (flag >= 0) {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("删除成功");
 			} else {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("删除失败");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("删除错误，请联系管理员");
 		}
 		return result;
@@ -174,9 +175,9 @@ public class BaseServiceImpl<T extends BaseModel, M extends BaseMapper<T, DTO>, 
 		List<T> list = mapper.findEntityAll(dto);
 		int total = mapper.findEntityAllCount(dto);
 		if (list != null && list.size() > 0) {
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("获取数据为空");
 			list = new ArrayList<T>();
 		}

@@ -22,6 +22,7 @@ import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITUserAddressService;
 import cn.com.ddhj.service.user.ITUserService;
+import cn.com.ddhj.util.Constant;
 
 @Service
 public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUserAddressMapper, BaseDto>
@@ -46,7 +47,7 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 	public BaseResult updateByCode(TUserAddress entity, String userToken) {
 		BaseResult result = new BaseResult();
 		UserDataResult userResult = userService.getUser(userToken);
-		if (userResult.getResultCode() == 0) {
+		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
 			TUser user = userResult.getUser();
 			entity.setUpdateUser(user.getUserCode());
 			result = super.updateByCode(entity);
