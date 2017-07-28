@@ -28,6 +28,7 @@ import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.MD5Util;
 
@@ -84,21 +85,21 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 						step.setUpdateTime(DateUtil.getSysDateTime());
 						stepMapper.updateByEquipmentCode(step);
 					}
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					user.setPassword("");
 					result.setUser(user);
 					result.setResultMessage("登录成功");
 					result.setUserToken(login.getUuid());
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("用户登录失败");
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户密码错误");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户不存在");
 		}
 		return result;
@@ -108,10 +109,10 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 	public RegisterResult register(TUser entity) {
 		RegisterResult result = new RegisterResult();
 		if (entity.getPhone() == null || "".equals(entity.getPhone())) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户手机号不能为空");
 		} else if (entity.getPassword() == null || "".equals(entity.getPhone())) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户密码不能为空");
 		} else {
 			TUser user = mapper.findUserByPhone(entity.getPhone());
@@ -134,17 +135,17 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					login.setCreateTime(DateUtil.getSysDateTime());
 					loginMapper.insertSelective(login);
 					// end
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					entity.setPassword("");
 					result.setUser(entity);
 					result.setResultMessage("注册成功");
 					result.setUserToken(login.getUuid());
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("注册失败");
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户已存在");
 			}
 		}
@@ -170,14 +171,14 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			int flag = mapper.userLoginAndLogOut(entity);
 			if (flag >= 0) {
 				loginMapper.deletByUuid(uid);
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("用户登出成功");
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户登出失败");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户登出失败");
 		}
 
@@ -197,7 +198,7 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 		BaseResult result = new BaseResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		if (login == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		} else {
 			TUser user = mapper.findTUserByUuid(login.getUserToken());
@@ -213,14 +214,14 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 						entity.setPassword(MD5Util.md5Hex(entity.getPassword()));
 						int flag = mapper.updateByCode(entity);
 						if (flag >= 0) {
-							result.setResultCode(0);
+							result.setResultCode(Constant.RESULT_SUCCESS);
 							result.setResultMessage("修改密码成功");
 						} else {
-							result.setResultCode(-1);
+							result.setResultCode(Constant.RESULT_ERROR);
 							result.setResultMessage("修改密码失败");
 						}
 					} else {
-						result.setResultCode(-1);
+						result.setResultCode(Constant.RESULT_ERROR);
 						result.setResultMessage("修改密码，密码不能为空");
 					}
 				} else if (StringUtils.equals(target, "user_edit_pic")) {
@@ -230,14 +231,14 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					if (StringUtils.isNotBlank(entity.getHeadPic())) {
 						int flag = mapper.updateByCode(entity);
 						if (flag >= 0) {
-							result.setResultCode(0);
+							result.setResultCode(Constant.RESULT_SUCCESS);
 							result.setResultMessage("修改用户头像成功");
 						} else {
-							result.setResultCode(-1);
+							result.setResultCode(Constant.RESULT_ERROR);
 							result.setResultMessage("修改用户头像失败");
 						}
 					} else {
-						result.setResultCode(-1);
+						result.setResultCode(Constant.RESULT_ERROR);
 						result.setResultMessage("头像地址为空");
 					}
 				} else if (StringUtils.equals(target, "user_edit_email")) {
@@ -250,18 +251,18 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 						if (matcher.find()) {
 							int flag = mapper.updateByCode(entity);
 							if (flag >= 0) {
-								result.setResultCode(0);
+								result.setResultCode(Constant.RESULT_SUCCESS);
 								result.setResultMessage("修改电子邮箱成功");
 							} else {
-								result.setResultCode(-1);
+								result.setResultCode(Constant.RESULT_ERROR);
 								result.setResultMessage("修改电子邮箱失败");
 							}
 						} else {
-							result.setResultCode(-1);
+							result.setResultCode(Constant.RESULT_ERROR);
 							result.setResultMessage("请填写正确邮箱格式");
 						}
 					} else {
-						result.setResultCode(-1);
+						result.setResultCode(Constant.RESULT_ERROR);
 						result.setResultMessage("电子邮箱不能为空");
 					}
 				} else if (StringUtils.equals(target, "user_edit_nickname")) {
@@ -271,19 +272,19 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					if (StringUtils.isNotBlank(entity.getNickName())) {
 						int flag = mapper.updateByCode(entity);
 						if (flag >= 0) {
-							result.setResultCode(0);
+							result.setResultCode(Constant.RESULT_SUCCESS);
 							result.setResultMessage("修改用户昵称成功");
 						} else {
-							result.setResultCode(-1);
+							result.setResultCode(Constant.RESULT_ERROR);
 							result.setResultMessage("修改用户昵称失败");
 						}
 					} else {
-						result.setResultCode(-1);
+						result.setResultCode(Constant.RESULT_ERROR);
 						result.setResultMessage("昵称不能为空");
 					}
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户尚未注册");
 			}
 		}
@@ -317,13 +318,13 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					login.setCreateUser(user.getUserCode());
 					login.setCreateTime(DateUtil.getSysDateTime());
 					loginMapper.insertSelective(login);
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					user.setPassword("");
 					result.setUser(user);
 					result.setResultMessage("登录成功");
 					result.setUserToken(login.getUuid());
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("用户登录失败");
 				}
 			} else {
@@ -345,18 +346,18 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					login.setCreateTime(DateUtil.getSysDateTime());
 					loginMapper.insertSelective(login);
 					// end
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					entity.setPassword("");
 					result.setUser(entity);
 					result.setResultMessage("登录成功");
 					result.setUserToken(login.getUuid());
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("登录失败");
 				}
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("手机号不能为空");
 		}
 		return result;
@@ -368,10 +369,10 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
 		List<TUser> list = mapper.findUserAll(dto);
 		if (list != null && list.size() > 0) {
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
 			list = new ArrayList<TUser>();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("查询注册用户列表为空");
 		}
 		PageInfo<TUser> page = new PageInfo<TUser>(list);
@@ -384,11 +385,11 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 
 		TUser u = mapper.findTUserByUuid(uuid);
 		if (u != null) {
-			result.put("code", "1");
+			result.put("code", Constant.RESULT_SUCCESS);
 			result.put("msg", "SUCCESS");
 			result.put("data", u);
 		} else {
-			result.put("code", 0);
+			result.put("code", Constant.RESULT_ERROR);
 			result.put("msg", "数据异常");
 		}
 
@@ -403,10 +404,10 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 		}
 		Integer flag = mapper.updateUserInfo(dto);
 		if (flag == 1) {
-			result.put("code", "1");
+			result.put("code", Constant.RESULT_SUCCESS);
 			result.put("msg", "SUCCESS");
 		} else {
-			result.put("code", 0);
+			result.put("code", Constant.RESULT_ERROR);
 			result.put("msg", "更新异常");
 		}
 
@@ -417,10 +418,10 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 		JSONObject result = new JSONObject();
 		Integer flag = mapper.deleteOne(id);
 		if (flag == 1) {
-			result.put("code", "1");
+			result.put("code", Constant.RESULT_SUCCESS);
 			result.put("msg", "删除成功");
 		} else {
-			result.put("code", 0);
+			result.put("code", Constant.RESULT_ERROR);
 			result.put("msg", "删除失败");
 		}
 
@@ -440,17 +441,17 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 		UserDataResult result = new UserDataResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userTocken);
 		if (login == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		} else {
 			TUser user = mapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("获取用户信息成功");
 				user.setPassword("");
 				result.setUser(user);
 			} else {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		}

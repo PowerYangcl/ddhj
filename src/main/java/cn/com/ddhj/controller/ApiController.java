@@ -101,6 +101,7 @@ import cn.com.ddhj.service.user.ITUserLpFollowService;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.service.user.ITUserStepService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
 @Controller
@@ -159,20 +160,20 @@ public class ApiController extends BaseClass {
 			// 用户注册
 			TUser entity = obj.toJavaObject(TUser.class);
 			RegisterResult result = userService.register(entity);
-			if (result.getResultCode() == 0) {
+			if (result.getResultCode() == Constant.RESULT_SUCCESS) {
 				session.setAttribute(result.getUserToken(), entity);
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result)); // 修正所有的返回值为JSONObject
 		} else if ("user_login".equals(api.getApiTarget())) {
 			TUserDto dto = obj.toJavaObject(TUserDto.class);
 			LoginResult result = userService.login(dto);
-			if (result.getResultCode() == 0) {
+			if (result.getResultCode() == Constant.RESULT_SUCCESS) {
 				session.setAttribute(result.getUserToken(), result.getUser());
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("user_logout".equals(api.getApiTarget())) {
 			BaseResult result = userService.logOut(obj.getString("userToken"));
-			if (result.getResultCode() == 0) {
+			if (result.getResultCode() == Constant.RESULT_SUCCESS) {
 				session.removeAttribute(obj.getString("userToken"));
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
@@ -218,7 +219,7 @@ public class ApiController extends BaseClass {
 		else if ("user_login_security".equals(api.getApiTarget())) {
 			TUser entity = obj.toJavaObject(TUser.class);
 			RegisterResult result = userService.loginBySecurityCode(entity);
-			if (result.getResultCode() == 0) {
+			if (result.getResultCode() == Constant.RESULT_SUCCESS) {
 				session.setAttribute(result.getUserToken(), entity);
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
@@ -529,23 +530,22 @@ public class ApiController extends BaseClass {
 			BaseResult result = userAddressService.updateByCode(entity, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 获取商品详细信息
-		else if ("product_info".equals(api.getApiTarget())){
+		// 获取商品详细信息 - Yangcl
+		else if ("product_detail".equals(api.getApiTarget())){
 			String pcode = obj.getString("productCode"); 
 			return productInfoService.getProductInfo(pcode);
 		}
-		// 我的主页-商品订单-6.6.2.	商品订单列表
-		else if("product_order_list".equals(api.getApiTarget())){
-			String buyerCode = obj.getString("buyerCode"); 
-			return productOrderService.findProductOrderList(buyerCode);
+		// 我的主页-商品订单-6.6.2.	商品订单列表 - Yangcl
+		else if("order_list".equals(api.getApiTarget())){
+			return productOrderService.findProductOrderList(obj);
 		}
-		// 新增收货地址
-		else if("add_user_address".equals(api.getApiTarget())){
-			return userAddressService.addUserAddress(obj); 
+		// 新增收货地址 - Yangcl
+		else if("address_add".equals(api.getApiTarget())){
+			return userAddressService.addUserAddress(obj , api.getUserToken()); 
 		}
-		// 删除收货地址
-		else if("delete_user_address".equals(api.getApiTarget())){
-			return userAddressService.deleteUserAddress(obj);
+		// 删除收货地址 - Yangcl
+		else if("address_del".equals(api.getApiTarget())){
+			return userAddressService.deleteUserAddress(obj , api.getUserToken());
 		}
 		//商品列表
 		else if("product_list".equals(api.getApiTarget())) {
@@ -562,7 +562,7 @@ public class ApiController extends BaseClass {
 		 */
 		else {
 			BaseResult result = new BaseResult();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("调用接口失败");
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}

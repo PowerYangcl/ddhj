@@ -57,6 +57,7 @@ import cn.com.ddhj.service.ITRubbishRecyclingService;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.report.ITReportService;
 import cn.com.ddhj.util.CommonUtil;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.PPTUtil;
 import cn.com.ddhj.util.PdfUtil;
@@ -132,20 +133,20 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					result.setRepList(list);
 					Integer total = mapper.findEntityAllCount(dto);
 					result.setRepCount(total);
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("查询楼盘环境报告列表成功");
 				} else {
 					result.setRepList(new ArrayList<TReport>());
 					result.setRepCount(0);
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_NULL);
 					result.setResultMessage("环境报告为空");
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("查询楼盘不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("查询楼盘编码不能为空");
 		}
 		return result;
@@ -164,8 +165,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		BaseResult result = new BaseResult();
 		String code = WebHelper.getInstance().getUniqueCode("R");
 		CreateReportResult pdfResult = createPDF(code, entity.getHousesCode(), path, null);
-		pdfResult.setResultCode(0);
-		if (pdfResult.getResultCode() == 0) {
+		if (pdfResult.getResultCode() == Constant.RESULT_SUCCESS) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 			entity.setCode(code);
 			entity.setCreateUser("system");
@@ -175,10 +175,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			entity.setPath(pdfResult.getPath());
 			int flag = mapper.insertSelective(entity);
 			if (flag > 0) {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("添加成功");
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("添加失败");
 			}
 		} else {
@@ -192,18 +192,17 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult updateByCode(TReport entity, String path) {
 		BaseResult result = new BaseResult();
 		CreateReportResult pdfResult = this.createPDF(entity.getCode(), entity.getHousesCode(), path, null);
-		pdfResult.setResultCode(0);
-		if (pdfResult.getResultCode() == 0) {
+		if (pdfResult.getResultCode() == Constant.RESULT_SUCCESS) {
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 			entity.setUpdateUser("system");
 			entity.setUpdateTime(DateUtil.getSysDateTime());
 			entity.setPath(pdfResult.getPath());
 			int flag = mapper.updateByCode(entity);
 			if (flag > 0) {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("修改成功");
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("修改失败");
 			}
 		} else {
@@ -253,10 +252,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			result.setPic(report.getPic());
 			result.setPrice(report.getPrice());
 			result.setName(report.getHousesName());
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("查询报告成功");
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("环境报告为空");
 		}
 		return result;
@@ -278,7 +277,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			for (int i = 0; i < list.size(); i++) {
 				CreateReportResult createResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/",
 						this.getCityAirLevel());
-				if (createResult.getResultCode() == 0) {
+				if (createResult.getResultCode() == Constant.RESULT_SUCCESS) {
 					list.get(i).setPath(createResult.getPath());
 				}
 			}
@@ -297,14 +296,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				mapper.insertReportData(remainderList);
 			}
 			if (flag) {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("批量添加报告集合成功");
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("批量添加报告集合失败");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("批量添加报告集合为空");
 		}
 		return result;
@@ -419,16 +418,16 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				}
 				String levelName = mapper.findLevel(code);
 				path = PdfUtil.instance().createPDF(lp.getTitle(), levelName, array, path, code);
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("创建报告成功");
 				result.setPath(path);
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("创建报告失败");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("创建报告失败");
 		}
 		return result;
@@ -480,10 +479,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			result.setImage(lp.getImages());
 			result.setPic(lp.getImages());
 			result.setName(lp.getTitle());
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("查询报告成功");
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("楼盘数据不存在");
 		}
 		return result;
@@ -503,10 +502,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
 		List<Map<String, String>> list = mapper.findReportDataAll(dto);
 		if (list != null && list.size() > 0) {
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
 			list = new ArrayList<Map<String, String>>();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("查询环境报告列表为空");
 		}
 		PageInfo<Map<String, String>> page = new PageInfo<Map<String, String>>(list);
@@ -538,7 +537,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			report.setUpdateUser(user != null ? user.getCode() : "system");
 			mapper.updateByCode(report);
 		} else {
-			result.setResultCode(1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("报告未创建");
 		}
 		return result;
@@ -548,12 +547,12 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult insertSelective(TReport entity, String path) {
 		BaseResult result = new BaseResult();
 		if (!StringUtils.isNotBlank(entity.getHousesCode())) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("楼盘不能为空");
 		} else {
 			String code = WebHelper.getInstance().getUniqueCode("R");
 			CreateReportResult createResult = createPDF(code, entity.getHousesCode(), path, null);
-			if (createResult.getResultCode() == 0) {
+			if (createResult.getResultCode() == Constant.RESULT_SUCCESS) {
 				entity.setCode(code);
 				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 				entity.setPath(createResult.getPath());
@@ -562,10 +561,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				entity.setUpdateTime(entity.getCreateTime());
 				int flag = mapper.insertSelective(entity);
 				if (flag > 0) {
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("创建报告成功");
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("失败");
 				}
 			} else {
@@ -602,7 +601,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				List<TReportLog> logData = new ArrayList<TReportLog>();
 				List<String> codes = new ArrayList<String>();
 				// 获取城市空气质量列表
-				
+
 				JSONArray cityAir = this.getCityAirLevel();
 				if (lpList != null && lpList.size() > 0) {
 					// 根据楼盘列表获取报告列表
@@ -627,7 +626,9 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						if (StringUtils.isNotBlank(date)) {
 							if (entity != null) {
 								codes.add(entity.getCode());
-//								CreateReportResult result = createPDF(entity.getCode(), lp.getCode(), path, cityAir);
+								// CreateReportResult result =
+								// createPDF(entity.getCode(), lp.getCode(),
+								// path, cityAir);
 								CreateReportResult result = createPPT(entity.getCode(), lp.getCode(), cityAir, elList);
 								entity.setPath(result.getPath());
 								entity.setReportDate(date);
@@ -699,7 +700,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		Long end = System.currentTimeMillis();
 		getLogger().logInfo("定时执行时间为:" + (end - start));
 		return reCode;
-		
+
 	}
 
 	/**
@@ -730,14 +731,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			System.out.println(lpCode + " generate success. path:" + path);
 			getLogger().logDebug(lpCode + "generate success. path:" + path);
 			if (StringUtils.isNotBlank(path)) {
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("生成报告成功");
 				result.setPath(path);
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("生成报告错误");
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
@@ -1096,28 +1097,28 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				airLevel = Integer.valueOf(air.getString("level"));
 			}
 			map.put("air.level", String.valueOf(airLevel));
-			//空气进度条旁边显示的百分比(一共6级,1级最好)
-        	double tmp = Double.parseDouble(map.get("air.level"));
-        	map.put("air.level.percent", String.valueOf((1 + (1 - tmp) / 6.0)));
-			
+			// 空气进度条旁边显示的百分比(一共6级,1级最好)
+			double tmp = Double.parseDouble(map.get("air.level"));
+			map.put("air.level.percent", String.valueOf((1 + (1 - tmp) / 6.0)));
+
 			// 噪音数值和等级(一共3级,1级最好)
 			int noiseLevel = getNoiseLevel(lp);
 			map.put("noise.level", String.valueOf(noiseLevel));
 			tmp = Double.parseDouble(map.get("noise.level"));
 			map.put("noise.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
-			
+
 			// 水质等级(一共3级,1级最好)
 			int waterLevel = waterEnv(lp);
 			map.put("water.level", String.valueOf(waterLevel));
 			tmp = Double.parseDouble(map.get("water.level"));
 			map.put("water.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
-			
+
 			// 土壤等级(一共3级,1级最好)
 			int soilLevel = 2;
 			map.put("soil.level", String.valueOf(soilLevel));
 			tmp = Double.parseDouble(map.get("soil.level"));
 			map.put("soil.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
-			
+
 			// 污染源和距离(一共3级,1级最好)
 			// 垃圾场
 			Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
@@ -1152,13 +1153,13 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			map.put("sourceOfPollution.type", sourceOfPollutionType);
 			tmp = Double.parseDouble(map.get("sourceOfPollution.level"));
 			map.put("sourceOfPollution.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
-			
+
 			// 辐射源距离
 			int sourceOfRadiationLevel = 1;
 			map.put("sourceOfRadiation.level", String.valueOf(sourceOfRadiationLevel));
 			tmp = Double.parseDouble(map.get("sourceOfRadiation.level"));
 			map.put("sourceOfRadiation.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
-			
+
 			// 容积率(一共3级,1级最好)
 			int volumeLevel = 1;
 			try {
@@ -1175,12 +1176,11 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			map.put("volume.level", String.valueOf(volumeLevel));
 			tmp = Double.parseDouble(map.get("volume.level"));
 			map.put("volume.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
-			
+
 			// 危险品存放等级
 			int hazardousArticleLevel = 1;
 			map.put("hazardousArticle.level", String.valueOf(hazardousArticleLevel));
-			
-			
+
 			// 获取绿地率数值
 			int afforestLevel = 1;
 			if (StringUtils.isNotBlank(lp.getGreeningRate())) {
@@ -1198,16 +1198,16 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			map.put("afforest.level", String.valueOf(afforestLevel));
 			if (StringUtils.isNotBlank(lp.getGreeningRate())) {
 				String percent = StringUtils.substringBefore(lp.getGreeningRate(), "%");
-				if(StringUtils.isNoneBlank(percent)) {
+				if (StringUtils.isNoneBlank(percent)) {
 					tmp = Double.parseDouble(percent) / 100.0;
 					map.put("afforest.level.percent", String.valueOf(tmp));
 				}
-			} 
-			if(map.get("afforest.level.percent") == null) {
+			}
+			if (map.get("afforest.level.percent") == null) {
 				tmp = Double.parseDouble(map.get("afforest.level"));
 				map.put("afforest.level.percent", String.valueOf((1 + (1 - tmp) / 3.0)));
 			}
-			
+
 			/**
 			 * 获取环境描述信息
 			 */

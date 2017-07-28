@@ -22,6 +22,7 @@ import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITUserAddressService;
 import cn.com.ddhj.service.user.ITUserService;
+import cn.com.ddhj.util.Constant;
 
 @Service
 public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUserAddressMapper, BaseDto>
@@ -46,7 +47,7 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 	public BaseResult updateByCode(TUserAddress entity, String userToken) {
 		BaseResult result = new BaseResult();
 		UserDataResult userResult = userService.getUser(userToken);
-		if (userResult.getResultCode() == 0) {
+		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
 			TUser user = userResult.getUser();
 			entity.setUpdateUser(user.getUserCode());
 			result = super.updateByCode(entity);
@@ -62,39 +63,51 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 	
 	/**
 	 * @description: 添加用户收货地址
-	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=add_user_address&api_key=appfamilyhas&
-	 * apiInput={"userCode":"U161005100033","name":"出柜斌","phone":"15800002222","provinces":"天津市河西区鸭厂镇","street":"河东区成林庄道100号","isDefault":1}
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=address_add&api_key=appfamilyhas&
+	 * apiInput={"name":"出柜斌","phone":"15800002222","provinces":"天津市河西区鸭厂镇","street":"河东区成林庄道100号","isDefault":1}
 	 * @返回数据如下：
 		{
-		    "status": "success",
-		    "msg": "地址添加成功"
+		    "resultCode": 0,
+		    "resultMessage": "地址添加成功"
 		}
 	 * @param entity
 	 * @author Yangcl 
 	 * @date 2017年7月27日 下午2:52:00 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject addUserAddress(JSONObject e_) {
+	public JSONObject addUserAddress(JSONObject e_ , String userToken) {
 		JSONObject re = new JSONObject();
+		String userCode = "";
+		UserDataResult userResult = userService.getUser(userToken);
+		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+			TUser user = userResult.getUser();
+			userCode = user.getUserCode();
+		}else{
+			re.put("resultCode", 1);
+			re.put("resultMessage", "用户尚未登录");
+			return re;
+		}
+		
 		TUserAddress e = null;
 		try {
 			e = e_.toJavaObject(TUserAddress.class);
 		} catch (Exception ex) {
-			re.put("status", "error");
-			re.put("msg", "地址信息解析错误");
+			re.put("resultCode", 1);
+			re.put("resultMessage", "地址信息解析错误");
 			return re;
 		}
 		if(e == null){
-			re.put("status", "error");
-			re.put("msg", "地址信息解析错误，有效数据为空");
+			re.put("resultCode", 1);
+			re.put("resultMessage", "地址信息解析错误，有效数据为空");
 			return re;
 		}
 		
-		if(StringUtils.isAnyBlank(e.getUserCode() , e.getName() , e.getPhone() , e.getProvinces() , e.getStreet() , e.getIsDefault()==null ? "" :e.getIsDefault().toString())){
-			re.put("status", "error");
-			re.put("msg", "地址关键信息不得为空");
+		if(StringUtils.isAnyBlank(e.getPhone() , e.getStreet() , e.getName() , e.getProvinces() , e.getIsDefault()==null ? "" :e.getIsDefault().toString())){
+			re.put("resultCode", 1);
+			re.put("resultMessage", "地址关键信息不得为空");
 			return re;
 		}
+		e.setUserCode(userCode); 
 		e.setUuid(UUID.randomUUID().toString().replace("-", "")); 
 		e.setCode(WebHelper.getInstance().getUniqueCode("AR")); 
 		e.setCreateUser(e.getUserCode());
@@ -106,11 +119,11 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		
 		int flag = mapper.insertSelective(e);
 		if(flag == 1){
-			re.put("status", "success");
-			re.put("msg", "地址添加成功");
+			re.put("resultCode", 0);
+			re.put("resultMessage", "地址添加成功");
 		}else{
-			re.put("status", "error");
-			re.put("msg", "添加收货地址失败");
+			re.put("resultCode", 1);
+			re.put("resultMessage", "添加收货地址失败");
 		}
 		return re;
 	}
@@ -119,11 +132,11 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 
 	/**
 	 * @description: 删除收货地址 
-	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=delete_user_address&api_key=appfamilyhas&apiInput={"userCode":"U161005100033","addrCode":"AR170727100004"}
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=address_del&api_key=appfamilyhas&apiInput={"addressID":"AR170727100004"}
 	 * @返回数据如下：
 		{
-		    "status": "success",
-		    "msg": "用户收货地址删除成功"
+		    "resultCode": 0,
+		    "resultMessage": "用户收货地址删除成功"
 		}
 	 * 
 	 * @param obj
@@ -131,13 +144,23 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 	 * @date 2017年7月27日 下午3:28:30 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject deleteUserAddress(JSONObject obj) {
+	public JSONObject deleteUserAddress(JSONObject obj , String userToken) {
 		JSONObject re = new JSONObject();
-		String userCode = obj.getString("userCode"); 
-		String addrCode = obj.getString("addrCode"); 
+		String userCode = "";
+		UserDataResult userResult = userService.getUser(userToken);
+		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+			TUser user = userResult.getUser();
+			userCode = user.getUserCode();
+		}else{
+			re.put("resultCode", 1);
+			re.put("resultMessage", "用户尚未登录");
+			return re;
+		}
+		
+		String addrCode = obj.getString("addressID"); 
 		if(StringUtils.isAnyBlank(userCode , addrCode)){
-			re.put("status", "error");
-			re.put("msg", "关键参数不得为空");
+			re.put("resultCode", 1);
+			re.put("resultMessage", "addressID关键参数不得为空");
 			return re;
 		}
 		TUserAddress e = new TUserAddress();
@@ -145,11 +168,11 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		e.setCode(addrCode);
 		int flag = mapper.deleteUserAddress(e);
 		if(flag == 1){
-			re.put("status", "success");
-			re.put("msg", "用户收货地址删除成功");
+			re.put("resultCode", 0);
+			re.put("resultMessage", "用户收货地址删除成功");
 		}else{
-			re.put("status", "error");
-			re.put("msg", "用户收货地址删除失败");
+			re.put("resultCode", 1);
+			re.put("resultMessage", "用户收货地址删除失败");
 		}
 		
 		return re;

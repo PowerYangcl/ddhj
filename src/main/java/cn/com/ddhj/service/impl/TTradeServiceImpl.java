@@ -40,6 +40,7 @@ import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.result.trade.TradeOrderResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
 import cn.com.ddhj.service.ITradeService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.PureNetUtil;
 
@@ -160,9 +161,9 @@ public class TTradeServiceImpl implements ITradeService {
 		List<TTradeDeal> dealList = tradeDealMapper.queryDealsByCityId(dto);
 		Integer total = tradeDealMapper.queryDealsByCityIdCount(dto);
 		if(dealList != null && !dealList.isEmpty()) {
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("获取数据为空");
 			dealList = new ArrayList<TTradeDeal>();
 		}
@@ -177,20 +178,20 @@ public class TTradeServiceImpl implements ITradeService {
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		
 		if (login == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 			return result;
 		}
 		
 		TUser user = userMapper.findTUserByUuid(login.getUserToken());
 		if (user == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户不存在");
 			return result;
 		}
 		
 		if(order == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("委托数据为空,无法报盘");
 			return result;
 		}
@@ -200,18 +201,18 @@ public class TTradeServiceImpl implements ITradeService {
 		TradePriceAvaiAmountResult avaiResult = this.getCurrentPriceAndAvailableAmount(dealDto, userToken);
 		if(order.getBuySell().equals("B")) {
 			if(order.getAmount().compareTo(avaiResult.getBuyAmount()) > 0) {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("委买量超过最大可买量");
 				return result;
 			}
 		} else if(order.getBuySell().equals("S")) {
 			if(order.getAmount().compareTo(avaiResult.getSellAmount()) > 0) {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("委卖量超过最大可卖量");
 				return result;
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("只能买入或卖出,委托类型不合法!");
 			return result;
 		}
@@ -290,10 +291,10 @@ public class TTradeServiceImpl implements ITradeService {
 				userMapper.updateByCode(user);
 			}
 			
-			result.setResultCode(1);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("委托成功");
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("委托失败");
 		}
 		
@@ -331,20 +332,20 @@ public class TTradeServiceImpl implements ITradeService {
 		TradePriceAvaiAmountResult result = new TradePriceAvaiAmountResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		if(login == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 			return result;
 		}
 		
 		TUser user = userMapper.findTUserByUuid(login.getUserToken());
 		if(user == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户不存在");
 			return result;
 		}
 		
 		if(StringUtils.isBlank(dto.getObjectCode())) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("查询交易标的参数为空");
 			return result;
 		}
@@ -376,7 +377,7 @@ public class TTradeServiceImpl implements ITradeService {
 				result.setSellAmount(0);
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("未查询到指定的交易标的");
 		}
 		return result;
@@ -387,14 +388,14 @@ public class TTradeServiceImpl implements ITradeService {
 		TradeBalanceResult result = new TradeBalanceResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		if(login == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 			return result;
 		}
 		
 		TUser user = userMapper.findTUserByUuid(login.getUserToken());
 		if(user == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户不存在");
 			return result;
 		}
@@ -427,14 +428,14 @@ public class TTradeServiceImpl implements ITradeService {
 		TradeOrderResult result = new TradeOrderResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		if(login == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 			return result;
 		}
 		
 		TUser user = userMapper.findTUserByUuid(login.getUserToken());
 		if(user == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户不存在");
 			return result;
 		}

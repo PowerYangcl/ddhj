@@ -10,6 +10,7 @@ import cn.com.ddhj.mapper.TCityMapper;
 import cn.com.ddhj.model.TCity;
 import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.service.ITCityService;
+import cn.com.ddhj.util.Constant;
 
 /**
  * 
@@ -76,10 +77,10 @@ public class TCityServiceImpl extends BaseServiceImpl<TCity, TCityMapper, TCityD
 		List<TCity> list = mapper.findHotCity();
 		if (list != null && list.size() > 0) {
 			result.setList(list);
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("查询热门城市成功");
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("查询热门城市失败");
 		}
 		return result;

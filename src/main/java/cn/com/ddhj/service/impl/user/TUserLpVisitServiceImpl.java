@@ -22,6 +22,7 @@ import cn.com.ddhj.result.tuser.VisitResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.util.CommonUtil;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
 /**
@@ -58,24 +59,24 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 				dto2.setUserCode(user.getUserCode());
 				int flag = mapper.deleteByLpCode(dto2);
 				if (flag >= 0) {
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("删除成功");
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("删除失败");
 				}
 			} else {
 				int flag = mapper.deleteByUserCode(user.getUserCode());
 				if (flag >= 0) {
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("删除成功");
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("删除失败");
 				}
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;
@@ -94,19 +95,19 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 			if (mapper.findVisitIsExists(entity) == null) {
 				int flag = mapper.insertSelective(entity);
 				if (flag > 0) {
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("添加浏览记录成功");
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("添加浏览记录失败");
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("浏览记录已存在");
 			}
 
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;
@@ -137,22 +138,22 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 						}
 						result.setList(list);
 						result.setTotal(lpMapper.findLpForUserCount(lpDto));
-						result.setResultCode(0);
+						result.setResultCode(Constant.RESULT_SUCCESS);
 						result.setResultMessage("获取浏览记录成功");
 					} else {
-						result.setResultCode(-1);
+						result.setResultCode(Constant.RESULT_NULL);
 						result.setResultMessage("暂无浏览记录");
 					}
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_NULL);
 					result.setResultMessage("暂无关注楼盘");
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 		return result;

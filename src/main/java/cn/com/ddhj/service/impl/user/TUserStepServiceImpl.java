@@ -31,6 +31,7 @@ import cn.com.ddhj.model.user.TUserStep;
 import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserStepService;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
 /**
@@ -119,7 +120,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 					// 批量添加数据到计步表
 					int flag = mapper.batchInsert(list);
 					if (flag > 0) {
-						result.setResultCode(0);
+						result.setResultCode(Constant.RESULT_SUCCESS);
 						/**
 						 * 汇总兑换碳币数量,同步到t_user表中
 						 */
@@ -137,19 +138,19 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						}
 						result.setResultMessage("同步成功");
 					} else {
-						result.setResultCode(-1);
+						result.setResultCode(Constant.RESULT_ERROR);
 						result.setResultMessage("批量同步计步数据错误");
 					}
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("同步计步数据为空");
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("请确认数据是否为json");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("参数错误");
 		}
 		return result;
@@ -176,10 +177,10 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			// 历史一年记录
 			result.setYear(getYearStep(equipmentCode));
 
-			result.setResultCode(0);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("查询列表成功");
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("设备编码为空");
 		}
 
@@ -206,15 +207,15 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 				}
 				List<TUserCarbonOperation> operations = carbonOperationData(list);
 				carbonOperationMapper.batchInsert(operations);
-				result.setResultCode(0);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("同步成功");
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_NULL);
 				result.setResultMessage("同步数据为空");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage(e.getMessage());
 		}
 		return result;

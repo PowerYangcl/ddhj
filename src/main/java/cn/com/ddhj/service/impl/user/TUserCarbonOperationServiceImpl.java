@@ -26,6 +26,7 @@ import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserCarbonOperationService;
+import cn.com.ddhj.util.Constant;
 
 /**
  * 
@@ -106,7 +107,7 @@ public class TUserCarbonOperationServiceImpl
 						}
 					}
 				} else {
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_ERROR);
 					result.setResultMessage("查询数据错误!");
 				}
 				/**
@@ -126,11 +127,11 @@ public class TUserCarbonOperationServiceImpl
 					result.setExpendCarbon(expendCarbon);
 				}
 			} else {
-				result.setResultCode(-1);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
 			}
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
 
@@ -163,11 +164,11 @@ public class TUserCarbonOperationServiceImpl
 				list = mapper.findCarbonOperationByTime(dto);
 				if (list != null && list.size() > 0) {
 					result.setList(list);
-					result.setResultCode(0);
+					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("获取数据成功");
 				} else {
 					result.setList(new ArrayList<TUserCarbonOperation>());
-					result.setResultCode(-1);
+					result.setResultCode(Constant.RESULT_NULL);
 					result.setResultMessage("查询数据为空");
 				}
 			}
@@ -183,14 +184,14 @@ public class TUserCarbonOperationServiceImpl
 		CarbonRechargeResult result = new CarbonRechargeResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		if(login == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 			return result;
 		}
 		
 		TUser user = userMapper.findTUserByUuid(login.getUserToken());
 		if(user == null) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户不存在");
 			return result;
 		}
@@ -206,10 +207,10 @@ public class TUserCarbonOperationServiceImpl
 		int success = rechargeMapper.insertSelective(recharge);
 		if(success ==1) {
 			result.setOrderCode(rechargeOrder);
-			result.setResultCode(1);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("创建充值订单成功");
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("创建充值订单失败");
 		}
 		return result;
@@ -227,9 +228,9 @@ public class TUserCarbonOperationServiceImpl
 		BaseResult result = new BaseResult();
 		int success =  mapper.insertSelective(carbonOperation);
 		if(success == 1) {
-			result.setResultCode(1);
+			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("插入碳币购买记录失败");
 		}
 		return result;
