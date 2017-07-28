@@ -111,36 +111,36 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 	public BaseResult confirmOrder(TProductOrderDto dto, String userToken) {
 		// 验证商品是否存在，库存是否可用
 		DataResult result = getProductList(dto.getProductList());
-//		try {
-//			if (result.getResultCode() == 0) {
-//				UserDataResult userResult = userService.getUser(userToken);
-//				if (userResult.getResultCode() == 0) {
-//					TUser user = userResult.getUser();
-//					// 创建订单
-//					String userCode = user.getUserCode();
-//					String orderCode = WebHelper.getInstance().getUniqueCode("PD");
-//					TProductOrder order = new TProductOrder();
-//					order.setCode(orderCode);
-//					order.setPayMoney(dto.getPayMoney());
-//					order.setBuyerCode(userCode);
-//					order.setBuyerPhone(user.getPhone());
-//					order.setDispatching(dto.getDispatching());
-//					order.setAddressCode(dto.getAddressCode());
-//					order.setCreateUser(userCode);
-//					BaseResult insertResult = super.insertSelective(order);
-//					if (insertResult.getResultCode() == 0) {
-//						detailMapper.batchInsert(orderDetails(dto.getProductList(), orderCode, userCode));
-//					}
-//				} else {
-//					result.setResultCode(userResult.getResultCode());
-//					result.setResultMessage(userResult.getResultMessage());
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			result.setResultCode(-1);
-//			result.setResultMessage("创建订单失败，请联系技术人员");
-//		}
+		try {
+			if (result.getResultCode() == 0) {
+				UserDataResult userResult = userService.getUser(userToken);
+				if (userResult.getResultCode() == 0) {
+					TUser user = userResult.getUser();
+					// 创建订单
+					String userCode = user.getUserCode();
+					String orderCode = WebHelper.getInstance().getUniqueCode("PD");
+					TProductOrder order = new TProductOrder();
+					order.setCode(orderCode);
+					order.setPayMoney(dto.getPayMoney());
+					order.setBuyerCode(userCode);
+					order.setBuyerPhone(user.getPhone());
+					order.setDispatching(dto.getDispatching());
+					order.setAddressCode(dto.getAddressCode());
+					order.setCreateUser(userCode);
+					BaseResult insertResult = super.insertSelective(order);
+					if (insertResult.getResultCode() == 0) {
+						detailMapper.batchInsert(orderDetails(dto.getProductList(), orderCode, userCode));
+					}
+				} else {
+					result.setResultCode(userResult.getResultCode());
+					result.setResultMessage(userResult.getResultMessage());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setResultCode(-1);
+			result.setResultMessage("创建订单失败，请联系技术人员");
+		}
 		return result;
 	}
 

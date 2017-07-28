@@ -515,7 +515,7 @@ public class ApiController extends BaseClass {
 		//订单确认
 		else if("order_confirm".equals(api.getApiTarget())) {
 			TProductOrderDto dto = obj.toJavaObject(TProductOrderDto.class);
-			BaseResult result = productOrderService.createOrder(dto, api.getUserToken());
+			BaseResult result = productOrderService.confirmOrder(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 订单详情
