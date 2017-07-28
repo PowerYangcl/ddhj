@@ -1,9 +1,7 @@
 package cn.com.ddhj.service.impl.store;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,9 +17,11 @@ import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TProductInfoMapper;
 import cn.com.ddhj.mapper.TProductOrderDetailMapper;
 import cn.com.ddhj.mapper.TProductOrderMapper;
+import cn.com.ddhj.mapper.TUserAddressMapper;
 import cn.com.ddhj.model.TProductInfo;
 import cn.com.ddhj.model.TProductOrder;
 import cn.com.ddhj.model.TProductOrderDetail;
+import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
@@ -48,6 +48,8 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 
 	@Autowired
 	private TProductInfoMapper productMapper;
+	@Autowired
+	private TUserAddressMapper addressMapper;
 
 	/**
 	 * 
@@ -156,10 +158,22 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 	public EntityResult findOrderDetailByCode(String orderCode) {
 		EntityResult result = new EntityResult();
 		try {
-			TProductOrder order = mapper.findOrderDetailByCode(orderCode);
+			TProductOrder order = mapper.selectByCode(orderCode);
 			if (order != null) {
 				List<TProductOrderDetail> list = detailMapper.findOrderProductDetail(orderCode);
-				order.setDetails(list);
+				if(list != null && list.size()>0){
+					order.setDetails(list);					
+				}else{
+					result.setResultCode(Constant.RESULT_ERROR);
+					result.setResultMessage("获取订单商品列表为空");					
+				}
+				TUserAddress address = addressMapper.selectByCode(order.getAddressCode());
+				if(address != null){
+					order.setAddress(address);
+				}else{
+					result.setResultCode(Constant.RESULT_ERROR);
+					result.setResultMessage("获取订单收货地址为空");					
+				}
 			}
 			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setEntity(order);
@@ -191,17 +205,18 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			return result;
 		}
 		
-		int stockError = 0, notFoundError = 0;
+		int stockError = 0,priceError = 0, notFoundError = 0;
 		StringBuffer productCodes = new StringBuffer();
 		StringBuffer notFoundProduct = new StringBuffer();
 		for (TProductInfo info : list) {
 			boolean found = false;
 			for (TProductInfo product : products) {
 				if (StringUtils.equals(info.getProductCode(), product.getProductCode())) {
-					if (product.getStockNum() > info.getBuyNum()) {
-						info.setCurrentPrice(product.getCurrentPrice());
-					} else {
+					if (product.getStockNum() < info.getBuyNum()) {
 						stockError++;
+						productCodes.append(info.getProductCode()).append(",");
+					} else if(info.getCurrentPrice() != product.getCurrentPrice()){
+						priceError++;
 						productCodes.append(info.getProductCode()).append(",");
 					}
 					found = true;
@@ -219,7 +234,9 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("商品" + productCodes.substring(0, productCodes.length() - 1) + "库存不足.");
 		} 
-		
+		if(priceError > 0){
+			result.setResultMessage("商品" + productCodes.substring(0, productCodes.length() - 1) + "当前售价不一致.");
+		}
 		if(notFoundError > 0) {
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage(result.getResultMessage() + "商品" + productCodes.substring(0, productCodes.length() - 1) + "未查到.");
