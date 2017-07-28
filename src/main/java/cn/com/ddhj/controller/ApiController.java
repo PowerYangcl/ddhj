@@ -64,6 +64,7 @@ import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
 import cn.com.ddhj.result.order.OrderTotal;
 import cn.com.ddhj.result.order.TOrderResult;
+import cn.com.ddhj.result.product.TPageProductListResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
@@ -548,6 +549,10 @@ public class ApiController extends BaseClass {
 			//库存大于0
 			dto.setStockNumFlag("gt0");
 			BaseResult result = productInfoService.findDataPage(dto);
+//			TPageProductListResult presult = new TPageProductListResult();
+//			if(result.getResultCode() > 0) {
+//				
+//			}
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**

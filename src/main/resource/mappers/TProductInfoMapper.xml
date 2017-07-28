@@ -184,7 +184,7 @@
 	</select>
 	
 	
-	<resultMap id="getProductInfoMap" type="cn.com.ddhj.result.TProductInfoResult">
+	<resultMap id="getProductInfoMap" type="cn.com.ddhj.result.product.TProductInfoResult">
 		<result column="product_code" property="productCode" jdbcType="VARCHAR" />
 		<result column="product_name" property="productName" jdbcType="VARCHAR" />
 		<result column="main_pic_url" property="mainPicUrl" jdbcType="VARCHAR" />
