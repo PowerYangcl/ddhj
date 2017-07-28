@@ -8,6 +8,11 @@ public class TProductInfo extends BaseModel {
 	private Integer stockNum;
 	private String productTip;
 	private Integer flagSellable;
+	
+	/**
+	 * 接口json转换使用在t_product_info中无对应字段
+	 */
+	private Integer buyNum;
 
 	public Integer getFlagSellable() {
 		return flagSellable;
@@ -63,5 +68,13 @@ public class TProductInfo extends BaseModel {
 
 	public void setProductTip(String productTip) {
 		this.productTip = productTip;
+	}
+
+	public Integer getBuyNum() {
+		return buyNum;
+	}
+
+	public void setBuyNum(Integer buyNum) {
+		this.buyNum = buyNum;
 	}
 }

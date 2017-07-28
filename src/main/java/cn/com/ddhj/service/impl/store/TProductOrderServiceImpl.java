@@ -91,6 +91,54 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		}
 		return result;
 	}
+	
+	
+	/**
+	 * 确认订单
+	 * 方法: confirmOrder <br>
+	 * @author zht
+	 * @param dto
+	 * @param userToken
+	 * @return
+	 * @see cn.com.ddhj.service.store.ITProductOrderService#createOrder(cn.com.ddhj.dto.store.TProductOrderDto,
+	 *      java.lang.String)
+	 */
+	@Override
+	public BaseResult confirmOrder(TProductOrderDto dto, String userToken) {
+		// 验证商品是否存在，库存是否可用
+		DataResult result = getProductList(dto.getProductList());
+//		try {
+//			if (result.getResultCode() == 0) {
+//				UserDataResult userResult = userService.getUser(userToken);
+//				if (userResult.getResultCode() == 0) {
+//					TUser user = userResult.getUser();
+//					// 创建订单
+//					String userCode = user.getUserCode();
+//					String orderCode = WebHelper.getInstance().getUniqueCode("PD");
+//					TProductOrder order = new TProductOrder();
+//					order.setCode(orderCode);
+//					order.setPayMoney(dto.getPayMoney());
+//					order.setBuyerCode(userCode);
+//					order.setBuyerPhone(user.getPhone());
+//					order.setDispatching(dto.getDispatching());
+//					order.setAddressCode(dto.getAddressCode());
+//					order.setCreateUser(userCode);
+//					BaseResult insertResult = super.insertSelective(order);
+//					if (insertResult.getResultCode() == 0) {
+//						detailMapper.batchInsert(orderDetails(dto.getProductList(), orderCode, userCode));
+//					}
+//				} else {
+//					result.setResultCode(userResult.getResultCode());
+//					result.setResultMessage(userResult.getResultMessage());
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			result.setResultCode(-1);
+//			result.setResultMessage("创建订单失败，请联系技术人员");
+//		}
+		return result;
+	}
 
 	/**
 	 * 
@@ -133,27 +181,48 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 	private DataResult getProductList(List<TProductInfo> list) {
 		DataResult result = new DataResult();
 		List<TProductInfo> products = productMapper.findProductsByList(list);
-		int stockError = 0;
+		if (products == null || products.size() == 0) {
+			result.setResultCode(-1);
+			result.setResultMessage("所购商品消失了!");
+			return result;
+		}
+		
+		int stockError = 0, notFoundError = 0;
 		StringBuffer productCodes = new StringBuffer();
-		if (products != null && products.size() > 0) {
+		StringBuffer notFoundProduct = new StringBuffer();
+		for (TProductInfo info : list) {
+			boolean found = false;
 			for (TProductInfo product : products) {
-				for (TProductInfo info : list) {
-					if (product.getStockNum() > info.getStockNum()) {
-						if (StringUtils.equals(info.getProductCode(), product.getProductCode())) {
-							info.setCurrentPrice(product.getCurrentPrice());
-						}
+				if (StringUtils.equals(info.getProductCode(), product.getProductCode())) {
+					if (product.getStockNum() > info.getBuyNum()) {
+						info.setCurrentPrice(product.getCurrentPrice());
 					} else {
 						stockError++;
 						productCodes.append(info.getProductCode()).append(",");
 					}
+					found = true;
+					break;
 				}
 			}
+			
+			if(!found) {
+				notFoundError++;
+				notFoundProduct.append(info.getProductCode()).append(",");
+			}
 		}
-		if (stockError == 0) {
-			result.setData(list);
-		} else {
+		
+		if (stockError > 0) {
 			result.setResultCode(-1);
-			result.setResultMessage("商品" + productCodes.substring(0, productCodes.length() - 1) + "库存不足");
+			result.setResultMessage("商品" + productCodes.substring(0, productCodes.length() - 1) + "库存不足.");
+		} 
+		
+		if(notFoundError > 0) {
+			result.setResultCode(-1);
+			result.setResultMessage(result.getResultMessage() + "商品" + productCodes.substring(0, productCodes.length() - 1) + "未查到.");
+		}
+		
+		if(result.getResultCode() == 0) {
+			result.setData(list);
 		}
 		return result;
 	}
@@ -176,7 +245,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 			entity.setOrderCode(orderCode);
 			entity.setProductCode(product.getProductCode());
-			entity.setBuyNum(product.getStockNum());
+			entity.setBuyNum(product.getBuyNum());
 			entity.setCurrentPrice(product.getCurrentPrice());
 			entity.setCreateUser(userCode);
 			entity.setCreateTime(DateUtil.getSysDateTime());

@@ -511,6 +511,12 @@ public class ApiController extends BaseClass {
 			BaseResult result = productOrderService.createOrder(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
+		//订单确认
+		else if("order_confirm".equals(api.getApiTarget())) {
+			TProductOrderDto dto = obj.toJavaObject(TProductOrderDto.class);
+			BaseResult result = productOrderService.createOrder(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		// 订单详情
 		else if ("order_detail".equals(api.getApiTarget())) {
 			String orderCode = obj.getString("orderCode");
@@ -543,16 +549,6 @@ public class ApiController extends BaseClass {
 		}
 		//商品列表
 		else if("product_list".equals(api.getApiTarget())) {
-			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);
-			//0 可售
-			dto.setFlagSellable(0);
-			//库存大于0
-			dto.setStockNumFlag("gt0");
-			TPageProductListResult result = productInfoService.findProductListPage(dto);
-			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		}
-		//订单确认
-		else if("order_confirm".equals(api.getApiTarget())) {
 			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);
 			//0 可售
 			dto.setFlagSellable(0);
