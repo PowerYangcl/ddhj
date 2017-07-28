@@ -43,7 +43,7 @@ public class TProductOrderTest extends BaseTest {
 	}
 
 	public void findOrderDetailByCode() {
-		EntityResult result = service.findOrderDetailByCode("PD170728100001");
+		EntityResult result = service.findOrderDetailByCode("PD170728100001","6a0a01f3378a459580b20ac89eada0fd");
 		System.out.println(JSON.toJSON(result));
 	}
 }

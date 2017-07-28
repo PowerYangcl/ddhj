@@ -53,6 +53,7 @@ import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
+import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
@@ -92,6 +93,7 @@ import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
 import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
 import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
 import cn.com.ddhj.service.report.ITReportService;
+import cn.com.ddhj.service.store.ITAreaService;
 import cn.com.ddhj.service.store.ITProductInfoService;
 import cn.com.ddhj.service.store.ITProductOrderService;
 import cn.com.ddhj.service.store.ITUserAddressService;
@@ -143,6 +145,8 @@ public class ApiController extends BaseClass {
 	private ITUserAddressService userAddressService;
 	@Autowired
 	private ITProductInfoService productInfoService;
+	@Autowired
+	private ITAreaService areaService;
 	
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
@@ -555,6 +559,12 @@ public class ApiController extends BaseClass {
 			//库存大于0
 			dto.setStockNumFlag("gt0");
 			TPageProductListResult result = productInfoService.findProductListPage(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//获取城市列表
+		else if("area_select".equals(api.getApiTarget())){
+			String parentCode = obj.getString("areaId");
+			DataResult result = areaService.findDataByParent(parentCode);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**
