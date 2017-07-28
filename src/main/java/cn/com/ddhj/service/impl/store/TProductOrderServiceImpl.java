@@ -216,16 +216,16 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		}
 		
 		if (stockError > 0) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("商品" + productCodes.substring(0, productCodes.length() - 1) + "库存不足.");
 		} 
 		
 		if(notFoundError > 0) {
-			result.setResultCode(-1);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage(result.getResultMessage() + "商品" + productCodes.substring(0, productCodes.length() - 1) + "未查到.");
 		}
 		
-		if(result.getResultCode() == 0) {
+		if(result.getResultCode() == Constant.RESULT_SUCCESS) {
 			result.setData(list);
 		}
 		return result;
