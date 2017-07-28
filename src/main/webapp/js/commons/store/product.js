@@ -71,7 +71,7 @@ var Product={
 			dataType : "json",
 			data : param,
 			success : function(result) {
-				if(result.resultCode == 0){
+				if(result.resultCode == 1){
 					alert(result.resultMessage);
 					window.open("index.htm","_self");
 				}else{
@@ -90,7 +90,7 @@ var Product={
 					data : param,
 					dataType : "json",
 					success : function(result) {
-						if(result.resultCode == 0){
+						if(result.resultCode == 1){
 							jAlert(result.resultMessage, '提示',function(){
 								window.open("index.htm","_self");
 							});
@@ -113,7 +113,7 @@ var Product={
 					data : param,
 					dataType : "json",
 					success : function(result) {
-						if(result.resultCode == 0){
+						if(result.resultCode == 1){
 							jAlert(result.resultMessage, '提示',function(){
 								window.open("index.htm","_self");
 							});

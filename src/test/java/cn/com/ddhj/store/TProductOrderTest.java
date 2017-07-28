@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSON;
 
+import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.model.TProductInfo;
@@ -24,7 +25,6 @@ public class TProductOrderTest extends BaseTest {
 	@Autowired
 	private ITProductOrderService service;
 
-	@Test
 	public void createOrder() {
 		TProductOrderDto dto = new TProductOrderDto();
 		dto.setPayMoney(100);
@@ -32,19 +32,18 @@ public class TProductOrderTest extends BaseTest {
 		dto.setDispatching(1);
 		List<TProductInfo> list = new ArrayList<TProductInfo>();
 		TProductInfo product = new TProductInfo();
-		product.setProductCode("1111");
+		product.setProductCode("TP170726100003");
 		product.setStockNum(10);
 		product.setCurrentPrice(11);
 		list.add(product);
 		dto.setProductList(list);
-		System.out.println(JSON.toJSON(dto));
-		// BaseResult result = service.createOrder(dto,
-		// "6a0a01f3378a459580b20ac89eada0fd");
-		// System.out.println(JSON.toJSON(result));
+		BaseResult result = service.createOrder(dto,"6a0a01f3378a459580b20ac89eada0fd");
+		System.out.println(JSON.toJSON(result));
 	}
 
+	@Test
 	public void findOrderDetailByCode() {
-		EntityResult result = service.findOrderDetailByCode("1111S");
+		EntityResult result = service.findOrderDetailByCode("PD170728100001");
 		System.out.println(JSON.toJSON(result));
 	}
 }
