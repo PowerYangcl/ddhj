@@ -29,10 +29,10 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
 		List<TProductInfo> list = mapper.findEntityAll(dto);
 		if (list != null && list.size() > 0) {
-			result.setResultCode(0);
+			result.setResultCode(1);
 		} else {
 			list = new ArrayList<TProductInfo>();
-			result.setResultCode(-1);
+			result.setResultCode(0);
 			result.setResultMessage("查询商品列表为空");
 		}
 		PageInfo<TProductInfo> page = new PageInfo<TProductInfo>(list);
