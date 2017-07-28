@@ -10,7 +10,7 @@ var login = {
         var url_ = 'sys/user/login.htm';
         var data_ = $('#' + formId).serializeArray();
         var object = JSON.parse(ajaxs.sendAjax('post' , url_ , data_));
-        if(object.resultCode == 0){
+        if(object.resultCode == 1){
             window.location.href='lp/index.htm';
         }else{
             alert(object.resultMessage);

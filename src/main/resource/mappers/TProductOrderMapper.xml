@@ -37,13 +37,13 @@
 		update_time
 	</sql>
 	<select id="selectByCode" resultMap="BaseResultMap"
-		parameterType="java.lang.Integer">
+		parameterType="java.lang.String">
 		select
 		<include refid="Base_Column_List" />
 		from t_product_order
 		where `code` = #{orderCode,jdbcType=VARCHAR}
 	</select>
-	<delete id="deleteByCode" parameterType="java.lang.Integer">
+	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from
 		t_product_order
 		where `code` = #{orderCode,jdbcType=VARCHAR}
