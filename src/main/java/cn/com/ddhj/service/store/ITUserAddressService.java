@@ -30,7 +30,7 @@ public interface ITUserAddressService extends IBaseService<TUserAddress, BaseDto
 	 * @date 2017年7月27日 下午2:52:00 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject addUserAddress(JSONObject entity);
+	public JSONObject addUserAddress(JSONObject entity , String userToken);
 
 	/**
 	 * @description: 删除收货地址
@@ -41,6 +41,6 @@ public interface ITUserAddressService extends IBaseService<TUserAddress, BaseDto
 	 * @date 2017年7月27日 下午3:27:57 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject deleteUserAddress(JSONObject obj);
+	public JSONObject deleteUserAddress(JSONObject obj , String userToken);
 
 }

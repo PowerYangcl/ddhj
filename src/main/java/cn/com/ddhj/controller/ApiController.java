@@ -530,16 +530,16 @@ public class ApiController extends BaseClass {
 			return productInfoService.getProductInfo(pcode);
 		}
 		// 我的主页-商品订单-6.6.2.	商品订单列表
-		else if("product_order_list".equals(api.getApiTarget())){
+		else if("order_list".equals(api.getApiTarget())){
 			return productOrderService.findProductOrderList(obj);
 		}
 		// 新增收货地址
-		else if("add_user_address".equals(api.getApiTarget())){
-			return userAddressService.addUserAddress(obj); 
+		else if("address_add".equals(api.getApiTarget())){
+			return userAddressService.addUserAddress(obj , api.getUserToken()); 
 		}
 		// 删除收货地址
 		else if("delete_user_address".equals(api.getApiTarget())){
-			return userAddressService.deleteUserAddress(obj);
+			return userAddressService.deleteUserAddress(obj , api.getUserToken());
 		}
 		//商品列表
 		else if("product_list".equals(api.getApiTarget())) {

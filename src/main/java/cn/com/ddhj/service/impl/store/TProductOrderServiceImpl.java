@@ -191,7 +191,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 
 	/**
 	 * @description: 返回指定用户的订单列表信息 
-	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=product_order_list&api_key=appfamilyhas&apiInput={"buyerCode":"U161005100033","pageSize":"10","pageIndex":"0"}
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=order_list&api_key=appfamilyhas&apiInput={"buyerCode":"U161005100033","pageSize":"10","pageIndex":"0"}
 	 * 
 	 * @返回参数如下：
 		{    
