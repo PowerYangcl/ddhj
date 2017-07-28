@@ -33,7 +33,7 @@ public interface ITProductOrderService extends IBaseService<TProductOrder, TProd
 	 * @param orderCode
 	 * @return
 	 */
-	EntityResult findOrderDetailByCode(String orderCode);
+	EntityResult findOrderDetailByCode(String orderCode,String userToken);
 	
 	/**
 	 * @description: 返回指定用户的订单列表信息 

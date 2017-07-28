@@ -521,7 +521,7 @@ public class ApiController extends BaseClass {
 		// 订单详情
 		else if ("order_detail".equals(api.getApiTarget())) {
 			String orderCode = obj.getString("orderCode");
-			EntityResult result = productOrderService.findOrderDetailByCode(orderCode);
+			EntityResult result = productOrderService.findOrderDetailByCode(orderCode,api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 修改收货地址
