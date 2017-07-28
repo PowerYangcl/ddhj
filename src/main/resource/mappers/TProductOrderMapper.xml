@@ -133,19 +133,22 @@
 
 	<!-- 返回指定用户的订单列表信息 -->	
 	<resultMap id="ProductOrderResultMap" type="cn.com.ddhj.result.ProductOrderResult"></resultMap>
-	<select id="findProductOrderList" parameterType="java.lang.String" resultMap="ProductOrderResultMap">
+	<select id="findProductOrderList" parameterType="cn.com.ddhj.dto.ProductOrderDto" resultMap="ProductOrderResultMap">
 		 select 
 				o.code as orderCode,
 				o.order_status as orderStatus,
 				o.pay_money as payMoney,
 				o.buyer_phone as mobile,
-				GROUP_CONCAT(p.product_name) as productNames,
-				GROUP_CONCAT(p.main_pic_url) as mpurl
+				GROUP_CONCAT(p.product_name order by p.id) as productNames,
+				GROUP_CONCAT(p.main_pic_url order by p.id) as mpurl,
+				GROUP_CONCAT(p.current_price order by p.id) as productPrices,
+				GROUP_CONCAT(p.product_code order by p.id) as productCode
 			from 
 				t_product_order o left join t_product_order_detail d on o.code = d.order_code left join t_product_info p on p.product_code = d.product_code
 			where 
-				o.buyer_code = #{buyerCode}
-			group by o.code
+				o.buyer_code = #{buyerCode , jdbcType=VARCHAR}
+			group by o.code 
+			limit  #{pageIndex,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
 	</select>
 	
 	

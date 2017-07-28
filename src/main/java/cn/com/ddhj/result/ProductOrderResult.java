@@ -14,7 +14,21 @@ public class ProductOrderResult {
 	private String mobile;
 	private String productNames;
 	private String mpurl;
+	private String productPrices;
+	private String productCode;
 	
+	public String getProductPrices() {
+		return productPrices;
+	}
+	public void setProductPrices(String productPrices) {
+		this.productPrices = productPrices;
+	}
+	public String getProductCode() {
+		return productCode;
+	}
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
 	public String getOrderCode() {
 		return orderCode;
 	}

@@ -1,7 +1,9 @@
 package cn.com.ddhj.mapper;
 
 import java.util.List;
+import java.util.Map;
 
+import cn.com.ddhj.dto.ProductOrderDto;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.model.TProductOrder;
 import cn.com.ddhj.result.ProductOrderResult;
@@ -28,5 +30,5 @@ public interface TProductOrderMapper extends BaseMapper<TProductOrder, TProductO
 	 * @date 2017年7月27日 上午11:05:19 
 	 * @version 1.0.0.1
 	 */
-	public List<ProductOrderResult> findProductOrderList(String buyerCode); 
+	public List<ProductOrderResult> findProductOrderList(ProductOrderDto d); 
 }

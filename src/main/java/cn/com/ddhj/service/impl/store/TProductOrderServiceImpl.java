@@ -1,7 +1,9 @@
 package cn.com.ddhj.service.impl.store;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.dto.ProductOrderDto;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TProductInfoMapper;
@@ -187,29 +190,51 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 
 	/**
 	 * @description: 返回指定用户的订单列表信息 
-	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=product_order_list&api_key=appfamilyhas&apiInput={"buyerCode":"U161005100033"}
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=product_order_list&api_key=appfamilyhas&apiInput={"buyerCode":"U161005100033","pageSize":"10","pageIndex":"0"}
 	 * 
 	 * @返回参数如下：
-		 {    
-		    "status": "success",
-		    "msg": "查询成功",
-		    "buyerCode": "U161005100033",
-		    "list": [
+		{    
+		    "resultCode": 0,
+		    "resultMessage": "查询成功",
+		    "telCS": "010-66668888",
+		    "orderList": [
 		        {
 		            "orderCode": "DD918342863587",
+		            "orderMoney": 1500,
 		            "orderStatus": "OS8866001",
-		            "payMoney": 1500,
-		            "mobile": "15800000000",
-		            "productNames": "测试0,测试1",
-		            "mpurl": "http://image-family.huijia29e/31c4779dd7b57ccbf0b1aa.jpg,http://image-cd4d8.jpg"
+		            "productList": [
+		                {
+		                    "productCode": "801613242",
+		                    "productName": "测试0",
+		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/2729e/31c4f7b50a9e4a779dd7b57ccbf0b1aa.jpg",
+		                    "productPrice": 1000
+		                },
+		                {
+		                    "productCode": "801613243",
+		                    "productName": "测试1",
+		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/29ada/f69f89d6601840df9560e4d9b5dcd4d8.jpg",
+		                    "productPrice": 500
+		                }
+		            ]
 		        },
 		        {
 		            "orderCode": "DD918342863676",
+		            "orderMoney": 1200,
 		            "orderStatus": "OS8866001",
-		            "payMoney": 1200,
-		            "mobile": "15800000000",
-		            "productNames": "测试2,测试3",
-		            "mpurl": "http://image-family.huij1618ccf58429aaec031ba998c4654.jpg,http://image-a7c2f712f.jpg"
+		            "productList": [
+		                {
+		                    "productCode": "TP170726100003",
+		                    "productName": "测试2",
+		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275be/7391618ccf58429aaec031ba998c4654.jpg",
+		                    "productPrice": 800
+		                },
+		                {
+		                    "productCode": "TP170726100004",
+		                    "productName": "测试3",
+		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/299ad/01baed55e9184e48a1061cfa7c2f712f.jpg",
+		                    "productPrice": 400
+		                }
+		            ]
 		        }
 		    ]
 		}
@@ -221,24 +246,59 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 	 * @date 2017年7月27日 上午11:05:19 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject findProductOrderList(String buyerCode) {
+	public JSONObject findProductOrderList(JSONObject obj) {
 		JSONObject re = new JSONObject();
+		String buyerCode = obj.getString("buyerCode");
 		if(StringUtils.isBlank(buyerCode)){
-			re.put("status", "error");
-			re.put("msg", "用户编号不得为空");
+			re.put("resultCode", 1);
+			re.put("resultMessage", "用户编号不得为空");
+			return re;
+		}
+		Integer pageSize = obj.getInteger("pageSize");
+		Integer pageIndex = obj.getInteger("pageIndex");
+		
+		ProductOrderDto d = new ProductOrderDto();
+		d.setBuyerCode(buyerCode);
+		d.setPageSize(pageSize);
+		d.setPageIndex(pageIndex);
+		
+		
+		List<ProductOrderResult> list = mapper.findProductOrderList(d); 
+		if(list == null || list.size() == 0){
+			re.put("resultCode", 2);
+			re.put("resultMessage" , "用户订单列表为空"); 
 			return re;
 		}
 		
-		List<ProductOrderResult> list = mapper.findProductOrderList(buyerCode);
-		if(list == null || list.size() == 0){
-			re.put("status", "error");
-			re.put("msg", "用户订单列表为空");
-			return re;
+		List<ProductOrderModel> olist= new ArrayList<>();
+		for(ProductOrderResult r : list){
+			ProductOrderModel m = new ProductOrderModel();
+			m.setOrderCode(r.getOrderCode());
+			m.setOrderMoney(Double.valueOf(r.getPayMoney()));
+			m.setOrderStatus(r.getOrderStatus());
+			
+			List<ProductModel> productList = new ArrayList<>();
+			String[] pnArr = r.getProductNames().split(",");
+			String[] mpArr = r.getMpurl().split(",");
+			String[] ppArr = r.getProductPrices().split(",");
+			String[] pcArr = r.getProductCode().split(",");
+			if(pnArr.length != 0){
+				for(int i = 0 ; i < pnArr.length ; i ++){
+					ProductModel p = new ProductModel();
+					p.setProductCode(pcArr[i]);
+					p.setProductName(pnArr[i]);
+					p.setProductPrice(Double.valueOf(ppArr[i]));
+					p.setImgUrl(mpArr[i]);
+					productList.add(p);
+				}
+			}
+			m.setProductList(productList);
+			olist.add(m);
 		}
-		re.put("status", "success");
-		re.put("msg", "查询成功");
-		re.put("list", list);
-		re.put("buyerCode", buyerCode);
+		re.put("resultCode", 0);
+		re.put("resultMessage", "查询成功");
+		re.put("orderList", olist);
+		re.put("telCS", "010-66668888");
 		return re;
 	}
 
@@ -246,10 +306,70 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 
 
 
+class ProductOrderModel{
+	private String orderCode;
+	private Double orderMoney;
+	private String orderStatus; // order_status 订单状态 OS8866001下单成功 OS8866002下单未付款 OS8866003订单作废
+	private List<ProductModel> productList;
+	
+	public String getOrderCode() {
+		return orderCode;
+	}
+	public void setOrderCode(String orderCode) {
+		this.orderCode = orderCode;
+	}
+	public Double getOrderMoney() {
+		return orderMoney;
+	}
+	public void setOrderMoney(Double orderMoney) {
+		this.orderMoney = orderMoney;
+	}
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+	public List<ProductModel> getProductList() {
+		return productList;
+	}
+	public void setProductList(List<ProductModel> productList) {
+		this.productList = productList;
+	} 
+}
 
 
-
-
+class ProductModel{
+	private String productCode;
+	private String productName;
+	private String imgUrl;
+	private Double productPrice;
+	
+	public String getProductCode() {
+		return productCode;
+	}
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+	public String getImgUrl() {
+		return imgUrl;
+	}
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
+	}
+	public Double getProductPrice() {
+		return productPrice;
+	}
+	public void setProductPrice(Double productPrice) {
+		this.productPrice = productPrice;
+	}
+}
 
 
 

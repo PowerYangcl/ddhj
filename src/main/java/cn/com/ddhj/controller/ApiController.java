@@ -528,8 +528,7 @@ public class ApiController extends BaseClass {
 		}
 		// 我的主页-商品订单-6.6.2.	商品订单列表
 		else if("product_order_list".equals(api.getApiTarget())){
-			String buyerCode = obj.getString("buyerCode"); 
-			return productOrderService.findProductOrderList(buyerCode);
+			return productOrderService.findProductOrderList(obj);
 		}
 		// 新增收货地址
 		else if("add_user_address".equals(api.getApiTarget())){
