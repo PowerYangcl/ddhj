@@ -7,17 +7,17 @@ import cn.com.ddhj.model.BaseModel;
 
 public class TPageProductListResult extends BaseResult {
 	private List<? extends BaseModel> productList;
-	private Integer recCount;
+	private Long recCount = new Long(0);
 	public List<? extends BaseModel> getProductList() {
 		return productList;
 	}
 	public void setProductList(List<? extends BaseModel> productList) {
 		this.productList = productList;
 	}
-	public Integer getRecCount() {
+	public Long getRecCount() {
 		return recCount;
 	}
-	public void setRecCount(Integer recCount) {
+	public void setRecCount(Long recCount) {
 		this.recCount = recCount;
 	}
 }
