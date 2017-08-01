@@ -25,9 +25,9 @@ import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
-import cn.com.ddhj.result.ProductOrderResult;
 import cn.com.ddhj.result.order.ProductOrderApiResult;
 import cn.com.ddhj.result.order.ProductOrderConfirmResult;
+import cn.com.ddhj.result.order.ProductOrderListResult;
 import cn.com.ddhj.result.order.ProductResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
@@ -388,7 +388,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		d.setPageSize(pageSize);
 		d.setPageIndex(pageIndex);
 
-		List<ProductOrderResult> list = mapper.findProductOrderList(d);
+		List<ProductOrderListResult> list = mapper.findProductOrderList(d);
 		if (list == null || list.size() == 0) {
 			re.put("resultCode", 2);
 			re.put("resultMessage", "用户订单列表为空");
@@ -396,7 +396,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		}
 		
 		List<ProductOrderApiResult> olist= new ArrayList<>();
-		for(ProductOrderResult r : list){
+		for(ProductOrderListResult r : list){
 			ProductOrderApiResult m = new ProductOrderApiResult();
 			m.setOrderCode(r.getOrderCode());
 			m.setOrderMoney(Double.valueOf(r.getPayMoney()));

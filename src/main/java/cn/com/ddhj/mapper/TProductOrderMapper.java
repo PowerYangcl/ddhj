@@ -1,11 +1,12 @@
 package cn.com.ddhj.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.com.ddhj.dto.ProductOrderDto;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.model.TProductOrder;
-import cn.com.ddhj.result.ProductOrderResult;
+import cn.com.ddhj.result.order.ProductOrderListResult;
 
 public interface TProductOrderMapper extends BaseMapper<TProductOrder, TProductOrderDto> {
 
@@ -29,16 +30,5 @@ public interface TProductOrderMapper extends BaseMapper<TProductOrder, TProductO
 	 * @date 2017年7月27日 上午11:05:19 
 	 * @version 1.0.0.1
 	 */
-	public List<ProductOrderResult> findProductOrderList(ProductOrderDto d); 
-	
-	/**
-	 * 
-	 * 方法: updateByCode <br>
-	 * 描述: 更新商品订单详情 <br>
-	 * 作者: zht<br>
-	 * 时间: 2017年8月1日
-	 * @param orderCode
-	 * @return
-	 */
-	public int updateByCode(TProductOrder order);
+	public List<ProductOrderListResult> findProductOrderList(ProductOrderDto d); 
 }
