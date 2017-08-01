@@ -148,7 +148,7 @@
 	</update>
 	<!-- 根据集合参数查询商品列表 -->
 	<select id="findProductsByList" parameterType="list" resultMap="BaseResultMap">
-		select product_code,current_price,stock_num from t_product_info
+		select product_code,product_name,current_price,stock_num,main_pic_url from t_product_info
 		<where>
 			product_code in
 			<foreach collection="list" item="product" index="index" open="("

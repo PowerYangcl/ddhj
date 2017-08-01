@@ -27,6 +27,7 @@ import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
 import cn.com.ddhj.result.ProductOrderResult;
 import cn.com.ddhj.result.order.ProductOrderApiResult;
+import cn.com.ddhj.result.order.ProductOrderConfirmResult;
 import cn.com.ddhj.result.order.ProductResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
@@ -112,38 +113,36 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 	 */
 	@Override
 	public BaseResult confirmOrder(TProductOrderDto dto, String userToken) {
-		// 验证商品是否存在，库存是否可用
-		DataResult result = getProductList(dto.getProductList());
-		try {
-			if (result.getResultCode() == 0) {
-				UserDataResult userResult = userService.getUser(userToken);
-				if (userResult.getResultCode() == 0) {
-					TUser user = userResult.getUser();
-					// 创建订单
-					String userCode = user.getUserCode();
-					String orderCode = WebHelper.getInstance().getUniqueCode("PD");
-					TProductOrder order = new TProductOrder();
-					order.setCode(orderCode);
-					order.setPayMoney(dto.getPayMoney());
-					order.setBuyerCode(userCode);
-					order.setBuyerPhone(user.getPhone());
-					order.setDispatching(dto.getDispatching());
-					order.setAddressCode(dto.getAddressCode());
-					order.setCreateUser(userCode);
-					BaseResult insertResult = super.insertSelective(order);
-					if (insertResult.getResultCode() == 0) {
-						detailMapper.batchInsert(orderDetails(dto.getProductList(), orderCode, userCode));
-					}
-				} else {
-					result.setResultCode(userResult.getResultCode());
-					result.setResultMessage(userResult.getResultMessage());
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			result.setResultCode(-1);
-			result.setResultMessage("创建订单失败，请联系技术人员");
+		ProductOrderConfirmResult result = new ProductOrderConfirmResult();
+		//获取用户信息
+		UserDataResult userResult = userService.getUser(userToken);
+		if (userResult.getResultCode() == Constant.RESULT_ERROR) {
+			return userResult;
 		}
+		
+		//检验地址
+		String addressCode = dto.getAddressCode();
+		if(StringUtils.isBlank(addressCode)) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("获取订单收货地址为空");
+			return result;
+		}
+		
+		TUserAddress address = addressMapper.selectByCode(addressCode);
+		if (address == null) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("获取订单收货地址为空");
+			return result;
+		}
+		
+		// 验证商品是否存在，库存是否可用
+		DataResult res = getProductList(dto.getProductList());
+		if(res.getResultCode() == Constant.RESULT_ERROR) {
+			return res;
+		}
+		//1-包邮
+		result.setDispatching(1);
+		result.setCarbonMoney(userResult.getUser().getCarbonMoney());
 		return result;
 	}
 
@@ -251,7 +250,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		}
 
 		if (result.getResultCode() == Constant.RESULT_SUCCESS) {
-			result.setData(list);
+			result.setData(products);
 		}
 		return result;
 	}
