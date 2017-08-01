@@ -1,4 +1,4 @@
-package cn.com.ddhj.result;
+package cn.com.ddhj.result.order;
 
 /**
  * @description: 商城 订单列表返回数据实体
@@ -7,7 +7,7 @@ package cn.com.ddhj.result;
  * @date 2017年7月27日 上午11:03:53 
  * @version 1.0.0
  */
-public class ProductOrderResult {
+public class ProductOrderListResult {
 	private String orderCode;
 	private String orderStatus; // order_status 订单状态 8866001下单成功 8866002下单未付款 8866003订单作废
 	private Integer payMoney;
