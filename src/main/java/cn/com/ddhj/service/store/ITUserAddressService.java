@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.dto.user.TUserAddressDto;
 import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.service.IBaseService;
 
@@ -43,4 +44,11 @@ public interface ITUserAddressService extends IBaseService<TUserAddress, BaseDto
 	 */
 	public JSONObject deleteUserAddress(JSONObject obj , String userToken);
 
+	/**
+	 * 查询用户收货地址列表
+	 * @author zht
+	 * @param dto
+	 * @return
+	 */
+	BaseResult findUserAddressPage(TUserAddressDto dto);
 }

@@ -37,6 +37,7 @@ import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.dto.trade.TTradeOrderDto;
 import cn.com.ddhj.dto.user.TMessageDto;
+import cn.com.ddhj.dto.user.TUserAddressDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
@@ -569,8 +570,9 @@ public class ApiController extends BaseClass {
 		}
 		//收货地址列表
 		else if("address_list".equals(api.getApiTarget())) {
-//			UseAddressResult result = userAddressService.
-			return null;
+			TUserAddressDto dto = obj.toJavaObject(TUserAddressDto.class);
+			BaseResult result = userAddressService.findUserAddressPage(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**
 		 * ================= 点点商城相关 end ======================

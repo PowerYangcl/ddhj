@@ -37,6 +37,17 @@
 		from t_user_address
 		where `code` = #{code,jdbcType=VARCHAR}
 	</select>
+	<select id="findEntityAll" resultMap="BaseResultMap" parameterType="cn.com.ddhj.dto.user.TUserAddressDto">
+		select 
+		<include refid="Base_Column_List" />
+		from t_user_address
+		<where>
+		 1=1
+		 <if test="userCode != null">
+		 	and `user_code` = #{userCode,jdbcType=VARCHAR}
+		 </if>
+		</where>
+	</select>
 	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from
 		t_user_address
