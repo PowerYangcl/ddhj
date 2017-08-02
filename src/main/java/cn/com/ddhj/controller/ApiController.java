@@ -516,10 +516,10 @@ public class ApiController extends BaseClass {
 			BaseResult result = productOrderService.createOrder(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//订单确认
+		//订单确认 - zht
 		else if("order_confirm".equals(api.getApiTarget())) {
 			TProductOrderDto dto = obj.toJavaObject(TProductOrderDto.class);
-			BaseResult result = productOrderService.createOrder(dto, api.getUserToken());
+			BaseResult result = productOrderService.confirmOrder(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 订单详情
@@ -551,7 +551,7 @@ public class ApiController extends BaseClass {
 		else if("address_del".equals(api.getApiTarget())){
 			return userAddressService.deleteUserAddress(obj , api.getUserToken());
 		}
-		//商品列表
+		//商品列表 - zht
 		else if("product_list".equals(api.getApiTarget())) {
 			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);
 			//0 可售
@@ -566,6 +566,11 @@ public class ApiController extends BaseClass {
 			String parentCode = obj.getString("areaId");
 			DataResult result = areaService.findDataByParent(parentCode);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//收货地址列表
+		else if("address_list".equals(api.getApiTarget())) {
+//			UseAddressResult result = userAddressService.
+			return null;
 		}
 		/**
 		 * ================= 点点商城相关 end ======================

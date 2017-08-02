@@ -6,7 +6,7 @@ import java.util.Map;
 import cn.com.ddhj.dto.ProductOrderDto;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.model.TProductOrder;
-import cn.com.ddhj.result.ProductOrderResult;
+import cn.com.ddhj.result.order.ProductOrderListResult;
 
 public interface TProductOrderMapper extends BaseMapper<TProductOrder, TProductOrderDto> {
 
@@ -30,5 +30,5 @@ public interface TProductOrderMapper extends BaseMapper<TProductOrder, TProductO
 	 * @date 2017年7月27日 上午11:05:19 
 	 * @version 1.0.0.1
 	 */
-	public List<ProductOrderResult> findProductOrderList(ProductOrderDto d); 
+	public List<ProductOrderListResult> findProductOrderList(ProductOrderDto d); 
 }

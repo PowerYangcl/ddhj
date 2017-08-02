@@ -1,7 +1,9 @@
 package cn.com.ddhj.service.impl.store;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.swing.text.html.parser.Entity;
@@ -11,13 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TUserAddressMapper;
+import cn.com.ddhj.model.TProductInfo;
 import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.result.PageResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITUserAddressService;
@@ -178,6 +185,22 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		return re;
 	}
 
+	
+//	public PageResult findUserAddressPage(TProductInfoDto dto) {
+//		PageResult result = new PageResult();
+//		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
+//		List<TProductInfo> list = mapper.findEntityAll(dto);
+//		if (list != null && list.size() > 0) {
+//			result.setResultCode(Constant.RESULT_SUCCESS);
+//		} else {
+//			list = new ArrayList<TProductInfo>();
+//			result.setResultCode(Constant.RESULT_NULL);
+//			result.setResultMessage("查询商品列表为空");
+//		}
+//		PageInfo<TProductInfo> page = new PageInfo<TProductInfo>(list);
+//		result.setPage(page);
+//		return result;
+//	}
 }
 
 
