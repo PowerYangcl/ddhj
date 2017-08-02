@@ -132,8 +132,8 @@
 	</select>
 
 	<!-- 返回指定用户的订单列表信息 -->	
-	<resultMap id="ProductOrderResultMap" type="cn.com.ddhj.result.ProductOrderResult"></resultMap>
-	<select id="findProductOrderList" parameterType="cn.com.ddhj.dto.ProductOrderDto" resultMap="ProductOrderResultMap">
+	<resultMap id="ProductOrderListResultMap" type="cn.com.ddhj.result.order.ProductOrderListResult"></resultMap>
+	<select id="findProductOrderList" parameterType="cn.com.ddhj.dto.ProductOrderDto" resultMap="ProductOrderListResultMap">
 		 select 
 				o.code as orderCode,
 				o.order_status as orderStatus,
