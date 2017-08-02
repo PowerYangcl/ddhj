@@ -1,12 +1,18 @@
 package cn.com.ddhj.controller.store;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.alibaba.fastjson.JSONArray;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.store.TProductInfoDto;
@@ -64,8 +70,8 @@ public class TProductInfoController {
 	}
 
 	@RequestMapping("editindex")
-	public String editIndex(String productCode, ModelMap model) {
-		TProductInfo product = service.selectByCode(productCode);
+	public String editIndex(String productCode,HttpServletRequest request, ModelMap model) {
+		TProductInfo product = service.selectByCode(productCode,request);
 		model.addAttribute("product", product);
 		return "/jsp/store/product/edit";
 	}
@@ -97,5 +103,12 @@ public class TProductInfoController {
 			result.setResultMessage("用户尚未登录");
 		}
 		return result;
+	}
+	
+	@RequestMapping("upload")
+	@ResponseBody
+	public JSONArray upload(@RequestParam("uploadFile[]") MultipartFile[] uploadFile, HttpServletRequest request,
+			HttpServletResponse response) {
+		return service.uploadFile(uploadFile, request, response);
 	}
 }

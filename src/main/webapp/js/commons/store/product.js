@@ -64,6 +64,14 @@ var Product={
 		aForm.launch(url_, 'table-form', obj).init().drawForm(Product.loadTable);
 	},
 	add:function(){
+		if(files.length>0){
+			var images = new Array();
+			for(var key in files){
+				var obj = files[key];
+				images.push(obj.path+obj.name);
+			}
+			$("#images").val(images.join(","));
+		}
 		var param = $("#addFrm").serializeArray();
 		$.ajax({
 			url : "add.htm",
