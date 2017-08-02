@@ -1,5 +1,6 @@
 package cn.com.ddhj.model;
 
+
 public class TProductInfo extends BaseModel {
 	private String productCode;
 	private String productName;
@@ -8,11 +9,38 @@ public class TProductInfo extends BaseModel {
 	private Integer stockNum;
 	private String productTip;
 	private Integer flagSellable;
-	
+	/**
+	 * 上传图片数组
+	 */
+	private String images;
+
 	/**
 	 * 接口json转换使用在t_product_info中无对应字段
 	 */
 	private Integer buyNum;
+
+	/**
+	 * 商品图片集合
+	 */
+	private String pics;
+
+	private String initialPreview;
+	
+	public String getPics() {
+		return pics;
+	}
+
+	public void setPics(String pics) {
+		this.pics = pics;
+	}
+
+	public String getImages() {
+		return images;
+	}
+
+	public void setImages(String images) {
+		this.images = images;
+	}
 
 	public Integer getFlagSellable() {
 		return flagSellable;
