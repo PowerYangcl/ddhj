@@ -192,38 +192,33 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 
 	/**
 	 * @description: 获取商品详细信息
-	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget= product_detail&
-	 *                                                       api_key=
-	 *                                                       appfamilyhas&
-	 *                                                       apiInput={
-	 *                                                       "productCode":
-	 *                                                       "801613242"} @返回参数如下：
-	 *                                                       { "resultCode": 0,
-	 *                                                       "resultMessage":
-	 *                                                       "查询成功",
-	 *                                                       "productName":
-	 *                                                       "测试0", "stockNum":
-	 *                                                       99, "productCode":
-	 *                                                       "801613242",
-	 *                                                       "discriptPicList":
-	 *                                                       [
-	 *                                                       "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/f56c0f2c02fd44dc85428116438e4c8f.jpg",
-	 *                                                       "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/5c3c40cebeab451cac0548cee4875ada.jpg",
-	 *                                                       "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/c8085670a5d44aa0b01c6b675881ae9b.jpg",
-	 *                                                       "http://image-family.huijiayou.cn/cfiles/staticfiles/imzoom/29a16/7612922a79ce4faa92884678e9093e69.jpg",
-	 *                                                       "http://image-family.huijiayou.cn/cfiles/staticfiles/imzoom/29a16/6ac99b8bb2c945c09b65cc53ca5ecf73.jpg"
-	 *                                                       ], "productTip":
-	 *                                                       "", "mainpicUrl": [
-	 *                                                       "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/2729e/31c4f7b50a9e4a779dd7b57ccbf0b1aa.jpg"
-	 *                                                       ], "currentPrice":
-	 *                                                       1000, "telCS":
-	 *                                                       "010-66668888",
-	 *                                                       "QQCS":
-	 *                                                       "66828979658" }
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=product_detail&api_key=appfamilyhas&apiInput={"productCode":"801613242"}
+	 * @返回参数如下：
+		 {
+		    "resultCode": 0,
+		    "resultMessage": "查询成功",
+		    "productName": "测试0", 
+		    "stockNum": 99,
+		    "productCode": "801613242",
+		    "discriptPicList": [
+		        "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/f56c0f2c02fd44dc85428116438e4c8f.jpg",
+		        "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/5c3c40cebeab451cac0548cee4875ada.jpg",
+		        "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/c8085670a5d44aa0b01c6b675881ae9b.jpg",
+		        "http://image-family.huijiayou.cn/cfiles/staticfiles/imzoom/29a16/7612922a79ce4faa92884678e9093e69.jpg",
+		        "http://image-family.huijiayou.cn/cfiles/staticfiles/imzoom/29a16/6ac99b8bb2c945c09b65cc53ca5ecf73.jpg"
+		    ],
+		    "productTip": "",
+		    "mainpicUrl": [
+		        "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/2729e/31c4f7b50a9e4a779dd7b57ccbf0b1aa.jpg"
+		    ], 
+		    "currentPrice": 1000,
+		    "telCS": "010-66668888",
+		    "QQCS": "66828979658" 
+		}
 	 * 
 	 * @param productCode
-	 * @author Yangcl
-	 * @date 2017年7月26日 下午3:34:47
+	 * @author Yangcl 
+	 * @date 2017年7月26日 下午3:34:47 
 	 * @version 1.0.0.1
 	 */
 	public JSONObject getProductInfo(String productCode) {
