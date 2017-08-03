@@ -305,7 +305,7 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 				}
 				result.put("futureData", futureData);  
 				
-				result.put("resultCode", 0); 
+				result.put("resultCode", 1); 
 				result.put("resultMessage", "SUCCESS"); 
 				return result;
 			}else{
@@ -524,7 +524,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 			result.put("detailList", envList);  // 环境明细
 			result.put("level", this.scoreLevel(score));  // 环境等级
 			result.put("tiptitle", weather.getString("des"));  // 提示标题
-			result.put("resultCode", 0); 
+			result.put("resultCode", 1); 
 			result.put("resultMessage", "SUCCESS"); 
 			logger.info("1032接口：" + result); 
 			return  result;
@@ -625,7 +625,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 						logger.info(e.getScore() + "|" + e.getDistance()); 
 					}
 					if(projectList.size() != 0){
-						result.put("resultCode", 0);
+						result.put("resultCode", 1);
 						result.put("resultMessage", "SUCCESS");
 						result.put("projectlist",  projectList); 
 					}
