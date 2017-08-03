@@ -195,7 +195,7 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=product_detail&api_key=appfamilyhas&apiInput={"productCode":"801613242"}
 	 * @返回参数如下：
 		 {
-		    "resultCode": 0,
+		    "resultCode": 1,
 		    "resultMessage": "查询成功",
 		    "productName": "测试0", 
 		    "stockNum": 99,
@@ -224,18 +224,18 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 	public JSONObject getProductInfo(String productCode) {
 		JSONObject re = new JSONObject();
 		if (StringUtils.isBlank(productCode)) {
-			re.put("resultCode", 1);
+			re.put("resultCode", -1);
 			re.put("resultMessage", "商品编号不得为空");
 			return re;
 		}
 		TProductInfoResult e = mapper.getProductInfo(productCode);
 		if (e == null) {
-			re.put("resultCode", 1);
+			re.put("resultCode", -1);
 			re.put("resultMessage", "未找到对应的商品信息");
 			return re;
 		}
 
-		re.put("resultCode", 0);
+		re.put("resultCode", 1);
 		re.put("resultMessage", "查询成功");
 		re.put("productCode", e.getProductCode());
 		re.put("productName", e.getProductName());

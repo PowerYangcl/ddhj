@@ -87,7 +87,7 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 			TUser user = userResult.getUser();
 			userCode = user.getUserCode();
 		}else{
-			re.put("resultCode", 1);
+			re.put("resultCode", -1);
 			re.put("resultMessage", "用户尚未登录");
 			return re;
 		}
@@ -96,18 +96,18 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		try {
 			e = e_.toJavaObject(TUserAddress.class);
 		} catch (Exception ex) {
-			re.put("resultCode", 1);
+			re.put("resultCode", -1);
 			re.put("resultMessage", "地址信息解析错误");
 			return re;
 		}
 		if(e == null){
-			re.put("resultCode", 1);
+			re.put("resultCode", -1);
 			re.put("resultMessage", "地址信息解析错误，有效数据为空");
 			return re;
 		}
 		
 		if(StringUtils.isAnyBlank(e.getPhone() , e.getStreet() , e.getName() , e.getProvinces() , e.getIsDefault()==null ? "" :e.getIsDefault().toString())){
-			re.put("resultCode", 1);
+			re.put("resultCode", -1);
 			re.put("resultMessage", "地址关键信息不得为空");
 			return re;
 		}
@@ -123,10 +123,10 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		
 		int flag = mapper.insertSelective(e);
 		if(flag == 1){
-			re.put("resultCode", 0);
+			re.put("resultCode", 1);
 			re.put("resultMessage", "地址添加成功");
 		}else{
-			re.put("resultCode", 1);
+			re.put("resultCode", -1);
 			re.put("resultMessage", "添加收货地址失败");
 		}
 		return re;
@@ -156,14 +156,14 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 			TUser user = userResult.getUser();
 			userCode = user.getUserCode();
 		}else{
-			re.put("resultCode", 1);
+			re.put("resultCode", -1);
 			re.put("resultMessage", "用户尚未登录");
 			return re;
 		}
 		
 		String addrCode = obj.getString("addressID"); 
 		if(StringUtils.isAnyBlank(userCode , addrCode)){
-			re.put("resultCode", 1);
+			re.put("resultCode", -1);
 			re.put("resultMessage", "addressID关键参数不得为空");
 			return re;
 		}
@@ -172,10 +172,10 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		e.setCode(addrCode);
 		int flag = mapper.deleteUserAddress(e);
 		if(flag == 1){
-			re.put("resultCode", 0);
+			re.put("resultCode", 1);
 			re.put("resultMessage", "用户收货地址删除成功");
 		}else{
-			re.put("resultCode", 1);
+			re.put("resultCode", -1);
 			re.put("resultMessage", "用户收货地址删除失败");
 		}
 		
