@@ -979,7 +979,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 */
 	public JSONObject landedScoreAverage(String city, String type, String date_ , String year , Integer pageIndex ,  Integer pageSize) {
 		JSONObject result = new JSONObject();
-		result.put("code", 0);
+		result.put("code", 1);
 		try {
 			String startTime = "";
 			String endTime = "";
@@ -1013,13 +1013,14 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(dto);
 			if(list != null && list.size() != 0){
 				result.put("data", list);
-			}else{
-				result.put("code", 2);  // 无数据 
 			}
+//			else{
+//				result.put("code", 1);  // 无数据 
+//			}
 			
 		} catch (ParseException e) {
 			e.printStackTrace();
-			result.put("code", 1);  // 系统异常
+			result.put("code", -1);  // 系统异常
 		}
 		return result;
 	}

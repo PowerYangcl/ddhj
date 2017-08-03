@@ -572,7 +572,7 @@ public class ApiController extends BaseClass {
 			DataResult result = areaService.findDataByParent(parentCode);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//收货地址列表
+		//收货地址列表-zht
 		else if("address_list".equals(api.getApiTarget())) {
 			TUserAddressDto dto = obj.toJavaObject(TUserAddressDto.class);
 			BaseResult result = userAddressService.findUserAddressPage(dto);
