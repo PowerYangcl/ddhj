@@ -127,6 +127,16 @@
 		and
 			user_code = #{userCode , jdbcType=VARCHAR} 
 	</delete>
+	
+	<select id="findUserAddress" resultMap="BaseResultMap" parameterType="cn.com.ddhj.model.TUserAddress">
+		select 
+			*
+		from t_user_address
+		where 
+			`code` = #{code , jdbcType=VARCHAR} 
+		and
+			user_code = #{userCode , jdbcType=VARCHAR} 
+	</select>
 </mapper>
 
 

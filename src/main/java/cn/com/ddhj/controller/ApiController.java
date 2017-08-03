@@ -552,6 +552,10 @@ public class ApiController extends BaseClass {
 		else if("address_del".equals(api.getApiTarget())){
 			return userAddressService.deleteUserAddress(obj , api.getUserToken());
 		}
+		// 一条收货地址的数据 - Yangcl
+		else if("address_detail".equals(api.getApiTarget())){
+			return userAddressService.findUserAddress(obj , api.getUserToken());
+		}
 		//商品列表 - zht
 		else if("product_list".equals(api.getApiTarget())) {
 			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);

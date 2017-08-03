@@ -9,5 +9,7 @@ public interface TUserAddressMapper extends BaseMapper<TUserAddress, BaseDto>{
 	public int deleteUserAddress(TUserAddress e); 
 	
 	public void selectByUserCode(TUserAddressDto userDto);
+
+	public TUserAddress findUserAddress(TUserAddress e); 
 	
 }

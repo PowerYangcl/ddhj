@@ -198,6 +198,56 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		result.setPage(page);
 		return result;
 	}
+
+
+
+	/**
+	 * @description: 获取一条收货地址的数据  
+	 * 
+	 * @param obj
+	 * @param userToken
+	 * @author Yangcl 
+	 * @date 2017年8月3日 下午5:17:20 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject findUserAddress(JSONObject obj, String userToken) {
+		JSONObject re = new JSONObject();
+		String userCode = "";
+		UserDataResult userResult = userService.getUser(userToken);
+		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+			TUser user = userResult.getUser();
+			userCode = user.getUserCode();
+		}else{
+			re.put("resultCode", -1);
+			re.put("resultMessage", "用户尚未登录");
+			return re;
+		}
+		
+		String addrCode = obj.getString("addressID"); 
+		if(StringUtils.isAnyBlank(userCode , addrCode)){
+			re.put("resultCode", -1);
+			re.put("resultMessage", "addressID关键参数不得为空");
+			return re;
+		}
+		TUserAddress e = new TUserAddress();
+		e.setUserCode(userCode);
+		e.setCode(addrCode);
+		TUserAddress ua = mapper.findUserAddress(e);
+		if(ua != null){
+			re.put("resultCode", 1);
+			re.put("resultMessage", "操作成功");
+			re.put("phone", ua.getPhone());
+			re.put("areaCode", ua.getAreaCode());
+			re.put("street", ua.getStreet());
+			re.put("isDefault", ua.getIsDefault().toString());
+			re.put("name", ua.getName());
+			re.put("province", ua.getProvinces());
+		}else{
+			re.put("resultCode", -1);
+			re.put("resultMessage", "用户尚无收货地址");
+		}
+		return re;
+	}
 }
 
 
