@@ -42,8 +42,8 @@ public class TProductInfoController {
 	}
 
 	@RequestMapping("detail")
-	public String detail(String productCode,ModelMap model) {
-		TProductInfo product=service.selectByCode(productCode);
+	public String detail(String productCode, ModelMap model) {
+		TProductInfo product = service.selectByCode(productCode);
 		model.addAttribute("product", product);
 		return "/jsp/store/product/detail";
 	}
@@ -70,8 +70,8 @@ public class TProductInfoController {
 	}
 
 	@RequestMapping("editindex")
-	public String editIndex(String productCode,HttpServletRequest request, ModelMap model) {
-		TProductInfo product = service.selectByCode(productCode,request);
+	public String editIndex(String productCode, HttpServletRequest request, ModelMap model) {
+		TProductInfo product = service.selectByCode(productCode, request);
 		model.addAttribute("product", product);
 		return "/jsp/store/product/edit";
 	}
@@ -104,11 +104,17 @@ public class TProductInfoController {
 		}
 		return result;
 	}
-	
+
 	@RequestMapping("upload")
 	@ResponseBody
 	public JSONArray upload(@RequestParam("uploadFile[]") MultipartFile[] uploadFile, HttpServletRequest request,
 			HttpServletResponse response) {
 		return service.uploadFile(uploadFile, request, response);
+	}
+
+	@RequestMapping("delfile")
+	@ResponseBody
+	public BaseResult delFile(String file, HttpServletRequest request, HttpServletResponse response) {
+		return service.delFile(file, request, response);
 	}
 }

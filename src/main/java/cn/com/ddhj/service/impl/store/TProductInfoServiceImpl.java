@@ -35,6 +35,7 @@ import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductInfoService;
 import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
+import cn.com.ddhj.util.MD5Util;
 
 @Service
 public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProductInfoMapper, TProductInfoDto>
@@ -98,7 +99,7 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 					result = super.updateByCode(entity);
 					if (result.getResultCode() == 1) {
 						String time = DateUtil.getSysDateTime();
-						picMapper.deleteByCode(entity.getProductCode());
+						picMapper.deleteByProductCode(entity.getProductCode());
 						List<TProductPic> pics = new ArrayList<TProductPic>();
 						// 添加图片到商品图片表
 						for (String str : images) {
@@ -139,14 +140,20 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 			 * 查询商品图片合集
 			 */
 			List<TProductPic> list = picMapper.selectByProductCode(code);
-
 			if (list != null && list.size() > 0) {
+				JSONArray array = new JSONArray();
 				List<String> imgs = new ArrayList<String>();
 				for (TProductPic pic : list) {
 					String img = "<img src='" + basePath + pic.getPicUrl() + "' class='file-preview-image'>";
 					imgs.add(img);
+					JSONObject obj = new JSONObject();
+					obj.put("caption", pic.getPicUrl());
+					obj.put("width", "120px");
+					obj.put("url", "delfile.htm");
+					array.add(obj);
 				}
-				info.setPics(JSONArray.toJSONString(imgs));
+				info.setInitialPreview(JSONArray.toJSONString(imgs));
+				info.setInitialPreviewConfig(JSONArray.toJSONString(array));
 			}
 		}
 		return info;
@@ -271,12 +278,13 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 					}
 					// 文件名称
 					String name = file.getOriginalFilename();
+					name = MD5Util.md5Hex(name)+name.substring(name.lastIndexOf("."),name.length());
 					File uploaded = new File(path + name);
 					try {
 						file.transferTo(uploaded);
 						// 文件上传文件成功，将文件信息存储到array中
 						JSONObject fileObj = new JSONObject();
-						fileObj.put("path", "product/images/" + date + "/");
+						fileObj.put("path", "images/" + date + "/");
 						fileObj.put("name", name);
 						array.add(fileObj);
 					} catch (Exception e) {

@@ -83,34 +83,35 @@ $('#uploadFile').fileinput({
 	enctype: 'multipart/form-data',
 	showUpload: true, //是否显示上传按钮
 	showCaption: false, //是否显示标题
+    initialPreview:${product.initialPreview},
+    initialPreviewConfig: ${product.initialPreviewConfig},
 	browseClass: "btn btn-primary", //按钮样式             
 	previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
 	msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！"
 });
-var files = new Array();//上传文件路径数组
+var files = ${product.initialPreview};//上传文件路径数组
 //上传回调函数
 $("#uploadFile").on("fileuploaded", function(event, data, previewId, index) {
 	//将上传完成的文件信息添加到files
 	initFileArray(data.response);
 });
-$("#uploadFile").fileinput('refresh', {
-    initialPreview:${product.pics},
-    init
-});
 $("#uploadFile").on("fileclear",function(){
 	if(files.length>0){
 		$.ajax({
-			url : "file/del.htm",
+			url : "delfile.htm",
 			dataType :"json",
 			data:{"file":JSON.stringify(files)},
 			success:function(data){
 				if(data > 0){
 					//初始化files
-					files = ${product.pics};					
+					files = ${product.initialPreview};					
 				}
 			}
 		});
 	}
+});
+$('#uploadFile').on('fileselect', function(event, numFiles, label) {
+	
 });
 //删除上传文件函数
 $("#uploadFile").on("filesuccessremove",function(event, previewId, index){
@@ -118,7 +119,7 @@ $("#uploadFile").on("filesuccessremove",function(event, previewId, index){
 		var file = new Array();
 		file.push(files[index]);
 		$.ajax({
-			url : "file/del.htm",
+			url : "file/delfile.htm",
 			dataType :"json",
 			data:{"file":JSON.stringify(file)},
 			success:function(data){
@@ -127,6 +128,7 @@ $("#uploadFile").on("filesuccessremove",function(event, previewId, index){
 		});
 	}
 });
+
 function initFileArray(data){
 	if(data){
 		for(var key in data){
@@ -138,6 +140,6 @@ function initFileArray(data){
 	}
 }
 </script>
-<script type="text/javascript" src="${js}/commons/store/product.js"></script>
+<script type="text/javascript" src="${js}/commons/store/product/product.js"></script>
 </body>
 </html>
