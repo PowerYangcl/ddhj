@@ -136,10 +136,6 @@
 		WHERE
 		user_code =
 		#{userCode,jdbcType=VARCHAR}
-		<if test="operationTypeChild != null and operationTypeChild != ''">
-			AND operation_type_child
-			=#{operationTypeChild,jdbcType=VARCHAR}
-		</if>
 		<choose>
 			<when test="day != null">
 				AND create_time >
@@ -149,6 +145,8 @@
 				ORDER BY create_time ASC
 			</when>
 			<otherwise>
+				AND operation_type_child
+				=#{operationTypeChild,jdbcType=VARCHAR}
 				limit
 				#{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 			</otherwise>

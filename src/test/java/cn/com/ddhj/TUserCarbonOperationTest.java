@@ -108,10 +108,9 @@ public class TUserCarbonOperationTest extends BaseTest {
 	@Test
 	public void sel() {
 		TUserCarbonOperationDto dto = new TUserCarbonOperationDto();
-		dto.setUserCode("U161022100001");
-		dto.setOperationTypeChild("DC170208100009");
-		dto.setDay(120);
-		CarbonTypeDetailResult result = serivce.getCarbonOperationByType("a91cc4c0fcfb4ffea4c581322446cb4b", dto);
+		dto.setUserCode("U161009100001");
+		dto.setDay(30);
+		CarbonTypeDetailResult result = serivce.getCarbonOperationByType("6a397b4cd42f4d62b3c5c43143d94714", dto);
 		System.out.println(JSON.toJSON(result));
 	}
 
