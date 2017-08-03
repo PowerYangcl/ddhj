@@ -814,7 +814,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 */
 	public JSONObject getFutureSevenAqi(String city_ , String area_ , String type){
 		JSONObject result = new JSONObject();
-		result.put("code", 0);
+		result.put("resultCode", -1);
 		String city = StringUtils.substringBefore(city_, "市");
 		String area = "";
 		if(StringUtils.endsWith(area_, "区")){
@@ -844,7 +844,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		try {
 			if(type.equals("A")){
 				if(StringUtils.isNotBlank(cwf.getSevenAqi()) && cwf.getSevenAqi().startsWith(today)){
-					result.put("code", 1);
+					result.put("resultCode", 1);
 					result.put("date", JSONArray.parseArray(StringUtils.substringAfter(cwf.getSevenAqi(), today))); 
 				}else{ 
 					param.put("startTime" , this.getSpecifyDate(new Date(), 1, "yyyyMMdd"));     // 更新今天的数据
@@ -861,14 +861,14 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 							e.setSevenAqi(sevenAqi); 
 							e.setUpdateTime(new Date()); 
 							cityWeatherForecastMapper.updateSelective(e);
-							result.put("code", 1);
+							result.put("resultCode", 1);
 							result.put("date", JSONArray.parseArray(obj.getString("series"))); 
 						}
 					} 
 				}
 			}else if(type.equals("B")){
 				if(StringUtils.isNotBlank(cwf.getFifteenWeather()) && cwf.getFifteenWeather().startsWith(today)){
-					result.put("code", 1);
+					result.put("resultCode", 1);
 					result.put("date", JSONArray.parseArray(StringUtils.substringAfter(cwf.getFifteenWeather(), today))); 
 				}else{ 
 					param.put("startTime" , this.getSpecifyDate(new Date(), 1, "yyyyMMdd"));  // 更新今天的数据
@@ -885,7 +885,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 							e.setFifteenWeather(fifteenWeather); 
 							e.setUpdateTime(new Date()); 
 							cityWeatherForecastMapper.updateSelective(e);
-							result.put("code", 1);
+							result.put("resultCode", 1);
 							result.put("date", JSONArray.parseArray(obj.getString("series")));
 						}
 					}
@@ -911,7 +911,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 */
 	public JSONObject perpetualCalendar(ServletContext application){
 		JSONObject result = new JSONObject();
-		result.put("code", 0);
+		result.put("resultCode", 1);
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		String today = format.format(new Date());
@@ -979,7 +979,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 */
 	public JSONObject landedScoreAverage(String city, String type, String date_ , String year , Integer pageIndex ,  Integer pageSize) {
 		JSONObject result = new JSONObject();
-		result.put("code", 1);
+		result.put("resultCode", 1);
 		try {
 			String startTime = "";
 			String endTime = "";
@@ -1015,12 +1015,12 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 				result.put("data", list);
 			}
 //			else{
-//				result.put("code", 1);  // 无数据 
+//				result.put("resultCode", 1);  // 无数据 
 //			}
 			
 		} catch (ParseException e) {
 			e.printStackTrace();
-			result.put("code", -1);  // 系统异常
+			result.put("resultCode", -1);  // 系统异常
 		}
 		return result;
 	}
