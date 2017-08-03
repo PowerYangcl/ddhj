@@ -24,7 +24,7 @@ public class Constant {
 	/**
 	 * 返回结果为空
 	 */
-	public static Integer RESULT_NULL = 0;
+	public static Integer RESULT_NULL = 1;
 	/**
 	 * 返回结果失败
 	 */

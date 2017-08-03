@@ -89,6 +89,15 @@ var Product={
 		});
 	},
 	edit:function(){
+		if(files.length>0){
+			var images = new Array();
+			for(var key in files){
+				var obj = files[key];
+				images.push(obj.path+obj.name);
+			}
+			$("#images").val(images.join(","));
+		}
+		alert($("#images").val());
 		jConfirm('您确定要编辑此商品吗?', '提示', function(r) {
 			if(r){
 				var param = $("#editFrm").serializeArray();

@@ -1,6 +1,5 @@
 package cn.com.ddhj.model;
 
-
 public class TProductInfo extends BaseModel {
 	private String productCode;
 	private String productName;
@@ -25,7 +24,25 @@ public class TProductInfo extends BaseModel {
 	private String pics;
 
 	private String initialPreview;
-	
+
+	private String initialPreviewConfig;
+
+	public String getInitialPreview() {
+		return initialPreview;
+	}
+
+	public void setInitialPreview(String initialPreview) {
+		this.initialPreview = initialPreview;
+	}
+
+	public String getInitialPreviewConfig() {
+		return initialPreviewConfig;
+	}
+
+	public void setInitialPreviewConfig(String initialPreviewConfig) {
+		this.initialPreviewConfig = initialPreviewConfig;
+	}
+
 	public String getPics() {
 		return pics;
 	}

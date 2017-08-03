@@ -77,7 +77,7 @@
 			</div>
 		</div>
 	</div>
-<script type="text/javascript" src="${js}/commons/store/product.js"></script>
+<script type="text/javascript" src="${js}/commons/store/product/product.js"></script>
 <script type="text/javascript">
 $(function(){
 	Product.init();
