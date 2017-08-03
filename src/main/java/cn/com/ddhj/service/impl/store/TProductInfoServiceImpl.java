@@ -239,10 +239,18 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 		re.put("resultMessage", "查询成功");
 		re.put("productCode", e.getProductCode());
 		re.put("productName", e.getProductName());
-		re.put("mainpicUrl", new ArrayList<String>(Arrays.asList(e.getMainPicUrl().split(","))));
+		if(e.getMainPicUrl() != null){
+			re.put("mainpicUrl", new ArrayList<String>(Arrays.asList(e.getMainPicUrl().split(","))));
+		}else{
+			re.put("mainpicUrl", "");
+		}
 		re.put("currentPrice", e.getCurrentPrice());
 		re.put("stockNum", e.getStockNum());
-		re.put("discriptPicList", new ArrayList<String>(Arrays.asList(e.getPicUrls().split(","))));
+		if(e.getPicUrls() != null){
+			re.put("discriptPicList", new ArrayList<String>(Arrays.asList(e.getPicUrls().split(","))));
+		}else{
+			re.put("discriptPicList", "");
+		}
 		re.put("productTip", e.getProductTip());
 		re.put("telCS", "010-66668888");
 		re.put("QQCS", "66828979658");
