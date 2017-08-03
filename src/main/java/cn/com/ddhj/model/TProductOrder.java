@@ -10,10 +10,20 @@ public class TProductOrder extends BaseModel {
 	private String buyerPhone;
 	private Integer dispatching;
 	private String addressCode;
+	private String addressDetail;
 
 	private List<TProductOrderDetail> details;
 
 	private TUserAddress address;
+
+	
+	public String getAddressDetail() {
+		return addressDetail;
+	}
+
+	public void setAddressDetail(String addressDetail) {
+		this.addressDetail = addressDetail;
+	}
 
 	public String getOrderStatus() {
 		return orderStatus;

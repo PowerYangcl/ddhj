@@ -37,15 +37,16 @@
 		from t_user_address
 		where `code` = #{code,jdbcType=VARCHAR}
 	</select>
-	<select id="findEntityAll" resultMap="BaseResultMap" parameterType="cn.com.ddhj.dto.user.TUserAddressDto">
-		select 
+	<select id="findEntityAll" resultMap="BaseResultMap"
+		parameterType="cn.com.ddhj.dto.user.TUserAddressDto">
+		select
 		<include refid="Base_Column_List" />
 		from t_user_address
 		<where>
-		 1=1
-		 <if test="userCode != null">
-		 	and `user_code` = #{userCode,jdbcType=VARCHAR}
-		 </if>
+			1=1
+			<if test="userCode != null">
+				and `user_code` = #{userCode,jdbcType=VARCHAR}
+			</if>
 		</where>
 	</select>
 	<delete id="deleteByCode" parameterType="java.lang.String">
@@ -119,23 +120,37 @@
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
-	
+
 	<delete id="deleteUserAddress" parameterType="cn.com.ddhj.model.TUserAddress">
-		delete from t_user_address
-		where 
-			`code` = #{code , jdbcType=VARCHAR} 
+		delete from
+		t_user_address
+		where
+		`code` = #{code , jdbcType=VARCHAR}
 		and
-			user_code = #{userCode , jdbcType=VARCHAR} 
+		user_code = #{userCode , jdbcType=VARCHAR}
 	</delete>
-	
-	<select id="findUserAddress" resultMap="BaseResultMap" parameterType="cn.com.ddhj.model.TUserAddress">
-		select 
-			*
+
+	<select id="findUserAddress" resultMap="BaseResultMap"
+		parameterType="cn.com.ddhj.model.TUserAddress">
+		select
+		*
 		from t_user_address
-		where 
-			`code` = #{code , jdbcType=VARCHAR} 
+		where
+		`code` = #{code , jdbcType=VARCHAR}
 		and
-			user_code = #{userCode , jdbcType=VARCHAR} 
+		user_code = #{userCode , jdbcType=VARCHAR}
+	</select>
+	<!-- 地址编码查询地址详细信息 2017-08-03 zhy -->
+	<select id="findAddressDetail" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		CONCAT(a.`name`,d.provinces, d.street) as address
+		FROM
+		t_user_address AS d,
+		v_area AS a
+		WHERE
+		d.area_code = a.area_code
+		AND d.`code` =#{addressCode,jdbcType=VARCHAR};
 	</select>
 </mapper>
 

@@ -11,6 +11,7 @@
 		<result column="buyer_phone" property="buyerPhone" jdbcType="VARCHAR" />
 		<result column="dispatching" property="dispatching" jdbcType="VARCHAR" />
 		<result column="address_code" property="addressCode" jdbcType="VARCHAR" />
+		<result column="address_detail" property="addressDetail" jdbcType="VARCHAR" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
@@ -27,7 +28,7 @@
 	<sql id="Base_Column_List">
 		id, uuid, code, pay_money, buyer_code, buyer_phone,
 		dispatching,
-		address_code, create_user,
+		address_code,address_detail, create_user,
 		DATE_FORMAT(create_time,'%Y-%m-%d
 		%H:%i:%s') as
 		create_time,
@@ -59,6 +60,7 @@
 			buyer_phone,
 			dispatching,
 			address_code,
+			address_detail,
 			create_user,
 			create_time,
 			update_user,
@@ -73,6 +75,7 @@
 			#{buyerPhone,jdbcType=VARCHAR},
 			#{dispatching,jdbcType=VARCHAR},
 			#{addressCode,jdbcType=VARCHAR},
+			#{addressDetail,jdbcType=VARCHAR},
 			#{createUser,jdbcType=VARCHAR},
 			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d
 			%H:%i:%s'),
@@ -102,6 +105,9 @@
 			<if test="addressCode != null and addressCode != null">
 				address_code = #{addressCode,jdbcType=VARCHAR},
 			</if>
+			<if test="addressDetail != null and addressDetail != null">
+				address_detail = #{addressDetail,jdbcType=VARCHAR},
+			</if>
 			update_user = #{updateUser,jdbcType=VARCHAR},
 			update_time =
 			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
@@ -118,6 +124,7 @@
 			o.dispatching,
 			o.create_time,
 			ua.`code` AS address_code,
+			o.address_detail,
 			ua.`name`,
 			ua.phone,
 			ua.provinces,

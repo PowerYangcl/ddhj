@@ -19,4 +19,12 @@ public interface TAreaMapper extends BaseMapper<TArea, TAreaDto> {
 	 * @return
 	 */
 	List<TArea> findDataByParent(String parentCode);
+
+	/**
+	 * 访问城市视图获取地市名称
+	 * 
+	 * @param areaCode
+	 * @return
+	 */
+	String findAddressAreaName(String areaCode);
 }

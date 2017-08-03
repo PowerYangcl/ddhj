@@ -84,4 +84,7 @@
 	<select id="findDataByParent" parameterType="java.lang.String" resultMap="BaseResultMap">
 		select `code`,`name` from t_area where parent_code = #{parentCode,jdbcType=VARCHAR}
 	</select>
+	<select id="findAddressAreaName" parameterType="java.lang.String" resultType="java.lang.String">
+		select `name` from v_area where area_code = #{areaCode,jdbcType=VARCHAR}
+	</select>
 </mapper>
