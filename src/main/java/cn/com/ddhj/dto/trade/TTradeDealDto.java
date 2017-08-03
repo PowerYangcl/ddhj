@@ -4,6 +4,7 @@ import cn.com.ddhj.dto.BaseDto;
 
 public class TTradeDealDto extends BaseDto {
 	private String cityId;
+	private Integer month;
 	private String objectCode;
 
 	public String getCityId() {
@@ -21,4 +22,13 @@ public class TTradeDealDto extends BaseDto {
 	public void setObjectCode(String objectCode) {
 		this.objectCode = objectCode;
 	}
+
+	public Integer getMonth() {
+		return month;
+	}
+
+	public void setMonth(Integer month) {
+		this.month = month;
+	}
+	
 }

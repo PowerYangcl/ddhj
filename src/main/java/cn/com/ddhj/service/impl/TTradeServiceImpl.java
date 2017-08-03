@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
+import cn.com.ddhj.result.trade.TradeDealChartResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.result.trade.TradeOrderResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
@@ -169,6 +171,31 @@ public class TTradeServiceImpl implements ITradeService {
 		}
 		result.setRepCount(total);
 		result.setRepList(dealList);
+		return result;
+	}
+	
+	@Override
+	public TradeDealChartResult queryDealsByCityIdAndPeriod(TTradeDealDto dto) {
+		TradeDealChartResult result = new TradeDealChartResult();
+		List<TTradeDeal> dealList = tradeDealMapper.queryDealsByCityIdAndPeriod(dto);
+		if(dealList != null && !dealList.isEmpty()) {
+			result.setResultCode(Constant.RESULT_SUCCESS);
+			for(TTradeDeal deal : dealList) {
+				String cityName = deal.getCityName();
+				List<TTradeDeal> list = null;
+				if(result.getDeals().containsKey(cityName)) {
+					list = result.getDeals().get(cityName);
+				} else {
+					list = new LinkedList<TTradeDeal>();
+					result.getDeals().put(cityName, list);
+				}
+				list.add(deal);
+			}
+		} else {
+			result.setResultCode(Constant.RESULT_NULL);
+			result.setResultMessage("获取数据为空");
+			
+		}
 		return result;
 	}
 

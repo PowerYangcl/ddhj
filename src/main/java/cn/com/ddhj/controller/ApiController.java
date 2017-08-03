@@ -71,6 +71,7 @@ import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
+import cn.com.ddhj.result.trade.TradeDealChartResult;
 import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.result.trade.TradeOrderResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
@@ -452,6 +453,12 @@ public class ApiController extends BaseClass {
 		else if ("trade_deals".equals(api.getApiTarget())) {
 			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
 			TradeDealResult result = tradeService.queryDealsByCityId(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//按城市ID/全国(cityId为空)和时间(当前时间向前查询1月|3月|6月|1年)碳交易行情用于绘制折线图
+		else if("trade_deals_chart".equals(api.getApiTarget())) {
+			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
+			TradeDealChartResult result = tradeService.queryDealsByCityIdAndPeriod(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 用户委托买/卖

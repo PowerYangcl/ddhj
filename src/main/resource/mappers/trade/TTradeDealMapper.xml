@@ -242,6 +242,24 @@
     order by deal_date desc 
     limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>
+  
+  <select id="queryDealsByCityIdAndPeriod" parameterType="cn.com.ddhj.dto.trade.TTradeDealDto" resultMap="BaseResultMap">
+    select 
+	    city_id, city_name,DATE_FORMAT(deal_date,'%Y-%m-%d') as deal_date,
+	    open_price,close_price,high_price,low_price,deal_price,deal_num,deal_amount
+    from t_trade_deal
+    <where>
+    	1=1 
+     	<if test="cityId != null">
+		   AND city_id=#{cityId,jdbcType=VARCHAR}
+		</if>
+		<if test="month != null">
+		   AND deal_date > DATE_SUB(CURDATE(), INTERVAL #{month,jdbcType=INTEGER} MONTH)
+		</if>
+    </where>
+    order by deal_date desc
+  </select>
+  
   <select id="queryDealsByCityIdCount" parameterType="cn.com.ddhj.dto.TOrderDto" resultType="java.lang.Integer">
     select count(*)
     from t_trade_deal

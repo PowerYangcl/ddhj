@@ -5,6 +5,7 @@ import java.util.List;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.trade.TTradeDeal;
+import cn.com.ddhj.result.trade.TradeDealResult;
 
 public interface TTradeDealMapper extends BaseMapper<TTradeDeal, TTradeDealDto> {
     int deleteByPrimaryKey(Integer id);
@@ -53,6 +54,18 @@ public interface TTradeDealMapper extends BaseMapper<TTradeDeal, TTradeDealDto> 
      * @return
      */
     List<TTradeDeal> queryDealsByCityId(TTradeDealDto dto);
+    
+    /**
+	 * 
+	 * 方法: queryDealsByCityIdAndPeriod<br>
+	 * 描述: 按城市Id和时间周期(1月|3月|6月|1年)查询该城市所有碳交易记录,按交易日期倒序,无城市ID时查询所有城市<br>
+	 * 作者: zht<br>
+	 * 时间: 2017年8月3日 下午9:35:05
+	 * 
+	 * @param 
+	 * @return
+	 */
+    List<TTradeDeal> queryDealsByCityIdAndPeriod(TTradeDealDto dto);
     
     /**
      * 
