@@ -1,7 +1,6 @@
 package cn.com.ddhj;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +16,7 @@ import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
+import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.service.user.ITUserCarbonOperationService;
 import cn.com.ddhj.util.DateUtil;
 
@@ -105,15 +105,15 @@ public class TUserCarbonOperationTest extends BaseTest {
 		}
 	}
 
+	@Test
 	public void sel() {
 		TUserCarbonOperationDto dto = new TUserCarbonOperationDto();
-		dto.setUserCode("U161022100001");
-		dto.setOperationTypeChild("DC170208100009");
-		List<TUserCarbonOperation> list = mapper.findCarbonOperationByTime(dto);
-		System.out.println(list.size());
+		dto.setUserCode("U161009100001");
+		dto.setDay(30);
+		CarbonTypeDetailResult result = serivce.getCarbonOperationByType("6a397b4cd42f4d62b3c5c43143d94714", dto);
+		System.out.println(JSON.toJSON(result));
 	}
 
-	@Test
 	public void getCarbonSum() {
 		CarbonDetailResult result = serivce.getCarbonOperationDetail("a91cc4c0fcfb4ffea4c581322446cb4b");
 		System.out.println(JSON.toJSON(result));

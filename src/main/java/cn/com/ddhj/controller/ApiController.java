@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.annotation.Inject;
@@ -38,6 +39,7 @@ import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.dto.trade.TTradeOrderDto;
 import cn.com.ddhj.dto.user.TMessageDto;
 import cn.com.ddhj.dto.user.TUserAddressDto;
+import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
@@ -149,7 +151,7 @@ public class ApiController extends BaseClass {
 	private ITProductInfoService productInfoService;
 	@Autowired
 	private ITAreaService areaService;
-	
+
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
 
@@ -440,8 +442,9 @@ public class ApiController extends BaseClass {
 		// 根据碳币类型查询交易明细
 		else if ("user_carbon_type_detail".equals(api.getApiTarget())) {
 			JSONObject param = JSONObject.parseObject(api.getApiInput());
+			TUserCarbonOperationDto dto = JSON.toJavaObject(param, TUserCarbonOperationDto.class);
 			CarbonTypeDetailResult result = userCarbonOperationserivce.getCarbonOperationByType(api.getUserToken(),
-					param.getString("type"), param.getInteger("pageIndex"), param.getInteger("pageSize"));
+					dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 查询支持碳交易的城市列表
@@ -524,8 +527,8 @@ public class ApiController extends BaseClass {
 			BaseResult result = productOrderService.createOrder(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//订单确认 - zht
-		else if("order_confirm".equals(api.getApiTarget())) {
+		// 订单确认 - zht
+		else if ("order_confirm".equals(api.getApiTarget())) {
 			TProductOrderDto dto = obj.toJavaObject(TProductOrderDto.class);
 			BaseResult result = productOrderService.confirmOrder(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
@@ -533,7 +536,7 @@ public class ApiController extends BaseClass {
 		// 订单详情
 		else if ("order_detail".equals(api.getApiTarget())) {
 			String orderCode = obj.getString("orderCode");
-			EntityResult result = productOrderService.findOrderDetailByCode(orderCode,api.getUserToken());
+			EntityResult result = productOrderService.findOrderDetailByCode(orderCode, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 修改收货地址
@@ -543,44 +546,44 @@ public class ApiController extends BaseClass {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 获取商品详细信息 - Yangcl
-		else if ("product_detail".equals(api.getApiTarget())){
-			String pcode = obj.getString("productCode"); 
+		else if ("product_detail".equals(api.getApiTarget())) {
+			String pcode = obj.getString("productCode");
 			return productInfoService.getProductInfo(pcode);
 		}
-		// 我的主页-商品订单-6.6.2.	商品订单列表 - Yangcl
-		else if("order_list".equals(api.getApiTarget())){
+		// 我的主页-商品订单-6.6.2. 商品订单列表 - Yangcl
+		else if ("order_list".equals(api.getApiTarget())) {
 			return productOrderService.findProductOrderList(obj);
 		}
 		// 新增收货地址 - Yangcl
-		else if("address_add".equals(api.getApiTarget())){
-			return userAddressService.addUserAddress(obj , api.getUserToken()); 
+		else if ("address_add".equals(api.getApiTarget())) {
+			return userAddressService.addUserAddress(obj, api.getUserToken());
 		}
 		// 删除收货地址 - Yangcl
-		else if("address_del".equals(api.getApiTarget())){
-			return userAddressService.deleteUserAddress(obj , api.getUserToken());
+		else if ("address_del".equals(api.getApiTarget())) {
+			return userAddressService.deleteUserAddress(obj, api.getUserToken());
 		}
 		// 一条收货地址的数据 - Yangcl
-		else if("address_detail".equals(api.getApiTarget())){
-			return userAddressService.findUserAddress(obj , api.getUserToken());
+		else if ("address_detail".equals(api.getApiTarget())) {
+			return userAddressService.findUserAddress(obj, api.getUserToken());
 		}
-		//商品列表 - zht
-		else if("product_list".equals(api.getApiTarget())) {
+		// 商品列表 - zht
+		else if ("product_list".equals(api.getApiTarget())) {
 			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);
-			//0 可售
+			// 0 可售
 			dto.setFlagSellable(0);
-			//库存大于0
+			// 库存大于0
 			dto.setStockNumFlag("gt0");
 			TPageProductListResult result = productInfoService.findProductListPage(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//获取城市列表
-		else if("area_select".equals(api.getApiTarget())){
+		// 获取城市列表
+		else if ("area_select".equals(api.getApiTarget())) {
 			String parentCode = obj.getString("areaId");
 			DataResult result = areaService.findDataByParent(parentCode);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//收货地址列表-zht
-		else if("address_list".equals(api.getApiTarget())) {
+		// 收货地址列表-zht
+		else if ("address_list".equals(api.getApiTarget())) {
 			TUserAddressDto dto = obj.toJavaObject(TUserAddressDto.class);
 			BaseResult result = userAddressService.findUserAddressPage(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));

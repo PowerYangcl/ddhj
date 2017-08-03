@@ -50,6 +50,7 @@ public class TUserCarbonOperationServiceImpl
 	private TOrderRechargeMapper rechargeMapper;
 
 	private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 	/**
 	 * 
 	 * 方法: getCarbonOperationDetail <br>
@@ -149,18 +150,19 @@ public class TUserCarbonOperationServiceImpl
 	 *      java.lang.String)
 	 */
 	@Override
-	public CarbonTypeDetailResult getCarbonOperationByType(String userToken, String type, Integer pageIndex, Integer pageSize) {
+	public CarbonTypeDetailResult getCarbonOperationByType(String userToken, TUserCarbonOperationDto dto) {
 		CarbonTypeDetailResult result = new CarbonTypeDetailResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		List<TUserCarbonOperation> list = null;
 		if (login != null) {
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
-				TUserCarbonOperationDto dto = new TUserCarbonOperationDto();
 				dto.setUserCode(user.getUserCode());
-				dto.setOperationTypeChild(type);
-				dto.setStart(pageIndex * pageSize);
-				dto.setPageSize(pageSize);
+				dto.setOperationTypeChild(dto.getType());
+				if (dto.getPageIndex() != null && dto.getPageSize() != null) {
+					dto.setStart(dto.getPageIndex() * dto.getPageSize());
+					dto.setPageSize(dto.getPageSize());
+				}
 				list = mapper.findCarbonOperationByTime(dto);
 				if (list != null && list.size() > 0) {
 					result.setList(list);
@@ -183,20 +185,20 @@ public class TUserCarbonOperationServiceImpl
 	public CarbonRechargeResult carbonRecharge(String userToken, TOrderRecharge recharge) {
 		CarbonRechargeResult result = new CarbonRechargeResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
-		if(login == null) {
+		if (login == null) {
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 			return result;
 		}
-		
+
 		TUser user = userMapper.findTUserByUuid(login.getUserToken());
-		if(user == null) {
+		if (user == null) {
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户不存在");
 			return result;
 		}
-		
-		//Recharge order
+
+		// Recharge order
 		String rechargeOrder = WebHelper.getInstance().getUniqueCode("RO");
 		recharge.setCode(rechargeOrder);
 		recharge.setBuyerCode(user.getUserCode());
@@ -205,7 +207,7 @@ public class TUserCarbonOperationServiceImpl
 		recharge.setStatus(new Integer(0));
 		recharge.setUuid(UUID.randomUUID().toString().replace("-", ""));
 		int success = rechargeMapper.insertSelective(recharge);
-		if(success ==1) {
+		if (success == 1) {
 			result.setOrderCode(rechargeOrder);
 			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("创建充值订单成功");
@@ -215,19 +217,19 @@ public class TUserCarbonOperationServiceImpl
 		}
 		return result;
 	}
-	
+
 	public TOrderRecharge selectRechargeRecByOrderCode(String orderCode) {
 		return rechargeMapper.selectByOrderCode(orderCode);
 	}
-	
+
 	public int updateRechargeRec(TOrderRecharge rec) {
 		return rechargeMapper.updateByPrimaryKey(rec);
 	}
-	
+
 	public BaseResult insertSelective(TUserCarbonOperation carbonOperation) {
 		BaseResult result = new BaseResult();
-		int success =  mapper.insertSelective(carbonOperation);
-		if(success == 1) {
+		int success = mapper.insertSelective(carbonOperation);
+		if (success == 1) {
 			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
 			result.setResultCode(Constant.RESULT_ERROR);
