@@ -7,7 +7,24 @@ public class TUserCarbonOperationDto extends BaseDto {
 	private String userCode;
 	private String operationType;
 	private String operationTypeChild;
-	private String createTime;
+	private String type;
+	private Integer day;
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Integer getDay() {
+		return day;
+	}
+
+	public void setDay(Integer day) {
+		this.day = day;
+	}
 
 	public String getUserCode() {
 		return userCode;
@@ -31,14 +48,6 @@ public class TUserCarbonOperationDto extends BaseDto {
 
 	public void setOperationTypeChild(String operationTypeChild) {
 		this.operationTypeChild = operationTypeChild;
-	}
-
-	public String getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(String createTime) {
-		this.createTime = createTime;
 	}
 
 }

@@ -40,7 +40,7 @@ public interface ITUserCarbonOperationService extends IBaseService<TUserCarbonOp
 	 * @param type
 	 * @return
 	 */
-	CarbonTypeDetailResult getCarbonOperationByType(String userToken, String type, Integer pageIndex, Integer pageSize);
+	CarbonTypeDetailResult getCarbonOperationByType(String userToken,TUserCarbonOperationDto dto);
 	
 	/**
 	 * 
