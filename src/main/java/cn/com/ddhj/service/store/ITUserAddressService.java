@@ -51,4 +51,6 @@ public interface ITUserAddressService extends IBaseService<TUserAddress, BaseDto
 	 * @return
 	 */
 	BaseResult findUserAddressPage(TUserAddressDto dto);
+
+	public JSONObject findUserAddress(JSONObject obj, String userToken); 
 }
