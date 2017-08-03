@@ -137,8 +137,11 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		
 		// 验证商品是否存在，库存是否可用
 		DataResult res = getProductList(dto.getProductList());
-		if(res.getResultCode() == Constant.RESULT_ERROR) {
+		if(res.getResultCode() == Constant.RESULT_SUCCESS) {
 			return res;
+		}else{
+			result.setResultCode(res.getResultCode());
+			result.setResultMessage(res.getResultMessage());
 		}
 		//1-包邮
 		result.setDispatching(1);
@@ -221,7 +224,10 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 					if (product.getStockNum() < info.getBuyNum()) {
 						stockError++;
 						productCodes.append(info.getProductCode()).append(",");
-					} else if (info.getCurrentPrice() != product.getCurrentPrice()) {
+					} else if (info.getCurrentPrice().intValue() != product.getCurrentPrice().intValue()) {
+						/**
+						 * java中Integer类型对于-128-127之间的数是缓冲区取的，所以用等号比较是一致的。但对于不在这区间的数字是在堆中new出来的。所以地址空间不一样，也就不相等。
+						 */
 						priceError++;
 						productCodes.append(info.getProductCode()).append(",");
 					}
@@ -241,6 +247,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			result.setResultMessage("商品" + productCodes.substring(0, productCodes.length() - 1) + "库存不足.");
 		}
 		if (priceError > 0) {
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("商品" + productCodes.substring(0, productCodes.length() - 1) + "当前售价不一致.");
 		}
 		if (notFoundError > 0) {
