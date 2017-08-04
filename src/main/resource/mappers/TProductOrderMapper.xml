@@ -154,6 +154,9 @@
 				t_product_order o left join t_product_order_detail d on o.code = d.order_code left join t_product_info p on p.product_code = d.product_code
 			where 
 				o.buyer_code = #{buyerCode , jdbcType=VARCHAR}
+				<if test="orderStatus != null and orderStatus !=''">
+					and o.order_status = #{orderStatus , jdbcType=VARCHAR} 
+				</if>
 			group by o.code 
 			limit  #{pageIndex,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
 	</select>
