@@ -123,13 +123,19 @@
 		from
 		t_user_step
 		<where>
-			equipment_code = #{equipmentCode,jdbcType=VARCHAR}
-			AND
 			create_date
 			BETWEEN
 			STR_TO_DATE(#{startDate,jdbcType=VARCHAR},'%Y-%m-%d')
 			AND
 			STR_TO_DATE(#{endDate,jdbcType=VARCHAR},'%Y-%m-%d')
+			<choose>
+				<when test="equipmentCode != null and equipmentCode != ''">
+					AND equipment_code = #{equipmentCode,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					AND user_code = #{userCode,jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
 		</where>
 	</select>
 	<!-- 根据设备号和时间段批量删除计步数据 -->

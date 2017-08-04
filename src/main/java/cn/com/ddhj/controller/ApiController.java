@@ -424,7 +424,7 @@ public class ApiController extends BaseClass {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} // 获取计步数据
 		else if ("step_data".equals(api.getApiTarget())) {
-			UserStepResult result = stepService.findUserStepData(obj.getString("equipmentCode"));
+			UserStepResult result = stepService.findUserStepData(obj.getString("equipmentCode"),api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 批量导入计步数据

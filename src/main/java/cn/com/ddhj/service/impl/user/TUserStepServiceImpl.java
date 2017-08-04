@@ -54,7 +54,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	private TUserMapper userMapper;
 	@Autowired
 	private TUserCarbonOperationMapper carbonOperationMapper;
-	
+
 	@Autowired
 	private ITUserService userService;
 
@@ -173,23 +173,30 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	 *      java.lang.String)
 	 */
 	@Override
-	public UserStepResult findUserStepData(String equipmentCode) {
+	public UserStepResult findUserStepData(String equipmentCode, String userToken) {
 		UserStepResult result = new UserStepResult();
-		if (StringUtils.isNotBlank(equipmentCode)) {
+		try {
+			String userCode = "";
+			if (StringUtils.isNotBlank(userToken)) {
+				UserDataResult userResult = userService.getUser(userToken);
+				if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+					TUser user = userResult.getUser();
+					userCode = user.getUserCode();
+				}
+			}
 			// 历史七天记录
-			result.setWeek(getWeekStep(equipmentCode));
+			result.setWeek(getWeekStep(equipmentCode, userCode));
 			// 历史一个月记录
-			result.setMonth(getMonthStep(equipmentCode));
+			result.setMonth(getMonthStep(equipmentCode, userCode));
 			// 历史一年记录
-			result.setYear(getYearStep(equipmentCode));
-
+			result.setYear(getYearStep(equipmentCode, userCode));
 			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("查询列表成功");
-		} else {
+		} catch (Exception e) {
+			e.printStackTrace();
 			result.setResultCode(Constant.RESULT_ERROR);
-			result.setResultMessage("设备编码为空");
+			result.setResultMessage("查询用户计步信息失败");
 		}
-
 		return result;
 	}
 
@@ -228,7 +235,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	}
 
 	@Override
-	public EntityResult findStepByDate(TUserStepDto dto,String userToken) {
+	public EntityResult findStepByDate(TUserStepDto dto, String userToken) {
 		EntityResult result = new EntityResult();
 		try {
 			UserDataResult userResult = userService.getUser(userToken);
@@ -247,9 +254,9 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 				} else {
 					result.setResultMessage("获取用户步数为空");
 				}
-			}else{
+			} else {
 				result.setResultCode(-1);
-				result.setResultMessage("用户尚未登录");				
+				result.setResultMessage("用户尚未登录");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -268,7 +275,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	 * 
 	 * @return
 	 */
-	private List<TUserStep> getWeekStep(String equipmentCode) {
+	private List<TUserStep> getWeekStep(String equipmentCode, String userCode) {
 		// 获取开始日期和结束日期
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -279,7 +286,11 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH) - 1);
 		String endDate = DateUtil.dateToString(cal2.getTime());
 		TUserStepDto dto = new TUserStepDto();
-		dto.setEquipmentCode(equipmentCode);
+		if (StringUtils.isNotBlank(equipmentCode)) {
+			dto.setEquipmentCode(equipmentCode);
+		} else {
+			dto.setUserCode(userCode);
+		}
 		dto.setStartDate(startDate);
 		dto.setEndDate(endDate);
 		List<TUserStep> list = mapper.findUserStepData(dto);
@@ -290,7 +301,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		return list;
 	}
 
-	private List<TUserStep> getMonthStep(String equipmentCode) {
+	private List<TUserStep> getMonthStep(String equipmentCode, String userCode) {
 		// 获取开始日期和结束日期
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -301,7 +312,11 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH) - 1);
 		String endDate = DateUtil.dateToString(cal2.getTime());
 		TUserStepDto dto = new TUserStepDto();
-		dto.setEquipmentCode(equipmentCode);
+		if (StringUtils.isNotBlank(equipmentCode)) {
+			dto.setEquipmentCode(equipmentCode);
+		} else {
+			dto.setUserCode(userCode);
+		}
 		dto.setStartDate(startDate);
 		dto.setEndDate(endDate);
 		List<TUserStep> list = mapper.findUserStepData(dto);
@@ -321,7 +336,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	 * 
 	 * @return
 	 */
-	private List<Map<String, Integer>> getYearStep(String equipmentCode) {
+	private List<Map<String, Integer>> getYearStep(String equipmentCode, String userCode) {
 		List<Map<String, Integer>> list = new ArrayList<Map<String, Integer>>();
 		for (int i = 0; i < 12; i++) {
 			Calendar cal = Calendar.getInstance();
@@ -333,14 +348,18 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH) - i, cal2.get(Calendar.DAY_OF_MONTH) - 1);
 			String endDate = DateUtil.dateToString(cal2.getTime());
 			TUserStepDto dto = new TUserStepDto();
-			dto.setEquipmentCode(equipmentCode);
+			if (StringUtils.isNotBlank(equipmentCode)) {
+				dto.setEquipmentCode(equipmentCode);
+			} else {
+				dto.setUserCode(userCode);
+			}
 			dto.setStartDate(startDate);
 			dto.setEndDate(endDate);
 			List<TUserStep> month = mapper.findUserStepData(dto);
 			month = trimData(month, startDate, endDate);
 			Integer total = 0;
 			for (TUserStep step : month) {
-				total += step.getStep();
+				total += step.getStep()!=null?step.getStep():0;
 			}
 			Map<String, Integer> map = new HashMap<String, Integer>();
 			map.put("month", i);

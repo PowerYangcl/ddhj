@@ -32,7 +32,7 @@ public interface ITUserStepService extends IBaseService<TUserStep, TUserStepDto>
 	 * @param time
 	 * @return
 	 */
-	UserStepResult findUserStepData(String equipmentCode);
+	UserStepResult findUserStepData(String equipmentCode,String userToken);
 
 	/**
 	 * 
