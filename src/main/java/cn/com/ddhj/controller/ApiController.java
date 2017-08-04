@@ -83,6 +83,7 @@ import cn.com.ddhj.result.tuser.MessageData;
 import cn.com.ddhj.result.tuser.MessageSelResult;
 import cn.com.ddhj.result.tuser.MessageTotal;
 import cn.com.ddhj.result.tuser.RegisterResult;
+import cn.com.ddhj.result.tuser.UserCarbonResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.result.tuser.VisitResult;
@@ -432,8 +433,13 @@ public class ApiController extends BaseClass {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**
-		 * ================= 碳币相关 start ======================
+		 * ================= 碳币相关 start zht ======================
 		 */
+		//获取用户当前碳币数
+		else if ("user_carbon".equals(api.getApiTarget())) {
+			UserCarbonResult result = userService.getUserCarbon(api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		// 获取用户碳币交易详情
 		else if ("user_carbon_detail".equals(api.getApiTarget())) {
 			CarbonDetailResult result = userCarbonOperationserivce.getCarbonOperationDetail(api.getUserToken());

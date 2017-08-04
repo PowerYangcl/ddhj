@@ -55,4 +55,14 @@ public interface TUserCarbonOperationMapper extends BaseMapper<TUserCarbonOperat
 	 * @return
 	 */
 	int batchInsert(List<TUserCarbonOperation> list);
+	
+	
+	/**
+	 * 根据用户编号查询用户昨日碳币支出与收入情况
+	 * @param userCode
+	 * @return
+	 */
+	List<TUserCarbonOperation> getUserCarbonOperationYesterday(String userCode);
+	
+	
 }

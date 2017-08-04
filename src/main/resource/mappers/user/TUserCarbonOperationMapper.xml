@@ -170,4 +170,10 @@
 		where user_code =
 		#{userCode,jdbcType=VARCHAR} group by operation_type_child;
 	</select>
+	<select id="getUserCarbonOperationYesterday" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select operation_type,SUM(carbon_sum) as carbon_sum 
+		from t_user_carbon_operation 
+		where user_code = 
+		#{userCode,jdbcType=VARCHAR} and create_time>DATE_SUB(CURDATE(),INTERVAL 1 DAY) group by operation_type; 
+	</select>
 </mapper>

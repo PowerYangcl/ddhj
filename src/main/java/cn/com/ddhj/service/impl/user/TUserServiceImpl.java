@@ -17,14 +17,17 @@ import com.github.pagehelper.PageInfo;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.mapper.user.TUserStepMapper;
 import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserStep;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
+import cn.com.ddhj.result.tuser.UserCarbonResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserService;
@@ -48,6 +51,8 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 	private TUserLoginMapper loginMapper;
 	@Autowired
 	private TUserStepMapper stepMapper;
+	@Autowired
+	private TUserCarbonOperationMapper userCarbonOperMapper;
 
 	/**
 	 * 
@@ -453,6 +458,28 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			} else {
 				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public UserCarbonResult getUserCarbon(String userToken) {
+		UserCarbonResult result = new UserCarbonResult();
+		UserDataResult userResult = getUser(userToken);
+		if(userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+			result.setCarbonMoney(userResult.getUser().getCarbonMoney());
+			List<TUserCarbonOperation> list = userCarbonOperMapper.getUserCarbonOperationYesterday(userResult.getUser().getUserCode());
+			if(list != null && !list.isEmpty()) {
+				for(TUserCarbonOperation oper : list) {
+					if("DC170208100002".equals(oper.getOperationType())) {
+						//收入
+						result.setIncome(oper.getCarbonSum());
+					} else if("DC170208100003".equals(oper.getOperationType())) {
+						//支出
+						result.setExpense(oper.getCarbonSum());
+					}
+				}
 			}
 		}
 		return result;
