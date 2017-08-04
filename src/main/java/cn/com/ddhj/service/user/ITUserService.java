@@ -7,7 +7,6 @@ import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
-import cn.com.ddhj.result.tuser.UserCarbonResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.IBaseService;
 
@@ -103,13 +102,6 @@ public interface ITUserService extends IBaseService<TUser, TUserDto> {
 	 * @return
 	 */
 	UserDataResult getUser(String userTocken);
-	
-	/**
-	 * 描述: 根据userToken查询用户碳币信息 <br>
-	 * @param userToken
-	 * @return
-	 */
-	UserCarbonResult getUserCarbon(String userToken);
 
 	public JSONObject getUserInfo(String uuid);
 
