@@ -559,7 +559,7 @@ public class ApiController extends BaseClass {
 		}
 		// 我的主页-商品订单-6.6.2. 商品订单列表 - Yangcl
 		else if ("order_list".equals(api.getApiTarget())) {
-			return productOrderService.findProductOrderList(obj);
+			return productOrderService.findProductOrderList(obj , api.getUserToken());
 		}
 		// 新增收货地址 - Yangcl
 		else if ("address_add".equals(api.getApiTarget())) {

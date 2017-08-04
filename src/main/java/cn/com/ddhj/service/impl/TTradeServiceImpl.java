@@ -4,10 +4,14 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.swing.text.Position;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +42,7 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealChartResult;
+import cn.com.ddhj.result.trade.TradeDealChartResult.CityTradeDeals;
 import cn.com.ddhj.result.trade.TradeDealResult;
 import cn.com.ddhj.result.trade.TradeOrderResult;
 import cn.com.ddhj.result.trade.TradePriceAvaiAmountResult;
@@ -180,16 +185,20 @@ public class TTradeServiceImpl implements ITradeService {
 		List<TTradeDeal> dealList = tradeDealMapper.queryDealsByCityIdAndPeriod(dto);
 		if(dealList != null && !dealList.isEmpty()) {
 			result.setResultCode(Constant.RESULT_SUCCESS);
+			Map<String, Integer> position = new HashMap<String, Integer>();
 			for(TTradeDeal deal : dealList) {
 				String cityName = deal.getCityName();
-				List<TTradeDeal> list = null;
-				if(result.getDeals().containsKey(cityName)) {
-					list = result.getDeals().get(cityName);
+				if(position.containsKey(cityName)) {
+					CityTradeDeals ctd = result.getList().get(position.get(cityName));
+					ctd.getDeals().add(deal);
 				} else {
-					list = new LinkedList<TTradeDeal>();
-					result.getDeals().put(cityName, list);
+					CityTradeDeals ctd = result.new CityTradeDeals();
+					ctd.setCityName(cityName);
+					ctd.getDeals().add(deal);
+					result.getList().add(ctd);
+					position.put(cityName, result.getList().size() - 1);
 				}
-				list.add(deal);
+
 			}
 		} else {
 			result.setResultCode(Constant.RESULT_NULL);

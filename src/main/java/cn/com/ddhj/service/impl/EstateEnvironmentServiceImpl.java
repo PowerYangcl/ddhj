@@ -1013,6 +1013,9 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(dto);
 			if(list != null && list.size() != 0){
 				result.put("data", list);
+			}else{
+				result.put("resultCode", -1);
+				result.put("resultMessage", "数据为空");
 			}
 //			else{
 //				result.put("resultCode", 1);  // 无数据 
