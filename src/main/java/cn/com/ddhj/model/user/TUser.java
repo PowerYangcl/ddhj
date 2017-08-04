@@ -52,6 +52,16 @@ public class TUser extends BaseModel {
 	 * 炭币
 	 */
 	private BigDecimal carbonMoney = BigDecimal.ZERO;
+	
+	/**
+	 * 昨天碳币收入
+	 */
+	private BigDecimal income = BigDecimal.ZERO;
+	
+	/**
+	 * 昨天碳币支出
+	 */
+	private BigDecimal expense = BigDecimal.ZERO;
 
 	public BigDecimal getCarbonMoney() {
 		return carbonMoney;
@@ -117,4 +127,20 @@ public class TUser extends BaseModel {
 		this.isLogin = isLogin;
 	}
 
+	public BigDecimal getIncome() {
+		return income;
+	}
+
+	public void setIncome(BigDecimal income) {
+		this.income = income;
+	}
+
+	public BigDecimal getExpense() {
+		return expense;
+	}
+
+	public void setExpense(BigDecimal expense) {
+		this.expense = expense;
+	}
+	
 }

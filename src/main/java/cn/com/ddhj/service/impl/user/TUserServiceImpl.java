@@ -27,7 +27,6 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserStep;
 import cn.com.ddhj.result.tuser.LoginResult;
 import cn.com.ddhj.result.tuser.RegisterResult;
-import cn.com.ddhj.result.tuser.UserCarbonResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserService;
@@ -455,6 +454,19 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 				result.setResultMessage("获取用户信息成功");
 				user.setPassword("");
 				result.setUser(user);
+
+				List<TUserCarbonOperation> list = userCarbonOperMapper.getUserCarbonOperationYesterday(user.getUserCode());
+				if(list != null && !list.isEmpty()) {
+					for(TUserCarbonOperation oper : list) {
+						if("DC170208100002".equals(oper.getOperationType())) {
+							//收入
+							result.getUser().setIncome(oper.getCarbonSum());
+						} else if("DC170208100003".equals(oper.getOperationType())) {
+							//支出
+							result.getUser().setExpense(oper.getCarbonSum());
+						}
+					}
+				}
 			} else {
 				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("用户不存在");
@@ -462,27 +474,4 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 		}
 		return result;
 	}
-
-	@Override
-	public UserCarbonResult getUserCarbon(String userToken) {
-		UserCarbonResult result = new UserCarbonResult();
-		UserDataResult userResult = getUser(userToken);
-		if(userResult.getResultCode() == Constant.RESULT_SUCCESS) {
-			result.setCarbonMoney(userResult.getUser().getCarbonMoney());
-			List<TUserCarbonOperation> list = userCarbonOperMapper.getUserCarbonOperationYesterday(userResult.getUser().getUserCode());
-			if(list != null && !list.isEmpty()) {
-				for(TUserCarbonOperation oper : list) {
-					if("DC170208100002".equals(oper.getOperationType())) {
-						//收入
-						result.setIncome(oper.getCarbonSum());
-					} else if("DC170208100003".equals(oper.getOperationType())) {
-						//支出
-						result.setExpense(oper.getCarbonSum());
-					}
-				}
-			}
-		}
-		return result;
-	}
-
 }
