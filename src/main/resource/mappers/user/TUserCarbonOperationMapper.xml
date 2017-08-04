@@ -120,7 +120,7 @@
 	<select id="findCarbonOperationByTime" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"
 		resultMap="BaseResultMap">
 		SELECT
-		create_time,
+		DATE_FORMAT(create_time,'%Y-%m-%d') as create_time,
 		(
 		SELECT
 		`name`
@@ -129,24 +129,34 @@
 		WHERE
 		`code` =
 		operation_type_child
-		) AS operation_type_child_name,
-		carbon_sum
+		) AS
+		operation_type_child_name,
+		SUM(carbon_sum) as carbon_sum
 		FROM
 		t_user_carbon_operation
 		WHERE
 		user_code =
 		#{userCode,jdbcType=VARCHAR}
+		<if test="operationTypeChild != null and operationTypeChild != ''">
+			AND operation_type_child
+			=#{operationTypeChild,jdbcType=VARCHAR}
+		</if>
 		<choose>
 			<when test="day != null">
 				AND create_time >
 				DATE_SUB(CURDATE(),
 				INTERVAL
 				#{day,jdbcType=INTEGER} DAY)
+				GROUP BY
+				DATE_FORMAT(create_time,
+				'%Y-%m-%d')
 				ORDER BY create_time ASC
 			</when>
 			<otherwise>
-				AND operation_type_child
-				=#{operationTypeChild,jdbcType=VARCHAR}
+				GROUP BY
+				DATE_FORMAT(create_time, '%Y-%m-%d')
+				ORDER BY
+				create_time ASC
 				limit
 				#{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 			</otherwise>
