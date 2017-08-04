@@ -152,6 +152,7 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 					obj.put("caption", url);
 					obj.put("width", "120px");
 					obj.put("url", "delfile.htm");
+					obj.put("key", pic.getId());
 					array.add(obj);
 					JSONObject picObj = new JSONObject();
 					picObj.put("path", url.substring(0, url.lastIndexOf("/")));

@@ -54,7 +54,6 @@
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			uuid,
 			`code`,
-			order_status,
 			pay_money,
 			buyer_code,
 			buyer_phone,
@@ -69,7 +68,6 @@
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			#{uuid,jdbcType=VARCHAR},
 			#{code,jdbcType=VARCHAR},
-			#{orderStatus,jdbcType=VARCHAR},
 			#{payMoney,jdbcType=INTEGER},
 			#{buyerCode,jdbcType=VARCHAR},
 			#{buyerPhone,jdbcType=VARCHAR},

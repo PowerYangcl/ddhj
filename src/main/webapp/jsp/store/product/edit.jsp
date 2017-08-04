@@ -112,7 +112,6 @@ $("#uploadFile").on("fileclear",function(){
 	}
 });
 $('#uploadFile').on('fileselect', function(event, numFiles, label) {
-	
 });
 //删除上传文件函数
 $("#uploadFile").on("filesuccessremove",function(event, previewId, index){
@@ -120,7 +119,7 @@ $("#uploadFile").on("filesuccessremove",function(event, previewId, index){
 		var file = new Array();
 		file.push(files[index]);
 		$.ajax({
-			url : "file/delfile.htm",
+			url : "delfile.htm",
 			dataType :"json",
 			data:{"file":JSON.stringify(file)},
 			success:function(data){
