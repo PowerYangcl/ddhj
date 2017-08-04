@@ -90,7 +90,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						TUserStep entity = new TUserStep();
 						entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 						entity.setEquipmentCode(equipmentCode);
-						entity.setStep(obj.getInteger("step"));
+						entity.setStep(obj.getInteger("step") != null ? obj.getInteger("step") : 0);
 						entity.setCreateDate(obj.getString("date"));
 						entity.setCreateTime(DateUtil.getSysDateTime());
 						entity.setUpdateTime(DateUtil.getSysDateTime());
@@ -359,7 +359,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			month = trimData(month, startDate, endDate);
 			Integer total = 0;
 			for (TUserStep step : month) {
-				total += step.getStep()!=null?step.getStep():0;
+				total += step.getStep();
 			}
 			Map<String, Integer> map = new HashMap<String, Integer>();
 			map.put("month", i);
@@ -409,7 +409,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 					TUserStep newStep = newList.get(i);
 					for (TUserStep step : list) {
 						if (StringUtils.equals(newStep.getCreateDate(), step.getCreateDate())) {
-							newStep.setStep(step.getStep() != null?step.getStep():0);
+							newStep.setStep(step.getStep());
 							break;
 						}
 					}
