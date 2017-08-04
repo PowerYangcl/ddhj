@@ -409,7 +409,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 					TUserStep newStep = newList.get(i);
 					for (TUserStep step : list) {
 						if (StringUtils.equals(newStep.getCreateDate(), step.getCreateDate())) {
-							newStep.setStep(step.getStep());
+							newStep.setStep(step.getStep() != null?step.getStep():0);
 							break;
 						}
 					}
