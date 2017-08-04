@@ -44,7 +44,7 @@ public interface ITProductOrderService extends IBaseService<TProductOrder, TProd
 	 * @date 2017年7月27日 上午11:05:19 
 	 * @version 1.0.0.1
 	 */
-	JSONObject findProductOrderList(JSONObject object);
+	JSONObject findProductOrderList(JSONObject object, String userToken);
 	
 	/**
 	 * 订单确认

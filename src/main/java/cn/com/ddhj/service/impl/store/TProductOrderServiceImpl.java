@@ -293,105 +293,77 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 	}
 
 	/**
-	 * @description: 返回指定用户的订单列表信息
-	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=order_list&
-	 * api_key= appfamilyhas&apiInput={"buyerCode":"U161005100033","pageSize":"10",
-	 *                                                                          "pageIndex"
-	 *                                                                          :
-	 *                                                                          "0"}
+	 * @description: 返回指定用户的订单列表信息 
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=order_list&api_key=appfamilyhas&apiInput={pageSize":"10","pageIndex":"0"}
 	 * 
-	 * 																			@返回参数如下：
-	 *                                                                          {
-	 *                                                                          "resultCode":
-	 *                                                                          0,
-	 *                                                                          "resultMessage":
-	 *                                                                          "查询成功",
-	 *                                                                          "telCS":
-	 *                                                                          "010-66668888",
-	 *                                                                          "orderList":
-	 *                                                                          [
-	 *                                                                          {
-	 *                                                                          "orderCode":
-	 *                                                                          "DD918342863587",
-	 *                                                                          "orderMoney":
-	 *                                                                          1500,
-	 *                                                                          "orderStatus":
-	 *                                                                          "OS8866001",
-	 *                                                                          "productList":
-	 *                                                                          [
-	 *                                                                          {
-	 *                                                                          "productCode":
-	 *                                                                          "801613242",
-	 *                                                                          "productName":
-	 *                                                                          "测试0",
-	 *                                                                          "imgUrl":
-	 *                                                                          "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/2729e/31c4f7b50a9e4a779dd7b57ccbf0b1aa.jpg",
-	 *                                                                          "productPrice":
-	 *                                                                          1000
-	 *                                                                          },
-	 *                                                                          {
-	 *                                                                          "productCode":
-	 *                                                                          "801613243",
-	 *                                                                          "productName":
-	 *                                                                          "测试1",
-	 *                                                                          "imgUrl":
-	 *                                                                          "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/29ada/f69f89d6601840df9560e4d9b5dcd4d8.jpg",
-	 *                                                                          "productPrice":
-	 *                                                                          500
-	 *                                                                          }
-	 *                                                                          ]
-	 *                                                                          },
-	 *                                                                          {
-	 *                                                                          "orderCode":
-	 *                                                                          "DD918342863676",
-	 *                                                                          "orderMoney":
-	 *                                                                          1200,
-	 *                                                                          "orderStatus":
-	 *                                                                          "OS8866001",
-	 *                                                                          "productList":
-	 *                                                                          [
-	 *                                                                          {
-	 *                                                                          "productCode":
-	 *                                                                          "TP170726100003",
-	 *                                                                          "productName":
-	 *                                                                          "测试2",
-	 *                                                                          "imgUrl":
-	 *                                                                          "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275be/7391618ccf58429aaec031ba998c4654.jpg",
-	 *                                                                          "productPrice":
-	 *                                                                          800
-	 *                                                                          },
-	 *                                                                          {
-	 *                                                                          "productCode":
-	 *                                                                          "TP170726100004",
-	 *                                                                          "productName":
-	 *                                                                          "测试3",
-	 *                                                                          "imgUrl":
-	 *                                                                          "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/299ad/01baed55e9184e48a1061cfa7c2f712f.jpg",
-	 *                                                                          "productPrice":
-	 *                                                                          400
-	 *                                                                          }
-	 *                                                                          ]
-	 *                                                                          }
-	 *                                                                          ]
-	 *                                                                          }
-	 *                                                                          productNames
-	 *                                                                          多个商品逗号分隔
-	 *                                                                          mpurl
-	 *                                                                          多个商品主图逗号分隔
+	 * @返回参数如下：
+		{    
+		    "resultCode": 0,
+		    "resultMessage": "查询成功",
+		    "telCS": "010-66668888",
+		    "orderList": [
+		        {
+		            "orderCode": "DD918342863587",
+		            "orderMoney": 1500,
+		            "orderStatus": "OS8866001",
+		            "productList": [
+		                {
+		                    "productCode": "801613242",
+		                    "productName": "测试0",
+		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/2729e/31c4f7b50a9e4a779dd7b57ccbf0b1aa.jpg",
+		                    "productPrice": 1000
+		                },
+		                {
+		                    "productCode": "801613243",
+		                    "productName": "测试1",
+		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/29ada/f69f89d6601840df9560e4d9b5dcd4d8.jpg",
+		                    "productPrice": 500
+		                }
+		            ]
+		        },
+		        {
+		            "orderCode": "DD918342863676",
+		            "orderMoney": 1200,
+		            "orderStatus": "OS8866001",
+		            "productList": [
+		                {
+		                    "productCode": "TP170726100003",
+		                    "productName": "测试2",
+		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275be/7391618ccf58429aaec031ba998c4654.jpg",
+		                    "productPrice": 800
+		                },
+		                {
+		                    "productCode": "TP170726100004",
+		                    "productName": "测试3",
+		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/299ad/01baed55e9184e48a1061cfa7c2f712f.jpg",
+		                    "productPrice": 400
+		                }
+		            ]
+		        }
+		    ]
+		}
+	 * productNames 多个商品逗号分隔
+	 * mpurl 多个商品主图逗号分隔
 	 * 
 	 * @param buyerCode
-	 * @author Yangcl
-	 * @date 2017年7月27日 上午11:05:19
+	 * @author Yangcl 
+	 * @date 2017年7月27日 上午11:05:19 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject findProductOrderList(JSONObject obj) {
+	public JSONObject findProductOrderList(JSONObject obj, String userToken) {
 		JSONObject re = new JSONObject();
-		String buyerCode = obj.getString("buyerCode");
-		if (StringUtils.isBlank(buyerCode)) {
+		
+		String buyerCode = "";
+		UserDataResult userResult = userService.getUser(userToken);
+		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+			TUser user = userResult.getUser();
+			buyerCode = user.getUserCode();
+		}else{
 			re.put("resultCode", -1);
-			re.put("resultMessage", "用户编号不得为空");
+			re.put("resultMessage", "用户尚未登录");
 			return re;
 		}
+		
 		Integer pageSize = obj.getInteger("pageSize");
 		Integer pageIndex = obj.getInteger("pageIndex");
 
@@ -399,6 +371,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		d.setBuyerCode(buyerCode);
 		d.setPageSize(pageSize);
 		d.setPageIndex(pageIndex);
+		d.setOrderStatus(obj.getString("orderStatus")); 
 
 		List<ProductOrderListResult> list = mapper.findProductOrderList(d);
 		if (list == null || list.size() == 0) {
