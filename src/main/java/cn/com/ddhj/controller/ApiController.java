@@ -43,6 +43,7 @@ import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
 import cn.com.ddhj.dto.user.TUserDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
+import cn.com.ddhj.dto.user.TUserStepDto;
 import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
@@ -430,6 +431,12 @@ public class ApiController extends BaseClass {
 		// 批量导入计步数据
 		else if ("step_sync".equals(api.getApiTarget())) {
 			BaseResult result = stepService.batchInsert(api.getApiInput());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//获取用户步数信息
+		else if("step_date".equals(api.getApiTarget())){
+			TUserStepDto dto = obj.toJavaObject(TUserStepDto.class);
+			EntityResult result =stepService.findStepByDate(dto,api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**

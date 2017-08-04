@@ -21,6 +21,26 @@ public class TUserStepDto extends BaseDto {
 	 */
 	private Integer type;
 
+	private String userCode;
+
+	private String date;
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
 	public String getEquipmentCode() {
 		return equipmentCode;
 	}

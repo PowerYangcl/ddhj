@@ -144,7 +144,7 @@
 	<select id="findAddressDetail" parameterType="java.lang.String"
 		resultType="java.lang.String">
 		SELECT
-		CONCAT(a.`name`,d.provinces, d.street) as address
+		CONCAT(a.`name`,d.street) as address
 		FROM
 		t_user_address AS d,
 		v_area AS a

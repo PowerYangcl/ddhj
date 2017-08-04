@@ -80,10 +80,11 @@ var Product={
 			data : param,
 			success : function(result) {
 				if(result.resultCode == 1){
-					alert(result.resultMessage);
-					window.open("index.htm","_self");
+					jAlert(result.resultMessage,"提示",function(){
+						window.open("index.htm","_self");						
+					});
 				}else{
-					alert(result.resultMessage);
+					jAlert(result.resultMessage,"提示");
 				}
 			}
 		});
@@ -98,6 +99,7 @@ var Product={
 			$("#images").val(images.join(","));
 		}
 		alert($("#images").val());
+		return false;
 		jConfirm('您确定要编辑此商品吗?', '提示', function(r) {
 			if(r){
 				var param = $("#editFrm").serializeArray();
