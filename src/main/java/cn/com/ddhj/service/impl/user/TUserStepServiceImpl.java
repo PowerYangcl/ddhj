@@ -28,8 +28,11 @@ import cn.com.ddhj.mapper.user.TUserStepMapper;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserStep;
+import cn.com.ddhj.result.EntityResult;
+import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
+import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.service.user.ITUserStepService;
 import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
@@ -51,6 +54,9 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 	private TUserMapper userMapper;
 	@Autowired
 	private TUserCarbonOperationMapper carbonOperationMapper;
+	
+	@Autowired
+	private ITUserService userService;
 
 	/**
 	 * 
@@ -133,8 +139,8 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						 * 同步到碳币操作日志表
 						 */
 						List<TUserCarbonOperation> operations = carbonOperationData(carbonUsers);
-						if(operations != null && operations.size()>0){
-							carbonOperationMapper.batchInsert(operations);							
+						if (operations != null && operations.size() > 0) {
+							carbonOperationMapper.batchInsert(operations);
 						}
 						result.setResultMessage("同步成功");
 					} else {
@@ -217,6 +223,38 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			e.printStackTrace();
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage(e.getMessage());
+		}
+		return result;
+	}
+
+	@Override
+	public EntityResult findStepByDate(TUserStepDto dto,String userToken) {
+		EntityResult result = new EntityResult();
+		try {
+			UserDataResult userResult = userService.getUser(userToken);
+			if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+				TUser user = userResult.getUser();
+				dto.setUserCode(user.getUserCode());
+				TUserStep step = mapper.findStepByDate(dto);
+				if (step != null) {
+					String carbonRatio = PropHelper.getValue("carbon_exchange_ratio");
+					String dischargeRatio = PropHelper.getValue("step_discharge");
+					Double carbon = step.getStep() * Double.valueOf(carbonRatio);
+					step.setCarbon(carbon);
+					Double discharge = step.getStep() * Double.valueOf(dischargeRatio);
+					step.setDischarge(discharge);
+					result.setEntity(step);
+				} else {
+					result.setResultMessage("获取用户步数为空");
+				}
+			}else{
+				result.setResultCode(-1);
+				result.setResultMessage("用户尚未登录");				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setResultCode(-1);
+			result.setResultMessage("获取用户步数错误，请联系技术人员");
 		}
 		return result;
 	}

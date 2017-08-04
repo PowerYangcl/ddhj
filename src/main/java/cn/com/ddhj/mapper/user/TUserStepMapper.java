@@ -73,14 +73,23 @@ public interface TUserStepMapper extends BaseMapper<TUserStep, TUserStepDto> {
 	 * @return
 	 */
 	List<TUserStep> findStepDataIsNotSync();
-	
+
 	/**
 	 * 
 	 * 方法: updateSyncByUserCode <br>
 	 * 描述: TODO <br>
 	 * 作者: zhy<br>
 	 * 时间: 2017年2月14日 上午10:55:41
+	 * 
 	 * @return
 	 */
 	int updateSyncByUserCode(TUserStep entity);
+
+	/**
+	 * 查询用户步数，按天显示，如果不传默认显示当天数据
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	TUserStep findStepByDate(TUserStepDto dto);
 }

@@ -162,4 +162,24 @@
 		from t_user_step
 		where is_sync = 0
 	</select>
+	<!-- 查询用户步数，按天显示，如果不传默认显示当天数据 2017-08-04 zhy -->
+	<select id="findStepByDate" parameterType="cn.com.ddhj.dto.user.TUserStepDto"
+		resultMap="BaseResultMap">
+		SELECT
+		SUM(step) as step
+		FROM
+		t_user_step
+		WHERE
+		user_code =
+		#{userCode,jdbcType=VARCHAR}
+		<choose>
+			<when test="date != null and date != ''">
+				AND DATE_FORMAT(create_date, '%Y-%m-%d') =
+				STR_TO_DATE(#{date,jdbcType=VARCHAR}, '%Y-%m-%d')
+			</when>
+			<otherwise>
+				AND DATE_FORMAT(create_date, '%Y-%m-%d') = CURRENT_DATE()
+			</otherwise>
+		</choose>
+	</select>
 </mapper>

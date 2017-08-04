@@ -23,6 +23,31 @@ public class TUserStep extends BaseModel {
 
 	private String userCode;
 
+	/**
+	 * 兑换碳币
+	 */
+	private Double carbon;
+	/**
+	 * 兑换排放量
+	 */
+	private Double discharge;
+
+	public Double getCarbon() {
+		return carbon;
+	}
+
+	public void setCarbon(Double carbon) {
+		this.carbon = carbon;
+	}
+
+	public Double getDischarge() {
+		return discharge;
+	}
+
+	public void setDischarge(Double discharge) {
+		this.discharge = discharge;
+	}
+
 	public Integer getIsSync() {
 		return isSync;
 	}

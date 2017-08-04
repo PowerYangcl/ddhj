@@ -83,13 +83,14 @@ $('#uploadFile').fileinput({
 	enctype: 'multipart/form-data',
 	showUpload: true, //是否显示上传按钮
 	showCaption: false, //是否显示标题
+	initialPreviewAsData:true,
     initialPreview:${product.initialPreview},
     initialPreviewConfig: ${product.initialPreviewConfig},
 	browseClass: "btn btn-primary", //按钮样式             
 	previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
 	msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！"
 });
-var files = ${product.initialPreview};//上传文件路径数组
+var files = JSON.parse('${product.pics}');//上传文件路径数组
 //上传回调函数
 $("#uploadFile").on("fileuploaded", function(event, data, previewId, index) {
 	//将上传完成的文件信息添加到files
@@ -102,9 +103,9 @@ $("#uploadFile").on("fileclear",function(){
 			dataType :"json",
 			data:{"file":JSON.stringify(files)},
 			success:function(data){
-				if(data > 0){
+				if(data.resultCode == 1){
 					//初始化files
-					files = ${product.initialPreview};					
+					files = new Array();					
 				}
 			}
 		});
@@ -123,12 +124,12 @@ $("#uploadFile").on("filesuccessremove",function(event, previewId, index){
 			dataType :"json",
 			data:{"file":JSON.stringify(file)},
 			success:function(data){
+				alert(JSON.stringify(data));
 				delete files[index];
 			}
 		});
 	}
 });
-
 function initFileArray(data){
 	if(data){
 		for(var key in data){

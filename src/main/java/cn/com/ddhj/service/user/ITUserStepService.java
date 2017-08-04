@@ -3,6 +3,7 @@ package cn.com.ddhj.service.user;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserStepDto;
 import cn.com.ddhj.model.user.TUserStep;
+import cn.com.ddhj.result.EntityResult;
 import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.service.IBaseService;
 
@@ -43,4 +44,9 @@ public interface ITUserStepService extends IBaseService<TUserStep, TUserStepDto>
 	 * @return
 	 */
 	BaseResult syncStepDataToCarbon();
+	
+	/**
+	 * 查询用户步数，按天显示，如果不传默认显示当天数据
+	 */
+	EntityResult findStepByDate(TUserStepDto dto,String userToken);
 }
