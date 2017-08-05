@@ -16,6 +16,7 @@ import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.dto.store.TUserAddressUpdateDto;
 import cn.com.ddhj.dto.user.TUserAddressDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TUserAddressMapper;
@@ -27,6 +28,7 @@ import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITUserAddressService;
 import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.util.Constant;
+import cn.com.ddhj.util.DateUtil;
 
 @Service
 public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUserAddressMapper, BaseDto>
@@ -48,13 +50,22 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 	 *      java.lang.String)
 	 */
 	@Override
-	public BaseResult updateByCode(TUserAddress entity, String userToken) {
+	public BaseResult updateByCode(TUserAddressUpdateDto entity, String userToken) {
 		BaseResult result = new BaseResult();
 		UserDataResult userResult = userService.getUser(userToken);
 		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
 			TUser user = userResult.getUser();
 			entity.setUpdateUser(user.getUserCode());
-			result = super.updateByCode(entity);
+			entity.setCode(entity.getAddressID());
+			entity.setUpdateTime(DateUtil.getSysDateTime());
+			int flag = mapper.updateByAddressID(entity);
+			if(flag == 1){
+				result.setResultCode(Constant.RESULT_SUCCESS);
+				result.setResultMessage("更新成功"); 
+			}else{
+				result.setResultCode(Constant.RESULT_ERROR);
+				result.setResultMessage("更新失败"); 
+			}
 		} else {
 			result.setResultCode(userResult.getResultCode());
 			result.setResultMessage(userResult.getResultMessage());

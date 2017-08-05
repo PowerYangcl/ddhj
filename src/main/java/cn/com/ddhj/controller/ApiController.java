@@ -35,6 +35,7 @@ import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.dto.store.TProductOrderDto;
+import cn.com.ddhj.dto.store.TUserAddressUpdateDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.dto.trade.TTradeOrderDto;
 import cn.com.ddhj.dto.user.TMessageDto;
@@ -548,7 +549,7 @@ public class ApiController extends BaseClass {
 		}
 		// 修改收货地址
 		else if ("address_update".equals(api.getApiTarget())) {
-			TUserAddress entity = obj.toJavaObject(TUserAddress.class);
+			TUserAddressUpdateDto entity = obj.toJavaObject(TUserAddressUpdateDto.class);
 			BaseResult result = userAddressService.updateByCode(entity, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
