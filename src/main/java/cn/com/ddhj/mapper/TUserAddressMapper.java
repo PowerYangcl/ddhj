@@ -22,4 +22,6 @@ public interface TUserAddressMapper extends BaseMapper<TUserAddress, BaseDto> {
 	String findAddressDetail(String addressCode);
 
 	public Integer updateByAddressID(TUserAddressUpdateDto dto);
+	
+	public Integer updateAddressByUsercode(String userCode); 
 }
