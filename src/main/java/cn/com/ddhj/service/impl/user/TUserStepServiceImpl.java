@@ -279,11 +279,11 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		// 获取开始日期和结束日期
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
-		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH) - 7);
+		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH) - 6);
 		String startDate = DateUtil.dateToString(cal.getTime());
 		Calendar cal2 = Calendar.getInstance();
 		cal2.setTime(new Date());
-		cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH) - 1);
+		cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH));
 		String endDate = DateUtil.dateToString(cal2.getTime());
 		TUserStepDto dto = new TUserStepDto();
 		if (StringUtils.isNotBlank(equipmentCode)) {
