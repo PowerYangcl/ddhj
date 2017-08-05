@@ -58,7 +58,9 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 			entity.setUpdateUser(user.getUserCode());
 			entity.setCode(entity.getAddressID());
 			entity.setUpdateTime(DateUtil.getSysDateTime());
-			mapper.updateAddressByUsercode(user.getUserCode()); 
+			if(entity.getIsDefault() == 1){
+				mapper.updateAddressByUsercode(user.getUserCode()); 
+			}
 			int flag = mapper.updateByAddressID(entity);
 			if(flag == 1){
 				result.setResultCode(Constant.RESULT_SUCCESS);
@@ -132,8 +134,9 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		e.setCreateTime(cdate);
 		e.setUpdateUser(e.getUserCode());
 		e.setUpdateTime(cdate);
-		
-		mapper.updateAddressByUsercode(userCode);
+		if(e.getIsDefault() == 1){
+			mapper.updateAddressByUsercode(userCode);
+		}
 		int flag = mapper.insertSelective(e);
 		if(flag == 1){
 			re.put("resultCode", 1);
