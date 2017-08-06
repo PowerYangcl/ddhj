@@ -1,8 +1,10 @@
 package cn.com.ddhj.service.impl;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -83,6 +85,27 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 						for (int i = 0; i < list.size(); i++) {
 							TOrder order = list.get(i);
 							order.setPath(basePath + order.getPath());
+							//报告订单已支付
+							if(order.getStatus() == 1 || order.getStatus() == 2) {
+								//计算报告购买时间与当前时间差值,大于半年则提示更新
+								try {
+									Date buyTime = DateUtil.strToDate(order.getCreateTime());
+									Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
+									if(new Date().compareTo(deadLine) >= 0) {
+										//报告要更新
+										String reportCode = order.getReportCode();
+										if(StringUtils.isNotBlank(reportCode)) {
+											TReport report = reportMapper.selectByCode(reportCode);
+											order.getReportUpdate().setAddress(order.getAddress());
+											order.getReportUpdate().setCity(report.getCity());
+											order.getReportUpdate().setLpCode(report.getHousesCode());
+											order.getReportUpdate().setPosition(report.getPosition());
+										}
+									}
+								} catch (ParseException e) {
+									e.printStackTrace();
+								}
+							}
 						}
 					}
 					result.setResultCode(Constant.RESULT_SUCCESS);

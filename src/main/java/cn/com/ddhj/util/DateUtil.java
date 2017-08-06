@@ -12,6 +12,8 @@ import java.util.Date;
  * 时间: 2016年10月1日 上午11:03:57
  */
 public class DateUtil {
+	
+	public static final long DAY_MILLI = 24 * 60 * 60 * 1000; // 一天的MilliSecond
 
 	public static final String DATE_FORMAT_DATEONLY = "yyyy-MM-dd"; // 年/月/日
 
@@ -32,6 +34,11 @@ public class DateUtil {
 	 */
 	public static String getSysDate() {
 		return sdfDateOnly.format(new Date());
+	}
+	
+	public static java.util.Date addDays(java.util.Date date, int days) {
+		long temp = date.getTime();
+		return new java.util.Date(temp + DateUtil.DAY_MILLI * days);
 	}
 
 	/**

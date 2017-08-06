@@ -44,6 +44,10 @@ public class TReport extends BaseModel {
 	private String rDesc;
 
 	private String reportDate;
+	
+	private String city;
+	
+	private String position;
 
 	/**
 	 * 根据楼盘编码获取的报告集合
@@ -184,6 +188,22 @@ public class TReport extends BaseModel {
 
 	public void setLevelName(String levelName) {
 		this.levelName = levelName;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
 	}
 
 }
