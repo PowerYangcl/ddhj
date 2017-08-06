@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
 import cn.com.ddhj.helper.WebHelper;
@@ -181,6 +183,7 @@ public class TUserCarbonOperationServiceImpl
 				}
 			}
 		}
+		System.out.println(JSON.toJSON(result));
 		return result;
 	}
 
@@ -273,6 +276,7 @@ public class TUserCarbonOperationServiceImpl
 				String date = DateUtil.dateToString(startCal.getTime());
 				TUserCarbonOperation entity = new TUserCarbonOperation();
 				entity.setCarbonSum(BigDecimal.ZERO);
+				entity.setOperationTypeChild("DC170208100004");
 				entity.setOperationTypeChildName("步行碳币");
 				entity.setCreateTime(date);
 				data.add(entity);
@@ -283,6 +287,7 @@ public class TUserCarbonOperationServiceImpl
 					TUserCarbonOperation obj = data.get(i);
 					for (TUserCarbonOperation oper : list) {
 						if (StringUtils.equals(obj.getCreateTime(), oper.getCreateTime())) {
+							obj.setOperationTypeChild(oper.getOperationTypeChild());
 							obj.setOperationTypeChildName(oper.getOperationTypeChildName());
 							obj.setCarbonSum(oper.getCarbonSum());
 							break;

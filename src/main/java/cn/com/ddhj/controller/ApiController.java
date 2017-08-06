@@ -395,6 +395,10 @@ public class ApiController extends BaseClass {
 			BaseResult result = uvService.delVisit(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
+		// 根据用户token删除所有楼盘浏览记录
+		else if("lp_visit_del_by_user_code".equals(api.getApiTarget())){
+			return uvService.deleteLpVisitByUserCode(api.getUserToken());
+		}
 		// 获取楼盘浏览记录
 		else if ("lp_visit_data".equals(api.getApiTarget())) {
 			TUserLpVisitDto dto = obj.toJavaObject(TUserLpVisitDto.class);

@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
@@ -18,9 +20,11 @@ import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserLpVisit;
+import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.result.tuser.VisitResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
+import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.util.CommonUtil;
 import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
@@ -44,6 +48,9 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 	private TUserMapper userMapper;
 	@Autowired
 	private TLandedPropertyMapper lpMapper;
+	
+	@Autowired
+	private ITUserService userService;
 
 	@Override
 	public BaseResult delVisit(TUserLpVisitDto dto, String userToken) {
@@ -159,4 +166,58 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 		return result;
 	}
 
+	/**
+	 * @descriptions 删除所有访问记录
+	 *
+	 * @param userToken
+	 * @return
+	 * @date 2017年8月6日 下午9:46:19
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject deleteLpVisitByUserCode(String userToken) {
+		JSONObject result = new JSONObject();
+		String userCode = "";
+		UserDataResult userResult = userService.getUser(userToken);
+		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+			TUser user = userResult.getUser();
+			userCode = user.getUserCode();
+		}else{
+			result.put("resultCode", -1);
+			result.put("resultMessage", "用户尚未登录");
+			return result;
+		}
+		
+		int flag = mapper.deleteByUserCode(userCode);
+		if(flag == 1){
+			result.put("resultCode", 1);
+			result.put("resultMessage", "访问记录删除成功");
+		}else{
+			result.put("resultCode", -1);
+			result.put("resultMessage", "访问记录删除失败");
+		}
+		
+		return result; 
+	}
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
