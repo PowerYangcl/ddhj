@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
 import cn.com.ddhj.helper.WebHelper;
@@ -169,7 +168,9 @@ public class TUserCarbonOperationServiceImpl
 				}
 				list = mapper.findCarbonOperationByTime(dto);
 				if (list != null && list.size() > 0) {
-					list = trimData(list, dto.getDay());
+					if (dto.getDay() != null) {
+						list = trimData(list, dto.getDay());
+					}
 					result.setList(list);
 					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("获取数据成功");
