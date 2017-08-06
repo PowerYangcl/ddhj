@@ -18,6 +18,9 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="deal_updown_ratio" jdbcType="DECIMAL" property="dealUpDownRatio" />
+    <result column="market_avg_price" jdbcType="DECIMAL" property="marketAvgPrice" />
+    <result column="market_avg_price_updown_ratio" jdbcType="DECIMAL" property="marketAvgPriceUpDownRatio" />
   </resultMap>
   <sql id="Base_Column_List">
     id, uuid, city_id, city_name, deal_date, open_price, high_price, low_price, close_price, 
@@ -199,6 +202,15 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="dealUpDownRatio != null">
+        deal_updown_ratio = #{dealUpDownRatio,jdbcType=TIMESTAMP},
+      </if>
+      <if test="marketAvgPrice != null">
+        market_avg_price = #{marketAvgPrice,jdbcType=TIMESTAMP},
+      </if>
+      <if test="marketAvgPriceUpDownRatio != null">
+        market_avg_price_updown_ratio = #{marketAvgPriceUpDownRatio,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -245,8 +257,8 @@
   
   <select id="queryDealsByCityIdAndPeriod" parameterType="cn.com.ddhj.dto.trade.TTradeDealDto" resultMap="BaseResultMap">
     select 
-	    city_id, city_name,DATE_FORMAT(deal_date,'%Y-%m-%d') as deal_date,
-	    open_price,close_price,high_price,low_price,deal_price,deal_num,deal_amount
+	    city_id, city_name,DATE_FORMAT(deal_date,'%Y-%m-%d') as deal_date,deal_updown_ratio,market_avg_price,
+	    open_price,close_price,high_price,low_price,deal_price,deal_num,deal_amount,market_avg_price_updown_ratio 
     from t_trade_deal
     <where>
     	1=1 
@@ -257,7 +269,7 @@
 		   AND deal_date > DATE_SUB(CURDATE(), INTERVAL #{month,jdbcType=INTEGER} MONTH)
 		</if>
     </where>
-    order by deal_date desc
+    order by city_id,deal_date desc
   </select>
   
   <select id="queryDealsByCityIdCount" parameterType="cn.com.ddhj.dto.TOrderDto" resultType="java.lang.Integer">
@@ -269,5 +281,28 @@
 		   AND city_id=#{cityId,jdbcType=VARCHAR}
 		</if>
     </where>
+  </select>
+  
+  <select id="queryTradeDealDates" resultMap="BaseResultMap">
+  	select deal_date from t_trade_deal group by deal_date order by deal_date desc
+  </select>
+
+  <select id="queryMarketAvgPriceByDealDate" parameterType="java.lang.String" resultType="java.math.BigDecimal">
+  	select sum(deal_price)/count(*) as avgPrice from t_trade_deal where deal_date=#{dealDate,jdbcType=TIMESTAMP}
+  </select>
+  
+  <select id="queryDealByCityIdAndDate" parameterType="cn.com.ddhj.dto.trade.TTradeDealDto" resultType="cn.com.ddhj.model.trade.TTradeDeal">
+  	select 
+	<include refid="Base_Column_List" /> 
+	from t_trade_deal 
+  	<where>
+  	    1=1 
+  		<if test="cityId != null">
+		   AND city_id=#{cityId,jdbcType=VARCHAR} 
+		</if>
+		<if test="dealDate != null">
+		   AND deal_date=#{dealDate,jdbcType=TIMESTAMP}
+		</if>
+  	</where>
   </select>
 </mapper>
