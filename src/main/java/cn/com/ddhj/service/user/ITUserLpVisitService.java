@@ -1,5 +1,7 @@
 package cn.com.ddhj.service.user;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
 import cn.com.ddhj.model.user.TUserLpVisit;
@@ -50,4 +52,6 @@ public interface ITUserLpVisitService extends IBaseService<TUserLpVisit, TUserLp
 	 * @return
 	 */
 	VisitResult findVisitLpData(TUserLpVisitDto dto, String userToken);
+
+	public JSONObject deleteLpVisitByUserCode(String userToken); 
 }
