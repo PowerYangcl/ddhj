@@ -89,6 +89,7 @@ import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.result.tuser.VisitResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
+import cn.com.ddhj.service.ITAddressEnshrineService;
 import cn.com.ddhj.service.ITCityService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
@@ -153,6 +154,9 @@ public class ApiController extends BaseClass {
 	private ITProductInfoService productInfoService;
 	@Autowired
 	private ITAreaService areaService;
+	
+	@Autowired
+	private ITAddressEnshrineService addressEnshrineService;
 
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
@@ -578,6 +582,16 @@ public class ApiController extends BaseClass {
 		else if ("address_detail".equals(api.getApiTarget())) {
 			return userAddressService.findUserAddress(obj, api.getUserToken());
 		}
+		// 同步客户端收藏的地址到数据库
+		else if ("rsync_address_enshrine".equals(api.getApiTarget())) {
+			return addressEnshrineService.rsyncAddressEnshrine(obj, api.getUserToken());
+		}
+		//  获取用户收藏地址列表
+		else if ("address_enshrine_list".equals(api.getApiTarget())) {
+			return addressEnshrineService.getUserAddressEnshrineList(api.getUserToken());
+		}
+		
+		
 		// 商品列表 - zht
 		else if ("product_list".equals(api.getApiTarget())) {
 			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);

@@ -1,6 +1,7 @@
 package cn.com.ddhj.service.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,14 @@ public class TAddressEnshrineServiceImpl implements ITAddressEnshrineService {
 		e.setUserCode(userCode);
 		e.setCreateTime(new Date());
 		
+		
+		int count = mapper.selectCountByName(e);
+		if(count != 0){
+			re.put("resultCode", 1);
+			re.put("resultMessage", "同步成功");
+			return re;
+		}
+		
 		int flag = mapper.insertSelective(e);
 		if(flag == 1){
 			re.put("resultCode", 1);
@@ -64,6 +73,35 @@ public class TAddressEnshrineServiceImpl implements ITAddressEnshrineService {
 		}else{
 			re.put("resultCode", -1);
 			re.put("resultMessage", "同步失败");
+		}
+		
+		return re;
+	}
+
+	
+	
+	
+	@Override
+	public JSONObject getUserAddressEnshrineList(String userToken) {
+		JSONObject re = new JSONObject();
+		String userCode = "";
+		UserDataResult userResult = userService.getUser(userToken);
+		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+			TUser user = userResult.getUser();
+			userCode = user.getUserCode();
+		}else{
+			re.put("resultCode", -1);
+			re.put("resultMessage", "用户尚未登录");
+			return re;
+		}
+		List<TAddressEnshrine> list = mapper.getListByUserCode(userCode);
+		if(list != null && list.size() != 0){
+			re.put("resultCode", -1);
+			re.put("resultMessage", "用户尚未登录");
+			re.put("data", list);
+		}else{
+			re.put("resultCode", -1);
+			re.put("resultMessage", "获取用户收藏地址列表为空");
 		}
 		
 		return re;
