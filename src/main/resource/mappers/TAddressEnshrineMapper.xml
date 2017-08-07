@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.com.ddhj.mapper.TAddressEnshrineMapper">
+<mapper namespace="cn.com.ddhj.mapper.ITAddressEnshrineMapper">
 	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TAddressEnshrine">
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
@@ -26,18 +26,15 @@
 			id = #{id,jdbcType=INTEGER}
 	</select>
 	
-	<select id="selectCountByName" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+	<select id="selectCountByName" resultType="java.lang.Integer" parameterType="cn.com.ddhj.model.TAddressEnshrine">
 		select
 			count(*)
 		from 
 			t_address_enshrine
 		where 
-			<if test="userCode != null and userCode != '' ">
-				user_code = #{userCode,jdbcType=VARCHAR} 
-			</if> 
-			<if test="name != null and name != '' ">
-				and name = #{name,jdbcType=VARCHAR} 
-			</if>
+			user_code = #{userCode,jdbcType=VARCHAR} 
+		and 
+			name = #{name,jdbcType=VARCHAR} 
 	</select>
 	
 	<select id="getListByUserCode" resultMap="BaseResultMap" parameterType="java.lang.String">
