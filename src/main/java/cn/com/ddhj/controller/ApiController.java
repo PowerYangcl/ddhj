@@ -582,11 +582,11 @@ public class ApiController extends BaseClass {
 		else if ("address_detail".equals(api.getApiTarget())) {
 			return userAddressService.findUserAddress(obj, api.getUserToken());
 		}
-		// 同步客户端收藏的地址到数据库
+		// 同步客户端收藏的地址到数据库 - Yangcl
 		else if ("rsync_address_enshrine".equals(api.getApiTarget())) {
 			return addressEnshrineService.rsyncAddressEnshrine(obj, api.getUserToken());
 		}
-		//  获取用户收藏地址列表
+		//  获取用户收藏地址列表 - Yangcl
 		else if ("address_enshrine_list".equals(api.getApiTarget())) {
 			return addressEnshrineService.getUserAddressEnshrineList(api.getUserToken());
 		}

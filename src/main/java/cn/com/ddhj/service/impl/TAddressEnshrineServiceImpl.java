@@ -2,6 +2,7 @@ package cn.com.ddhj.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class TAddressEnshrineServiceImpl implements ITAddressEnshrineService {
 			re.put("resultMessage", "用户尚未登录");
 			return re;
 		}
+		e.setUuid(UUID.randomUUID().toString().replace("-", ""));
 		e.setUserCode(userCode);
 		e.setCreateTime(new Date());
 		
@@ -96,8 +98,8 @@ public class TAddressEnshrineServiceImpl implements ITAddressEnshrineService {
 		}
 		List<TAddressEnshrine> list = mapper.getListByUserCode(userCode);
 		if(list != null && list.size() != 0){
-			re.put("resultCode", -1);
-			re.put("resultMessage", "用户尚未登录");
+			re.put("resultCode", 1);
+			re.put("resultMessage", "获取成功");
 			re.put("data", list);
 		}else{
 			re.put("resultCode", -1);
