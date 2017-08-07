@@ -5,14 +5,12 @@ public class TOrderDto extends BaseDto {
 	private Integer status;
 
 	private String createUser;
-	
+	private String reportCode;
 	
 	private String code;
 	private String phone;
 	private String reportTitle;
 	private String level;
-	
-	
 
 	public String getCode() {
 		return code;
@@ -62,4 +60,11 @@ public class TOrderDto extends BaseDto {
 		this.status = status;
 	}
 
+	public String getReportCode() {
+		return reportCode;
+	}
+
+	public void setReportCode(String reportCode) {
+		this.reportCode = reportCode;
+	}
 }

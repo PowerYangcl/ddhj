@@ -326,7 +326,8 @@
 		r.pic,
 		r.image,
 		r.price,
-		r.path
+		r.path,
+		r.create_time 
 		FROM
 		t_report AS r
 		LEFT
