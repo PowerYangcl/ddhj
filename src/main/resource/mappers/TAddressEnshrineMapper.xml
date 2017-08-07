@@ -58,9 +58,9 @@
 		where 
 				user_code = #{userCode,jdbcType=VARCHAR}
 		and
-				lat = #{lat,jdbcType=VARCHAR},
+				lat = #{lat,jdbcType=VARCHAR} 
 		and
-				lng = #{lng,jdbcType=VARCHAR},
+				lng = #{lng,jdbcType=VARCHAR} 
 	</delete>
 	
 	
