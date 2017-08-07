@@ -127,6 +127,53 @@ public class TAddressEnshrineServiceImpl implements ITAddressEnshrineService {
 		return re;
 	}
 
+
+
+
+	/**
+	 * @descriptions 根据经纬度删除一条记录
+	 *
+	 * @param input
+	 * @param userToken
+	 * @date 2017年8月7日 下午5:16:23
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject delUserAddressEnshrine(JSONObject input, String userToken) {
+		JSONObject re = new JSONObject();
+		String userCode = "";
+		UserDataResult userResult = userService.getUser(userToken);
+		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+			TUser user = userResult.getUser();
+			userCode = user.getUserCode();
+		}else{
+			re.put("resultCode", -1);
+			re.put("resultMessage", "用户尚未登录");
+			return re;
+		}
+		String lat = input.getString("lat");
+		String lng = input.getString("lng");
+		if(StringUtils.isAnyBlank(lat , lng)){
+			re.put("resultCode", -1);
+			re.put("resultMessage", "经纬度信息不得为空");
+			return re;
+		}
+		
+		TAddressEnshrine e = new TAddressEnshrine();
+		e.setLat(lat);
+		e.setLng(lng);
+		e.setUserCode(userCode);
+		int flag = mapper.deleteByLatlng(e);
+		if(flag == 1){
+			re.put("resultCode", 1);
+			re.put("resultMessage", "删除成功");
+		}else{
+			re.put("resultCode", -1);
+			re.put("resultMessage", "删除失败");
+		}
+		return re;
+	}
+
 }
 
 

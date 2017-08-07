@@ -590,6 +590,10 @@ public class ApiController extends BaseClass {
 		else if ("address_enshrine_list".equals(api.getApiTarget())) {
 			return addressEnshrineService.getUserAddressEnshrineList(api.getUserToken());
 		}
+		// 根据经纬度删除一条记录
+		else if ("del_address_enshrine".equals(api.getApiTarget())) {
+			return addressEnshrineService.delUserAddressEnshrine(obj , api.getUserToken());
+		}
 		
 		
 		// 商品列表 - zht

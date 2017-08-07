@@ -27,4 +27,15 @@ public interface ITAddressEnshrineService {
 	 * @version 1.0.0.1
 	 */
 	public JSONObject getUserAddressEnshrineList(String userToke);
+	
+	/**
+	 * @descriptions 根据经纬度删除一条记录
+	 *
+	 * @param input
+	 * @param userToken
+	 * @date 2017年8月7日 下午5:16:23
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject delUserAddressEnshrine(JSONObject input, String userToken);
 }

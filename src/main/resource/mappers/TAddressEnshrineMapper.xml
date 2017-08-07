@@ -50,6 +50,20 @@
 		delete from t_address_enshrine where id = #{id,jdbcType=INTEGER}
 	</delete>
 	
+	
+	
+	
+	<delete id="deleteByLatlng" parameterType="cn.com.ddhj.model.TAddressEnshrine">
+		delete from t_address_enshrine 
+		where 
+				user_code = #{userCode,jdbcType=VARCHAR}
+		and
+				lat = #{lat,jdbcType=VARCHAR},
+		and
+				lng = #{lng,jdbcType=VARCHAR},
+	</delete>
+	
+	
 	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TAddressEnshrine">
 		insert into t_address_enshrine
 		<trim prefix="(" suffix=")" suffixOverrides=",">

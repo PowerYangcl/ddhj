@@ -11,4 +11,6 @@ public interface ITAddressEnshrineMapper {
 	public Integer selectCountByName(TAddressEnshrine e);
 	
 	public List<TAddressEnshrine> getListByUserCode(String userCode);
+
+	public int deleteByLatlng(TAddressEnshrine e); 
 }
