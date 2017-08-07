@@ -159,7 +159,16 @@
 			limit  #{pageIndex,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
 	</select>
 	
-	
+	<update id="updateOrderStatusByCode" parameterType="cn.com.ddhj.model.TProductOrder">
+		update t_product_order
+		<set>
+			<if test="orderStatus != null and orderStatus !=''">
+				order_status = #{orderStatus , jdbcType=VARCHAR}, 
+			</if>
+			update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+		</set>
+		where `code` = #{orderCode,jdbcType=VARCHAR}
+	</update>
 </mapper>
 
 

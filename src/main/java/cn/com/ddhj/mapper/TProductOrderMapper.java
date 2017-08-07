@@ -30,5 +30,7 @@ public interface TProductOrderMapper extends BaseMapper<TProductOrder, TProductO
 	 * @date 2017年7月27日 上午11:05:19 
 	 * @version 1.0.0.1
 	 */
-	public List<ProductOrderListResult> findProductOrderList(ProductOrderDto d); 
+	public List<ProductOrderListResult> findProductOrderList(ProductOrderDto d);
+
+	public int updateOrderStatusByCode(TProductOrder e);  
 }

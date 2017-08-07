@@ -594,7 +594,14 @@ public class ApiController extends BaseClass {
 		else if ("del_address_enshrine".equals(api.getApiTarget())) {
 			return addressEnshrineService.delUserAddressEnshrine(obj , api.getUserToken());
 		}
-		
+		// 删除订单
+		else if ("del_product_order".equals(api.getApiTarget())) {
+			return productOrderService.deleteOrder(obj);
+		}
+		// 取消订单
+		else if ("cancel_product_order".equals(api.getApiTarget())) {
+			return productOrderService.cancelOrder(obj);
+		}
 		
 		// 商品列表 - zht
 		else if ("product_list".equals(api.getApiTarget())) {

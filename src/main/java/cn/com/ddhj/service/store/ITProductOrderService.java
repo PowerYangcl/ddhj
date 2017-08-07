@@ -54,4 +54,8 @@ public interface ITProductOrderService extends IBaseService<TProductOrder, TProd
 	 * @return
 	 */
 	BaseResult confirmOrder(TProductOrderDto dto, String userToken);
+	
+	public JSONObject deleteOrder(JSONObject input);
+	
+	public JSONObject cancelOrder(JSONObject input);
 }

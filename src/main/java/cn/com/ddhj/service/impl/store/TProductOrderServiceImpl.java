@@ -412,4 +412,105 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		return re;
 	}
 
+	
+	/**
+	 * @descriptions 删除订单
+	 *
+	 * @param input
+	 * 
+	 * @date 2017年8月7日 下午11:34:05
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject deleteOrder(JSONObject input) {
+		JSONObject re = new JSONObject();
+		String orderCode = input.getString("orderCode");
+		String status = input.getString("orderStatus");
+		if(!status.equals("8866005")){  // 已取消状态的订单才能删除
+			re.put("resultCode", -1);
+			re.put("resultMessage", "已作取消态的订单才能删除，请先取消订单");
+			return re;
+		}
+		
+		TProductOrder e = new TProductOrder();
+		e.setOrderStatus("8866003");
+		e.setCode(orderCode);
+		e.setUpdateTime(DateUtil.getSysDateTime()); 
+		int flag = mapper.updateOrderStatusByCode(e);
+		if(flag == 1){
+			re.put("resultCode", 1);
+			re.put("resultMessage", "订单删除成功");
+		}else{
+			re.put("resultCode", -1);
+			re.put("resultMessage", "订单删除失败");
+		}
+		
+		return re;
+	}
+
+	/**
+	 * @descriptions 取消订单
+	 *
+	 * @param input
+	 * 
+	 * @date 2017年8月7日 下午11:34:22
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject cancelOrder(JSONObject input) {
+		JSONObject re = new JSONObject();
+		String orderCode = input.getString("orderCode");
+		String status = input.getString("orderStatus");
+		if(!status.equals("8866002")){  // 未付款，或失败的才能取消
+			re.put("resultCode", -1);
+			re.put("resultMessage", "已作取消态的订单才能删除，请先取消订单");
+			return re;
+		}
+		
+		TProductOrder e = new TProductOrder();
+		e.setOrderStatus("8866005");
+		e.setCode(orderCode);
+		e.setUpdateTime(DateUtil.getSysDateTime()); 
+		int flag = mapper.updateOrderStatusByCode(e);
+		if(flag == 1){
+			re.put("resultCode", 1);
+			re.put("resultMessage", "订单取消成功");
+		}else{
+			re.put("resultCode", -1);
+			re.put("resultMessage", "订单取消失败");
+		}
+		
+		return re;
+	}
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
