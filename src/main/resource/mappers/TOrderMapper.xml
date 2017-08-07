@@ -64,6 +64,14 @@
 		from t_order
 		where `code` = #{code,jdbcType=VARCHAR}
 	</select>
+	<select id="findOrderByReportCodeAndUserCode" resultMap="BaseResultMap" parameterType="cn.com.ddhj.dto.TOrderDto">
+		select
+		<include refid="Base_Column_List" />
+		from t_order
+		where report_code = #{reportCode,jdbcType=VARCHAR} and create_user=#{createUser,jdbcType=VARCHAR}
+		order by create_time desc 
+	</select>
+	
 	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from t_order
 		where `code` = #{code,jdbcType=VARCHAR}

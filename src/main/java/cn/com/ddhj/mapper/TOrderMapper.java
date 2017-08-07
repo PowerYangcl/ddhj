@@ -5,6 +5,7 @@ import java.util.Map;
 
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.report.TReport;
 
 /**
  * 
@@ -37,6 +38,15 @@ public interface TOrderMapper extends BaseMapper<TOrder, TOrderDto> {
 	 * @return
 	 */
 	List<Map<String, String>> findOrderAll(TOrderDto dto);
+	
+	/**
+	 * 根据楼盘报告编号和用户编号查询楼盘报告订单信息
+	 * @author zht
+	 * @param reportCode
+	 * @param userCode
+	 * @return
+	 */
+	List<TOrder> findOrderByReportCodeAndUserCode(TOrderDto dto);
 
 	public Integer deleteOne(Integer id); 
 }

@@ -2,6 +2,7 @@ package cn.com.ddhj.service.impl.report;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,10 +25,12 @@ import com.github.pagehelper.PageInfo;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
+import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
+import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
 import cn.com.ddhj.mapper.report.TReportLogMapper;
@@ -38,6 +41,7 @@ import cn.com.ddhj.mapper.user.TUserLpFollowMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
@@ -75,6 +79,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	@Autowired
 	private TReportMapper mapper;
 	@Autowired
+	private TOrderMapper orderMapper;
+	@Autowired
 	private TReportTemplateMapper templateMapper;
 	@Autowired
 	private TReportEnvironmentLevelMapper levelMapper;
@@ -98,7 +104,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private ITChemicalPlantService chemicalService;
 	@Autowired
 	private TWaterEnviromentMapper waterEnvMapper;
-
+	@Autowired
+	private TReportMapper reportMapper;
 	/**
 	 * 
 	 * 方法: getReportData <br>
@@ -456,11 +463,12 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 
 			// 如果userTocken不为空，查询楼盘是否已关注
+			TUser user = null;
 			int isFollow = 0;
 			if (StringUtils.isNotBlank(userTocken)) {
 				TUserLogin login = loginMapper.findLoginByUuid(userTocken);
 				if (login != null) {
-					TUser user = userMapper.findTUserByUuid(login.getUserToken());
+					user = userMapper.findTUserByUuid(login.getUserToken());
 					if (user != null) {
 						TUserLpFollow dto = new TUserLpFollow();
 						dto.setLpCode(lpCode);
@@ -472,6 +480,49 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					}
 				}
 			}
+			
+			//检查报告是否需要更新
+			if(user != null && reports != null && !reports.isEmpty()) {
+				TOrderDto orderDto = new TOrderDto();
+				for(TReport report : reports) {
+					orderDto.setCreateUser(user.getUserCode());
+					orderDto.setReportCode(report.getCode());
+					List<TOrder> orderList = orderMapper.findOrderByReportCodeAndUserCode(orderDto);
+					if(orderList == null || orderList.isEmpty())
+						continue;
+					
+					for(TOrder order : orderList) {
+						//报告订单已支付
+						if(order.getStatus() == 1 || order.getStatus() == 2) {
+							//计算报告购买时间与当前时间差值,大于半年则提示更新
+							try {
+								Date buyTime = DateUtil.strToDate(order.getCreateTime());
+								Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
+								if(new Date().compareTo(deadLine) >= 0) {
+									//报告要更新
+									String reportCode = order.getReportCode();
+									if(StringUtils.isNotBlank(reportCode)) {
+										//report对象中没有address,city,lpcode, position信息
+										//用reportMapper的selectByCode方法左联合查询一下四个lp属性
+										TReport reportJoinInfo = reportMapper.selectByCode(reportCode);
+										report.getReportUpdate().setAddress(reportJoinInfo.getAddress());
+										report.getReportUpdate().setCity(reportJoinInfo.getCity());
+										report.getReportUpdate().setLpCode(reportJoinInfo.getHousesCode());
+										report.getReportUpdate().setPosition(reportJoinInfo.getPosition());
+									}
+								}
+							} catch (ParseException e) {
+								e.printStackTrace();
+							}
+							break;
+						}
+					}
+				}
+			}
+			
+			
+
+			
 			result.setIsFollow(isFollow);
 			result.setLevelList(reports);
 			result.setAddress(lp.getAddressFull());
