@@ -428,7 +428,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		String status = input.getString("orderStatus");
 		if(!status.equals("8866005")){  // 已取消状态的订单才能删除
 			re.put("resultCode", -1);
-			re.put("resultMessage", "已作取消态的订单才能删除，请先取消订单");
+			re.put("resultMessage", "已取消的订单才能删除，请先取消订单");
 			return re;
 		}
 		
@@ -463,7 +463,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		String status = input.getString("orderStatus");
 		if(!status.equals("8866002")){  // 未付款，或失败的才能取消
 			re.put("resultCode", -1);
-			re.put("resultMessage", "已作取消态的订单才能删除，请先取消订单");
+			re.put("resultMessage", "未付款订单才能 取消");
 			return re;
 		}
 		

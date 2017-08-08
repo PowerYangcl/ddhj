@@ -52,6 +52,7 @@ import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.TPayment;
+import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
@@ -93,7 +94,6 @@ import cn.com.ddhj.service.ITCityService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.ITradeService;
-import cn.com.ddhj.service.file.IFileService;
 import cn.com.ddhj.service.impl.TPaymentServiceImpl;
 import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
 import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
@@ -154,11 +154,9 @@ public class ApiController extends BaseClass {
 	private ITProductInfoService productInfoService;
 	@Autowired
 	private ITAreaService areaService;
-
+	
 	@Autowired
 	private ITAddressEnshrineService addressEnshrineService;
-	@Autowired
-	private IFileService fileService;
 
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
@@ -402,7 +400,7 @@ public class ApiController extends BaseClass {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 根据用户token删除所有楼盘浏览记录
-		else if ("lp_visit_del_by_user_code".equals(api.getApiTarget())) {
+		else if("lp_visit_del_by_user_code".equals(api.getApiTarget())){
 			return uvService.deleteLpVisitByUserCode(api.getUserToken());
 		}
 		// 获取楼盘浏览记录
@@ -435,7 +433,7 @@ public class ApiController extends BaseClass {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} // 获取计步数据
 		else if ("step_data".equals(api.getApiTarget())) {
-			UserStepResult result = stepService.findUserStepData(obj.getString("equipmentCode"), api.getUserToken());
+			UserStepResult result = stepService.findUserStepData(obj.getString("equipmentCode"),api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 批量导入计步数据
@@ -443,10 +441,10 @@ public class ApiController extends BaseClass {
 			BaseResult result = stepService.batchInsert(api.getApiInput());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 获取用户步数信息
-		else if ("step_date".equals(api.getApiTarget())) {
+		//获取用户步数信息
+		else if("step_date".equals(api.getApiTarget())){
 			TUserStepDto dto = obj.toJavaObject(TUserStepDto.class);
-			EntityResult result = stepService.findStepByDate(dto, api.getUserToken());
+			EntityResult result =stepService.findStepByDate(dto,api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**
@@ -483,8 +481,8 @@ public class ApiController extends BaseClass {
 			TradeDealResult result = tradeService.queryDealsByCityId(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 按城市ID/全国(cityId为空)和时间(当前时间向前查询1月|3月|6月|1年)碳交易行情用于绘制折线图
-		else if ("trade_deals_chart".equals(api.getApiTarget())) {
+		//按城市ID/全国(cityId为空)和时间(当前时间向前查询1月|3月|6月|1年)碳交易行情用于绘制折线图
+		else if("trade_deals_chart".equals(api.getApiTarget())) {
 			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
 			TradeDealChartResult result = tradeService.queryDealsByCityIdAndPeriod(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
@@ -577,7 +575,7 @@ public class ApiController extends BaseClass {
 		}
 		// 我的主页-商品订单-6.6.2. 商品订单列表 - Yangcl
 		else if ("order_list".equals(api.getApiTarget())) {
-			return productOrderService.findProductOrderList(obj, api.getUserToken());
+			return productOrderService.findProductOrderList(obj , api.getUserToken());
 		}
 		// 新增收货地址 - Yangcl
 		else if ("address_add".equals(api.getApiTarget())) {
@@ -595,23 +593,31 @@ public class ApiController extends BaseClass {
 		else if ("rsync_address_enshrine".equals(api.getApiTarget())) {
 			return addressEnshrineService.rsyncAddressEnshrine(obj, api.getUserToken());
 		}
-		// 获取用户收藏地址列表 - Yangcl
+		//  获取用户收藏地址列表 - Yangcl
 		else if ("address_enshrine_list".equals(api.getApiTarget())) {
 			return addressEnshrineService.getUserAddressEnshrineList(api.getUserToken());
 		}
 		// 根据经纬度删除一条记录
 		else if ("del_address_enshrine".equals(api.getApiTarget())) {
-			return addressEnshrineService.delUserAddressEnshrine(obj, api.getUserToken());
+			return addressEnshrineService.delUserAddressEnshrine(obj , api.getUserToken());
 		}
-		// 删除订单
+		// 删除订单 - Yangcl
 		else if ("del_product_order".equals(api.getApiTarget())) {
 			return productOrderService.deleteOrder(obj);
 		}
-		// 取消订单
+		// 取消订单 - Yangcl
 		else if ("cancel_product_order".equals(api.getApiTarget())) {
 			return productOrderService.cancelOrder(obj);
 		}
-
+		// 删除报告订单 - Yangcl
+		else if ("del_report_order".equals(api.getApiTarget())) {
+			return orderService.deleteReportOrder(obj);
+		}
+		// 取消报告订单 - Yangcl
+		else if ("cancel_report_order".equals(api.getApiTarget())) {
+			return orderService.cancelReportOrder(obj);
+		}
+		
 		// 商品列表 - zht
 		else if ("product_list".equals(api.getApiTarget())) {
 			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);

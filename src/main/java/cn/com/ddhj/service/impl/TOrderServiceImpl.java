@@ -403,6 +403,74 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		return result;
 	}
 
+
+	/**
+	 * @descriptions 根据order code删除一条记录 
+	 *
+	 * @param input
+	 * @date 2017年8月8日 上午10:45:33
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject deleteReportOrder(JSONObject input){
+		JSONObject re = new JSONObject();
+		String orderCode	 = input.getString("orderCode");
+		Integer status = input.getInteger("status");
+		if(StringUtils.isBlank(orderCode) || status != null){
+			re.put("resultCode", -1);
+			re.put("resultMessage", "关键参数不得为空");
+			return re;
+		}
+		if(status != 3){
+			re.put("resultCode", -1);
+			re.put("resultMessage", "已作取消态的订单才能删除，请先取消订单");
+			return re;
+		}
+		
+		TOrder e = new TOrder();
+		e.setCode(orderCode);
+		e.setStatus(4);  // 作废该订单
+		Integer flag = mapper.updateOrderStatus(e);
+		if (flag == 1) {
+			re.put("resultCode", Constant.RESULT_SUCCESS);
+			re.put("resultMessage", "删除成功");
+		} else {
+			re.put("resultCode", Constant.RESULT_ERROR);
+			re.put("resultMessage", "删除失败");
+		}
+		return re;
+	}
+
+	@Override
+	public JSONObject cancelReportOrder(JSONObject input) {
+		JSONObject re = new JSONObject();
+		String orderCode	 = input.getString("orderCode");
+		Integer status = input.getInteger("status");
+		if(StringUtils.isBlank(orderCode) || status != null){
+			re.put("resultCode", -1);
+			re.put("resultMessage", "关键参数不得为空");
+			return re;
+		}
+		if(status != 0){
+			re.put("resultCode", -1);
+			re.put("resultMessage", "未支付状态的订单才能取消");
+			return re;
+		}
+		
+		TOrder e = new TOrder();
+		e.setCode(orderCode);
+		e.setStatus(3);  // 取消该订单
+		Integer flag = mapper.updateOrderStatus(e);
+		if (flag == 1) {
+			re.put("resultCode", Constant.RESULT_SUCCESS);
+			re.put("resultMessage", "取消成功");
+		} else {
+			re.put("resultCode", Constant.RESULT_ERROR);
+			re.put("resultMessage", "取消失败");
+		}
+		return re;
+	}
+
 	@Override
 	public JSONObject deleteOne(Integer id) {
 		JSONObject result = new JSONObject();
@@ -418,3 +486,36 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		return result;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
