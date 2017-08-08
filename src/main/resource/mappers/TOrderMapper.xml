@@ -213,6 +213,7 @@
 			<if test="status != null">
 				AND o.`status` = #{status,jdbcType=INTEGER}
 			</if>
+			AND o.`status`!=4 	
 		</where>
 		order by o.update_time desc
 		limit
