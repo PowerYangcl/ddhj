@@ -2,7 +2,10 @@ package cn.com.ddhj.service.impl.file;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,6 +17,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
+
+import com.alibaba.fastjson.JSON;
+
 import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
@@ -54,6 +60,7 @@ public class FileServiceImpl extends BaseClass implements IFileService {
 	 */
 	private List<FileItem> getFileFromRequest(HttpServletRequest request) {
 		List<FileItem> items = null; // 得到所有的文件
+		requestData(request);
 		String contentType = request.getContentType();
 		if (StringUtils.contains(contentType, "multipart/form-data")) { // 如果文件是以二进制方式上传的
 			DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -65,6 +72,26 @@ public class FileServiceImpl extends BaseClass implements IFileService {
 			}
 		}
 		return items;
+	}
+
+	private void requestData(HttpServletRequest request) {
+		Map map = request.getParameterMap();
+		Set keSet = map.entrySet();
+		for (Iterator itr = keSet.iterator(); itr.hasNext();) {
+			Map.Entry me = (Map.Entry) itr.next();
+			Object ok = me.getKey();
+			Object ov = me.getValue();
+			String[] value = new String[1];
+			if (ov instanceof String[]) {
+				value = (String[]) ov;
+			} else {
+				value[0] = ov.toString();
+			}
+
+			for (int k = 0; k < value.length; k++) {
+				System.out.println(ok + "=" + value[k]);
+			}
+		}
 	}
 
 	/**
