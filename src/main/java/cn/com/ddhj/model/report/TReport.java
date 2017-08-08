@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import cn.com.ddhj.model.BaseModel;
+import cn.com.ddhj.model.ReportUpdate;
 
 /**
  * 
@@ -44,6 +45,12 @@ public class TReport extends BaseModel {
 	private String rDesc;
 
 	private String reportDate;
+	
+	private String city;
+	
+	private String position;
+	
+	private ReportUpdate reportUpdate = new ReportUpdate();
 
 	/**
 	 * 根据楼盘编码获取的报告集合
@@ -186,4 +193,27 @@ public class TReport extends BaseModel {
 		this.levelName = levelName;
 	}
 
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+
+	public ReportUpdate getReportUpdate() {
+		return reportUpdate;
+	}
+
+	public void setReportUpdate(ReportUpdate reportUpdate) {
+		this.reportUpdate = reportUpdate;
+	}
 }

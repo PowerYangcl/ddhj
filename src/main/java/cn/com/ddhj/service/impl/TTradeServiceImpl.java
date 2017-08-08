@@ -5,13 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import javax.swing.text.Position;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,10 +128,84 @@ public class TTradeServiceImpl implements ITradeService {
 				
 				if(!existCity) {
 					tradeCityMapper.insertSelective(city);
-				}
+				}	
 			}
+			calOtherPrice();
 		}
 		return 0;
+	}
+	
+	private void calOtherPrice() {
+		//定时抓取数据后,计算市场均价和市场均价较上一交易日涨跌幅
+		List<TTradeDeal> tradeDealDateList = tradeDealMapper.queryTradeDealDates();
+		for(int i = 0; i < tradeDealDateList.size(); i++) {
+			TTradeDeal tradeDate = tradeDealDateList.get(i);
+			if(StringUtils.isBlank(tradeDate.getDealDate())) 
+				continue;
+			//计算当日市场均价
+			BigDecimal marketAvgPrice = tradeDealMapper.queryMarketAvgPriceByDealDate(tradeDate.getDealDate());
+			if(marketAvgPrice != null)
+				marketAvgPrice = marketAvgPrice.setScale(2, BigDecimal.ROUND_HALF_UP);
+			
+			if(i < tradeDealDateList.size() - 1) {
+				//计算当日市场均价较上一交易日涨跌幅
+				TTradeDeal pirortradeDate = tradeDealDateList.get(i + 1);
+				if(StringUtils.isBlank(pirortradeDate.getDealDate())) 
+					continue;
+				BigDecimal pirorMarketAvgPrice = tradeDealMapper.queryMarketAvgPriceByDealDate(pirortradeDate.getDealDate());
+				if(pirorMarketAvgPrice != null)
+					pirorMarketAvgPrice = pirorMarketAvgPrice.setScale(2, BigDecimal.ROUND_HALF_UP);
+				
+				BigDecimal marketAvgPriceUpDownRatio = BigDecimal.ZERO;
+				if(marketAvgPrice != null && pirorMarketAvgPrice != null && pirorMarketAvgPrice.compareTo(BigDecimal.ZERO) != 0) {
+					marketAvgPriceUpDownRatio = marketAvgPrice.subtract(pirorMarketAvgPrice)
+							.divide(pirorMarketAvgPrice, 5, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100));
+					marketAvgPriceUpDownRatio = marketAvgPriceUpDownRatio.setScale(2, BigDecimal.ROUND_HALF_UP);
+					
+				}
+				
+				//查询每个城市当日的成交价较上一交易日涨幅
+				List<TTradeCity> cityList = tradeCityMapper.queryAllTradeCity();
+				for(TTradeCity city : cityList) {
+					TTradeDealDto dto = new TTradeDealDto();
+					dto.setCityId(city.getCityId());
+					dto.setDealDate(tradeDate.getDealDate());
+					TTradeDeal curTradeDeal = tradeDealMapper.queryDealByCityIdAndDate(dto);
+					if(curTradeDeal == null) {
+						continue;
+					}
+					curTradeDeal = tradeDealMapper.selectByPrimaryKey(curTradeDeal.getId());
+					if(curTradeDeal == null || curTradeDeal.getDealPrice() == null ) 
+						continue;
+					curTradeDeal.setDealPrice(curTradeDeal.getDealPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+					
+					dto.setDealDate(pirortradeDate.getDealDate());
+					TTradeDeal pirorTradeDeal = tradeDealMapper.queryDealByCityIdAndDate(dto);
+					if(pirorTradeDeal == null) {
+						continue;
+					}
+					pirorTradeDeal = tradeDealMapper.selectByPrimaryKey(pirorTradeDeal.getId());
+					if(pirorTradeDeal == null || pirorTradeDeal.getDealPrice() == null) 
+						continue;
+					pirorTradeDeal.setDealPrice(pirorTradeDeal.getDealPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+					
+					if(pirorTradeDeal.getDealPrice().compareTo(BigDecimal.ZERO) != 0) {
+						BigDecimal curCityPriceUpDownRatio = curTradeDeal.getDealPrice().subtract(pirorTradeDeal.getDealPrice())
+								.divide(pirorTradeDeal.getDealPrice(), 5, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100));
+						curCityPriceUpDownRatio = curCityPriceUpDownRatio.setScale(2, BigDecimal.ROUND_HALF_UP);
+						
+						curTradeDeal.setDealUpDownRatio(curCityPriceUpDownRatio);
+					}
+					curTradeDeal.setMarketAvgPrice(marketAvgPrice);
+					curTradeDeal.setMarketAvgPriceUpDownRatio(marketAvgPriceUpDownRatio);
+					curTradeDeal.setDealPrice(null);
+					tradeDealMapper.updateByPrimaryKeySelective(curTradeDeal);
+				}
+				
+			}
+			
+			
+		}
 	}
 	
 	private JSONObject getCarbonDealData(String url) {
@@ -185,6 +256,7 @@ public class TTradeServiceImpl implements ITradeService {
 		List<TTradeDeal> dealList = tradeDealMapper.queryDealsByCityIdAndPeriod(dto);
 		if(dealList != null && !dealList.isEmpty()) {
 			result.setResultCode(Constant.RESULT_SUCCESS);
+			//按城市为行情数据分组
 			Map<String, Integer> position = new HashMap<String, Integer>();
 			for(TTradeDeal deal : dealList) {
 				String cityName = deal.getCityName();
@@ -198,7 +270,6 @@ public class TTradeServiceImpl implements ITradeService {
 					result.getList().add(ctd);
 					position.put(cityName, result.getList().size() - 1);
 				}
-
 			}
 		} else {
 			result.setResultCode(Constant.RESULT_NULL);
@@ -493,5 +564,4 @@ public class TTradeServiceImpl implements ITradeService {
 		}
 		return tradeDeal;
 	}
-
 }

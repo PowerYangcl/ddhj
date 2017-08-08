@@ -95,6 +95,8 @@ public class TOrder extends BaseModel {
 	 * 发票内容
 	 */
 	private String invoiceContent;
+	
+	private ReportUpdate reportUpdate = new ReportUpdate();
 
 	/**
 	 * ==============新加字段 end ===============
@@ -307,5 +309,12 @@ public class TOrder extends BaseModel {
 	public void setInvoiceTitle(String invoiceTitle) {
 		this.invoiceTitle = invoiceTitle;
 	}
+	
+	public ReportUpdate getReportUpdate() {
+		return reportUpdate;
+	}
 
+	public void setReportUpdate(ReportUpdate reportUpdate) {
+		this.reportUpdate = reportUpdate;
+	}
 }

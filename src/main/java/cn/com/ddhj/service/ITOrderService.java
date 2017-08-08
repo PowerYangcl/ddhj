@@ -110,5 +110,42 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 */
 	SysOrderDataResult getOrderBySys(TOrderDto dto);
 
-	public JSONObject deleteOne(Integer id); 
+	/**
+	 * @descriptions 删除订单
+	 *
+	 * @param input
+	 * @date 2017年8月8日 上午10:57:02
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject deleteReportOrder(JSONObject input); 
+	
+	/**
+	 * @descriptions 取消订单
+	 *
+	 * @param input
+	 * @date 2017年8月8日 上午10:57:15
+	 * @author Yangcl 
+	 * @version 1.0.0.1
+	 */
+	public JSONObject cancelReportOrder(JSONObject input);
+
+	public JSONObject deleteOne(Integer id);  
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

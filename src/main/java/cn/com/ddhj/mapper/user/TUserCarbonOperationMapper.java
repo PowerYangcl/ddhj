@@ -33,6 +33,14 @@ public interface TUserCarbonOperationMapper extends BaseMapper<TUserCarbonOperat
 	List<TUserCarbonOperation> findCarbonOperationByTime(TUserCarbonOperationDto dto);
 
 	/**
+	 * 显示碳币交易明细 精确到秒
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	List<TUserCarbonOperation> findCarbonOperationDetail(TUserCarbonOperationDto dto);
+
+	/**
 	 * 
 	 * 方法: getCarbonOperationSum <br>
 	 * 描述: 根据收支类型汇总交易记录 <br>
@@ -43,26 +51,25 @@ public interface TUserCarbonOperationMapper extends BaseMapper<TUserCarbonOperat
 	 * @return
 	 */
 	List<TUserCarbonOperation> getCarbonOperationSum(TUserCarbonOperationDto dto);
-	
-	
+
 	/**
 	 * 
 	 * 方法: batchInsert <br>
 	 * 描述: 批量添加碳币操作日志 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2017年2月14日 上午9:01:25
+	 * 
 	 * @param list
 	 * @return
 	 */
 	int batchInsert(List<TUserCarbonOperation> list);
-	
-	
+
 	/**
 	 * 根据用户编号查询用户昨日碳币支出与收入情况
+	 * 
 	 * @param userCode
 	 * @return
 	 */
 	List<TUserCarbonOperation> getUserCarbonOperationYesterday(String userCode);
-	
-	
+
 }

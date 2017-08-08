@@ -35,6 +35,7 @@ import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.dto.store.TProductOrderDto;
+import cn.com.ddhj.dto.store.TUserAddressUpdateDto;
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.dto.trade.TTradeOrderDto;
 import cn.com.ddhj.dto.user.TMessageDto;
@@ -88,6 +89,7 @@ import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.result.tuser.VisitResult;
 import cn.com.ddhj.service.IEstateEnvironmentService;
+import cn.com.ddhj.service.ITAddressEnshrineService;
 import cn.com.ddhj.service.ITCityService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
@@ -152,6 +154,9 @@ public class ApiController extends BaseClass {
 	private ITProductInfoService productInfoService;
 	@Autowired
 	private ITAreaService areaService;
+	
+	@Autowired
+	private ITAddressEnshrineService addressEnshrineService;
 
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
@@ -394,6 +399,10 @@ public class ApiController extends BaseClass {
 			BaseResult result = uvService.delVisit(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
+		// 根据用户token删除所有楼盘浏览记录
+		else if("lp_visit_del_by_user_code".equals(api.getApiTarget())){
+			return uvService.deleteLpVisitByUserCode(api.getUserToken());
+		}
 		// 获取楼盘浏览记录
 		else if ("lp_visit_data".equals(api.getApiTarget())) {
 			TUserLpVisitDto dto = obj.toJavaObject(TUserLpVisitDto.class);
@@ -452,6 +461,13 @@ public class ApiController extends BaseClass {
 			TUserCarbonOperationDto dto = JSON.toJavaObject(param, TUserCarbonOperationDto.class);
 			CarbonTypeDetailResult result = userCarbonOperationserivce.getCarbonOperationByType(api.getUserToken(),
 					dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		// 根据碳币类型查询交易明细，精确到秒
+		else if ("user_carbon_detail_time".equals(api.getApiTarget())) {
+			JSONObject param = JSONObject.parseObject(api.getApiInput());
+			TUserCarbonOperationDto dto = JSON.toJavaObject(param, TUserCarbonOperationDto.class);
+			DataResult result = userCarbonOperationserivce.findCarbonOperationDetail(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 查询支持碳交易的城市列表
@@ -548,7 +564,7 @@ public class ApiController extends BaseClass {
 		}
 		// 修改收货地址
 		else if ("address_update".equals(api.getApiTarget())) {
-			TUserAddress entity = obj.toJavaObject(TUserAddress.class);
+			TUserAddressUpdateDto entity = obj.toJavaObject(TUserAddressUpdateDto.class);
 			BaseResult result = userAddressService.updateByCode(entity, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
@@ -573,6 +589,35 @@ public class ApiController extends BaseClass {
 		else if ("address_detail".equals(api.getApiTarget())) {
 			return userAddressService.findUserAddress(obj, api.getUserToken());
 		}
+		// 同步客户端收藏的地址到数据库 - Yangcl
+		else if ("rsync_address_enshrine".equals(api.getApiTarget())) {
+			return addressEnshrineService.rsyncAddressEnshrine(obj, api.getUserToken());
+		}
+		//  获取用户收藏地址列表 - Yangcl
+		else if ("address_enshrine_list".equals(api.getApiTarget())) {
+			return addressEnshrineService.getUserAddressEnshrineList(api.getUserToken());
+		}
+		// 根据经纬度删除一条记录
+		else if ("del_address_enshrine".equals(api.getApiTarget())) {
+			return addressEnshrineService.delUserAddressEnshrine(obj , api.getUserToken());
+		}
+		// 删除订单 - Yangcl
+		else if ("del_product_order".equals(api.getApiTarget())) {
+			return productOrderService.deleteOrder(obj);
+		}
+		// 取消订单 - Yangcl
+		else if ("cancel_product_order".equals(api.getApiTarget())) {
+			return productOrderService.cancelOrder(obj);
+		}
+		// 删除报告订单 - Yangcl
+		else if ("del_report_order".equals(api.getApiTarget())) {
+			return orderService.deleteReportOrder(obj);
+		}
+		// 取消报告订单 - Yangcl
+		else if ("cancel_report_order".equals(api.getApiTarget())) {
+			return orderService.cancelReportOrder(obj);
+		}
+		
 		// 商品列表 - zht
 		else if ("product_list".equals(api.getApiTarget())) {
 			TProductInfoDto dto = obj.toJavaObject(TProductInfoDto.class);
@@ -786,5 +831,12 @@ public class ApiController extends BaseClass {
 			build.append("<msg>").append(result.getResultMessage()).append("</msg>");
 		}
 		return build.toString();
+	}
+
+	@RequestMapping("upload/user_header")
+	@ResponseBody
+	public String uploadFile(HttpServletRequest request) {
+		String url = fileService.uploadUserHeader(request);
+		return url;
 	}
 }

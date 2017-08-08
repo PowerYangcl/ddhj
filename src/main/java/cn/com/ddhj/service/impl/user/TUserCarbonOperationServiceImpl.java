@@ -1,7 +1,9 @@
 package cn.com.ddhj.service.impl.user;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -21,12 +23,14 @@ import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
+import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserCarbonOperationService;
 import cn.com.ddhj.util.Constant;
+import cn.com.ddhj.util.DateUtil;
 
 /**
  * 
@@ -158,13 +162,15 @@ public class TUserCarbonOperationServiceImpl
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
 				dto.setUserCode(user.getUserCode());
-				dto.setOperationTypeChild(dto.getType());
 				if (dto.getPageIndex() != null && dto.getPageSize() != null) {
 					dto.setStart(dto.getPageIndex() * dto.getPageSize());
 					dto.setPageSize(dto.getPageSize());
 				}
 				list = mapper.findCarbonOperationByTime(dto);
 				if (list != null && list.size() > 0) {
+					if (dto.getDay() != null) {
+						list = trimData(list, dto.getDay());
+					}
 					result.setList(list);
 					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("获取数据成功");
@@ -236,5 +242,93 @@ public class TUserCarbonOperationServiceImpl
 			result.setResultMessage("插入碳币购买记录失败");
 		}
 		return result;
+	}
+
+	/**
+	 * 显示碳币交易明细 精确到秒
+	 */
+	@Override
+	public DataResult findCarbonOperationDetail(TUserCarbonOperationDto dto, String userToken) {
+		DataResult result = new DataResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		List<TUserCarbonOperation> list = null;
+		if (login != null) {
+			TUser user = userMapper.findTUserByUuid(login.getUserToken());
+			if (user != null) {
+				dto.setUserCode(user.getUserCode());
+				if (dto.getPageIndex() != null && dto.getPageSize() != null) {
+					dto.setStart(dto.getPageIndex() * dto.getPageSize());
+					dto.setPageSize(dto.getPageSize());
+				}
+				list = mapper.findCarbonOperationDetail(dto);
+				if (list != null && list.size() > 0) {
+					if (dto.getDay() != null) {
+						list = trimData(list, dto.getDay());
+					}
+					result.setData(list);
+					result.setResultCode(Constant.RESULT_SUCCESS);
+					result.setResultMessage("获取数据成功");
+				} else {
+					result.setData(new ArrayList<TUserCarbonOperation>());
+					result.setResultCode(Constant.RESULT_NULL);
+					result.setResultMessage("查询数据为空");
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法: trimData <br>
+	 * 描述: 初始化碳币操作记录数据 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月6日 下午4:07:24
+	 * 
+	 * @param list
+	 * @param day
+	 * @return
+	 */
+	private List<TUserCarbonOperation> trimData(List<TUserCarbonOperation> list, int days) {
+		List<TUserCarbonOperation> data = new ArrayList<TUserCarbonOperation>();
+		try {
+			int day = 0;
+			// 开始时间
+			Calendar startCal = Calendar.getInstance();
+			startCal.setTime(new Date());
+			startCal.set(startCal.get(Calendar.YEAR), startCal.get(Calendar.MONTH),
+					startCal.get(Calendar.DAY_OF_MONTH) - days);
+			// 结束时间
+			Calendar endCal = Calendar.getInstance();
+			endCal.set(endCal.get(Calendar.YEAR), endCal.get(Calendar.MONTH), endCal.get(Calendar.DAY_OF_MONTH) - 1);
+			endCal.setTime(new Date());
+			while (startCal.getTime().before(endCal.getTime())) {
+				startCal.set(Calendar.DATE, startCal.get(Calendar.DATE) + day);
+				String date = DateUtil.dateToString(startCal.getTime());
+				TUserCarbonOperation entity = new TUserCarbonOperation();
+				entity.setCarbonSum(BigDecimal.ZERO);
+				entity.setOperationTypeChild("DC170208100004");
+				entity.setOperationTypeChildName("步行碳币");
+				entity.setCreateTime(date);
+				data.add(entity);
+				day = 1;
+			}
+			if (list != null && list.size() > 0) {
+				for (int i = 0; i < data.size(); i++) {
+					TUserCarbonOperation obj = data.get(i);
+					for (TUserCarbonOperation oper : list) {
+						if (StringUtils.equals(obj.getCreateTime(), oper.getCreateTime())) {
+							obj.setOperationTypeChild(oper.getOperationTypeChild());
+							obj.setOperationTypeChildName(oper.getOperationTypeChildName());
+							obj.setCarbonSum(oper.getCarbonSum());
+							break;
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
 	}
 }

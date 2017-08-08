@@ -1,7 +1,6 @@
 package cn.com.ddhj.model.trade;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import cn.com.ddhj.model.BaseModel;
 
@@ -28,11 +27,29 @@ public class TTradeDeal extends BaseModel {
 
     private BigDecimal closePrice;
 
+    /**
+     * 当日成交价
+     */
     private BigDecimal dealPrice;
 
     private BigDecimal dealAmount;
 
     private BigDecimal dealNum;
+    
+    /**
+     * 当日成交价较前一日涨跌幅
+     */
+    private BigDecimal dealUpDownRatio = BigDecimal.ZERO;
+    
+    /**
+     * 当日市场均价
+     */
+    private BigDecimal marketAvgPrice = BigDecimal.ZERO;
+    
+    /**
+     * 当日市场均价较前一日涨跌幅
+     */
+    private BigDecimal marketAvgPriceUpDownRatio = BigDecimal.ZERO;
 
     public String getCityId() {
         return cityId;
@@ -112,5 +129,29 @@ public class TTradeDeal extends BaseModel {
 
 	public void setDealNum(BigDecimal dealNum) {
 		this.dealNum = dealNum;
+	}
+
+	public BigDecimal getMarketAvgPrice() {
+		return marketAvgPrice;
+	}
+
+	public void setMarketAvgPrice(BigDecimal marketAvgPrice) {
+		this.marketAvgPrice = marketAvgPrice;
+	}
+
+	public BigDecimal getDealUpDownRatio() {
+		return dealUpDownRatio;
+	}
+
+	public void setDealUpDownRatio(BigDecimal dealUpDownRatio) {
+		this.dealUpDownRatio = dealUpDownRatio;
+	}
+
+	public BigDecimal getMarketAvgPriceUpDownRatio() {
+		return marketAvgPriceUpDownRatio;
+	}
+
+	public void setMarketAvgPriceUpDownRatio(BigDecimal marketAvgPriceUpDownRatio) {
+		this.marketAvgPriceUpDownRatio = marketAvgPriceUpDownRatio;
 	}
 }

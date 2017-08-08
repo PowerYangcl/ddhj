@@ -1,11 +1,11 @@
 package cn.com.ddhj.mapper.trade;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import cn.com.ddhj.dto.trade.TTradeDealDto;
 import cn.com.ddhj.mapper.BaseMapper;
 import cn.com.ddhj.model.trade.TTradeDeal;
-import cn.com.ddhj.result.trade.TradeDealResult;
 
 public interface TTradeDealMapper extends BaseMapper<TTradeDeal, TTradeDealDto> {
     int deleteByPrimaryKey(Integer id);
@@ -78,4 +78,25 @@ public interface TTradeDealMapper extends BaseMapper<TTradeDeal, TTradeDealDto> 
      * @return
      */
     Integer queryDealsByCityIdCount(TTradeDealDto dto);
+    
+    /**
+     * 查询系统中所有的交易日期,并按日期倒序
+     * @return
+     */
+    List<TTradeDeal> queryTradeDealDates();
+    
+    /**
+     * 按交易日期查询该日期市场成交均价
+     * 作者: 海涛<br>
+     * @param dealDate
+     */
+    BigDecimal queryMarketAvgPriceByDealDate(String dealDate);
+    
+    /**
+     * 按城市ID和交易时间查询该交易日的成交价
+     * 作者: 海涛<br>
+     * @param dto
+     * @return
+     */
+    TTradeDeal queryDealByCityIdAndDate(TTradeDealDto dto);
 }

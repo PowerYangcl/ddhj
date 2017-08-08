@@ -120,6 +120,43 @@
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
+	
+	<update id="updateByAddressID" parameterType="cn.com.ddhj.dto.store.TUserAddressUpdateDto">
+		update t_user_address
+		<set>
+			<if test="name != null and name != ''">
+				`name` = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="areaCode != null and areaCode != ''">
+				`phone` = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="areaCode != null and areaCode != ''">
+				area_code = #{areaCode,jdbcType=VARCHAR},
+			</if>
+			<if test="provinces != null and provinces !=''">
+				provinces = #{provinces,jdbcType=VARCHAR},
+			</if>
+			<if test="street != null and street != ''">
+				street = #{street,jdbcType=VARCHAR},
+			</if>
+			<if test="isDefault != null">
+				is_default = #{isDefault,jdbcType=INTEGER},
+			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time =
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+		</set>
+		where `code` = #{code,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateAddressByUsercode" parameterType="java.lang.String">
+		update 
+			t_user_address
+		set 
+			is_default = 0
+		where 
+			user_code = #{userCode}
+	</update>
 
 	<delete id="deleteUserAddress" parameterType="cn.com.ddhj.model.TUserAddress">
 		delete from
