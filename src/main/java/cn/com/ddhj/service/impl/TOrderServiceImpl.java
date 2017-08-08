@@ -416,7 +416,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		JSONObject re = new JSONObject();
 		String orderCode	 = input.getString("orderCode");
 		Integer status = input.getInteger("status");
-		if(StringUtils.isBlank(orderCode) || status != null){
+		if(StringUtils.isBlank(orderCode) || status == null){
 			re.put("resultCode", -1);
 			re.put("resultMessage", "关键参数不得为空");
 			return re;
@@ -446,7 +446,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		JSONObject re = new JSONObject();
 		String orderCode	 = input.getString("orderCode");
 		Integer status = input.getInteger("status");
-		if(StringUtils.isBlank(orderCode) || status != null){
+		if(StringUtils.isBlank(orderCode) || status == null){
 			re.put("resultCode", -1);
 			re.put("resultMessage", "关键参数不得为空");
 			return re;
