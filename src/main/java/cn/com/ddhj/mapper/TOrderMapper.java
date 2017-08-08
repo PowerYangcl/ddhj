@@ -48,5 +48,24 @@ public interface TOrderMapper extends BaseMapper<TOrder, TOrderDto> {
 	 */
 	List<TOrder> findOrderByReportCodeAndUserCode(TOrderDto dto);
 
-	public Integer deleteOne(Integer id); 
+	public Integer deleteOne(Integer id);
+
+	public Integer updateOrderStatus(TOrder e);  
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

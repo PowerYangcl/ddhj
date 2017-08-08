@@ -333,4 +333,38 @@
 		id =
 		#{id}
 	</delete>
+	
+	
+	<update id="updateOrderStatus" parameterType="cn.com.ddhj.model.TOrder">
+		update t_order
+		<set>  
+			<if test="status != null">
+				`status` = #{status , jdbcType=INTEGER},
+			</if>
+			update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</set>
+		where `code` = #{code,jdbcType=VARCHAR}
+	</update>
+	
+	
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -594,13 +594,21 @@ public class ApiController extends BaseClass {
 		else if ("del_address_enshrine".equals(api.getApiTarget())) {
 			return addressEnshrineService.delUserAddressEnshrine(obj , api.getUserToken());
 		}
-		// 删除订单
+		// 删除订单 - Yangcl
 		else if ("del_product_order".equals(api.getApiTarget())) {
 			return productOrderService.deleteOrder(obj);
 		}
-		// 取消订单
+		// 取消订单 - Yangcl
 		else if ("cancel_product_order".equals(api.getApiTarget())) {
 			return productOrderService.cancelOrder(obj);
+		}
+		// 删除报告订单 - Yangcl
+		else if ("del_report_order".equals(api.getApiTarget())) {
+			return orderService.deleteReportOrder(obj);
+		}
+		// 取消报告订单 - Yangcl
+		else if ("cancel_report_order".equals(api.getApiTarget())) {
+			return orderService.cancelReportOrder(obj);
 		}
 		
 		// 商品列表 - zht
