@@ -12,8 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
-
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
 import cn.com.ddhj.helper.WebHelper;
@@ -25,6 +23,7 @@ import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
+import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
@@ -163,7 +162,6 @@ public class TUserCarbonOperationServiceImpl
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
 				dto.setUserCode(user.getUserCode());
-				dto.setOperationTypeChild(dto.getType());
 				if (dto.getPageIndex() != null && dto.getPageSize() != null) {
 					dto.setStart(dto.getPageIndex() * dto.getPageSize());
 					dto.setPageSize(dto.getPageSize());
@@ -183,7 +181,6 @@ public class TUserCarbonOperationServiceImpl
 				}
 			}
 		}
-		System.out.println(JSON.toJSON(result));
 		return result;
 	}
 
@@ -243,6 +240,40 @@ public class TUserCarbonOperationServiceImpl
 		} else {
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("插入碳币购买记录失败");
+		}
+		return result;
+	}
+
+	/**
+	 * 显示碳币交易明细 精确到秒
+	 */
+	@Override
+	public DataResult findCarbonOperationDetail(TUserCarbonOperationDto dto, String userToken) {
+		DataResult result = new DataResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		List<TUserCarbonOperation> list = null;
+		if (login != null) {
+			TUser user = userMapper.findTUserByUuid(login.getUserToken());
+			if (user != null) {
+				dto.setUserCode(user.getUserCode());
+				if (dto.getPageIndex() != null && dto.getPageSize() != null) {
+					dto.setStart(dto.getPageIndex() * dto.getPageSize());
+					dto.setPageSize(dto.getPageSize());
+				}
+				list = mapper.findCarbonOperationDetail(dto);
+				if (list != null && list.size() > 0) {
+					if (dto.getDay() != null) {
+						list = trimData(list, dto.getDay());
+					}
+					result.setData(list);
+					result.setResultCode(Constant.RESULT_SUCCESS);
+					result.setResultMessage("获取数据成功");
+				} else {
+					result.setData(new ArrayList<TUserCarbonOperation>());
+					result.setResultCode(Constant.RESULT_NULL);
+					result.setResultMessage("查询数据为空");
+				}
+			}
 		}
 		return result;
 	}

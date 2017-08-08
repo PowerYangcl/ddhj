@@ -7,16 +7,7 @@ public class TUserCarbonOperationDto extends BaseDto {
 	private String userCode;
 	private String operationType;
 	private String operationTypeChild;
-	private String type;
 	private Integer day;
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
 
 	public Integer getDay() {
 		return day;

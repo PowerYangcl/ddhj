@@ -83,7 +83,7 @@ $('#uploadFile').fileinput({
 	enctype: 'multipart/form-data',
 	showUpload: true, //是否显示上传按钮
 	showCaption: false, //是否显示标题
-	initialPreviewAsData:true,
+	initialPreviewShowDelete:true,
     initialPreview:${product.initialPreview},
     initialPreviewConfig: ${product.initialPreviewConfig},
 	browseClass: "btn btn-primary", //按钮样式             

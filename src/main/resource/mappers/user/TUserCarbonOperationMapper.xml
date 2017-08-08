@@ -8,6 +8,8 @@
 		<result column="user_code" property="userCode" jdbcType="VARCHAR" />
 		<result column="operation_type" property="operationType"
 			jdbcType="VARCHAR" />
+		<result column="operation_type_name" property="operationTypeName"
+			jdbcType="VARCHAR" />
 		<result column="operation_type_child" property="operationTypeChild"
 			jdbcType="VARCHAR" />
 		<result column="operation_type_child_name" property="operationTypeChildName"
@@ -121,6 +123,16 @@
 		resultMap="BaseResultMap">
 		SELECT
 		DATE_FORMAT(create_time,'%Y-%m-%d') as create_time,
+		operation_type,
+		(
+		SELECT
+		`name`
+		FROM
+		sys_define_code
+		WHERE
+		`code` =
+		operation_type
+		) AS operation_type_name,
 		operation_type_child,
 		(
 		SELECT
@@ -132,12 +144,17 @@
 		operation_type_child
 		) AS
 		operation_type_child_name,
-		SUM(carbon_sum) as carbon_sum
+		SUM(carbon_sum) as
+		carbon_sum
 		FROM
 		t_user_carbon_operation
 		WHERE
 		user_code =
 		#{userCode,jdbcType=VARCHAR}
+		<if test="operationType != null and operationType != ''">
+			AND operation_type
+			=#{operationType,jdbcType=VARCHAR}
+		</if>
 		<if test="operationTypeChild != null and operationTypeChild != ''">
 			AND operation_type_child
 			=#{operationTypeChild,jdbcType=VARCHAR}
@@ -163,6 +180,66 @@
 			</otherwise>
 		</choose>
 	</select>
+	<!-- 显示碳币交易明细 精确到秒 2017-08-08 zhy -->
+	<select id="findCarbonOperationDetail" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"
+		resultMap="BaseResultMap">
+		SELECT
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d %H:%i:%s'
+		) AS
+		create_time,
+		operation_type,
+		(
+		SELECT
+		`name`
+		FROM
+		sys_define_code
+		WHERE
+		`code` = operation_type
+		) AS
+		operation_type_name,
+		operation_type_child,
+		(
+		SELECT
+		`name`
+		FROM
+		sys_define_code
+		WHERE
+		`code` =
+		operation_type_child
+		) AS
+		operation_type_child_name,
+		carbon_sum
+		FROM
+		t_user_carbon_operation
+		WHERE
+		user_code =
+		#{userCode,jdbcType=VARCHAR}
+		<if test="operationType != null and operationType != ''">
+			AND operation_type
+			=#{operationType,jdbcType=VARCHAR}
+		</if>
+		<if test="operationTypeChild != null and operationTypeChild != ''">
+			AND operation_type_child
+			=#{operationTypeChild,jdbcType=VARCHAR}
+		</if>
+		<choose>
+			<when test="day != null">
+				AND create_time >
+				DATE_SUB(CURDATE(),
+				INTERVAL
+				#{day,jdbcType=INTEGER} DAY)
+				ORDER BY create_time ASC
+			</when>
+			<otherwise>
+				ORDER BY
+				create_time ASC
+				limit
+				#{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+			</otherwise>
+		</choose>
+	</select>
 	<!-- 根据收支细分类型汇总交易记录 2017-02-10 zhy -->
 	<select id="getCarbonOperationSum" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"
 		resultMap="BaseResultMap">
@@ -171,10 +248,14 @@
 		where user_code =
 		#{userCode,jdbcType=VARCHAR} group by operation_type_child;
 	</select>
-	<select id="getUserCarbonOperationYesterday" parameterType="java.lang.String" resultMap="BaseResultMap">
-		select operation_type,SUM(carbon_sum) as carbon_sum 
-		from t_user_carbon_operation 
-		where user_code = 
-		#{userCode,jdbcType=VARCHAR} and create_time>DATE_SUB(CURDATE(),INTERVAL 1 DAY) group by operation_type; 
+	<select id="getUserCarbonOperationYesterday" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select operation_type,SUM(carbon_sum) as carbon_sum
+		from
+		t_user_carbon_operation
+		where user_code =
+		#{userCode,jdbcType=VARCHAR}
+		and create_time>DATE_SUB(CURDATE(),INTERVAL 1 DAY) group by
+		operation_type;
 	</select>
 </mapper>
