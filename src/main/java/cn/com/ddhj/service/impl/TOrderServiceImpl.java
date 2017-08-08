@@ -470,6 +470,21 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		}
 		return re;
 	}
+
+	@Override
+	public JSONObject deleteOne(Integer id) {
+		JSONObject result = new JSONObject();
+		Integer flag = mapper.deleteOne(id);
+		if (flag == 1) {
+			result.put("code", Constant.RESULT_SUCCESS);
+			result.put("msg", "删除成功");
+		} else {
+			result.put("code", Constant.RESULT_ERROR);
+			result.put("msg", "删除失败");
+		}
+
+		return result;
+	}
 }
 
 

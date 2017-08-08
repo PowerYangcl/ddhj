@@ -29,11 +29,11 @@ public class TOrderController {
 		return service.getOrderBySys(dto);
 	}
 	
-	@RequestMapping("deleteOne")
-	@ResponseBody
-	public JSONObject deleteOne(Integer id) {
-		return service.deleteOne(id);
-	}
+//	@RequestMapping("deleteOne")
+//	@ResponseBody
+//	public JSONObject deleteOne(Integer id) {
+//		return service.deleteOne(id);
+//	}
 	
 	
 }

@@ -128,7 +128,9 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */
-	public JSONObject cancelReportOrder(JSONObject input); 
+	public JSONObject cancelReportOrder(JSONObject input);
+
+	public JSONObject deleteOne(Integer id);  
 }
 
 
