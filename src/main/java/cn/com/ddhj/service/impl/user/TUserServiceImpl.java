@@ -1,19 +1,14 @@
 package cn.com.ddhj.service.impl.user;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -21,7 +16,6 @@ import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserDto;
-import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
@@ -480,42 +474,5 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * 
-	 * 方法: uploadPic <br>
-	 * 描述: 头像上传 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2017年8月6日 下午9:24:03
-	 * 
-	 * @param updateFiles
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	private String uploadPic(MultipartFile[] updateFiles, String userCode, HttpServletRequest request,
-			HttpServletResponse response) {
-		String path = PropHelper.getValue("user_head_pic");
-		// 遍历上传文件数组
-		for (MultipartFile file : updateFiles) {
-			if (!file.isEmpty()) {
-				path = path + "/" + userCode + "/";
-				File pathFile = new File(path);
-				if (!pathFile.exists()) {
-					pathFile.mkdirs();
-				}
-				// 文件名称
-				String name = file.getOriginalFilename();
-				name = MD5Util.md5Hex(name) + name.substring(name.lastIndexOf("."), name.length());
-				File uploaded = new File(path + name);
-				try {
-					file.transferTo(uploaded);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return path;
 	}
 }
