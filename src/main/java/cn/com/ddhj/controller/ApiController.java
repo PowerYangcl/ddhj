@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
@@ -53,7 +53,6 @@ import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.TPayment;
-import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
@@ -64,6 +63,7 @@ import cn.com.ddhj.result.EntityResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
+import cn.com.ddhj.result.file.FileResult;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
 import cn.com.ddhj.result.order.OrderAddResult;
@@ -838,10 +838,9 @@ public class ApiController extends BaseClass {
 		return build.toString();
 	}
 
-	@RequestMapping(value = "upload/user_header", method = RequestMethod.GET)
+	@RequestMapping(value = "upload/user_header")
 	@ResponseBody
-	public String uploadFile(HttpServletRequest request) {
-		String url = fileService.uploadUserHeader(request);
-		return url;
+	public FileResult uploadFile(@RequestParam HashMap<String, Object> parameterMap, HttpServletRequest request) {
+		return fileService.uploadUserHeader(request);
 	}
 }

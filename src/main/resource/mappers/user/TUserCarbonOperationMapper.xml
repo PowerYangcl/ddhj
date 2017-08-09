@@ -168,13 +168,13 @@
 				GROUP BY
 				DATE_FORMAT(create_time,
 				'%Y-%m-%d')
-				ORDER BY create_time ASC
+				ORDER BY create_time DESC
 			</when>
 			<otherwise>
 				GROUP BY
 				DATE_FORMAT(create_time, '%Y-%m-%d')
 				ORDER BY
-				create_time ASC
+				create_time DESC
 				limit
 				#{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 			</otherwise>
@@ -230,11 +230,11 @@
 				DATE_SUB(CURDATE(),
 				INTERVAL
 				#{day,jdbcType=INTEGER} DAY)
-				ORDER BY create_time ASC
+				ORDER BY create_time DESC
 			</when>
 			<otherwise>
 				ORDER BY
-				create_time ASC
+				create_time DESC
 				limit
 				#{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 			</otherwise>

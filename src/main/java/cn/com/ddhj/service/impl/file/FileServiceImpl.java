@@ -2,10 +2,7 @@ package cn.com.ddhj.service.impl.file;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,8 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 
-import com.alibaba.fastjson.JSON;
-
 import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
@@ -31,18 +26,19 @@ import cn.com.ddhj.util.DateUtil;
 public class FileServiceImpl extends BaseClass implements IFileService {
 
 	@Override
-	public String uploadUserHeader(HttpServletRequest request) {
-		String path = PropHelper.getValue("user_header_path") + DateUtil.getSysDateTime() + "/";
-		FileResult result = upload(request, path);
-		return result.getUrl();
+	public FileResult uploadUserHeader(HttpServletRequest request) {
+		String time = DateUtil.sysDateToStrForFile();
+		String path = PropHelper.getValue("user_header_path") + time + "/";
+		String visitPath = PropHelper.getValue("user_header_visit_path") + time + "/";
+		return upload(request, path, visitPath);
 	}
 
-	private FileResult upload(HttpServletRequest request, String path) {
+	private FileResult upload(HttpServletRequest request, String path, String visitPath) {
 		FileResult result = new FileResult();
 		List<FileItem> fileItems = getFileFromRequest(request);
 		if (fileItems != null && fileItems.size() != 0) {
 			FileItem item = fileItems.get(0);
-			result = saveFile(item.getName(), item.get(), path);
+			result = saveFile(item.getName(), item.get(), path, visitPath);
 		} else {
 			result.setResultCode(-1);
 			result.setResultMessage("未发现要上传的文件，请核实");
@@ -60,7 +56,6 @@ public class FileServiceImpl extends BaseClass implements IFileService {
 	 */
 	private List<FileItem> getFileFromRequest(HttpServletRequest request) {
 		List<FileItem> items = null; // 得到所有的文件
-		requestData(request);
 		String contentType = request.getContentType();
 		if (StringUtils.contains(contentType, "multipart/form-data")) { // 如果文件是以二进制方式上传的
 			DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -74,26 +69,6 @@ public class FileServiceImpl extends BaseClass implements IFileService {
 		return items;
 	}
 
-	private void requestData(HttpServletRequest request) {
-		Map map = request.getParameterMap();
-		Set keSet = map.entrySet();
-		for (Iterator itr = keSet.iterator(); itr.hasNext();) {
-			Map.Entry me = (Map.Entry) itr.next();
-			Object ok = me.getKey();
-			Object ov = me.getValue();
-			String[] value = new String[1];
-			if (ov instanceof String[]) {
-				value = (String[]) ov;
-			} else {
-				value[0] = ov.toString();
-			}
-
-			for (int k = 0; k < value.length; k++) {
-				System.out.println(ok + "=" + value[k]);
-			}
-		}
-	}
-
 	/**
 	 * @descriptions 持久化一个文件到硬盘
 	 *
@@ -105,14 +80,14 @@ public class FileServiceImpl extends BaseClass implements IFileService {
 	 * @author Yangcl
 	 * @version 1.0.0.1
 	 */
-	private FileResult saveFile(String fileName, byte[] file, String path) {
+	private FileResult saveFile(String fileName, byte[] file, String path, String visitPath) {
 		FileResult result = new FileResult();
 		if (StringUtils.isBlank(fileName)) {
 			result.setResultCode(-1);
 			result.setResultMessage("文件名称不得为空");
 			return result;
 		}
-		if (fileName.split(".").length < 2) {
+		if (fileName.split("\\.").length < 2) {
 			result.setResultCode(-1);
 			result.setResultMessage("文件名称错误，缺少后缀");
 			return result;
@@ -130,7 +105,8 @@ public class FileServiceImpl extends BaseClass implements IFileService {
 			result.setOriginal(fileName);
 			result.setType(postfix);
 			result.setPath(path);
-			result.setUrl(PropHelper.getValue("user_header_visit_path"));
+			String url = PropHelper.getValue("user_header_url") + visitPath + name + "." + postfix;
+			result.setUrl(url);
 		} catch (IOException e) {
 			e.printStackTrace();
 			result.setResultCode(-1);
@@ -139,5 +115,4 @@ public class FileServiceImpl extends BaseClass implements IFileService {
 		}
 		return result;
 	}
-
 }

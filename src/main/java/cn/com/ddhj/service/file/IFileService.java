@@ -2,6 +2,8 @@ package cn.com.ddhj.service.file;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.com.ddhj.result.file.FileResult;
+
 public interface IFileService {
 
 	/**
@@ -10,5 +12,5 @@ public interface IFileService {
 	 * @param data
 	 * @return
 	 */
-	String uploadUserHeader(HttpServletRequest request);
+	FileResult uploadUserHeader(HttpServletRequest request);
 }
