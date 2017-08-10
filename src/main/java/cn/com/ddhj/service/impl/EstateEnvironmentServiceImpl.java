@@ -1184,11 +1184,9 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	private String scoreLevel(String score_){
 		Double score = Double.valueOf(score_);
 		String level = "优";
-		if(score > 120 && score < 200){
+		if(score >= 60 && score <= 80){
 			level = "良";
-		}else if(score > 200 && score <300){
-			level = "中";
-		}else if(score > 300){
+		}else if(score < 60){
 			level = "差";
 		}
 		
