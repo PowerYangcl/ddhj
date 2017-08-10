@@ -1,6 +1,8 @@
 package cn.com.ddhj.service.apporderpay.result;
 
-public class ApiPayInfoResult {
+import cn.com.ddhj.base.BaseResult;
+
+public class ApiPayInfoResult extends BaseResult {
 	private AlipayPaymentResult  alipayPayment = new AlipayPaymentResult();
 	
 	private WechatPaymentResult wechatResult = new WechatPaymentResult();

@@ -53,8 +53,8 @@ import com.srnpr.xmassystem.support.PlusSupportSystem;
 import com.srnpr.zapcom.baseclass.BaseClass;
 import com.srnpr.zapcom.basehelper.FormatHelper;
 import com.srnpr.zapcom.basehelper.VersionHelper;
-import com.srnpr.zapcom.basemodel.MDataMap;
-import com.srnpr.zapcom.topapi.RootResult;
+import cn.com.ddhj.model.map.MDataMap;
+import cn.com.ddhj.base.BaseResult;
 import com.srnpr.zapdata.dbdo.DbUp;
 import com.srnpr.zapweb.helper.WebHelper;
 import com.srnpr.zapweb.helper.WebSessionHelper;
@@ -94,7 +94,7 @@ public class ApiWechatProcessService extends BaseClass{
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public MDataMap wechatMovePayment(String orderCode, String ip,RootResult rootResult)
+	public MDataMap wechatMovePayment(String orderCode, String ip, BaseResult rootResult)
 			throws UnsupportedEncodingException {
 
 		// 接收财付通通知的URL
@@ -1264,7 +1264,7 @@ public class ApiWechatProcessService extends BaseClass{
 	 * @author wz
 	 *
 	 */
-	public MDataMap wechatMovePaymentNew(String orderPayCode, String ip,RootResult rootResult)
+	public MDataMap wechatMovePaymentNew(String orderPayCode, String ip, BaseResult rootResult)
 			throws UnsupportedEncodingException {
 
 		// 接收财付通通知的URL

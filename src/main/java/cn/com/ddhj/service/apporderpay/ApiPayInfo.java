@@ -1,22 +1,21 @@
 package cn.com.ddhj.service.apporderpay;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import cn.com.ddhj.service.apporderpay.result.AlipayPaymentResult;
-import com.cmall.groupcenter.pay.model.ApiPayInfoInput;
-import com.cmall.groupcenter.pay.model.ApiPayInfoResult;
-import cn.com.ddhj.service.apporderpay.result.WechatPaymentResult;
-import com.cmall.ordercenter.alipay.process.CreateOrderPay;
-import com.cmall.ordercenter.alipay.process.WechatProcessRequest;
-import com.cmall.ordercenter.service.ApiAlipayMoveProcessService;
-import com.cmall.ordercenter.service.ApiWechatProcessService;
-import com.srnpr.zapcom.basemodel.MDataMap;
-import com.srnpr.zapcom.topapi.RootResult;
 import com.srnpr.zapdata.dbdo.DbUp;
-import com.srnpr.zapweb.helper.WebHelper;
-import com.srnpr.zapweb.webapi.RootApiForToken;
+
+import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.helper.PropHelper;
+import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.TOrderMapper;
+import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.map.MDataMap;
+import cn.com.ddhj.service.apporderpay.result.AlipayPaymentResult;
+import cn.com.ddhj.service.apporderpay.result.ApiPayInfoInput;
+import cn.com.ddhj.service.apporderpay.result.ApiPayInfoResult;
+import cn.com.ddhj.service.apporderpay.result.WechatPaymentResult;
+import cn.com.ddhj.util.Constant;
 
 /**
  * 支付
@@ -24,21 +23,22 @@ import com.srnpr.zapweb.webapi.RootApiForToken;
  * @author wz
  * 
  */
-public class ApiPayInfo extends
-		RootApiForToken<ApiPayInfoResult, ApiPayInfoInput> {
-
-	public ApiPayInfoResult Process(ApiPayInfoInput inputParam,
-			MDataMap mRequestMap) {
+@Service
+public class ApiPayInfo {
+	@Autowired
+	private TOrderMapper mapper;
+	
+	public ApiPayInfoResult Process(ApiPayInfoInput inputParam, MDataMap mRequestMap) {
 
 		ApiPayInfoResult apiPayInfoResult = new ApiPayInfoResult();
 		AlipayPaymentResult alipayPaymentResult = new AlipayPaymentResult();
 		WechatPaymentResult wechatPaymentResult = new WechatPaymentResult();
 		
 		CreateOrderPay createOrderPay = new CreateOrderPay();
-		String orderCodeNewSmall = "";
+		
 		String orderCodeNewBig = "";
 		String alipaySign = "";
-		String sellerCode = getManageCode();
+		String sellerCode = "SI2003";
 
 		String statePay = "";
 		String orderCodeAll = "";
@@ -52,50 +52,64 @@ public class ApiPayInfo extends
 			orderCodeAll = orderCodeAll.substring(0, orderCodeAll.length() - 1);
 		}
 		// 查询支付单号详情表, 获取支付状态
-		List<Map<String, Object>> payDetailList = DbUp.upTable("oc_paydetail").dataSqlList(
-						"select state from oc_paydetail where order_code in ("
-								+ orderCodeAll + ") "
-								+ "or big_order_code in (" + orderCodeAll + ")",
-						new MDataMap());
+		TOrder order = mapper.selectByCode(orderCodeAll);
+		//status 订单状态 0 未支付 1 已支付未下载 2 已支付已下载 3 已取消 4订单作废
+		if(order == null) {
+			apiPayInfoResult.setResultCode(Constant.RESULT_ERROR);
+			apiPayInfoResult.setResultMessage("查询不到指定订单,无法支付!");
+			return apiPayInfoResult;
+		}
+		
+		if(order.getStatus()!=0) {
+			apiPayInfoResult.setResultCode(Constant.RESULT_ERROR);
+			apiPayInfoResult.setResultMessage("订单状态不是未支付,无法支付!");
+			return apiPayInfoResult;
+		}
+//		List<Map<String, Object>> payDetailList = DbUp.upTable("oc_paydetail").dataSqlList(
+//						"select state from oc_paydetail where order_code in ("
+//								+ orderCodeAll + ") "
+//								+ "or big_order_code in (" + orderCodeAll + ")",
+//						new MDataMap());
 		
 		//判断state属于那种支付状态, 如果不是待支付状态(0), 直接返回错误信息退出
-		for (Map payDetailMap : payDetailList) {
-			if ("1".equals(payDetailMap.get("state"))) {
-				apiPayInfoResult.setResultMessage("此订单正在支付中,无法进行支付!");
-				return apiPayInfoResult;
-			} else if ("2".equals(payDetailMap.get("state"))) {
-				apiPayInfoResult.setResultMessage("此订单已经支付过,无法再次支付!");
-				return apiPayInfoResult;
-			}
-		}
+//		for (Map payDetailMap : payDetailList) {
+//			if ("1".equals(payDetailMap.get("state"))) {
+//				apiPayInfoResult.setResultMessage("此订单正在支付中,无法进行支付!");
+//				return apiPayInfoResult;
+//			} else if ("2".equals(payDetailMap.get("state"))) {
+//				apiPayInfoResult.setResultMessage("此订单已经支付过,无法再次支付!");
+//				return apiPayInfoResult;
+//			}
+//		}
 		
 		
 		/*
 		 * 以下代码是待支付状态下运行的
 		 */
 		
-		// 将所有订单号拼接成DD150105100199,DD150105100190形式
-		for (String orderCode : inputParam.getOrderCodes()) {
-			if ("DD".equals(orderCode.substring(0, 2))) {
-				orderCodeNewSmall = orderCodeNewSmall + "'" + orderCode + "',";
-			} else if ("OS".equals(orderCode.substring(0, 2))) {
-				orderCodeNewBig = orderCodeNewBig + "'" + orderCode + "',";
-			}
-
-		}
-		if (!"".equals(orderCodeNewSmall)) {
-			orderCodeNewSmall = orderCodeNewSmall.substring(0,orderCodeNewSmall.length() - 1);
-		}
-		if (!"".equals(orderCodeNewBig)) {
-			orderCodeNewBig = orderCodeNewBig.substring(0,orderCodeNewBig.length() - 1);
-		}
+//		// 将所有订单号拼接成DD150105100199,DD150105100190形式
+//		String orderCodeNewSmall = "";
+//		for (String orderCode : inputParam.getOrderCodes()) {
+//			if ("DD".equals(orderCode.substring(0, 2))) {
+//				orderCodeNewSmall = orderCodeNewSmall + "'" + orderCode + "',";
+//			} else if ("OS".equals(orderCode.substring(0, 2))) {
+//				orderCodeNewBig = orderCodeNewBig + "'" + orderCode + "',";
+//			}
+//
+//		}
+//		if (!"".equals(orderCodeNewSmall)) {
+//			orderCodeNewSmall = orderCodeNewSmall.substring(0,orderCodeNewSmall.length() - 1);
+//		}
+//		if (!"".equals(orderCodeNewBig)) {
+//			orderCodeNewBig = orderCodeNewBig.substring(0,orderCodeNewBig.length() - 1);
+//		}
 		// 自动生成支付单号
-		String payCode = WebHelper.upCode("PP");
+		String payCode = WebHelper.getInstance().getUniqueCode("PP");
 		// 获取锁定唯一约束值
-		String sLockUuid = WebHelper.addLock(10, payCode);
+		String sLockUuid = WebHelper.getInstance().addLock(10, payCode);
 
 		// 创建支付单号信息
-		String orderPayCode = createOrderPay.createOrderPayInfo(payCode,sLockUuid, inputParam.getType(), orderCodeNewSmall,orderCodeNewBig, sellerCode);
+		String orderPayCode = createOrderPay.createOrderPayInfo(payCode, sLockUuid, inputParam.getType(), orderCodeNewSmall,orderCodeNewBig, sellerCode);
 		
 		if (orderPayCode != null) {
 			if ("449746280003".equals(inputParam.getType())) { // 支付宝支付
@@ -103,7 +117,7 @@ public class ApiPayInfo extends
 				ApiAlipayMoveProcessService alipayMoveProcessService = new ApiAlipayMoveProcessService();
 				alipaySign = alipayMoveProcessService.alipayMoveParameterNew(orderPayCode);
 				alipayPaymentResult.setAlipaySign(alipaySign);
-				alipayPaymentResult.setAlipayUrl(bConfig("ordercenter.ali_url_http"));
+				alipayPaymentResult.setAlipayUrl(PropHelper.getValue("ali_url_http"));
 
 				apiPayInfoResult.setAlipayPayment(alipayPaymentResult);
 
@@ -111,12 +125,12 @@ public class ApiPayInfo extends
 					// 去支付时更新状态 为支付中 state： 0 待支付 1 支付中 2 已支付
 					DbUp.upTable("oc_pay_info").dataUpdate(new MDataMap("pay_code", orderPayCode,"state", "1"), "state", "pay_code");
 
-					DbUp.upTable("oc_paydetail").dataUpdate(new MDataMap("pay_code", orderPayCode,"state", "1"), "state", "pay_code");
+//					DbUp.upTable("oc_paydetail").dataUpdate(new MDataMap("pay_code", orderPayCode,"state", "1"), "state", "pay_code");
 
 				}
 
 			} else if ("449746280005".equals(inputParam.getType())) { // 微信支付
-				RootResult rootResult = new RootResult();
+				BaseResult rootResult = new BaseResult();
 				// 获取微信支付信息
 				WechatProcessRequest wechatProcessRequest = new WechatProcessRequest();
 				MDataMap mDataMap = wechatProcessRequest.wechatMoveNew(orderPayCode, inputParam.getIp(), rootResult);
@@ -148,7 +162,7 @@ public class ApiPayInfo extends
 
 				DbUp.upTable("oc_paydetail").dataUpdate(new MDataMap("pay_code", orderPayCode, "state", "1"),"state", "pay_code");
 			}
-			WebHelper.unLock(sLockUuid);
+			WebHelper.getInstance().unLock(sLockUuid);
 		}
 
 		return apiPayInfoResult;
