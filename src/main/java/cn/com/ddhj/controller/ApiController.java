@@ -61,7 +61,6 @@ import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
-import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.result.file.FileResult;
 import cn.com.ddhj.result.lp.TLpCommentData;
 import cn.com.ddhj.result.lp.TLpCommentTopData;
@@ -463,8 +462,7 @@ public class ApiController extends BaseClass {
 		else if ("user_carbon_type_detail".equals(api.getApiTarget())) {
 			JSONObject param = JSONObject.parseObject(api.getApiInput());
 			TUserCarbonOperationDto dto = JSON.toJavaObject(param, TUserCarbonOperationDto.class);
-			CarbonTypeDetailResult result = userCarbonOperationserivce.getCarbonOperationByType(api.getUserToken(),
-					dto);
+			DataResult result = userCarbonOperationserivce.getCarbonOperationByType(api.getUserToken(), dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 根据碳币类型查询交易明细，精确到秒
