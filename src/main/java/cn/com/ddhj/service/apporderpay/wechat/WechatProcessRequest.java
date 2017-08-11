@@ -1,7 +1,8 @@
-package cn.com.ddhj.service.apporderpay;
+package cn.com.ddhj.service.apporderpay.wechat;
 
 import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.model.apppay.TPayInfo;
 import cn.com.ddhj.model.map.MDataMap;
 
 /**
@@ -24,17 +25,17 @@ public class WechatProcessRequest extends BaseClass {
 	 * @param rootResult
 	 * @return
 	 */
-	public MDataMap wechatMove(String orderCode, String ip,
-			BaseResult rootResult) {
-		MDataMap mDataMap = new MDataMap();
-		try {
-			ApiWechatProcessService apiWechatProcessService = new ApiWechatProcessService();
-			mDataMap = apiWechatProcessService.wechatMovePayment(orderCode, ip, rootResult);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return mDataMap;
-	}
+//	public MDataMap wechatMove(String orderCode, String ip,
+//			BaseResult rootResult) {
+//		MDataMap mDataMap = new MDataMap();
+//		try {
+//			ApiWechatProcessService apiWechatProcessService = new ApiWechatProcessService();
+//			mDataMap = apiWechatProcessService.wechatMovePayment(orderCode, ip, rootResult);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return mDataMap;
+//	}
 	
 
 	/**
@@ -44,12 +45,11 @@ public class WechatProcessRequest extends BaseClass {
 	 * @param rootResult
 	 * @return
 	 */
-	public MDataMap wechatMoveNew(String orderPayCode, String ip,
-			BaseResult rootResult) {
+	public MDataMap wechatMoveNew(String orderPayCode, TPayInfo payInfo, String ip, BaseResult rootResult) {
 		MDataMap mDataMap = new MDataMap();
 		try {
 			ApiWechatProcessService apiWechatProcessService = new ApiWechatProcessService();
-			mDataMap = apiWechatProcessService.wechatMovePaymentNew(orderPayCode, ip, rootResult);
+			mDataMap = apiWechatProcessService.wechatMovePaymentNew(orderPayCode, payInfo, ip, rootResult);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

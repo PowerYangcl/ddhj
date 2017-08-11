@@ -26,6 +26,8 @@
 		<fastjson.version>1.2.16</fastjson.version>
 		<junit.version>4.12</junit.version>
 		<poi.version>3.15</poi.version>
+		<dom4j.version>1.6</dom4j.version>
+		<commons-httpclient.version>3.1</commons-httpclient.version>
 	</properties>
 
 	<dependencies>
@@ -59,6 +61,11 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>${commons-httpclient.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -249,6 +256,16 @@
 			<artifactId>solr-solrj</artifactId>
 			<version>5.5.4</version>
 		</dependency>
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>${dom4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>2.0.2</version>
+		</dependency>		
 	</dependencies>
 
 

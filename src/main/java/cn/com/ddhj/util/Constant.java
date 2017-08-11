@@ -29,4 +29,6 @@ public class Constant {
 	 * 返回结果失败
 	 */
 	public static Integer RESULT_ERROR = -1;
+	
+	public static String SELLER_CODE = "DDHJ";
 }
