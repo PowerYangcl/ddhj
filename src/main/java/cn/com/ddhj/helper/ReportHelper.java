@@ -1,5 +1,9 @@
 package cn.com.ddhj.helper;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +25,8 @@ import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.ITChemicalPlantService;
 import cn.com.ddhj.util.CommonUtil;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 public class ReportHelper extends BaseClass {
 
@@ -41,7 +47,7 @@ public class ReportHelper extends BaseClass {
 	 * @param lat
 	 * @return
 	 */
-	public static String getWeatherDistribution(Long lat) {
+	public static String getWeatherDistribution(Float lat) {
 		String val = "";
 		if (lat > 35) {
 			val = "华北、东北区域（既北京，河北，天津，青岛，大连等城市）为温带季风气候，夏季夏季高温多雨，冬季寒冷干燥。";
@@ -262,4 +268,21 @@ public class ReportHelper extends BaseClass {
 		return array;
 	}
 
+	public void createHtml(TLandedProperty lp) {
+		try {
+			String path = ReportHelper.class.getResource("/report/h5.ftl").getPath();
+			// 创建一个合适的Configration对象
+			Configuration configuration = new Configuration(Configuration.VERSION_2_3_23);
+			// 指定模板文件所在路径
+			configuration.setDirectoryForTemplateLoading(new File(path).getParentFile());
+			// 设置模板编码
+			configuration.setDefaultEncoding("UTF-8");
+			Template template = configuration.getTemplate("h5.ftl");
+			Writer writer = new OutputStreamWriter(new FileOutputStream("d:/test/" + lp.getCode() + ".html"), "UTF-8");
+			template.process(lp, writer);
+			System.out.println("创建成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
