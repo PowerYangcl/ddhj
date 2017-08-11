@@ -194,6 +194,9 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			result.setResultMessage("查询列表成功");
 		} catch (Exception e) {
 			e.printStackTrace();
+			result.setWeek(new ArrayList<TUserStep>());
+			result.setYear(new ArrayList<Map<String, Integer>>());
+			result.setMonth(new ArrayList<TUserStep>());
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("查询用户计步信息失败");
 		}
@@ -359,7 +362,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			month = trimData(month, startDate, endDate);
 			Integer total = 0;
 			for (TUserStep step : month) {
-				total += step.getStep();
+				total += step.getStep()!=null?step.getStep():0;
 			}
 			Map<String, Integer> map = new HashMap<String, Integer>();
 			map.put("month", i);
