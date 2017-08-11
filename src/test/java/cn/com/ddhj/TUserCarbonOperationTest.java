@@ -15,8 +15,8 @@ import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
+import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
-import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.service.user.ITUserCarbonOperationService;
 import cn.com.ddhj.util.DateUtil;
 
@@ -110,7 +110,7 @@ public class TUserCarbonOperationTest extends BaseTest {
 		TUserCarbonOperationDto dto = new TUserCarbonOperationDto();
 		dto.setUserCode("U161009100001");
 		dto.setDay(30);
-		CarbonTypeDetailResult result = serivce.getCarbonOperationByType("6a397b4cd42f4d62b3c5c43143d94714", dto);
+		DataResult result = serivce.getCarbonOperationByType("6a397b4cd42f4d62b3c5c43143d94714", dto);
 		System.out.println(JSON.toJSON(result));
 	}
 

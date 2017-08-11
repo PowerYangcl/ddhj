@@ -26,7 +26,6 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
-import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.user.ITUserCarbonOperationService;
 import cn.com.ddhj.util.Constant;
@@ -154,8 +153,8 @@ public class TUserCarbonOperationServiceImpl
 	 *      java.lang.String)
 	 */
 	@Override
-	public CarbonTypeDetailResult getCarbonOperationByType(String userToken, TUserCarbonOperationDto dto) {
-		CarbonTypeDetailResult result = new CarbonTypeDetailResult();
+	public DataResult getCarbonOperationByType(String userToken, TUserCarbonOperationDto dto) {
+		DataResult result = new DataResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		List<TUserCarbonOperation> list = null;
 		if (login != null) {
@@ -171,11 +170,11 @@ public class TUserCarbonOperationServiceImpl
 					if (dto.getDay() != null) {
 						list = trimData(list, dto.getDay());
 					}
-					result.setList(list);
+					result.setData(list);
 					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("获取数据成功");
 				} else {
-					result.setList(new ArrayList<TUserCarbonOperation>());
+					result.setData(new ArrayList<TUserCarbonOperation>());
 					result.setResultCode(Constant.RESULT_NULL);
 					result.setResultMessage("查询数据为空");
 				}

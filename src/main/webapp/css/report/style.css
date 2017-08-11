@@ -1,0 +1,241 @@
+input{
+               appearance:button;
+               -moz-appearance:button; /* Firefox */
+               -webkit-appearance:button; /* Safari 鍜� Chrome */
+}
+html {
+    background: #f8f8f8;
+}
+
+table {
+    border-collapse: collapse;
+}
+.cel-26 {
+    width: 26%;
+}
+.cel-37 {
+    width: 37%;
+}
+.verticalPage{position: fixed; width: 100%;}
+.verticalPage ul{
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    webkit-transition: 1s all ease;
+}
+.verticalPage li{
+    position: relative;
+    background: url(../../images/report/bg_back02.png) no-repeat;
+    background-size: 100% 100%;
+}
+.verticalPage li:first-child{
+    background: url(../../images/report/bg_back.png) no-repeat;
+    background-size: 100% 100%;
+}
+.verticalPage li .bg_logo01{
+    width: 100%;
+    margin-top: .9rem;
+}
+.verticalPage li h1{
+    margin-top: .3rem;
+    font-size: .25rem;
+    color: #222;
+    text-align: center;
+}
+.verticalPage li h1 span{
+    position: relative;
+    line-height: .25rem;
+}
+.verticalPage li h1 span:before{
+    content: "";
+    position: absolute;
+    height: 1px;
+    background: #222;
+    width: .45rem;
+    top: .18rem;
+    left: -.6rem;
+}
+.verticalPage li h1 span:after{
+    content: "";
+    position: absolute;
+    height: 1px;
+    background: #222;
+    width: .45rem;
+    top: .18rem;
+    right: -.6rem;
+}
+.verticalPage li .time{
+    font-size: .12rem;
+    color: #222;
+    text-align: center;
+    margin-top: .12rem;
+}
+.verticalPage li .position{
+    font-size: .18rem;
+    color: #0076be;
+    text-align: center;
+    margin-top: .7rem;
+}
+.verticalPage li .copyright{
+    font-size: .14rem;
+    color: #222;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    left: 0;
+    bottom: .7rem;
+}
+.verticalPage li .point{
+        width: 0.22rem;
+    height: 0.12rem;
+    background: url(../../images/report/jiantou.png) no-repeat;
+    background-size: 100%;
+    position: absolute;
+    left: 50%;
+    margin-left: -.11rem;
+    bottom: .4rem;
+    -webkit-animation: slide 2s infinite;
+     animation: slide 2s infinite; 
+}
+@keyframes slide {
+  from {
+    bottom: 0.4rem;
+    opacity: 0.7; }
+  to {
+    bottom: 0.5rem;
+    opacity: 0; } 
+}
+
+@-webkit-keyframes slide {
+  from {
+    bottom: 0.4rem;
+    opacity: 0.7; }
+  to {
+    bottom: 0.5rem;
+    opacity: 0; } 
+}
+
+.verticalPage li .bg_logo02{
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.verticalPage li .dir{
+    position: absolute;
+    width: 100%;
+    color: #222;
+    font-size: .25rem;
+    left: 0;
+    top: 25%;
+    text-align: center;
+}
+.verticalPage li .dir02{
+    position: absolute;
+    width: 100%;
+    color: #222;
+    font-size: .25rem;
+    left: 0;
+    top: 14%;
+    text-align: center;
+}
+.verticalPage li .con{
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 34%;
+}
+.verticalPage li .con p{
+    color: #222;
+    font-size: .16rem;
+    text-align: center;
+    line-height: .36rem;
+}
+.verticalPage li .detail{
+    position: absolute;
+    left: 0;
+    top: 21%;
+    width: 100%;
+}
+.verticalPage li .detail02{
+    position: absolute;
+    left: 0;
+    top: 13%;
+    width: 100%;
+}
+.verticalPage li .detail h2{
+    color: #05a1ff;
+    font-size: .16rem;
+    text-align: center;
+    line-height: .36rem;
+}
+.verticalPage li .detail p.txt{
+    color: #222;
+    font-size: .12rem;
+    line-height: .2rem;
+    width: 80%;
+    margin:0 auto;
+    text-indent: 24px;
+    padding-bottom: .15rem;
+}
+.verticalPage li p.botm{
+    position: absolute;
+    left: 10%;
+    bottom: 1.1rem;
+    color: #222;
+    font-size: .12rem;
+    line-height: .2rem;
+    width: 80%;
+    text-indent: 24px;
+    padding-bottom: .15rem;
+}
+.verticalPage li .chinaImg{
+    width: 80%;
+    margin: 0 auto;
+    display: block;
+}
+
+.detail_table{
+    width: 80%;
+    margin:0 auto .2rem;
+}
+.detail_table table{
+    width: 100%;
+    border: none;
+    text-align: center;
+}
+.detail_table table thead{
+    background: #c5c1b2;
+    color: #fff;
+}
+.detail_table table thead th{
+    height: .3rem;
+    font-size: .11rem;
+    font-weight: normal;
+}
+.detail_table table tbody tr{
+    height: .4rem;
+    font-size: .10rem;
+    font-weight: normal;
+    color: #222;
+}
+.downloadBtn{
+    width: 1.65rem;
+    height: .4rem;
+    line-height: .4rem;
+    font-size: .13rem;
+    color: #fff;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    margin-left: -.825rem;
+    bottom: .65rem;
+    background: #05a1ff;
+}
+
+/*濯掍綋鏌ヨ*/
+@media screen and (max-width: 320px) {
+   
+}
+/*濯掍綋鏌ヨend*/
