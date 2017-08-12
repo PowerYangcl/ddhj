@@ -1,7 +1,7 @@
-package cn.com.ddhj.service.apporderpay.result;
+package cn.com.ddhj.service.apporderpay.result.wechat;
 
 
-public class WechatPaymentResult {
+public class WCPaymentResult {
 
 	private String appid = "";
 	

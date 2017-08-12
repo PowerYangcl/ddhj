@@ -1,4 +1,4 @@
-package cn.com.ddhj.service.apporderpay.result;
+package cn.com.ddhj.service.apporderpay.result.ali;
 
 public class AlipayPaymentResult {
 

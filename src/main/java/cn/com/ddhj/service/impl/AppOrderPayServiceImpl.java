@@ -1,6 +1,5 @@
 package cn.com.ddhj.service.impl;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,15 +19,21 @@ import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.apppay.TPayInfo;
 import cn.com.ddhj.model.map.MDataMap;
 import cn.com.ddhj.model.user.TUser;
-import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.IAppOrderPay;
 import cn.com.ddhj.service.apporderpay.alipay.ApiAlipayMoveProcessService;
-import cn.com.ddhj.service.apporderpay.result.AlipayPaymentResult;
 import cn.com.ddhj.service.apporderpay.result.ApiPayInfoResult;
-import cn.com.ddhj.service.apporderpay.result.WechatPaymentResult;
+import cn.com.ddhj.service.apporderpay.result.ApiPaymentAllResult;
+import cn.com.ddhj.service.apporderpay.result.ApplePayResponse;
+import cn.com.ddhj.service.apporderpay.result.ali.AlipayPaymentResult;
+import cn.com.ddhj.service.apporderpay.result.wechat.WCPaymentResult;
+import cn.com.ddhj.service.apporderpay.result.wechat.WeChatpaymentResult;
 import cn.com.ddhj.service.apporderpay.wechat.WechatProcessRequest;
+import cn.com.ddhj.service.impl.orderpay.OrderPayProcess;
+import cn.com.ddhj.service.impl.orderpay.prepare.AlipayPreparePayProcess;
+import cn.com.ddhj.service.impl.orderpay.prepare.ApplePayPreparePayProcess;
+import cn.com.ddhj.service.impl.orderpay.prepare.WechatPreparePayProcess;
 import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
@@ -78,12 +83,118 @@ public class AppOrderPayServiceImpl implements IAppOrderPay {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public BaseResult doPay(TPayInfoDto dto, String userToken) {
+		ApiPaymentAllResult apiPaymentAllResult = new ApiPaymentAllResult();
+		
+		UserDataResult userResult = new UserDataResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if (login == null) {
+			userResult.setResultCode(Constant.RESULT_ERROR);
+			userResult.setResultMessage("用户未登录");
+			return userResult;
+		}
+		
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if(user == null) {
+			userResult.setResultCode(Constant.RESULT_ERROR);
+			userResult.setResultMessage("用户不存在");
+			return userResult;
+		}
+
+		// 查询支付单号详情表, 获取支付状态
+		TOrder order = mapper.selectByCode(dto.getOrderCodes());
+		//status 订单状态 0 未支付 1 已支付未下载 2 已支付已下载 3 已取消 4订单作废
+		if(order == null) {
+			apiPaymentAllResult.setResultCode(Constant.RESULT_ERROR);
+			apiPaymentAllResult.setResultMessage("查询不到指定订单,无法支付!");
+			return apiPaymentAllResult;
+		}
+				
+		if(order.getStatus() != 0) {
+			apiPaymentAllResult.setResultCode(Constant.RESULT_ERROR);
+			apiPaymentAllResult.setResultMessage("订单状态不是未支付,无法支付!");
+			return apiPaymentAllResult;
+		}
+				
+		
+		// 获取锁定唯一约束值
+		String sLockUuid = WebHelper.getInstance().addLock(5, user.getUserCode()+"_PAY");
+
+		// 创建支付单号信息
+		// 开始锁定交易的流水号和交易类型5秒
+		TPayInfo payInfo = new TPayInfo();
+		if (StringUtils.isBlank(sLockUuid)) {
+			apiPaymentAllResult.setResultCode(Constant.RESULT_ERROR);
+			apiPaymentAllResult.setResultMessage("支付锁定失败,可能是10秒内多次支付,请稍候重试!");
+			return apiPaymentAllResult;
+		}
+		
+		if("449746280003".equals(dto.getType())){  
+			//支付宝支付
+			AlipayPreparePayProcess.PaymentResult result = new OrderPayProcess().aliPayAppPrepare(dto.getOrderCodes());
+			AlipayPaymentResult alipayPaymentResult = new AlipayPaymentResult();
+			if(result.upFlagTrue()){
+				alipayPaymentResult.setAlipaySign(result.payInfo);
+				alipayPaymentResult.setAlipayUrl(PropHelper.getValue("ali_url_http"));	
+				apiPaymentAllResult.setAlipayPaymentResult(alipayPaymentResult);
+			}else{
+				apiPaymentAllResult.setResultCode(result.getResultCode());
+				apiPaymentAllResult.setResultMessage(result.getResultMessage());
+			}
+		}else if("449746280005".equals(dto.getType())){   
+			//微信支付(惠家有)
+			WechatPreparePayProcess.PaymentResult result = new OrderPayProcess().wechatPrepare(dto.getOrderCodes());
+			WeChatpaymentResult paymentResult = new WeChatpaymentResult();
+			if(result.upFlagTrue()){
+				paymentResult.setAppid(result.appid);	
+				paymentResult.setMch_id(result.partnerid);
+				paymentResult.setNonce_str(result.noncestr);
+				paymentResult.setPrepay_id(result.prepayid);
+				paymentResult.setSign(result.sign);
+				paymentResult.setTrade_type("APP");
+				paymentResult.setTimestamp(result.timestamp);
+				apiPaymentAllResult.setWeChatpaymentResult(paymentResult);
+			}else{
+				apiPaymentAllResult.setResultCode(result.getResultCode());
+				apiPaymentAllResult.setResultMessage(result.getResultMessage());
+			}
+		} else if("449746280013".equals(dto.getType())){
+			/*
+			ApplePayResponse applePayResponse = PayServiceFactory.getInstance().getApplePayProcess().process(inputParam.getOrder_code());
+			
+			apiPaymentAllResult.setApplePayResult(applePayResponse);
+			*/
+			ApplePayPreparePayProcess.PaymentResult result = new OrderPayProcess().applePayPrepare(dto.getOrderCodes());
+			ApplePayResponse paymentResult = new ApplePayResponse();
+			if(result.upFlagTrue()){
+				paymentResult.setAp_merchant_id(result.ap_merchant_id);
+				paymentResult.setBusi_partner(result.busi_partner);
+				paymentResult.setDt_order(result.dt_order);
+				paymentResult.setMoney_order(result.money_order);
+				paymentResult.setNo_order(result.no_order);
+				paymentResult.setNotify_url(result.notify_url);
+				paymentResult.setOid_partner(result.oid_partner);
+				paymentResult.setRisk_item(result.risk_item);
+				paymentResult.setSign(result.sign);
+				paymentResult.setSign_type(result.sign_type);
+				paymentResult.setUser_id(result.user_id);
+				paymentResult.setValid_order(result.valid_order);
+				apiPaymentAllResult.setApplePayResult(paymentResult);
+			}else{
+				apiPaymentAllResult.setResultCode(result.getResultCode());
+				apiPaymentAllResult.setResultMessage(result.getResultMessage());
+			}
+		}
+		WebHelper.getInstance().unLock(sLockUuid);
+		return apiPaymentAllResult;
+	}
 
 	@Override
 	public BaseResult doPay(TPayInfoDto dto, String userToken, String remoteIp) {
 		ApiPayInfoResult apiPayInfoResult = new ApiPayInfoResult();
 		AlipayPaymentResult alipayPaymentResult = new AlipayPaymentResult();
-		WechatPaymentResult wechatPaymentResult = new WechatPaymentResult();
+		WCPaymentResult wechatPaymentResult = new WCPaymentResult();
 		
 		UserDataResult result = new UserDataResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
