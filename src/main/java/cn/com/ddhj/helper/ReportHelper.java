@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.ITChemicalPlantService;
+import cn.com.ddhj.service.impl.lp.TLpEnvironmentIndex;
 import cn.com.ddhj.util.CommonUtil;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -40,6 +42,18 @@ public class ReportHelper extends BaseClass {
 	private TWaterEnviromentMapper waterEnvMapper;
 	@Inject
 	private ITAreaNoiseMapper noiseMapper;
+
+	private static ReportHelper self;
+
+	public static ReportHelper getInstance() {
+		if (self == null) {
+			synchronized (ReportHelper.class) {
+				if (self == null)
+					self = new ReportHelper();
+			}
+		}
+		return self;
+	}
 
 	/**
 	 * 根据纬度判断气候类型
@@ -69,21 +83,27 @@ public class ReportHelper extends BaseClass {
 	 * @param greeningRate
 	 * @return
 	 */
-	public static Integer afforestLevel(String greeningRate) {
-		Integer afforestLevel = 1;
+	public static TLpEnvironmentIndex afforestLevel(String greeningRate) {
+		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		Integer level = 1;
 		if (StringUtils.isNotBlank(greeningRate)) {
 			try {
 				Double afforest = Double.valueOf(greeningRate.substring(0, greeningRate.indexOf("%")));
+				entity.setValue(BigDecimal.valueOf(afforest));
 				if (afforest > 25 && afforest < 30) {
-					afforestLevel = 2;
+					level = 2;
 				} else if (afforest < 25) {
-					afforestLevel = 3;
+					level = 3;
 				}
 			} catch (Exception e) {
-				afforestLevel = 1;
+				level = 1;
+				entity.setValue(BigDecimal.valueOf(30));
 			}
 		}
-		return afforestLevel;
+		entity.setLevel(level);
+		String evaluate = PropHelper.getValue("afforest_level_" + level);
+		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
+		return entity;
 	}
 
 	/**
@@ -92,21 +112,27 @@ public class ReportHelper extends BaseClass {
 	 * @param volumeRate
 	 * @return
 	 */
-	public static Integer volumeLevel(String volumeRate) {
-		int volumeLevel = 1;
+	public static TLpEnvironmentIndex volumeLevel(String volumeRate) {
+		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		Integer level = 1;
 		if (volumeRate != null && !"".equals(volumeRate)) {
 			try {
 				Double volume = Double.valueOf(volumeRate);
+				entity.setValue(BigDecimal.valueOf(volume));
 				if (volume > 3 && volume < 5) {
-					volumeLevel = 2;
+					level = 2;
 				} else if (volume > 5) {
-					volumeLevel = 3;
+					level = 3;
 				}
 			} catch (Exception e) {
-				volumeLevel = 1;
+				entity.setValue(BigDecimal.valueOf(1));
+				level = 1;
 			}
 		}
-		return volumeLevel;
+		entity.setLevel(level);
+		String evaluate = PropHelper.getValue("volume_level_" + level);
+		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
+		return entity;
 	}
 
 	/**
@@ -119,8 +145,9 @@ public class ReportHelper extends BaseClass {
 	 * @param lp
 	 * @return
 	 */
-	public Integer getNoiseLevel(TLandedProperty lp) {
-		int level = 1;
+	public TLpEnvironmentIndex getNoiseLevel(TLandedProperty lp) {
+		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		Integer level = 1;
 		if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
 			Double lat = Double.valueOf(lp.getLat());
 			Double lng = Double.valueOf(lp.getLng());
@@ -144,8 +171,12 @@ public class ReportHelper extends BaseClass {
 						areaList.add(e);
 					}
 				}
+				Double distance = Double.NaN;
 				for (TAreaNoise e : areaList) {
-					Double distance = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
+					Double distance_new = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
+					if (distance < distance_new) {
+						continue;
+					}
 					if (distance < 2000) {
 						if (e.getFlag() == 1) { // e.getLevel().equals("0类")
 							level = 1;
@@ -157,7 +188,6 @@ public class ReportHelper extends BaseClass {
 							level = 3;
 						}
 					} else if (distance < 5000 && e.getFlag() == 4) { // 机场5km以内
-																		// 4类
 						level = 3;
 					}
 				}
@@ -181,8 +211,13 @@ public class ReportHelper extends BaseClass {
 		} else {
 			level = 1;
 		}
-
-		return level;
+		if (level == 1 && entity.getValue() == null) {
+			entity.setValue(BigDecimal.valueOf(45));
+		}
+		entity.setLevel(level);
+		String evaluate = PropHelper.getValue("volume_level_" + level);
+		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
+		return entity;
 	}
 
 	/**
@@ -197,9 +232,9 @@ public class ReportHelper extends BaseClass {
 	 * @param list
 	 * @return
 	 */
-	public Integer waterEnv(TLandedProperty lp) {
-		int level = 2;
-
+	public TLpEnvironmentIndex waterEnv(TLandedProperty lp) {
+		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		Integer level = 2;
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("北京", "北京");
 		map.put("上海", "上海");
@@ -225,16 +260,20 @@ public class ReportHelper extends BaseClass {
 					String oxy = w.getOxygenquality();
 					if (StringUtils.isBlank(oxy)) {
 						level = 2;
-					} else if (oxy.equals("Ⅰ")) {
-						level = 1;
-					} else if (oxy.equals("-") || oxy.equals("Ⅱ")) {
-						level = 1;
-					} else if (oxy.equals("Ⅲ")) {
-						level = 2;
-					} else if (oxy.equals("Ⅳ")) {
-						level = 3;
+						entity.setValue(BigDecimal.ZERO);
 					} else {
-						level = 3;
+						if (oxy.equals("Ⅰ")) {
+							level = 1;
+						} else if (oxy.equals("-") || oxy.equals("Ⅱ")) {
+							level = 1;
+						} else if (oxy.equals("Ⅲ")) {
+							level = 2;
+						} else if (oxy.equals("Ⅳ")) {
+							level = 3;
+						} else {
+							level = 3;
+						}
+						entity.setValue(BigDecimal.valueOf(Double.valueOf(oxy)));
 					}
 				} else {
 					level = 2;
@@ -243,7 +282,13 @@ public class ReportHelper extends BaseClass {
 				level = 2;
 			}
 		}
-		return level;
+		if (level == 2 && entity.getValue() == null) {
+			entity.setValue(BigDecimal.valueOf(100));
+		}
+		entity.setLevel(level);
+		String evaluate = PropHelper.getValue("volume_level_" + level);
+		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
+		return entity;
 	}
 
 	/**
