@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.lp.TLpEnvironmentMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.lp.TLpEnvironment">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="lp_code" property="lpCode" jdbcType="VARCHAR" />
+		<result column="air" property="air" jdbcType="INTEGER" />
+		<result column="afforest" property="afforest" jdbcType="INTEGER" />
+		<result column="volume" property="volume" jdbcType="INTEGER" />
+		<result column="water" property="water" jdbcType="INTEGER" />
+		<result column="rubbish" property="rubbish" jdbcType="INTEGER" />
+		<result column="chemical" property="chemical" jdbcType="INTEGER" />
+		<result column="nosie" property="nosie" jdbcType="INTEGER" />
+		<result column="radiation" property="radiation" jdbcType="INTEGER" />
+		<result column="hazardous_article" property="hazardousArticle"
+			jdbcType="INTEGER" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, lp_code, air, afforest, volume, water, rubbish,
+		chemical,
+		nosie,radiation,hazardous_article,create_user,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
+		update_time
+	</sql>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_lp_environment
+		where lp_code = #{lpCode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByCode" parameterType="java.lang.Integer">
+		delete from
+		t_lp_environment
+		where lp_code = #{lpCode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.lp.TLpEnvironment">
+		insert into t_lp_environment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			lp_code,
+			<if test="air != null">
+				air,
+			</if>
+			<if test="afforest != null">
+				afforest,
+			</if>
+			<if test="volume != null">
+				volume,
+			</if>
+			<if test="water != null">
+				water,
+			</if>
+			<if test="rubbish != null">
+				rubbish,
+			</if>
+			<if test="chemical != null">
+				chemical,
+			</if>
+			<if test="nosie != null">
+				nosie,
+			</if>
+			<if test="radiation != null">
+				radiation,
+			</if>
+			<if test="hazardousArticle != null">
+				hazardous_article,
+			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{lpCode,jdbcType=VARCHAR},
+			<if test="air != null">
+				#{air,jdbcType=INTEGER},
+			</if>
+			<if test="afforest != null">
+				#{afforest,jdbcType=INTEGER},
+			</if>
+			<if test="volume != null">
+				#{volume,jdbcType=INTEGER},
+			</if>
+			<if test="water != null">
+				#{water,jdbcType=INTEGER},
+			</if>
+			<if test="rubbish != null">
+				#{rubbish,jdbcType=INTEGER},
+			</if>
+			<if test="chemical != null">
+				#{chemical,jdbcType=INTEGER},
+			</if>
+			<if test="nosie != null">
+				#{nosie,jdbcType=INTEGER},
+			</if>
+			<if test="radiation != null">
+				#{radiation,jdbcType=INTEGER},
+			</if>
+			<if test="hazardousArticle != null">
+				#{hazardousArticle,jdbcType=INTEGER},
+			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</trim>
+	</insert>
+	<insert id="batchInsert" parameterType="list">
+		insert into t_lp_environment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			lp_code,
+			air,
+			afforest,
+			volume,
+			water,
+			rubbish,
+			chemical,
+			nosie,
+			radiation,
+			hazardous_article,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix=" (" suffix=")" suffixOverrides=",">
+				#{item.uuid,jdbcType=VARCHAR},
+				#{item.lpCode,jdbcType=VARCHAR},
+				#{item.air,jdbcType=INTEGER},
+				#{item.afforest,jdbcType=INTEGER},
+				#{item.volume,jdbcType=INTEGER},
+				#{item.water,jdbcType=INTEGER},
+				#{item.rubbish,jdbcType=INTEGER},
+				#{item.chemical,jdbcType=INTEGER},
+				#{item.nosie,jdbcType=INTEGER},
+				#{item.radiation,jdbcType=INTEGER},
+				#{item.hazardousArticle,jdbcType=INTEGER},
+				#{item.createUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.createTime,jdbcType=VARCHAR},'%Y-%m-%d
+				%H:%i:%s'),
+				#{item.updateUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			</trim>
+		</foreach>
+	</insert>
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.lp.TLpEnvironment">
+		update t_lp_environment
+		<set>
+			<if test="air != null">
+				air = #{air,jdbcType=INTEGER},
+			</if>
+			<if test="afforest != null">
+				afforest = #{afforest,jdbcType=INTEGER},
+			</if>
+			<if test="volume != null">
+				volume = #{volume,jdbcType=INTEGER},
+			</if>
+			<if test="water != null">
+				water = #{water,jdbcType=INTEGER},
+			</if>
+			<if test="rubbish != null">
+				rubbish = #{rubbish,jdbcType=INTEGER},
+			</if>
+			<if test="chemical != null">
+				chemical = #{chemical,jdbcType=INTEGER},
+			</if>
+			<if test="nosie != null">
+				nosie = #{nosie,jdbcType=INTEGER},
+			</if>
+			<if test="radiation != null">
+				radiation = #{radiation,jdbcType=INTEGER},
+			</if>
+			<if test="hazardousArticle != null">
+				hazardous_article = #{hazardousArticle,jdbcType=INTEGER},
+			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_date =
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</set>
+		where lp_code = #{lpCode,jdbcType=VARCHAR}
+	</update>
+</mapper>

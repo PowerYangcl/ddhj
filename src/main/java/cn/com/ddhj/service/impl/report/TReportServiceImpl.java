@@ -27,6 +27,7 @@ import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
@@ -106,6 +107,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TWaterEnviromentMapper waterEnvMapper;
 	@Autowired
 	private TReportMapper reportMapper;
+
 	/**
 	 * 
 	 * 方法: getReportData <br>
@@ -480,30 +482,31 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					}
 				}
 			}
-			
-			//检查报告是否需要更新
-			if(user != null && reports != null && !reports.isEmpty()) {
+
+			// 检查报告是否需要更新
+			if (user != null && reports != null && !reports.isEmpty()) {
 				TOrderDto orderDto = new TOrderDto();
-				for(TReport report : reports) {
+				for (TReport report : reports) {
 					orderDto.setCreateUser(user.getUserCode());
 					orderDto.setReportCode(report.getCode());
 					List<TOrder> orderList = orderMapper.findOrderByReportCodeAndUserCode(orderDto);
-					if(orderList == null || orderList.isEmpty())
+					if (orderList == null || orderList.isEmpty())
 						continue;
-					
-					for(TOrder order : orderList) {
-						//报告订单已支付
-						if(order.getStatus() == 1 || order.getStatus() == 2) {
-							//计算报告购买时间与当前时间差值,大于半年则提示更新
+
+					for (TOrder order : orderList) {
+						// 报告订单已支付
+						if (order.getStatus() == 1 || order.getStatus() == 2) {
+							// 计算报告购买时间与当前时间差值,大于半年则提示更新
 							try {
 								Date buyTime = DateUtil.strToDate(order.getCreateTime());
 								Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
-								if(new Date().compareTo(deadLine) >= 0) {
-									//报告要更新
+								if (new Date().compareTo(deadLine) >= 0) {
+									// 报告要更新
 									String reportCode = order.getReportCode();
-									if(StringUtils.isNotBlank(reportCode)) {
-										//report对象中没有address,city,lpcode, position信息
-										//用reportMapper的selectByCode方法左联合查询一下四个lp属性
+									if (StringUtils.isNotBlank(reportCode)) {
+										// report对象中没有address,city,lpcode,
+										// position信息
+										// 用reportMapper的selectByCode方法左联合查询一下四个lp属性
 										TReport reportJoinInfo = reportMapper.selectByCode(reportCode);
 										report.getReportUpdate().setAddress(reportJoinInfo.getAddress());
 										report.getReportUpdate().setCity(reportJoinInfo.getCity());
@@ -519,10 +522,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					}
 				}
 			}
-			
-			
 
-			
 			result.setIsFollow(isFollow);
 			result.setLevelList(reports);
 			result.setAddress(lp.getAddressFull());
@@ -791,6 +791,27 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public BaseResult createHtmlAll() {
+		BaseResult result = new BaseResult();
+		try {
+			List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
+			if (lpList != null && lpList.size() > 0) {
+				for (TLandedProperty lp : lpList) {
+					lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
+					new ReportHelper().createHtml(lp);
+				}
+			}
+			result.setResultCode(Constant.RESULT_SUCCESS);
+			result.setResultMessage("创建H5报告成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("创建H5报告失败，失败原因：" + e.getMessage());
 		}
 		return result;
 	}
@@ -1355,4 +1376,5 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		}
 		return map;
 	}
+
 }

@@ -57,6 +57,7 @@ import cn.com.ddhj.service.IEstateInfoService;
 import cn.com.ddhj.service.ILongitudeLatitudeService;
 import cn.com.ddhj.service.IWeatherAreaSupportService;
 import cn.com.ddhj.util.CommonUtil;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DCacheEnum;
 import cn.com.ddhj.util.DoctorScoreUtil;
 import cn.com.ddhj.util.PureNetUtil;
@@ -831,6 +832,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		map.put("tarea", area);
 		TCityWeatherForecast cwf = cityWeatherForecastMapper.selectByCityArea(map);
 		if(cwf == null){
+			result.put("resultMessage", "cwf 为空 | " + city + " | " + area);
 			return result;
 		}
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
@@ -844,11 +846,12 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		try {
 			if(type.equals("A")){
 				if(StringUtils.isNotBlank(cwf.getSevenAqi()) && cwf.getSevenAqi().startsWith(today)){
+					logger.info("2050接口 type = A 开始读取缓存");
 					result.put("resultCode", 1);
 					result.put("date", JSONArray.parseArray(StringUtils.substringAfter(cwf.getSevenAqi(), today))); 
 				}else{ 
-					param.put("startTime" , this.getSpecifyDate(new Date(), 1, "yyyyMMdd"));     // 更新今天的数据
-					param.put("endTime" , this.getSpecifyDate(new Date(), 7, "yyyyMMdd")); 
+					param.put("startTime" , this.getSpecifyDate(new Date(), 0, "yyyyMMdd"));     // 更新今天的数据
+					param.put("endTime" , this.getSpecifyDate(new Date(), 6, "yyyyMMdd")); 
 					url = "http://v.juhe.cn/xiangji_weather/aqi_average_byAreaid.php";
 					responseJson = PureNetUtil.post(url , param);
 					if (responseJson != null && !"".equals(responseJson)) {
@@ -868,11 +871,13 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 				}
 			}else if(type.equals("B")){
 				if(StringUtils.isNotBlank(cwf.getFifteenWeather()) && cwf.getFifteenWeather().startsWith(today)){
+					logger.info("2050接口 type = B 开始读取缓存");
 					result.put("resultCode", 1);
 					result.put("date", JSONArray.parseArray(StringUtils.substringAfter(cwf.getFifteenWeather(), today))); 
 				}else{ 
-					param.put("startTime" , this.getSpecifyDate(new Date(), 1, "yyyyMMdd"));  // 更新今天的数据
-					param.put("endTime" , this.getSpecifyDate(new Date(), 15, "yyyyMMdd")); 
+					logger.info("2050接口 type = B 开始请求聚合数据");
+					param.put("startTime" , this.getSpecifyDate(new Date(), 0, "yyyyMMdd"));  // 更新今天的数据
+					param.put("endTime" , this.getSpecifyDate(new Date(), 14, "yyyyMMdd"));  
 					url = "http://v.juhe.cn/xiangji_weather/15_area.php";
 					responseJson = PureNetUtil.post(url , param);
 					if (responseJson != null && !"".equals(responseJson)) {
@@ -887,6 +892,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 							cityWeatherForecastMapper.updateSelective(e);
 							result.put("resultCode", 1);
 							result.put("date", JSONArray.parseArray(obj.getString("series")));
+							logger.info("2050接口 type = B 请求结果：" + fifteenWeather);
 						}
 					}
 				}
@@ -937,7 +943,24 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 				if(cale.getBoolean("flag") && holiday.getBoolean("flag")){
 					result.putAll(cale);
 					result.putAll(holiday); 
-				}else{
+				}else if(cale.getBoolean("flag") && !holiday.getBoolean("flag")){
+					result.put("flag", false); 
+					result.putAll(cale);
+					result.put("holidayName", "近期暂无节日");  //  元旦
+					result.put("holidayFestival", "");  // 2017-1-1
+					result.put("holidayDesc", "");  // 1月1日放假，1月2日（星期一）补休，共3天。
+				}else if(!cale.getBoolean("flag") && holiday.getBoolean("flag")){
+					result.put("flag", false); 
+					result.putAll(holiday); 
+					String today_ = format.format(new Date());
+					result.put("avoid", "上班、写代码、做文案、挤公交");  // 开市.纳采.订盟.作灶.造庙.造船.经络
+					result.put("animalsYear", "猫");  // 猴
+					result.put("weekday", this.weekday(today_));  // 星期六 
+					result.put("suit", "看电影、逛街、逗女友、吃大餐");  
+					result.put("lunarYear", "东汉末年");  // 丙申年 
+					result.put("lunar", "七月初七");  // 十一月廿六
+					result.put("date", today_ );  // 2016-12-24 
+				} else{
 					String today_ = format.format(new Date());
 					result.put("flag", false); //  标识字段，如果为false 则代表聚合请求失败，给的是假数据，再次请求的时候会作为判断依据
 					result.put("avoid", "上班、写代码、做文案、挤公交");  // 开市.纳采.订盟.作灶.造庙.造船.经络
@@ -1013,8 +1036,8 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(dto);
 			if(list != null && list.size() != 0){
 				result.put("data", list);
-			}else{
-				result.put("resultCode", -1);
+			}else {
+				result.put("resultCode", Constant.RESULT_NULL);
 				result.put("resultMessage", "数据为空");
 			}
 //			else{
@@ -1184,11 +1207,9 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	private String scoreLevel(String score_){
 		Double score = Double.valueOf(score_);
 		String level = "优";
-		if(score > 120 && score < 200){
+		if(score >= 60 && score <= 80){
 			level = "良";
-		}else if(score > 200 && score <300){
-			level = "中";
-		}else if(score > 300){
+		}else if(score < 60){
 			level = "差";
 		}
 		

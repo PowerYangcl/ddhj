@@ -76,7 +76,8 @@
 			<if test="parentCode != null">
 				parent_code = #{parentCode,jdbcType=VARCHAR},
 			</if>
-			#{updateUser,jdbcType=VARCHAR},
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_date =
 			STR_TO_DATE(
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</set>

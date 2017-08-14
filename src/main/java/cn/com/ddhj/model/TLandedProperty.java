@@ -2,6 +2,8 @@ package cn.com.ddhj.model;
 
 import java.math.BigDecimal;
 
+import cn.com.ddhj.model.lp.TLpEnvironment;
+
 /**
  * 
  * 类: TLandedProperty <br>
@@ -52,6 +54,7 @@ public class TLandedProperty extends BaseModel {
 	private String images;
 
 	private String overview;
+	
 
 	/**
 	 * 报告最小价格
@@ -62,6 +65,33 @@ public class TLandedProperty extends BaseModel {
 	 * 与用户当前位置的距离
 	 */
 	private Integer distance;
+	
+	/**
+	 * 环境相关参数
+	 */
+	private TLpEnvironment environment;
+	/**
+	 * 气候类型
+	 */
+	private String weatherDistribution;
+	
+	
+
+	public TLpEnvironment getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(TLpEnvironment environment) {
+		this.environment = environment;
+	}
+
+	public String getWeatherDistribution() {
+		return weatherDistribution;
+	}
+
+	public void setWeatherDistribution(String weatherDistribution) {
+		this.weatherDistribution = weatherDistribution;
+	}
 
 	public Integer getDistance() {
 		return distance;

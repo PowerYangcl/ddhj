@@ -150,11 +150,19 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * 描述: 生成ppt格式环境报告，并转换为pdf报告 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2017年3月1日 下午1:41:15
+	 * 
 	 * @param code
 	 * @param lpCode
 	 * @param cityAir
 	 * @param list
 	 * @return
 	 */
-	CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir,List<TReportEnvironmentLevel> list);
+	CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir, List<TReportEnvironmentLevel> list);
+
+	/**
+	 * 创建H5环境报告
+	 * 
+	 * @return
+	 */
+	BaseResult createHtmlAll();
 }

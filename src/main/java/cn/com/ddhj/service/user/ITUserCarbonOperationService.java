@@ -7,7 +7,6 @@ import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
-import cn.com.ddhj.result.carbon.CarbonTypeDetailResult;
 import cn.com.ddhj.service.IBaseService;
 
 /**
@@ -41,7 +40,7 @@ public interface ITUserCarbonOperationService extends IBaseService<TUserCarbonOp
 	 * @param type
 	 * @return
 	 */
-	CarbonTypeDetailResult getCarbonOperationByType(String userToken,TUserCarbonOperationDto dto);
+	DataResult getCarbonOperationByType(String userToken,TUserCarbonOperationDto dto);
 	
 	/**
 	 * 显示碳币交易明细 精确到秒
