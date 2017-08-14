@@ -25,6 +25,7 @@ public class LongitudeLatitudeServiceImpl implements ILongitudeLatitudeService {
 
 	/**
 	 * @descriptions 经纬度地址解析|获取当前地理位置信息
+	 * 	默认请求百度的经纬度地址解析接口，如果用完则调用聚合的接口
 	 *
 	 * @param lng 经度 (如：119.9772857)
 	 * @param lat 纬度 (如：27.327578)
@@ -35,10 +36,45 @@ public class LongitudeLatitudeServiceImpl implements ILongitudeLatitudeService {
 	 * @version 1.0.0.1
 	 */
 	public JSONObject getCurrentPositionInfo(String lng , String lat , String type) {
+		JSONObject result = new JSONObject();
+		String burl = "http://api.map.baidu.com/geocoder/v2/?";
+		String ak = "mwtIbCVKxq5l7TMLCpNrCnoOxGnWlotK";
+		String location = lat + "," + lng;
+		Map<String, String> bp = new HashMap<String, String>();
+		bp.put("ak", ak);
+		bp.put("location", location);
+		bp.put("output", "json");
+		bp.put("pois", "1");
+		String bjson = PureNetUtil.post(burl , bp);
+		
+		JSONObject bobj = JSONObject.parseObject(bjson);
+		if(bobj.getInteger("status") == 0){ 
+			JSONObject re = bobj.getJSONObject("result");
+			String address_ = re.getString("formatted_address");
+			String business_ = re.getString("business");
+			JSONObject info = re.getJSONObject("addressComponent"); 
+			
+			result.put("code" , "1");
+			result.put("msg" , "SUCCESS");
+			result.put("code" , "1");
+			result.put("msg" , "SUCCESS");
+			result.put("lng" , lng);
+			result.put("lat" , lat);
+			result.put("address" , address_);
+			result.put("business" , business_);
+			result.put("citycode" , "baidu");
+			result.put("country" , info.getString("country") );
+			result.put("province" , info.getString("province") );
+			result.put("city" , info.getString("city") );
+			result.put("district" ,info.getString("district") );
+			result.put("adcode" , info.getString("adcode"));
+			result.put("street" , info.getString("street") );
+			result.put("street_number" , info.getString("street_number") ); 
+			return result;
+		}
+		
 		String key = "e06872cce776a7fd22b66251127512e7";
 		String url = "http://apis.juhe.cn/geo/";
-		
-		JSONObject result = new JSONObject();
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("lng", lng);					// 经度 (如：119.9772857)
 		param.put("lat", lat);					// 纬度 (如：27.327578)
