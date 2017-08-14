@@ -96,7 +96,7 @@
 		<property name="cronExpression" value="0 00 23 ? * SAT"></property>
 	</bean>
 	
-	<!-- 抓取中国碳交易网的行情数据 -->
+	<!-- 定时抓取中国碳交易网的行情数据 -->
 	<bean name="carbonDealData" class="cn.com.ddhj.job.CarbonDealData" />
 	<bean id="quartzCarbonDealData"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -111,12 +111,29 @@
 		<!-- 每分钟运行定时任务 -->
 		<property name="cronExpression" value="0 0 12 * * ?"></property>
 	</bean>
+	
+	<!-- 定时更新楼盘solr索引 -->
+	<bean name="reindexLandProperty" class="cn.com.ddhj.solr.job.ReindexLandPropertyForSolr" />
+	<bean id="quartzReindexLandProperty"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="reindexLandProperty"></property>
+		<property name="targetMethod" value="reindex"></property>
+		<!-- 设定多个job不会并发运行 -->
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="reindexLandPropertyTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="quartzReindexLandProperty" />
+		<!-- 凌晨5分运行定时任务 -->
+		<property name="cronExpression" value="0 5 0 * * ?"></property>
+	</bean>
 	<bean name="quartzScheduler"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<!-- ref bean="quartzTrigger" / -->
 				<ref bean="carbonDealDataTrigger" />
+				<ref bean="reindexLandPropertyTrigger" />
 				<!--
 					<ref bean="createReportTrigger" /> 
 				 -->
