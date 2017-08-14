@@ -201,10 +201,9 @@
 			i.current_price as currentPrice,
 			i.stock_num as stockNum,
 			i.product_tip as productTip,
-			i.flag_sellable as flagSellable,
-			GROUP_CONCAT(p.pic_url order by p.id asc) as picUrls
+			i.flag_sellable as flagSellable
 		from 
-			t_product_info i left join t_product_pic p on i.product_code = p.product_code
+			t_product_info i 											 
 		where
 			i.product_code  = #{productCode}
 	</select>

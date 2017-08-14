@@ -29,6 +29,7 @@ import cn.com.ddhj.result.order.ProductOrderApiResult;
 import cn.com.ddhj.result.order.ProductOrderConfirmResult;
 import cn.com.ddhj.result.order.ProductOrderListResult;
 import cn.com.ddhj.result.order.ProductResult;
+import cn.com.ddhj.result.product.TProductInfoResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductOrderService;
@@ -294,7 +295,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 
 	/**
 	 * @description: 返回指定用户的订单列表信息 
-	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=order_list&api_key=appfamilyhas&apiInput={pageSize":"10","pageIndex":"0"}
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=order_list&api_key=appfamilyhas&apiInput={"pageSize":"10","pageIndex":"0"}
 	 * 
 	 * @返回参数如下：
 		{    
@@ -388,17 +389,18 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			m.setOrderStatus(r.getOrderStatus());
 
 			List<ProductResult> productList = new ArrayList<>();
-			String[] pnArr = r.getProductNames().split(",");
-			String[] mpArr = r.getMpurl().split(",");
-			String[] ppArr = r.getProductPrices().split(",");
+//			String[] pnArr = r.getProductNames().split(",");
+//			String[] mpArr = r.getMpurl().split(",");
+//			String[] ppArr = r.getProductPrices().split(",");
 			String[] pcArr = r.getProductCode().split(",");
-			if (pnArr.length != 0) {
-				for (int i = 0; i < pnArr.length; i++) {
+			if (pcArr.length != 0) {
+				for (int i = 0; i < pcArr.length; i++) {
+					TProductInfoResult view = productMapper.getProductInfo(pcArr[i]);
 					ProductResult p = new ProductResult();
 					p.setProductCode(pcArr[i]);
-					p.setProductName(pnArr[i]);
-					p.setProductPrice(Double.valueOf(ppArr[i]));
-					p.setImgUrl(mpArr[i]);
+					p.setProductName(view.getProductName());
+					p.setProductPrice(Double.valueOf(view.getCurrentPrice()));
+					p.setImgUrl(view.getMainPicUrl());  
 					productList.add(p);
 				}
 			}
