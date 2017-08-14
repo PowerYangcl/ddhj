@@ -57,6 +57,7 @@ import cn.com.ddhj.service.IEstateInfoService;
 import cn.com.ddhj.service.ILongitudeLatitudeService;
 import cn.com.ddhj.service.IWeatherAreaSupportService;
 import cn.com.ddhj.util.CommonUtil;
+import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DCacheEnum;
 import cn.com.ddhj.util.DoctorScoreUtil;
 import cn.com.ddhj.util.PureNetUtil;
@@ -1035,8 +1036,8 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(dto);
 			if(list != null && list.size() != 0){
 				result.put("data", list);
-			}else{
-				result.put("resultCode", -1);
+			}else {
+				result.put("resultCode", Constant.RESULT_NULL);
 				result.put("resultMessage", "数据为空");
 			}
 //			else{
