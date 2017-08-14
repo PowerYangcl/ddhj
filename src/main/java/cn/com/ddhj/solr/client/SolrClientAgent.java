@@ -120,38 +120,7 @@ public class SolrClientAgent {
 		    doc.addField("k1", data.getK1());
 	        doc.addField("s1", data.getS1());
 	        doc.addField("s2", data.getS2());
-	        doc.addField("s3", data.getS3());
-	        doc.addField("s4", data.getS4());
-	        doc.addField("s5", data.getS5());
-	        doc.addField("s6", data.getS6());
-	        doc.addField("s7", data.getS7());
-	        doc.addField("s8", data.getS8());
-	        doc.addField("s9", data.getS9());
-	        doc.addField("s10", data.getS10());
-	        doc.addField("s11", data.getS11());
-	        doc.addField("s12", data.getS12());
-	        doc.addField("s13", data.getS13());
-	        doc.addField("s14", data.getS14());
-	        doc.addField("s15", data.getS15());
-	        doc.addField("s16", data.getS16());
-	        doc.addField("i1", data.getI1());
-	        doc.addField("i2", data.getI2());
-	        doc.addField("i3", data.getI3());
-	        doc.addField("i4", data.getI4());
-	        doc.addField("i5", data.getI5());
 	        doc.addField("d1",data.getD1());
-	        doc.addField("d2",data.getD2());
-	        doc.addField("d3",data.getD3());
-	        doc.addField("d4",data.getD4());
-	        doc.addField("t1",data.getT1());
-	        doc.addField("l1",data.getL1());
-	        doc.addField("l2",data.getL2());
-	        doc.addField("l3",data.getL3());
-	        doc.addField("l4",data.getL4());
-	        doc.addField("l5",data.getL5());
-	        doc.addField("l6",data.getL6());
-	        doc.addField("l7",data.getL7());
-	        doc.addField("l8",data.getL8());
 		return doc;
 	}
 	

@@ -6,4 +6,6 @@ import cn.com.ddhj.model.apppay.TPayInfo;
 
 public interface IAppOrderPay extends IBaseService<TPayInfo, TPayInfoDto> {
 	BaseResult doPay(TPayInfoDto dto, String userToken, String remoteIp);
+	
+	BaseResult doPay(TPayInfoDto dto, String userToken);
 }

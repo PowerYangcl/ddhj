@@ -651,7 +651,7 @@ public class ApiController extends BaseClass {
 		//app楼盘报告订单支付-zht
 		else if ("app_order_pay".equals(api.getApiTarget())) {
 			TPayInfoDto dto = obj.toJavaObject(TPayInfoDto.class);
-			BaseResult result = orderPayService.doPay(dto, api.getUserToken(), getIpAddr(request));
+			BaseResult result = orderPayService.doPay(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**

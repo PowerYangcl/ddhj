@@ -20,78 +20,42 @@ import org.apache.solr.client.solrj.beans.Field;
  * 
  * solr索引库创建数据源 <br/>
  * 描述 : SolrData所有的字段为SolrInputDocument提供数据的封装 <br/>
- * 创建作者 : zhouguohui <br/>
- * 创建时间 : 2015-08-15 09:25:31 <br/>
- * 文件版本 : V1.0 <br/>
- * 修改历史 : V1.0
  */
 public class SolrData {
 	/**
 	 * solr唯一标示key
 	 */
 	@Field
-	private String k1 ;//对应商品的productCode
+	private String k1 ;//对应楼盘编号landCode
 	/***
 	 * s开头的为字符串
 	 */
 	@Field
-	private String s1;//对应商品的productName
+	private String s1;	//所在城市
 	@Field
-	private String s2;
+	private String s2;	//楼盘名称
 	@Field
-	private String s3;
+	private String s3;	
 	@Field
 	private String s4;
 	@Field
 	private String s5;
-	@Field
-	private String s6;
-	@Field
-	private String s7;
-	@Field
-	private String s8;
-	@Field
-	private String s9;
-	@Field
-	private String s10;
-	@Field
-	private String s11;
-	@Field
-	private String s12;
-	@Field
-	private String s13;//对应商品的品牌
-	@Field
-	private String s14;//对应商品的品牌编号
-	@Field
-	private String s15;//对应商品里面的 sellerCode
-	@Field
-	private String s16;//对应商品里面的 smallSellerCode
+
 	
 	/**
 	 * i开头的数字
 	 */
 	@Field
 	private int i1;    //i1代表商品是否有货 1代表有货 0代表没有货
-	@Field
-	private int i2;    //i2代表商品销量值
-	@Field
-	private int i3;    //i3代表是否海外购 1代表是海外购 0代表不是海外购
-	@Field
-	private int i4;
-	@Field
-	private int i5;
 	
 	/**
 	 * d开头的为双精度数字
 	 */
 	@Field
-	private Double d1; //d1为销售价格
+	private Double d1; //楼盘的综合评分
 	@Field
 	private Double d2; //d2位人气
-	@Field
-	private Double d3;
-	@Field
-	private Double d4;
+
 	/**
 	 * t为日期格式
 	 */
@@ -229,133 +193,7 @@ public class SolrData {
 	public void setS5(String s5) {
 		this.s5 = s5;
 	}
-	/**
-	 * @return the s6
-	 */
-	public String getS6() {
-		return s6;
-	}
-	/**
-	 * @param s6 the s6 to set
-	 */
-	public void setS6(String s6) {
-		this.s6 = s6;
-	}
-	/**
-	 * @return the s7
-	 */
-	public String getS7() {
-		return s7;
-	}
-	/**
-	 * @param s7 the s7 to set
-	 */
-	public void setS7(String s7) {
-		this.s7 = s7;
-	}
-	/**
-	 * @return the s8
-	 */
-	public String getS8() {
-		return s8;
-	}
-	/**
-	 * @param s8 the s8 to set
-	 */
-	public void setS8(String s8) {
-		this.s8 = s8;
-	}
-	/**
-	 * @return the s9
-	 */
-	public String getS9() {
-		return s9;
-	}
-	/**
-	 * @param s9 the s9 to set
-	 */
-	public void setS9(String s9) {
-		this.s9 = s9;
-	}
-	/**
-	 * @return the s10
-	 */
-	public String getS10() {
-		return s10;
-	}
-	/**
-	 * @param s10 the s10 to set
-	 */
-	public void setS10(String s10) {
-		this.s10 = s10;
-	}
-	/**
-	 * @return the s11
-	 */
-	public String getS11() {
-		return s11;
-	}
-	/**
-	 * @param s11 the s11 to set
-	 */
-	public void setS11(String s11) {
-		this.s11 = s11;
-	}
-	/**
-	 * @return the s12
-	 */
-	public String getS12() {
-		return s12;
-	}
-	/**
-	 * @param s12 the s12 to set
-	 */
-	public void setS12(String s12) {
-		this.s12 = s12;
-	}
-	/**
-	 * @return the s13
-	 */
-	public String getS13() {
-		return s13;
-	}
-	/**
-	 * @param s13 the s13 to set
-	 */
-	public void setS13(String s13) {
-		this.s13 = s13;
-	}
-	/**
-	 * @return the s14
-	 */
-	public String getS14() {
-		return s14;
-	}
-	/**
-	 * @param s14 the s14 to set
-	 */
-	public void setS14(String s14) {
-		this.s14 = s14;
-	}
-	/**
-	 * @return the s15
-	 */
-	public String getS15() {
-		return s15;
-	}
-	/**
-	 * @param s15 the s15 to set
-	 */
-	public void setS15(String s15) {
-		this.s15 = s15;
-	}
 	
-	public String getS16() {
-		return s16;
-	}
-	public void setS16(String s16) {
-		this.s16 = s16;
-	}
 	/**
 	 * @return the i1
 	 */
@@ -368,30 +206,7 @@ public class SolrData {
 	public void setI1(int i1) {
 		this.i1 = i1;
 	}
-	/**
-	 * @return the i2
-	 */
-	public int getI2() {
-		return i2;
-	}
-	/**
-	 * @param i2 the i2 to set
-	 */
-	public void setI2(int i2) {
-		this.i2 = i2;
-	}
-	/**
-	 * @return the i3
-	 */
-	public int getI3() {
-		return i3;
-	}
-	/**
-	 * @param i3 the i3 to set
-	 */
-	public void setI3(int i3) {
-		this.i3 = i3;
-	}
+	
 	/**
 	 * @return the d1
 	 */
@@ -416,30 +231,7 @@ public class SolrData {
 	public void setD2(Double d2) {
 		this.d2 = d2;
 	}
-	/**
-	 * @return the d3
-	 */
-	public Double getD3() {
-		return d3;
-	}
-	/**
-	 * @param d3 the d3 to set
-	 */
-	public void setD3(Double d3) {
-		this.d3 = d3;
-	}
-	/**
-	 * @return the d4
-	 */
-	public Double getD4() {
-		return d4;
-	}
-	/**
-	 * @param d4 the d4 to set
-	 */
-	public void setD4(Double d4) {
-		this.d4 = d4;
-	}
+	
 	/**
 	 * @return the t1
 	 */
@@ -548,30 +340,7 @@ public class SolrData {
 	public void setL8(List<String> l8) {
 		this.l8 = l8;
 	}
-	/**
-	 * @return the i4
-	 */
-	public int getI4() {
-		return i4;
-	}
-	/**
-	 * @param i4 the i4 to set
-	 */
-	public void setI4(int i4) {
-		this.i4 = i4;
-	}
-	/**
-	 * @return the i5
-	 */
-	public int getI5() {
-		return i5;
-	}
-	/**
-	 * @param i5 the i5 to set
-	 */
-	public void setI5(int i5) {
-		this.i5 = i5;
-	}
+	
 	/**
 	 * @return the counts
 	 */
