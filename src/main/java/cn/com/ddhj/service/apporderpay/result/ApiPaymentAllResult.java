@@ -11,8 +11,6 @@ public class ApiPaymentAllResult extends BaseResult {
 	
 	private ApplePayResponse applePayResult = new ApplePayResponse();
 	
-	private String fnCode ="";
-	
 	private String jsapiparam;
 	
 	public AlipayPaymentResult getAlipayPaymentResult() {
@@ -32,12 +30,6 @@ public class ApiPaymentAllResult extends BaseResult {
 	}
 	public void setApplePayResult(ApplePayResponse applePayResult) {
 		this.applePayResult = applePayResult;
-	}
-	public String getFnCode() {
-		return fnCode;
-	}
-	public void setFnCode(String fnCode) {
-		this.fnCode = fnCode;
 	}
 	public String getJsapiparam() {
 		return jsapiparam;
