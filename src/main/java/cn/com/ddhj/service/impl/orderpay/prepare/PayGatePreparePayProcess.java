@@ -82,8 +82,7 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 			} else {
 				param.put("c_reurl", XmasPayConfig.getPayGateDefaultReURL());
 			}
-			
-			param.put("c_retflag", "2");
+//			param.put("c_retflag", "2");
 		}
 		
 		param.put("c_signstr", PayGateUtils.createSign(param, XmasPayConfig.getPayGatePass()));

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.apppay.TPayInfoMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.apppay.TPayInfo">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="pay_code" property="payCode" jdbcType="VARCHAR" />
+		<result column="trade_no" property="tradeNo" jdbcType="VARCHAR" />
+		<result column="pay_money" property="payMoney" jdbcType="DECIMAL" />
+		<result column="seller_code" property="sellerCode" jdbcType="VARCHAR" />
+		<result column="pay_type" property="payType" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, pay_code, pay_money,
+		seller_code,pay_type,status,
+		create_user,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
+		update_time
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_pay_info
+		where pay_code = #{payCode,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_pay_info
+		where pay_code = #{payCode,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from t_pay_info
+		where pay_code = #{payCode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.apppay.TPayInfo">
+		insert into t_pay_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			pay_code,
+			trade_no,
+			pay_money,
+			seller_code,
+			pay_type,
+			`status`,
+			create_user,
+			create_time,
+			update_user,
+			update_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{payCode,jdbcType=VARCHAR},
+			#{tradeNo,jdbcType=VARCHAR},
+			#{payMoney,jdbcType=DECIMAL},
+			#{sellerCode,jdbcType=VARCHAR},
+			#{payType,jdbcType=VARCHAR},
+			#{status,jdbcType=INTEGER},
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</trim>
+	</insert>
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.apppay.TPayInfo">
+		update t_pay_info
+		<set>
+			<if test="payMoney != null">
+				pay_money = #{payMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="status != null">
+				`status` = #{status,jdbcType=INTEGER},
+			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time =STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</set>
+		where pay_code = #{payCode,jdbcType=VARCHAR}
+	</update>
+
+	<delete id="deleteOne" parameterType="java.lang.Integer">
+		delete
+		from t_pay_info
+		where
+		id =#{id}
+	</delete>
+</mapper>

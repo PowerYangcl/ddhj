@@ -32,6 +32,7 @@ import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
+import cn.com.ddhj.dto.apppay.TPayInfoDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.dto.store.TProductOrderDto;
@@ -87,6 +88,7 @@ import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.result.tuser.VisitResult;
+import cn.com.ddhj.service.IAppOrderPay;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITAddressEnshrineService;
 import cn.com.ddhj.service.ITCityService;
@@ -154,6 +156,8 @@ public class ApiController extends BaseClass {
 	private ITProductInfoService productInfoService;
 	@Autowired
 	private ITAreaService areaService;
+	@Autowired
+	private IAppOrderPay orderPayService;
 
 	@Autowired
 	private ITAddressEnshrineService addressEnshrineService;
@@ -641,6 +645,12 @@ public class ApiController extends BaseClass {
 			TUserAddressDto dto = obj.toJavaObject(TUserAddressDto.class);
 			BaseResult result = userAddressService.findUserAddressPage(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		} 
+		//app楼盘报告订单支付-zht
+		else if ("app_order_pay".equals(api.getApiTarget())) {
+			TPayInfoDto dto = obj.toJavaObject(TPayInfoDto.class);
+			BaseResult result = orderPayService.doPay(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**
 		 * ================= 点点商城相关 end ======================
@@ -839,5 +849,24 @@ public class ApiController extends BaseClass {
 	@ResponseBody
 	public FileResult uploadFile(HttpServletRequest request) {
 		return fileService.uploadUserHeader(request);
+	}
+	
+	public String getIpAddr(HttpServletRequest request) {
+		String ip = request.getHeader("X-Real-IP");
+		if (!StringUtils.isBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
+			return ip;
+		}
+		ip = request.getHeader("X-Forwarded-For");
+		if (!StringUtils.isBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
+			// 多次反向代理后会有多个IP值，第一个为真实IP。
+			int index = ip.indexOf(',');
+			if (index != -1) {
+				return ip.substring(0, index);
+			} else {
+				return ip;
+			}
+		} else {
+			return request.getRemoteAddr();
+		}
 	}
 }
