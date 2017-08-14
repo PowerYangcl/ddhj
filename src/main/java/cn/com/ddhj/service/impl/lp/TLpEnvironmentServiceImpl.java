@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.impl.lp;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,6 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 
 	private List<TLpEnvironment> getData() {
 		List<TLpEnvironment> list = new ArrayList<TLpEnvironment>();
-		ReportHelper helper = new ReportHelper();
 		try {
 			// JSONArray cityAirLevel = helper.getCityAirLevel();
 			List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
@@ -75,36 +75,11 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 					entity.setUuid(WebHelper.getInstance().genUuid());
 					entity.setLpCode(lp.getCode());
 					// 获取绿地率等级
-					Integer afforestLevel = 1;
-					if (StringUtils.isNotBlank(lp.getGreeningRate())) {
-						try {
-							Double afforest = Double
-									.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
-							if (afforest > 25 && afforest < 30) {
-								afforestLevel = 2;
-							} else if (afforest < 25) {
-								afforestLevel = 3;
-							}
-						} catch (Exception e) {
-							afforestLevel = 1;
-						}
-					}
-					entity.setAfforest(afforestLevel);
+					TLpEnvironmentIndex afforestEnv = ReportHelper.afforestLevel(lp.getGreeningRate());
+					entity.setAfforest(afforestEnv.getValue());
 					// 获取容积率等级
-					Integer volumeLevel = 1;
-					if (lp.getVolumeRate() != null && !"".equals(lp.getVolumeRate())) {
-						try {
-							Double volume = Double.valueOf(lp.getVolumeRate());
-							if (volume > 3 && volume < 5) {
-								volumeLevel = 2;
-							} else if (volume > 5) {
-								volumeLevel = 3;
-							}
-						} catch (Exception e) {
-							volumeLevel = 1;
-						}
-					}
-					entity.setVolume(volumeLevel);
+					TLpEnvironmentIndex volumeLevelEnv = ReportHelper.afforestLevel(lp.getVolumeRate());
+					entity.setVolume(volumeLevelEnv.getValue());
 					// 空气质量等级
 					Integer airLevel = 1;
 					// if (StringUtils.isNotBlank(lp.getCity())) {
@@ -119,37 +94,35 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 					// }
 					// }
 					// }
-					entity.setAir(airLevel);
-					// 水质量等级
-					Integer waterLevel = 2;
-					if (StringUtils.isNoneBlank(lp.getCity())) {
-						waterLevel = helper.waterEnv(lp);
-					}
-					entity.setWater(waterLevel);
-					// 垃圾设施等级
-					Integer rubbishLevel = 1;
+					entity.setAir(BigDecimal.ZERO);
+					// 水质量数值
+					entity.setWater(ReportHelper.getInstance().waterEnv(lp).getValue());
+					// 垃圾设施数值
+					String rubbishDistance = "";
 					if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
 							&& StringUtils.isNotBlank(lp.getLng())) {
 						Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
-						rubbishLevel = Integer.valueOf(rubbish.get("level"));
+						rubbishDistance = StringUtils.isNotBlank(rubbish.get("distance")) ? rubbish.get("distance")
+								: "0.00";
 					}
-					entity.setRubbish(rubbishLevel);
-					// 化工厂
-					Integer chemicalLevel = 1;
+					entity.setRubbish(BigDecimal.valueOf(Double.valueOf(rubbishDistance)));
+					// 化工厂数值
+					String chemicalDistance = "";
 					if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
 							&& StringUtils.isNotBlank(lp.getLng())) {
 						Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(),
 								lp.getLng());
-						chemicalLevel = Integer.valueOf(chemical.get("level"));
+						chemicalDistance = StringUtils.isNotBlank(chemical.get("distance")) ? chemical.get("distance")
+								: "0.00";
 					}
-					entity.setChemical(chemicalLevel);
+					entity.setChemical(BigDecimal.valueOf(Double.valueOf(chemicalDistance)));
 					// 噪音等级
-					Integer nosieLevel = helper.getNoiseLevel(lp);
-					entity.setNosie(nosieLevel);
+					TLpEnvironmentIndex nosieEnv = ReportHelper.getInstance().getNoiseLevel(lp);
+					entity.setNosie(nosieEnv.getValue());
 					// 高压电辐射
-					entity.setRadiation(1);
+					entity.setRadiation(BigDecimal.valueOf(1));
 					// 危险品存放
-					entity.setHazardousArticle(1);
+					entity.setHazardousArticle(BigDecimal.valueOf(1));
 					entity.setCreateUser("timer");
 					entity.setCreateTime(DateUtil.getSysDateTime());
 					entity.setUpdateUser("timer");

@@ -1,130 +1,39 @@
 package cn.com.ddhj.model.lp;
 
+import java.math.BigDecimal;
+
 import cn.com.ddhj.model.BaseModel;
 
-/**
- * 楼盘环境参数
- * 
- * @author user
- *
- */
 public class TLpEnvironment extends BaseModel {
 
 	private String lpCode;
 
-	private Integer air;
-	private String airDesc;
+	private String city;
 
-	private Integer afforest;
-	private String afforestDesc;
+	private BigDecimal air;
 
-	private Integer volume;
-	private String volumeDesc;
+	private BigDecimal afforest;
 
-	private Integer water;
-	private String waterDesc;
+	private BigDecimal volume;
 
-	private Integer rubbish;
-	private String rubbishDesc;
+	private BigDecimal water;
 
-	private Integer chemical;
-	private String chemicalDesc;
+	private BigDecimal rubbish;
 
-	private Integer nosie;
-	private String nosieDesc;
+	private BigDecimal chemical;
 
-	private Integer radiation;
-	private String radiationDesc;
+	private BigDecimal nosie;
 
-	private Integer hazardousArticle;
-	private String hazardousArticleDesc;
+	private BigDecimal radiation;
 
-	public Integer getHazardousArticle() {
-		return hazardousArticle;
+	private BigDecimal hazardousArticle;
+
+	public String getCity() {
+		return city;
 	}
 
-	public void setHazardousArticle(Integer hazardousArticle) {
-		this.hazardousArticle = hazardousArticle;
-	}
-
-	public String getHazardousArticleDesc() {
-		return hazardousArticleDesc;
-	}
-
-	public void setHazardousArticleDesc(String hazardousArticleDesc) {
-		this.hazardousArticleDesc = hazardousArticleDesc;
-	}
-
-	public Integer getRadiation() {
-		return radiation;
-	}
-
-	public void setRadiation(Integer radiation) {
-		this.radiation = radiation;
-	}
-
-	public String getRadiationDesc() {
-		return radiationDesc;
-	}
-
-	public void setRadiationDesc(String radiationDesc) {
-		this.radiationDesc = radiationDesc;
-	}
-
-	public String getAirDesc() {
-		return airDesc;
-	}
-
-	public void setAirDesc(String airDesc) {
-		this.airDesc = airDesc;
-	}
-
-	public String getAfforestDesc() {
-		return afforestDesc;
-	}
-
-	public void setAfforestDesc(String afforestDesc) {
-		this.afforestDesc = afforestDesc;
-	}
-
-	public String getVolumeDesc() {
-		return volumeDesc;
-	}
-
-	public void setVolumeDesc(String volumeDesc) {
-		this.volumeDesc = volumeDesc;
-	}
-
-	public String getWaterDesc() {
-		return waterDesc;
-	}
-
-	public void setWaterDesc(String waterDesc) {
-		this.waterDesc = waterDesc;
-	}
-
-	public String getRubbishDesc() {
-		return rubbishDesc;
-	}
-
-	public void setRubbishDesc(String rubbishDesc) {
-		this.rubbishDesc = rubbishDesc;
-	}
-
-	public String getChemicalDesc() {
-		return chemicalDesc;
-	}
-
-	public void setChemicalDesc(String chemicalDesc) {
-		this.chemicalDesc = chemicalDesc;
-	}
-
-	public String getNosieDesc() {
-		return nosieDesc;
-	}
-
-	public void setNosieDesc(String nosieDesc) {
-		this.nosieDesc = nosieDesc;
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 	public String getLpCode() {
@@ -135,60 +44,76 @@ public class TLpEnvironment extends BaseModel {
 		this.lpCode = lpCode;
 	}
 
-	public Integer getAir() {
+	public BigDecimal getAir() {
 		return air;
 	}
 
-	public void setAir(Integer air) {
+	public void setAir(BigDecimal air) {
 		this.air = air;
 	}
 
-	public Integer getAfforest() {
+	public BigDecimal getAfforest() {
 		return afforest;
 	}
 
-	public void setAfforest(Integer afforest) {
+	public void setAfforest(BigDecimal afforest) {
 		this.afforest = afforest;
 	}
 
-	public Integer getVolume() {
+	public BigDecimal getVolume() {
 		return volume;
 	}
 
-	public void setVolume(Integer volume) {
+	public void setVolume(BigDecimal volume) {
 		this.volume = volume;
 	}
 
-	public Integer getWater() {
+	public BigDecimal getWater() {
 		return water;
 	}
 
-	public void setWater(Integer water) {
+	public void setWater(BigDecimal water) {
 		this.water = water;
 	}
 
-	public Integer getRubbish() {
+	public BigDecimal getRubbish() {
 		return rubbish;
 	}
 
-	public void setRubbish(Integer rubbish) {
+	public void setRubbish(BigDecimal rubbish) {
 		this.rubbish = rubbish;
 	}
 
-	public Integer getChemical() {
+	public BigDecimal getChemical() {
 		return chemical;
 	}
 
-	public void setChemical(Integer chemical) {
+	public void setChemical(BigDecimal chemical) {
 		this.chemical = chemical;
 	}
 
-	public Integer getNosie() {
+	public BigDecimal getNosie() {
 		return nosie;
 	}
 
-	public void setNosie(Integer nosie) {
+	public void setNosie(BigDecimal nosie) {
 		this.nosie = nosie;
+	}
+
+	public BigDecimal getRadiation() {
+		return radiation;
+	}
+
+	public void setRadiation(BigDecimal radiation) {
+		this.radiation = radiation;
+	}
+
+	public BigDecimal getHazardousArticle() {
+		return hazardousArticle;
+	}
+
+	public void setHazardousArticle(BigDecimal hazardousArticle) {
+		this.hazardousArticle = hazardousArticle;
 	}
 
 }
