@@ -82,24 +82,26 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 			if (lpList != null && lpList.size() > 0) {
 				for (TLandedProperty lp : lpList) {
 					TLpEnvironment entity = new TLpEnvironment();
+					entity.setCity(StringUtils.isNotBlank(lp.getCity())?lp.getCity():"");
 					entity.setUuid(WebHelper.getInstance().genUuid());
 					entity.setLpCode(lp.getCode());
 					// 获取绿地率等级
-					Double afforest = Double.NaN;
+					BigDecimal afforest = BigDecimal.ZERO;
 					try {
-						afforest = Double.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
+						Double _afforest = Double.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
+						afforest = BigDecimal.valueOf(_afforest);
 					} catch (Exception e) {
 					}
-					entity.setAfforest(BigDecimal.valueOf(afforest));
+					entity.setAfforest(afforest);
 					// 获取容积率等级
-					Double volume = Double.NaN;
+					BigDecimal volume = BigDecimal.ZERO;
 					if (lp.getVolumeRate() != null && !"".equals(lp.getVolumeRate())) {
 						try {
-							volume = Double.valueOf(lp.getVolumeRate());
+							volume = BigDecimal.valueOf(Double.valueOf(lp.getVolumeRate()));
 						} catch (Exception e) {
 						}
 					}
-					entity.setVolume(BigDecimal.valueOf(volume));
+					entity.setVolume(volume);
 					// 空气质量等级
 					Integer airLevel = 1;
 					// if (StringUtils.isNotBlank(lp.getCity())) {
@@ -117,21 +119,24 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 					entity.setAir(BigDecimal.ZERO);
 					// 水质量数值
 					BigDecimal water = BigDecimal.ZERO;
-					List<TWaterEnviroment> waterEnvs = waterEnvMapper.selectByCity(lp.getCity());
-					if (list != null && list.size() != 0) {
-						Double lat = Double.valueOf(lp.getLat());
-						Double lng = Double.valueOf(lp.getLng());
-						TreeMap<Integer, TWaterEnviroment> map_ = new TreeMap<Integer, TWaterEnviroment>();
-						for (TWaterEnviroment e : waterEnvs) {
-							Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()),
-									Double.valueOf(e.getLng()));
-							map_.put(d, e);
+					try {
+						List<TWaterEnviroment> waterEnvs = waterEnvMapper.selectByCity(lp.getCity());
+						if (list != null && list.size() != 0) {
+							Double lat = Double.valueOf(lp.getLat());
+							Double lng = Double.valueOf(lp.getLng());
+							TreeMap<Integer, TWaterEnviroment> map_ = new TreeMap<Integer, TWaterEnviroment>();
+							for (TWaterEnviroment e : waterEnvs) {
+								Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()),
+										Double.valueOf(e.getLng()));
+								map_.put(d, e);
+							}
+							TWaterEnviroment w = map_.get(map_.firstKey());
+							String oxy = w.getOxygenquality();
+							if (StringUtils.isNotBlank(oxy)) {
+								water = BigDecimal.valueOf(Double.valueOf(oxy));
+							}
 						}
-						TWaterEnviroment w = map_.get(map_.firstKey());
-						String oxy = w.getOxygenquality();
-						if (StringUtils.isNotBlank(oxy)) {
-							water = BigDecimal.valueOf(Double.valueOf(oxy));
-						}
+					} catch (Exception e) {
 					}
 					entity.setWater(water);
 					// 垃圾设施数值
