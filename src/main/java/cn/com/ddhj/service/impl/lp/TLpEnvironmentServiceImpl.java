@@ -15,7 +15,6 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.landedProperty.TLpEnvironmentDto;
-import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
@@ -59,7 +58,15 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 			 */
 			List<TLpEnvironment> list = getData();
 			if (list != null && list.size() > 0) {
-				mapper.batchInsert(list);
+				int size = list.size() / 10000;
+				int current = 10000;
+				for (int i = 0; i <= size; i++) {
+					System.out.println((current * i + i) + "|" + (current * (i + 1)));
+					List<TLpEnvironment> subList = list.subList(current * i, current * (i + 1));
+					mapper.batchInsert(subList);
+				}
+				List<TLpEnvironment> subList = list.subList(current * size + 1, list.size());
+				mapper.batchInsert(subList);
 				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("批量添加成功");
 			} else {
@@ -82,13 +89,14 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 			if (lpList != null && lpList.size() > 0) {
 				for (TLandedProperty lp : lpList) {
 					TLpEnvironment entity = new TLpEnvironment();
-					entity.setCity(StringUtils.isNotBlank(lp.getCity())?lp.getCity():"");
+					entity.setCity(StringUtils.isNotBlank(lp.getCity()) ? lp.getCity() : "");
 					entity.setUuid(WebHelper.getInstance().genUuid());
 					entity.setLpCode(lp.getCode());
 					// 获取绿地率等级
 					BigDecimal afforest = BigDecimal.ZERO;
 					try {
-						Double _afforest = Double.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
+						Double _afforest = Double
+								.valueOf(lp.getGreeningRate().substring(0, lp.getGreeningRate().indexOf("%")));
 						afforest = BigDecimal.valueOf(_afforest);
 					} catch (Exception e) {
 					}
@@ -140,22 +148,24 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 					}
 					entity.setWater(water);
 					// 垃圾设施数值
-					String rubbishDistance = "";
+					String rubbishDistance = "0.00";
 					if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
 							&& StringUtils.isNotBlank(lp.getLng())) {
 						Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
-						rubbishDistance = StringUtils.isNotBlank(rubbish.get("distance")) ? rubbish.get("distance")
-								: "0.00";
+						if (rubbish != null && StringUtils.isNotBlank(rubbish.get("distance"))) {
+							rubbishDistance = rubbish.get("distance");
+						}
 					}
 					entity.setRubbish(BigDecimal.valueOf(Double.valueOf(rubbishDistance)));
 					// 化工厂数值
-					String chemicalDistance = "";
+					String chemicalDistance = "0.00";
 					if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
 							&& StringUtils.isNotBlank(lp.getLng())) {
 						Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(),
 								lp.getLng());
-						chemicalDistance = StringUtils.isNotBlank(chemical.get("distance")) ? chemical.get("distance")
-								: "0.00";
+						if (chemical != null && StringUtils.isNotBlank(chemical.get("distance"))) {
+							chemicalDistance = chemical.get("distance");
+						}
 					}
 					entity.setChemical(BigDecimal.valueOf(Double.valueOf(chemicalDistance)));
 					// 噪音等级
@@ -190,7 +200,7 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 	 */
 	@SuppressWarnings("unused")
 	public Double noiseLevel(TLandedProperty lp) {
-		Double distance = Double.NaN;
+		Double distance = Double.valueOf("0.00");
 		if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
 			Double lat = Double.valueOf(lp.getLat());
 			Double lng = Double.valueOf(lp.getLng());
