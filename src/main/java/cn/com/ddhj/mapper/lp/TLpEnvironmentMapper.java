@@ -21,4 +21,12 @@ public interface TLpEnvironmentMapper extends BaseMapper<TLpEnvironment, TLpEnvi
 	 * @return
 	 */
 	int batchInsert(List<TLpEnvironment> list);
+
+	/**
+	 * 查询环境参数排名
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	Integer findEnvironmentSort(TLpEnvironment entity);
 }
