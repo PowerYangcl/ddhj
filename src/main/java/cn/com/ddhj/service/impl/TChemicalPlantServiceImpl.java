@@ -39,6 +39,7 @@ public class TChemicalPlantServiceImpl extends BaseServiceImpl<TChemicalPlant, T
 	public Map<String, String> getChemical(String city, String lat, String lng) {
 		Map<String, String> map = new HashMap<String, String>();
 		int level = 2;
+		String levelName="良";
 		TChemicalPlantDto dto = new TChemicalPlantDto();
 		dto.setCity(city);
 		dto.setLat(lat);
@@ -50,8 +51,10 @@ public class TChemicalPlantServiceImpl extends BaseServiceImpl<TChemicalPlant, T
 			map.put("distance", String.valueOf(ll));
 			if (ll > 1000) {
 				level = 1;
+				levelName="优";
 			}
 		}
+		map.put("levelName",levelName);
 		map.put("level", String.valueOf(level));
 		return map;
 	}

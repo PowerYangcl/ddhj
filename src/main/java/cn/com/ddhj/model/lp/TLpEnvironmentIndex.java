@@ -1,9 +1,9 @@
 package cn.com.ddhj.model.lp;
 
-import java.math.BigDecimal;
-
 public class TLpEnvironmentIndex {
 
+	private String name;
+	private String city;
 	/**
 	 * 数值
 	 */
@@ -13,14 +13,53 @@ public class TLpEnvironmentIndex {
 	 */
 	private Integer level;
 	/**
+	 * 等级名称
+	 */
+	private String levelName;
+	/**
 	 * 排行
 	 */
 	private Integer sort;
+	/**
+	 * 排行时效
+	 */
+	private String sortTime;
 	/**
 	 * 评价
 	 */
 	private String evaluate;
 
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getLevelName() {
+		return levelName;
+	}
+
+	public void setLevelName(String levelName) {
+		this.levelName = levelName;
+	}
+
+	public String getSortTime() {
+		return sortTime;
+	}
+
+	public void setSortTime(String sortTime) {
+		this.sortTime = sortTime;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public Double getValue() {
 		return value;

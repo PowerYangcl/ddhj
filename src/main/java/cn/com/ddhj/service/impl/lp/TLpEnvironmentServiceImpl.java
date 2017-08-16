@@ -60,7 +60,7 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 			if (list != null && list.size() > 0) {
 				int size = list.size() / 10000;
 				int current = 10000;
-				for (int i = 0; i <= size; i++) {
+				for (int i = 0; i <= size-1; i++) {
 					System.out.println((current * i + i) + "|" + (current * (i + 1)));
 					List<TLpEnvironment> subList = list.subList(current * i, current * (i + 1));
 					mapper.batchInsert(subList);

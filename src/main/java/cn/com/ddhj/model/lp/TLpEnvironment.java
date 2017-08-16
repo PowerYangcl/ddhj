@@ -30,7 +30,16 @@ public class TLpEnvironment extends BaseModel {
 
 	private BigDecimal hazardousArticle;
 
+	private Integer sortTime;
 	
+	public Integer getSortTime() {
+		return sortTime;
+	}
+
+	public void setSortTime(Integer sortTime) {
+		this.sortTime = sortTime;
+	}
+
 	public BigDecimal getSoil() {
 		return soil;
 	}

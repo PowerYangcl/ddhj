@@ -263,6 +263,7 @@ public class CityAirServiceImpl implements ICityAirService {
 		JSONObject cityAir = new JSONObject();
 		cityAir.put("name", cityName);
 		Integer level = 1;
+		String levelName = "优";
 		JSONObject air = getCityAir(cityName);
 		if (air != null) {
 			JSONArray result = JSONArray.parseArray(air.getString("result"));
@@ -272,16 +273,22 @@ public class CityAirServiceImpl implements ICityAirService {
 				cityAir.put("aqi", aqi);
 				if (aqi >= 50 && aqi <= 100) {
 					level = 2;
+					levelName = "良";
 				} else if (aqi >= 101 && aqi <= 150) {
 					level = 3;
+					levelName = "轻度污染";
 				} else if (aqi >= 151 && aqi <= 200) {
 					level = 4;
+					levelName = "中度污染";
 				} else if (aqi >= 201 && aqi <= 300) {
 					level = 5;
+					levelName = "重度污染";
 				} else if (aqi > 301) {
 					level = 6;
+					levelName = "严重污染";
 				}
 				cityAir.put("level", level);
+				cityAir.put("levelName", levelName);
 			}
 		}
 		return cityAir;
@@ -330,39 +337,39 @@ public class CityAirServiceImpl implements ICityAirService {
 				list.add(cad);
 				e.setList(list);
 			}
-		}else{
+		} else {
 			String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 			CityAqiData c = new CityAqiData();
 			c.setDate(today);
 			c.setCity(cityName);
 			c.setAQI("80");
-			c.setQuality("II"); 
-			
+			c.setQuality("II");
+
 			List<CityAqiData> el = new ArrayList<CityAqiData>();
-			for(int i = 1 ; i < 8 ; i ++){
+			for (int i = 1; i < 8; i++) {
 				int flag = Integer.valueOf("-" + i);
 				CityAqiData a = new CityAqiData();
-				String day = new SimpleDateFormat("yyyy-MM-dd").format(this.dateCount(new Date(), flag)); 
+				String day = new SimpleDateFormat("yyyy-MM-dd").format(this.dateCount(new Date(), flag));
 				a.setDate(day);
 				a.setCity(cityName);
 				Integer aqi = 20 + new Random().nextInt(100) + 1;
 				a.setAQI(aqi.toString());
-				a.setQuality("II"); 
+				a.setQuality("II");
 				el.add(a);
 			}
 			e.setEntity(c);
-			e.setList(el); 
+			e.setList(el);
 		}
 		return e;
 	}
 
-	private Date dateCount(Date date , int flag){
-	    Calendar calendar = Calendar.getInstance();       // 日历对象
-	    calendar.setTime(date);       // 设置当前日期
-	    calendar.add(Calendar.DATE , flag); // 月份减一 或 加一
-	    return calendar.getTime();
+	private Date dateCount(Date date, int flag) {
+		Calendar calendar = Calendar.getInstance(); // 日历对象
+		calendar.setTime(date); // 设置当前日期
+		calendar.add(Calendar.DATE, flag); // 月份减一 或 加一
+		return calendar.getTime();
 	}
-	
+
 	/**
 	 * @descriptions【 聚合接口】->【天气预报】(免费接口)
 	 *
@@ -382,7 +389,7 @@ public class CityAirServiceImpl implements ICityAirService {
 			String result = PureNetUtil.get(url, param);
 			if (result != null && !"".equals(result)) {
 				obj = JSONObject.parseObject(result);
-				if(obj.getString("error_code").equals("207302")){
+				if (obj.getString("error_code").equals("207302")) {
 					obj.put("code", "-3"); // 查询不到该城市的信息
 				}
 			} else {
@@ -414,7 +421,7 @@ public class CityAirServiceImpl implements ICityAirService {
 		JSONObject res = new JSONObject();
 
 		JSONObject obj = this.getCityWeather(city);
-//		if (obj.getString("reason").equals("successed!")) {
+		// if (obj.getString("reason").equals("successed!")) {
 		if (StringUtils.contains(obj.getString("reason"), "查询成功")) {
 			JSONObject result = JSONObject.parseObject(obj.getString("result"));
 			JSONObject data = JSONObject.parseObject(result.getString("data"));
@@ -427,7 +434,7 @@ public class CityAirServiceImpl implements ICityAirService {
 			JSONObject pm25_ = JSONObject.parseObject(pm25.getString("pm25"));
 			String info = weather.getString("info");
 			String humidity = weather.getString("humidity"); // 湿度
-			String temperature = weather.getString("temperature");  // 温度 
+			String temperature = weather.getString("temperature"); // 温度
 			String wind_ = wind.getString("direct") + "/" + wind.getString("power");
 			String quality = pm25_.getString("quality");
 			String des = pm25_.getString("des");
@@ -446,34 +453,34 @@ public class CityAirServiceImpl implements ICityAirService {
 
 			res.put("info", info); // 阵雨
 			res.put("humidity", humidity);
-			res.put("temperature", temperature);  
-			res.put("updateTime", realtime.getString("time"));       
+			res.put("temperature", temperature);
+			res.put("updateTime", realtime.getString("time"));
 			res.put("wind", wind_); // 东南风/2级
 			res.put("quality", quality); // 优|轻度污染
 			res.put("des", des); // 可正常活动。
-			res.put("pm25" , pm25_.getString("pm25"));  // 今日pm2.5数据，但无法取得明日的数据 
-			
-			res.put("futureTemperature", "");  // 第二天的温度 
-			String nextDay = this.getNextDate(new Date());  
+			res.put("pm25", pm25_.getString("pm25")); // 今日pm2.5数据，但无法取得明日的数据
+
+			res.put("futureTemperature", ""); // 第二天的温度
+			String nextDay = this.getNextDate(new Date());
 			JSONArray weatherList = JSONObject.parseArray(data.getString("weather"));
-			for(int i = 0 ; i < weatherList.size(); i ++){
-				JSONObject future = weatherList.getJSONObject(i); 
-				if(future.getString("date").equals(nextDay)){
+			for (int i = 0; i < weatherList.size(); i++) {
+				JSONObject future = weatherList.getJSONObject(i);
+				if (future.getString("date").equals(nextDay)) {
 					JSONObject subInfo = JSONObject.parseObject(future.getString("info"));
 					JSONArray arr = JSONObject.parseArray(subInfo.getString("day"));
-					String futureTemperature = arr.getString(2);  //arr.getJSONObject(2).toString();  
-					res.put("futureTemperature", futureTemperature);  
+					String futureTemperature = arr.getString(2); // arr.getJSONObject(2).toString();
+					res.put("futureTemperature", futureTemperature);
 				}
 			}
-			
+
 			return res;
-		}else{
-			if(obj.getString("code").equals("-1")){
+		} else {
+			if (obj.getString("code").equals("-1")) {
 				res.put("info", "天气一般"); // 阵雨
 				res.put("wind", "1级"); // 东南风/2级
 				res.put("quality", "优"); // 优|轻度污染
 				res.put("des", "可正常活动"); // 可正常活动。
-			}else{
+			} else {
 				res.put("info", "无天气信息"); // 阵雨
 				res.put("wind", "2级"); // 东南风/2级
 				res.put("quality", "优"); // 优|轻度污染
@@ -482,94 +489,91 @@ public class CityAirServiceImpl implements ICityAirService {
 			return res;
 		}
 	}
-	
-	
-	private String getNextDate(Date date){
-		 Calendar calendar = new GregorianCalendar();
-		 calendar.setTime(date);
-		 calendar.add(calendar.DATE , 1);//把日期往后增加一天.整数往后推,负数往前移动
-		 date=calendar.getTime(); //这个时间就是日期往后推一天的结果 
-		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		 
-		 return formatter.format(date);
+
+	private String getNextDate(Date date) {
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(date);
+		calendar.add(calendar.DATE, 1);// 把日期往后增加一天.整数往后推,负数往前移动
+		date = calendar.getTime(); // 这个时间就是日期往后推一天的结果
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+		return formatter.format(date);
 	}
-	
-	
-	
+
 	/**
-	 * @descriptions 【 聚合接口】->全国天气预报|替换【天气预报】(免费接口)
-	 * 	根据城市名/id查询天气
+	 * @descriptions 【 聚合接口】->全国天气预报|替换【天气预报】(免费接口) 根据城市名/id查询天气
 	 *
-	 * @param city 城市名
+	 * @param city
+	 *            城市名
 	 * @date 2016年10月7日 下午8:48:52
-	 * @author Yangcl 
+	 * @author Yangcl
 	 * @version 1.0.0.1
 	 */
 	public JSONObject getWeatherByCityName(String city) {
 		String key = "d915236d734c8a417e48116ee70a4257";
 		String url = "http://v.juhe.cn/weather/index";
-		
+
 		Map<String, String> param = new HashMap<String, String>();
-		param.put("cityname", city);					 
-		param.put("key", key);		
-		param.put("format", "2");	
-		param.put("dtype", "json");	
-		
+		param.put("cityname", city);
+		param.put("key", key);
+		param.put("format", "2");
+		param.put("dtype", "json");
+
 		JSONObject obj = new JSONObject();
-		String responseJson = PureNetUtil.post(url , param);
+		String responseJson = PureNetUtil.post(url, param);
 		if (responseJson != null && !"".equals(responseJson)) {
 			obj = JSONObject.parseObject(responseJson);
 		}
-		
+
 		return obj;
 	}
-	
-	
-//	public JSONObject getWeatherInfo(String city) {
-//		JSONObject res = new JSONObject();
-//
-//		JSONObject obj = this.getCityWeather(city);
-////		if (obj.getString("reason").equals("successed!")) {
-//		if (StringUtils.contains(obj.getString("reason"), "查询成功")) {
-//
-//			res.put("info", info); // 阵雨
-//			res.put("humidity", humidity);   // 湿度
-//			res.put("temperature", temperature);  // 温度 
-//			res.put("updateTime", realtime.getString("time"));       // 接口数据更新时间 
-//			res.put("wind", wind_); // 东南风/2级
-//			res.put("quality", quality); // 优|轻度污染                 																					 TODO 其他接口
-//			res.put("des", des); // 可正常活动。                 																								 TODO 其他接口
-//			res.put("pm25" , pm25_.getString("pm25"));  // 今日pm2.5数据，但无法取得明日的数据                  TODO 其他接口
-//			
-//			res.put("futureTemperature", "");  // 第二天的温度
-//			String nextDay = this.getNextDate(new Date());  
-//			JSONArray weatherList = JSONObject.parseArray(data.getString("weather"));
-//			for(int i = 0 ; i < weatherList.size(); i ++){
-//				JSONObject future = weatherList.getJSONObject(i); 
-//				if(future.getString("date").equals(nextDay)){
-//					JSONObject subInfo = JSONObject.parseObject(future.getString("info"));
-//					JSONArray arr = JSONObject.parseArray(subInfo.getString("day"));
-//					String futureTemperature = arr.getString(2);  //arr.getJSONObject(2).toString();  
-//					res.put("futureTemperature", futureTemperature);  
-//				}
-//			}
-//			
-//			return res;
-//		}else{
-//			if(obj.getString("code").equals("-1")){
-//				res.put("info", "天气一般"); // 阵雨
-//				res.put("wind", "1级"); // 东南风/2级
-//				res.put("quality", "优"); // 优|轻度污染
-//				res.put("des", "可正常活动"); // 可正常活动。
-//			}else{
-//				res.put("info", "无天气信息"); // 阵雨
-//				res.put("wind", "2级"); // 东南风/2级
-//				res.put("quality", "优"); // 优|轻度污染
-//				res.put("des", "查询不到该城市的信息"); // 可正常活动。
-//			}
-//			return res;
-//		}
-//	}
-	
-	
+
+	// public JSONObject getWeatherInfo(String city) {
+	// JSONObject res = new JSONObject();
+	//
+	// JSONObject obj = this.getCityWeather(city);
+	//// if (obj.getString("reason").equals("successed!")) {
+	// if (StringUtils.contains(obj.getString("reason"), "查询成功")) {
+	//
+	// res.put("info", info); // 阵雨
+	// res.put("humidity", humidity); // 湿度
+	// res.put("temperature", temperature); // 温度
+	// res.put("updateTime", realtime.getString("time")); // 接口数据更新时间
+	// res.put("wind", wind_); // 东南风/2级
+	// res.put("quality", quality); // 优|轻度污染 TODO 其他接口
+	// res.put("des", des); // 可正常活动。 TODO 其他接口
+	// res.put("pm25" , pm25_.getString("pm25")); // 今日pm2.5数据，但无法取得明日的数据 TODO
+	// 其他接口
+	//
+	// res.put("futureTemperature", ""); // 第二天的温度
+	// String nextDay = this.getNextDate(new Date());
+	// JSONArray weatherList = JSONObject.parseArray(data.getString("weather"));
+	// for(int i = 0 ; i < weatherList.size(); i ++){
+	// JSONObject future = weatherList.getJSONObject(i);
+	// if(future.getString("date").equals(nextDay)){
+	// JSONObject subInfo = JSONObject.parseObject(future.getString("info"));
+	// JSONArray arr = JSONObject.parseArray(subInfo.getString("day"));
+	// String futureTemperature = arr.getString(2);
+	// //arr.getJSONObject(2).toString();
+	// res.put("futureTemperature", futureTemperature);
+	// }
+	// }
+	//
+	// return res;
+	// }else{
+	// if(obj.getString("code").equals("-1")){
+	// res.put("info", "天气一般"); // 阵雨
+	// res.put("wind", "1级"); // 东南风/2级
+	// res.put("quality", "优"); // 优|轻度污染
+	// res.put("des", "可正常活动"); // 可正常活动。
+	// }else{
+	// res.put("info", "无天气信息"); // 阵雨
+	// res.put("wind", "2级"); // 东南风/2级
+	// res.put("quality", "优"); // 优|轻度污染
+	// res.put("des", "查询不到该城市的信息"); // 可正常活动。
+	// }
+	// return res;
+	// }
+	// }
+
 }

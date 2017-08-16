@@ -61,51 +61,13 @@
                         </tr>
                       </thead>
                       <tbody>
+                      	<#list environmentIndexs as env>
                         <tr>
-                          <td>空气质量（AQI）</td>
-                          <td>100</td>
-                          <td>优</td>
+                          <td>${env.name}</td>
+                          <td>${env.value}</td>
+                          <td>${env.level}</td>
                         </tr>
-                        <tr>
-                          <td>噪音</td>
-                          <td>100</td>
-                          <td>优</td>
-                        </tr>
-                        <tr>
-                          <td>水质</td>
-                          <td>100</td>
-                          <td>优</td>
-                        </tr>
-                        <tr>
-                          <td>土壤</td>
-                          <td>100</td>
-                          <td>优</td>
-                        </tr>
-                        <tr>
-                          <td>高压电辐射</td>
-                          <td>100</td>
-                          <td>优</td>
-                        </tr>
-                        <tr>
-                          <td>危险品存放</td>
-                          <td>100</td>
-                          <td>优</td>
-                        </tr>
-                        <tr>
-                          <td>污染源</td>
-                          <td>100</td>
-                          <td>优</td>
-                        </tr>
-                        <tr>
-                          <td>绿地率</td>
-                          <td>100</td>
-                          <td>优</td>
-                        </tr>
-                        <tr>
-                          <td>容积率</td>
-                          <td>1</td>
-                          <td>优</td>
-                        </tr>
+                        </#list>
                       </tbody>
                     </table>
                 </div>
@@ -128,60 +90,14 @@
                         </tr>
                       </thead>
                      <tbody>
-                        <tr>
-                          <td>空气质量（AQI）</td>
-                          <td>2</td>
-                          <td>近一个月</td>
-                          <td>北京市内</td>
-                        </tr>
-                        <tr>
-                          <td>噪音</td>
-                          <td>3</td>
-                          <td>近一个月</td>
-                          <td>北京市内</td>
-                        </tr>
-                        <tr>
-                          <td>水质</td>
-                          <td>4</td>
-                          <td>近一个月</td>
-                          <td>北京市内</td>
-                        </tr>
-                        <tr>
-                          <td>土壤</td>
-                          <td>1</td>
-                          <td>近一个月</td>
-                          <td>北京市内</td>
-                        </tr>
-                        <tr>
-                          <td>高压电辐射</td>
-                          <td>2</td>
-                          <td>近一个月</td>
-                          <td>北京市内</td>
-                        </tr>
-                        <tr>
-                          <td>危险品存放</td>
-                          <td>4</td>
-                          <td>近一个月</td>
-                          <td>北京市内</td>
-                        </tr>
-                        <tr>
-                          <td>污染源</td>
-                          <td>100</td>
-                          <td>近一个月</td>
-                          <td>北京市内</td>
-                        </tr>
-                        <tr>
-                          <td>绿地率</td>
-                          <td>2</td>
-                          <td>近一个月</td>
-                          <td>北京市内</td>
-                        </tr>
-                        <tr>
-                          <td>容积率</td>
-                          <td>3</td>
-                          <td>近一个月</td>
-                          <td>北京市内</td>
-                        </tr>
+                     	<#list environmentIndexs as env>
+	                        <tr>
+	                          <td>${env.name}</td>
+	                          <td>${env.sort}</td>
+	                          <td>${env.sortTime}</td>
+	                          <td>${env.city}</td>
+	                        </tr>
+                     	</#list>
                       </tbody>
                       </table>
 				</div>
@@ -201,51 +117,13 @@
                           <th style="width:48%;">评价</th>
                       </thead>
                      <tbody>
+                     	<#list environmentIndexs as env>
                         <tr>
-                          <td>空气质量（AQI）</td>
-                          <td>优</td>
-                          <td>测试数据</td>
+                          <td>${env.name}</td>
+                          <td>${env.level}</td>
+                          <td>${env.evaluate}</td>
                         </tr>
-                        <tr>
-                          <td>噪音</td>
-                          <td>优</td>
-                          <td>测试数据</td>
-                        </tr>
-                        <tr>
-                          <td>水质</td>
-                          <td>优</td>
-                          <td>测试数据</td>
-                        </tr>
-                        <tr>
-                          <td>土壤</td>
-                          <td>优</td>
-                          <td>测试数据</td>
-                        </tr>
-                        <tr>
-                          <td>高压电辐射</td>
-                          <td>优</td>
-                          <td>测试数据</td>
-                        </tr>
-                        <tr>
-                          <td>危险品存放</td>
-                          <td>优</td>
-                          <td>测试数据</td>
-                        </tr>
-                        <tr>
-                          <td>污染源</td>
-                          <td>优</td>
-                          <td>测试数据</td>
-                        </tr>
-                        <tr>
-                          <td>绿地率</td>
-                          <td>优</td>
-                          <td>测试数据</td>
-                        </tr>
-                        <tr>
-                          <td>容积率</td>
-                          <td>优</td>
-                          <td>测试数据</td>
-                        </tr>
+                        </#list>
                      </tbody>
                      </table>
                 </div>

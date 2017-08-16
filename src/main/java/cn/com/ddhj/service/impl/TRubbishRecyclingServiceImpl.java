@@ -90,8 +90,9 @@ public class TRubbishRecyclingServiceImpl
 	 */
 	@Override
 	public Map<String, String> getRubbish(String city, String lat, String lng) {
-		Map<String, String> map = new HashMap<String,String>();
+		Map<String, String> map = new HashMap<String, String>();
 		Integer level = 1;
+		String levelName = "优";
 		TRubbishRecyclingDto dto = new TRubbishRecyclingDto();
 		dto.setCity(city);
 		dto.setLat(lat);
@@ -101,12 +102,15 @@ public class TRubbishRecyclingServiceImpl
 			map.put("distance", String.valueOf(distance));
 			if (distance > 300 && distance <= 1000) {
 				level = 2;
+				levelName = "良";
 			} else if (distance <= 300) {
 				level = 3;
+				levelName = "差";
 			}
-		}else{
+		} else {
 			map.put("distance", "0.00");
 		}
+		map.put("levelName", levelName);
 		map.put("level", String.valueOf(level));
 		return map;
 	}

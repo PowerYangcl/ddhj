@@ -808,6 +808,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (lpList != null && lpList.size() > 0) {
 				for (TLandedProperty lp : lpList) {
 					lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
+					lp.setEnvironmentIndexs(this.getLpEnvironmentIndexs(lp));
 					new ReportHelper().createHtml(lp);
 				}
 			}
@@ -1408,18 +1409,21 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			/**
 			 * 土壤
 			 */
-			TLpEnvironmentIndex soil = ReportHelper.getInstance().soilLevel(entity.getSoil().doubleValue());
+			TLpEnvironmentIndex soil = ReportHelper.getInstance().soilLevel(entity.getSoil().doubleValue(),
+					lp.getCity());
 			list.add(soil);
 			/**
 			 * 高压电辐射
 			 */
 			TLpEnvironmentIndex radiation = ReportHelper.getInstance()
-					.radiationLevel(entity.getRadiation().doubleValue());
+					.radiationLevel(entity.getRadiation().doubleValue(), lp.getCity());
 			list.add(radiation);
 			/**
 			 * 危险品
 			 */
-			TLpEnvironmentIndex hazardousArticle = null;
+			TLpEnvironmentIndex hazardousArticle = ReportHelper.getInstance()
+					.hazardousArticleLevel(entity.getHazardousArticle().doubleValue(), lp.getCity());
+			list.add(hazardousArticle);
 			/**
 			 * 垃圾回收
 			 */
@@ -1433,13 +1437,16 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			/**
 			 * 绿化率
 			 */
-			TLpEnvironmentIndex afforest = ReportHelper.afforestLevel(entity.getAfforest().doubleValue());
+			TLpEnvironmentIndex afforest = ReportHelper.getInstance().afforestLevel(entity.getAfforest().doubleValue(),
+					lp.getCity());
 			list.add(afforest);
 			/**
 			 * 容积率
 			 */
-			TLpEnvironmentIndex volume = ReportHelper.volumeLevel(entity.getVolume().doubleValue());
+			TLpEnvironmentIndex volume = ReportHelper.getInstance().volumeLevel(entity.getVolume().doubleValue(),
+					lp.getCity());
 			list.add(volume);
+			System.out.println(JSON.toJSON(list));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

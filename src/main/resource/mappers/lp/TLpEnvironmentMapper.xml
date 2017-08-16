@@ -227,6 +227,9 @@
 		select count(1) from t_lp_environment
 		<where>
 			city= #{city,jdbcType=VARCHAR}
+			AND create_time > DATE_SUB(CURDATE(),
+			INTERVAL
+			#{sortTime,jdbcType=INTEGER} MONTH)
 			<if test="air != null">
 				AND air &gt; #{air,jdbcType=DECIMAL}
 			</if>

@@ -120,15 +120,12 @@ public class PropLoad {
 	public MStringMap getData() {
 		MStringMap map = new MStringMap();
 		try {
-			System.out.println("开始读取properties配置文件");
 			Resource[] resources = IoHelper.upResources("classpath*:properties/dev.properties");
 			for (int i = 0; i < resources.length; i++) {
 				map.putAll(loadProperties(resources[i].getFile().getParent()));
 			}
-			System.out.println("读取properties配置文件结束");
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("读取properties配置文件报错,错误原因:" + e.getMessage());
 		}
 		return map;
 	}
