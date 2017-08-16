@@ -78,6 +78,46 @@ public class TLandedProperty extends BaseModel {
 
 	private List<TLpEnvironmentIndex> environmentIndexs;
 
+	private List<TLpEnvironmentIndex> environmentIndexs1;
+
+	private List<TLpEnvironmentIndex> environmentIndexs2;
+
+	private List<TLpEnvironmentIndex> environmentIndexs3;
+
+	private List<TLpEnvironmentIndex> environmentIndexs4;
+
+	public List<TLpEnvironmentIndex> getEnvironmentIndexs1() {
+		return environmentIndexs1;
+	}
+
+	public void setEnvironmentIndexs1(List<TLpEnvironmentIndex> environmentIndexs1) {
+		this.environmentIndexs1 = environmentIndexs1;
+	}
+
+	public List<TLpEnvironmentIndex> getEnvironmentIndexs4() {
+		return environmentIndexs4;
+	}
+
+	public void setEnvironmentIndexs4(List<TLpEnvironmentIndex> environmentIndexs4) {
+		this.environmentIndexs4 = environmentIndexs4;
+	}
+
+	public List<TLpEnvironmentIndex> getEnvironmentIndexs2() {
+		return environmentIndexs2;
+	}
+
+	public void setEnvironmentIndexs2(List<TLpEnvironmentIndex> environmentIndexs2) {
+		this.environmentIndexs2 = environmentIndexs2;
+	}
+
+	public List<TLpEnvironmentIndex> getEnvironmentIndexs3() {
+		return environmentIndexs3;
+	}
+
+	public void setEnvironmentIndexs3(List<TLpEnvironmentIndex> environmentIndexs3) {
+		this.environmentIndexs3 = environmentIndexs3;
+	}
+
 	public List<TLpEnvironmentIndex> getEnvironmentIndexs() {
 		return environmentIndexs;
 	}

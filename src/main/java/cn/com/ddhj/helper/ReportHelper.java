@@ -637,21 +637,27 @@ public class ReportHelper extends BaseClass {
 		return array;
 	}
 
-	public void createHtml(TLandedProperty lp) {
+	public String createHtml(TLandedProperty lp, String reportName) {
+		String url = "";
 		try {
-			String path = ReportHelper.class.getResource("/report/report.ftl").getPath();
+			String path = ReportHelper.class.getResource("/report/" + reportName + ".ftl").getPath();
 			// 创建一个合适的Configration对象
 			Configuration configuration = new Configuration(Configuration.VERSION_2_3_23);
 			// 指定模板文件所在路径
 			configuration.setDirectoryForTemplateLoading(new File(path).getParentFile());
 			// 设置模板编码
 			configuration.setDefaultEncoding("UTF-8");
-			Template template = configuration.getTemplate("report.ftl");
-			Writer writer = new OutputStreamWriter(new FileOutputStream("d:/test/" + lp.getCode() + ".html"), "UTF-8");
+			Template template = configuration.getTemplate(reportName + ".ftl");
+			File file = new File("d:/test/" + lp.getCode() + "/");
+			if (!file.exists()) {
+				file.mkdirs();
+			}
+			Writer writer = new OutputStreamWriter(
+					new FileOutputStream("d:/test/" + lp.getCode() + "/" + reportName + ".html"), "UTF-8");
 			template.process(lp, writer);
-			System.out.println("创建成功");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return url;
 	}
 }

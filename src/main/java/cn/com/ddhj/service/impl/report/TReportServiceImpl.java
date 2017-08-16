@@ -808,8 +808,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (lpList != null && lpList.size() > 0) {
 				for (TLandedProperty lp : lpList) {
 					lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
-					lp.setEnvironmentIndexs(this.getLpEnvironmentIndexs(lp));
-					new ReportHelper().createHtml(lp);
+					List<TLpEnvironmentIndex> list = this.getLpEnvironmentIndexs(lp);
+					lp.setEnvironmentIndexs(list);
+					lp.setEnvironmentIndexs1(list.subList(0, 3));
+					lp.setEnvironmentIndexs2(list.subList(3, 6));
+					lp.setEnvironmentIndexs3(list.subList(6, 9));
+					lp.setEnvironmentIndexs4(list.subList(9, list.size()));
+					new ReportHelper().createHtml(lp,"full");
+					new ReportHelper().createHtml(lp,"simplification");
 				}
 			}
 			result.setResultCode(Constant.RESULT_SUCCESS);

@@ -117,11 +117,87 @@
                           <th style="width:48%;">评价</th>
                       </thead>
                      <tbody>
-                     	<#list environmentIndexs as env>
+                     	<#list environmentIndexs1 as env>
                         <tr>
                           <td>${env.name}</td>
                           <td>${env.level}</td>
-                          <td>${env.evaluate}</td>
+                          <td style="height:150px;">${env.evaluate}</td>
+                        </tr>
+                        </#list>
+                     </tbody>
+                     </table>
+                </div>
+           	</div>
+       </li>
+       <li>
+            <img class="bg_logo02" src="images/report/bg_logo02.png">
+            <div class="point"></div>
+            <div class="detail detail02">
+                <h2>区域环境质量评价</h2>
+                <div class="detail_table">
+                    <table border="1">
+                      <thead>
+                        <tr>
+                          <th class="cel-26">环境参数</th>
+                          <th class="cel-26">等级</th>
+                          <th style="width:48%;">评价</th>
+                      </thead>
+                     <tbody>
+                     	<#list environmentIndexs2 as env>
+                        <tr>
+                          <td>${env.name}</td>
+                          <td>${env.level}</td>
+                          <td style="height:150px;">${env.evaluate}</td>
+                        </tr>
+                        </#list>
+                     </tbody>
+                     </table>
+                </div>
+           	</div>
+       </li>
+       <li>
+            <img class="bg_logo02" src="images/report/bg_logo02.png">
+            <div class="point"></div>
+            <div class="detail detail02">
+                <div class="detail_table">
+                    <table border="1">
+                      <thead>
+                        <tr>
+                          <th class="cel-26">环境参数</th>
+                          <th class="cel-26">等级</th>
+                          <th style="width:48%;">评价</th>
+                      </thead>
+                     <tbody>
+                     	<#list environmentIndexs3 as env>
+                        <tr>
+                          <td>${env.name}</td>
+                          <td>${env.level}</td>
+                          <td style="height:150px;">${env.evaluate}</td>
+                        </tr>
+                        </#list>
+                     </tbody>
+                     </table>
+                </div>
+           	</div>
+       </li>
+       <li>
+            <img class="bg_logo02" src="images/report/bg_logo02.png">
+            <div class="point"></div>
+            <div class="detail detail02">
+                <div class="detail_table">
+                    <table border="1">
+                      <thead>
+                        <tr>
+                          <th class="cel-26">环境参数</th>
+                          <th class="cel-26">等级</th>
+                          <th style="width:48%;">评价</th>
+                      </thead>
+                     <tbody>
+                     	<#list environmentIndexs4 as env>
+                        <tr>
+                          <td>${env.name}</td>
+                          <td>${env.level}</td>
+                          <td style="height:150px;">${env.evaluate}</td>
                         </tr>
                         </#list>
                      </tbody>
