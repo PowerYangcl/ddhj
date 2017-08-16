@@ -446,96 +446,107 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public TReportSelResult getTReportByLp(String lpCode, String userTocken) {
 		TReportSelResult result = new TReportSelResult();
 		TLandedProperty lp = lpMapper.selectByCode(lpCode);
-		if (lp != null) {
-			// 如果楼盘不为空
-			List<TReport> list = mapper.findReportByHousesCode(lpCode);
-			List<TReport> reports = new ArrayList<TReport>();
-			List<String> lpCodes = new ArrayList<String>();
-			if (StringUtils.isNotBlank(lp.getLat()) && StringUtils.isNotBlank(lp.getLng())) {
-				lpCodes = this.getLpCodes(Double.valueOf(lp.getLat()), Double.valueOf(lp.getLng()), 10 * 1000);
-			}
-			if (lpCodes.contains(lpCode)) {
-				for (TReport r : list) {
-					if ("RL161006100001".equals(r.getLevelCode())) {
-						reports.add(r);
-					}
-				}
-			} else {
-				reports = mapper.findReportByHousesCode(lpCode);
-			}
-
-			// 如果userTocken不为空，查询楼盘是否已关注
-			TUser user = null;
-			int isFollow = 0;
-			if (StringUtils.isNotBlank(userTocken)) {
-				TUserLogin login = loginMapper.findLoginByUuid(userTocken);
-				if (login != null) {
-					user = userMapper.findTUserByUuid(login.getUserToken());
-					if (user != null) {
-						TUserLpFollow dto = new TUserLpFollow();
-						dto.setLpCode(lpCode);
-						dto.setUserCode(user.getUserCode());
-						TUserLpFollow follow = followMapper.findFollowIsExists(dto);
-						if (follow != null) {
-							isFollow = 1;
-						}
-					}
-				}
-			}
-
-			// 检查报告是否需要更新
-			if (user != null && reports != null && !reports.isEmpty()) {
-				TOrderDto orderDto = new TOrderDto();
-				for (TReport report : reports) {
-					orderDto.setCreateUser(user.getUserCode());
-					orderDto.setReportCode(report.getCode());
-					List<TOrder> orderList = orderMapper.findOrderByReportCodeAndUserCode(orderDto);
-					if (orderList == null || orderList.isEmpty())
-						continue;
-
-					for (TOrder order : orderList) {
-						// 报告订单已支付
-						if (order.getStatus() == 1 || order.getStatus() == 2) {
-							// 计算报告购买时间与当前时间差值,大于半年则提示更新
-							try {
-								Date buyTime = DateUtil.strToDate(order.getCreateTime());
-								Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
-								if (new Date().compareTo(deadLine) >= 0) {
-									// 报告要更新
-									String reportCode = order.getReportCode();
-									if (StringUtils.isNotBlank(reportCode)) {
-										// report对象中没有address,city,lpcode,
-										// position信息
-										// 用reportMapper的selectByCode方法左联合查询一下四个lp属性
-										TReport reportJoinInfo = reportMapper.selectByCode(reportCode);
-										report.getReportUpdate().setAddress(reportJoinInfo.getAddress());
-										report.getReportUpdate().setCity(reportJoinInfo.getCity());
-										report.getReportUpdate().setLpCode(reportJoinInfo.getHousesCode());
-										report.getReportUpdate().setPosition(reportJoinInfo.getPosition());
-									}
-								}
-							} catch (ParseException e) {
-								e.printStackTrace();
-							}
-							break;
-						}
-					}
-				}
-			}
-
-			result.setIsFollow(isFollow);
-			result.setLevelList(reports);
-			result.setAddress(lp.getAddressFull());
-			result.setDetail(lp.getOverview());
-			result.setImage(lp.getImages());
-			result.setPic(lp.getImages());
-			result.setName(lp.getTitle());
-			result.setResultCode(Constant.RESULT_SUCCESS);
-			result.setResultMessage("查询报告成功");
-		} else {
+		if (lp == null) {
 			result.setResultCode(Constant.RESULT_NULL);
 			result.setResultMessage("楼盘数据不存在");
+			return result;
 		}
+		
+		// 如果楼盘不为空
+//		List<TReport> list = mapper.findReportByHousesCode(lpCode);
+//		List<TReport> reports = new ArrayList<TReport>();
+//		List<String> lpCodes = new ArrayList<String>();
+//		if (StringUtils.isNotBlank(lp.getLat()) && StringUtils.isNotBlank(lp.getLng())) {
+//			lpCodes = this.getLpCodes(Double.valueOf(lp.getLat()), Double.valueOf(lp.getLng()), 10 * 1000);
+//		}
+//		if (lpCodes.contains(lpCode)) {
+//			for (TReport r : list) {
+//				if ("RL161006100001".equals(r.getLevelCode())) {
+//					reports.add(r);
+//				}
+//			}
+//		} else {
+//			reports = mapper.findReportByHousesCode(lpCode);
+//		}
+		
+		List<TReport> del = new ArrayList<TReport>();
+		List<TReport> reports = mapper.findReportByHousesCode(lpCode);
+		for (TReport r : reports) {
+			if (!Constant.REPORT_LEVEL_FULL.equals(r.getLevelCode())) {
+				del.add(r);
+			}
+		}
+		reports.removeAll(del);
+		
+		// 如果userTocken不为空，查询楼盘是否已关注
+		TUser user = null;
+		int isFollow = 0;
+		if (StringUtils.isNotBlank(userTocken)) {
+			TUserLogin login = loginMapper.findLoginByUuid(userTocken);
+			if (login != null) {
+				user = userMapper.findTUserByUuid(login.getUserToken());
+				if (user != null) {
+					TUserLpFollow dto = new TUserLpFollow();
+					dto.setLpCode(lpCode);
+					dto.setUserCode(user.getUserCode());
+					TUserLpFollow follow = followMapper.findFollowIsExists(dto);
+					if (follow != null) {
+						isFollow = 1;
+					}
+				}
+			}
+		}
+
+		// 检查报告是否需要更新
+		if (user != null && reports != null && !reports.isEmpty()) {
+			TOrderDto orderDto = new TOrderDto();
+			for (TReport report : reports) {
+				orderDto.setCreateUser(user.getUserCode());
+				orderDto.setReportCode(report.getCode());
+				List<TOrder> orderList = orderMapper.findOrderByReportCodeAndUserCode(orderDto);
+				if (orderList == null || orderList.isEmpty())
+					continue;
+
+				for (TOrder order : orderList) {
+					// 报告订单已支付
+					if (order.getStatus() == 1 || order.getStatus() == 2) {
+						// 计算报告购买时间与当前时间差值,大于半年则提示更新
+						try {
+							Date buyTime = DateUtil.strToDate(order.getUpdateTime());
+							Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
+							if (new Date().compareTo(deadLine) >= 0) {
+								// 报告要更新
+								String reportCode = order.getReportCode();
+								if (StringUtils.isNotBlank(reportCode)) {
+									// report对象中没有address,city,lpcode,
+									// position信息
+									// 用reportMapper的selectByCode方法左联合查询一下四个lp属性
+									TReport reportJoinInfo = reportMapper.selectByCode(reportCode);
+									report.getReportUpdate().setAddress(reportJoinInfo.getAddress());
+									report.getReportUpdate().setCity(reportJoinInfo.getCity());
+									report.getReportUpdate().setLpCode(reportJoinInfo.getHousesCode());
+									report.getReportUpdate().setPosition(reportJoinInfo.getPosition());
+								}
+							}
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		result.setIsFollow(isFollow);
+		result.setLevelList(reports);
+		result.setAddress(lp.getAddressFull());
+		result.setDetail(lp.getOverview());
+		result.setImage(lp.getImages());
+		result.setPic(lp.getImages());
+		result.setName(lp.getTitle());
+		result.setResultCode(Constant.RESULT_SUCCESS);
+		result.setResultMessage("查询报告成功");
+
 		return result;
 	}
 
@@ -633,6 +644,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 * @see cn.com.ddhj.service.report.ITReportService#batchCreateReport()
 	 */
 	@Override
+	@Deprecated
 	public int batchCreateReport() {
 		int reCode = 1;
 		Long start = System.currentTimeMillis();

@@ -58,6 +58,8 @@
 		r.pic,
 		r.image,
 		r.rang,
+		r.price,
+		r.updatePrice,
 		lp.overview AS detail,
 		lp.city AS city,
 		concat(ifnull(lp.lat,""),",",ifnull(lp.lng,"")) AS position,
@@ -299,6 +301,7 @@
 		r.image,
 		r.title,
 		r.price,
+		r.updatePrice,
 		r.houses_code,
 		rl.`name`
 		AS level_name
@@ -326,6 +329,7 @@
 		r.pic,
 		r.image,
 		r.price,
+		r.updatePrice,
 		r.path,
 		r.create_time 
 		FROM

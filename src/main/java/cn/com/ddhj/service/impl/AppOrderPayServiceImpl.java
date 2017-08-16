@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.impl;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,10 +13,12 @@ import cn.com.ddhj.dto.apppay.TPayInfoDto;
 import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TOrderMapper;
+import cn.com.ddhj.mapper.TOrderRechargeMapper;
 import cn.com.ddhj.mapper.apppay.TPayInfoMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.apppay.TPayInfo;
 import cn.com.ddhj.model.map.MDataMap;
 import cn.com.ddhj.model.user.TUser;
@@ -41,6 +44,8 @@ import cn.com.ddhj.util.DateUtil;
 public class AppOrderPayServiceImpl implements IAppOrderPay {
 	@Autowired
 	private TOrderMapper mapper;
+	@Autowired
+	private TOrderRechargeMapper rechargeMapper;
 	@Autowired
 	private TPayInfoMapper payInfoMapper;
 	@Autowired
@@ -84,6 +89,7 @@ public class AppOrderPayServiceImpl implements IAppOrderPay {
 		return null;
 	}
 	
+	@SuppressWarnings("unused")
 	public BaseResult doPay(TPayInfoDto dto, String userToken) {
 		ApiPaymentAllResult apiPaymentAllResult = new ApiPaymentAllResult();
 		
@@ -91,44 +97,87 @@ public class AppOrderPayServiceImpl implements IAppOrderPay {
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		if (login == null) {
 			userResult.setResultCode(Constant.RESULT_ERROR);
-			userResult.setResultMessage("用户未登录");
+			userResult.setResultMessage("用户未登录!");
 			return userResult;
 		}
 		
 		TUser user = userMapper.findTUserByUuid(login.getUserToken());
 		if(user == null) {
 			userResult.setResultCode(Constant.RESULT_ERROR);
-			userResult.setResultMessage("用户不存在");
+			userResult.setResultMessage("用户不存在!");
 			return userResult;
 		}
 
 		// 查询支付单号详情表, 获取支付状态
-		TOrder order = mapper.selectByCode(dto.getOrderCodes());
-		//status 订单状态 0 未支付 1 已支付未下载 2 已支付已下载 3 已取消 4订单作废
+		if(StringUtils.isBlank(dto.getOrderCodes()))  {
+			apiPaymentAllResult.setResultCode(Constant.RESULT_ERROR);
+			apiPaymentAllResult.setResultMessage("支付订单编号为空!");
+			return apiPaymentAllResult;
+		}
+		
+		Object order = null;
+		Integer orderStatus = null;
+		String orderCode = "", payType = "";
+		BigDecimal payPrice = BigDecimal.ZERO;
+		if(dto.getOrderCodes().startsWith("D")) {
+			//楼盘报告订单状态 订单状态 0 未支付 1 已支付未下载 2 已支付已下载 3 已取消 4订单作废
+			order = mapper.selectByCode(dto.getOrderCodes());
+			TOrder to = (TOrder) order; 
+			orderStatus = to.getStatus();
+			orderCode = to.getCode();
+			payPrice = to.getPayPrice();
+			//楼盘报告支付订单
+			payType = "DC170811100001001";
+		} else if(dto.getOrderCodes().startsWith("RO")) {
+			//碳币充值订单状态 0 未支付 1 已支付 2 已取消 3.已充值
+			order = rechargeMapper.selectByOrderCode(dto.getOrderCodes());
+			orderStatus = ((TOrderRecharge ) order).getStatus();
+			TOrderRecharge to = (TOrderRecharge) order;
+			orderCode = to.getCode();
+			payPrice = to.getPayPrice();
+			//碳币充值支付订单
+			payType = "DC170811100001002";
+		} else {
+			apiPaymentAllResult.setResultCode(Constant.RESULT_ERROR);
+			apiPaymentAllResult.setResultMessage("支付订单编号格式非法!");
+			return apiPaymentAllResult;
+		}
+		
 		if(order == null) {
 			apiPaymentAllResult.setResultCode(Constant.RESULT_ERROR);
 			apiPaymentAllResult.setResultMessage("查询不到指定订单,无法支付!");
 			return apiPaymentAllResult;
 		}
 				
-		if(order.getStatus() != 0) {
+		if(orderStatus == null || orderStatus != 0) {
 			apiPaymentAllResult.setResultCode(Constant.RESULT_ERROR);
 			apiPaymentAllResult.setResultMessage("订单状态不是未支付,无法支付!");
 			return apiPaymentAllResult;
 		}
 				
 		
-		// 获取锁定唯一约束值
+		// 获取锁定唯一约束值,开始锁定交易的流水号和交易类型5秒
 		String sLockUuid = WebHelper.getInstance().addLock(5, user.getUserCode()+"_PAY");
-
-		// 创建支付单号信息
-		// 开始锁定交易的流水号和交易类型5秒
-		TPayInfo payInfo = new TPayInfo();
 		if (StringUtils.isBlank(sLockUuid)) {
 			apiPaymentAllResult.setResultCode(Constant.RESULT_ERROR);
 			apiPaymentAllResult.setResultMessage("支付锁定失败,可能是10秒内多次支付,请稍候重试!");
 			return apiPaymentAllResult;
 		}
+		
+		// 创建支付单号信息
+		TPayInfo payInfo = new TPayInfo();
+		String payCode = WebHelper.getInstance().getUniqueCode("PP");
+		payInfo.setUuid(UUID.randomUUID().toString().replace("-", ""));
+		payInfo.setPayCode(payCode);
+		payInfo.setTradeNo(orderCode);
+		payInfo.setCreateUser(user.getUserCode());
+		payInfo.setCreateTime(DateUtil.getSysDateTime());
+		payInfo.setPayMoney(payPrice);
+		payInfo.setPayType(payType);
+		payInfo.setSellerCode(Constant.SELLER_CODE);
+		//支付状态:   0 待支付    1 支付中  2 已支付
+		payInfo.setStatus(0);
+		payInfoMapper.insertSelective(payInfo);
 		
 		if("449746280003".equals(dto.getType())){  
 			//支付宝支付
@@ -191,6 +240,7 @@ public class AppOrderPayServiceImpl implements IAppOrderPay {
 	}
 
 	@Override
+	@Deprecated
 	public BaseResult doPay(TPayInfoDto dto, String userToken, String remoteIp) {
 		ApiPayInfoResult apiPayInfoResult = new ApiPayInfoResult();
 		AlipayPaymentResult alipayPaymentResult = new AlipayPaymentResult();
@@ -243,6 +293,7 @@ public class AppOrderPayServiceImpl implements IAppOrderPay {
 		String payCode = WebHelper.getInstance().getUniqueCode("PP");
 		payInfo.setUuid(UUID.randomUUID().toString().replace("-", ""));
 		payInfo.setPayCode(payCode);
+		payInfo.setTradeNo(order.getCode());
 		payInfo.setCreateUser(user.getUserCode());
 		payInfo.setCreateTime(DateUtil.getSysDateTime());
 		payInfo.setPayMoney(order.getPayPrice());

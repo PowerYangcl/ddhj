@@ -46,7 +46,7 @@ public class SolrDataUtil {
 			if(StringUtils.isNotBlank(updateTime)) {
 				Date up;
 				try {
-					up = DateUtil.strToDateTime(updateTime);
+					up = DateUtil.strToDate(updateTime);
 					sd.setT1(up);
 				} catch (ParseException e) {
 					e.printStackTrace();

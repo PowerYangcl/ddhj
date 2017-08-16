@@ -89,7 +89,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 							if(order.getStatus() == 1 || order.getStatus() == 2) {
 								//计算报告购买时间与当前时间差值,大于半年则提示更新
 								try {
-									Date buyTime = DateUtil.strToDate(order.getCreateTime());
+									Date buyTime = DateUtil.strToDate(order.getUpdateTime());
 									Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
 									if(new Date().compareTo(deadLine) >= 0) {
 										//报告要更新
@@ -252,61 +252,66 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	 * 
 	 * 方法: orderAffirm <br>
 	 * 
-	 * @param codes
+	 * @param codes 报告编号
+	 * @param type new|update 报告购买类型(new新购, update更新购买)
 	 * @return
 	 * @see cn.com.ddhj.service.ITOrderService#orderAffirm(java.lang.String)
 	 */
 	@Override
-	public OrderAffirmResult orderAffirm(String codes, String userToken) {
+	public OrderAffirmResult orderAffirm(String codes, String type, String userToken) {
 		OrderAffirmResult result = new OrderAffirmResult();
+		if (StringUtils.isBlank(codes)) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("无效参数");
+			return result;
+		}
+		
+		List<String> list = Arrays.asList(codes.split(","));
+		if (list == null || list.isEmpty()) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("无效参数");
+			return result;
+		}
+		
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
-		if (login != null) {
-			TUser user = userMapper.findTUserByUuid(login.getUserToken());
-			if (user != null) {
-				String carbon_money_ratio = PropHelper.getValue("carbon_money_ratio");
-				result.setCarbonMoney(user.getCarbonMoney());
-				result.setCarbonToMoneyRatio(BigDecimal.valueOf(Double.valueOf(carbon_money_ratio)));
-				if (codes != null && !"".equals(codes)) {
-					try {
-						List<String> list = Arrays.asList(codes.split(","));
-						if (list != null && list.size() > 0) {
-							List<TReport> reports = reportMapper.findRreportByChart(list);
-							if (reports != null && reports.size() > 0) {
-								double payMoney = 0;
-								for (int i = 0; i < reports.size(); i++) {
-									TReport r = reports.get(i);
-									r.setLevelList(reportMapper.findReportByHousesCode(r.getHousesCode()));
-									payMoney += r.getPrice().doubleValue();
-								}
-								result.setResultCode(Constant.RESULT_SUCCESS);
-								result.setResultMessage("获取环境报告成功");
-								result.setPayMoney(BigDecimal.valueOf(payMoney));
-								result.setReportList(reports);
-							} else {
-								result.setResultCode(Constant.RESULT_NULL);
-								result.setResultMessage("环境报告为空");
-							}
-						} else {
-							result.setResultCode(Constant.RESULT_ERROR);
-							result.setResultMessage("无效参数");
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-						result.setResultCode(Constant.RESULT_ERROR);
-						result.setResultMessage("无效参数");
-					}
-				} else {
-					result.setResultCode(Constant.RESULT_ERROR);
-					result.setResultMessage("无效参数");
-				}
-			} else {
-				result.setResultCode(Constant.RESULT_ERROR);
-				result.setResultMessage("用户不存在");
-			}
-		} else {
+		if (login == null) {
 			result.setResultCode(-1);
 			result.setResultMessage("用户未登录");
+			return result;
 		}
+		
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if (user == null) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("用户不存在");
+			return result;
+		}
+		
+		String carbon_money_ratio = PropHelper.getValue("carbon_money_ratio");
+		result.setCarbonMoney(user.getCarbonMoney());
+		result.setCarbonToMoneyRatio(BigDecimal.valueOf(Double.valueOf(carbon_money_ratio)));
+
+		List<TReport> reports = reportMapper.findRreportByChart(list);
+		if (reports == null || reports.isEmpty()) {
+			result.setResultCode(Constant.RESULT_NULL);
+			result.setResultMessage("环境报告为空");
+			return result;
+		}
+		
+		double payMoney = 0;
+		for (int i = 0; i < reports.size(); i++) {
+			TReport r = reports.get(i);
+			r.setLevelList(reportMapper.findReportByHousesCode(r.getHousesCode()));
+			if(StringUtils.isBlank(type) || type.equals("new")) {
+				payMoney += r.getPrice().doubleValue();
+			} else if(type.equals("update")) {
+				payMoney += r.getUpdatePrice().doubleValue();
+			}
+		}
+		result.setResultCode(Constant.RESULT_SUCCESS);
+		result.setResultMessage("获取环境报告成功");
+		result.setPayMoney(BigDecimal.valueOf(payMoney));
+		result.setReportList(reports);
 		return result;
 	}
 

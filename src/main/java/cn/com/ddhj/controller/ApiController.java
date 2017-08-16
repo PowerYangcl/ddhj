@@ -349,7 +349,7 @@ public class ApiController extends BaseClass {
 			BaseResult result = orderService.updateByCode(entity, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_affirm".equals(api.getApiTarget())) {
-			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"), api.getUserToken());
+			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"), obj.getString("type"), api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 订单数量
@@ -646,7 +646,7 @@ public class ApiController extends BaseClass {
 			BaseResult result = userAddressService.findUserAddressPage(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} 
-		//app楼盘报告订单支付-zht
+		//app楼盘报告订单支付|碳币充值订单支付 -zht
 		else if ("app_order_pay".equals(api.getApiTarget())) {
 			TPayInfoDto dto = obj.toJavaObject(TPayInfoDto.class);
 			BaseResult result = orderPayService.doPay(dto, api.getUserToken());
@@ -684,6 +684,34 @@ public class ApiController extends BaseClass {
 		}
 	}
 
+	@RequestMapping("rechargePay/{orderCode}/{payType}")
+	public String rechargePay(@PathVariable("orderCode") String orderCode, @PathVariable("payType") String payType,
+			HttpServletRequest request, HttpServletResponse response) {
+		String openID = request.getParameter("openID");
+		String returnUrl = request.getParameter("returnUrl");
+		OrderPayResult result = orderService.orderPay(openID, orderCode, payType, returnUrl);
+		// 将支付回调接口换成充值回调接口
+		if (result.getRedirectUrl().contains(XmasPayConfig.getPayGateReturnUrl())) {
+			String newUrl = result.getRedirectUrl().replace(XmasPayConfig.getPayGateReturnUrl(),
+					XmasPayConfig.getPayGateReturnUrlForRecharge());
+			result.setRedirectUrl(newUrl);
+		}
+
+		if (StringUtils.isEmpty(result.getErrorMsg())) {
+			return result.getRedirectUrl();
+		} else {
+			String errMsg = "";
+			try {
+				errMsg = URLEncoder.encode(result.getErrorMsg(), "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "redirect:" + XmasPayConfig.getPayGateDefaultReURL() + "?errorMsg=" + errMsg;
+
+		}
+	}
+	
 	@RequestMapping("payNotify")
 	@ResponseBody
 	public String payNotify(HttpServletRequest request, HttpServletResponse response) {
@@ -740,34 +768,6 @@ public class ApiController extends BaseClass {
 			build.append("<msg>").append(result.getResultMessage()).append("</msg>");
 		}
 		return build.toString();
-	}
-
-	@RequestMapping("rechargePay/{orderCode}/{payType}")
-	public String rechargePay(@PathVariable("orderCode") String orderCode, @PathVariable("payType") String payType,
-			HttpServletRequest request, HttpServletResponse response) {
-		String openID = request.getParameter("openID");
-		String returnUrl = request.getParameter("returnUrl");
-		OrderPayResult result = orderService.orderPay(openID, orderCode, payType, returnUrl);
-		// 将支付回调接口换成充值回调接口
-		if (result.getRedirectUrl().contains(XmasPayConfig.getPayGateReturnUrl())) {
-			String newUrl = result.getRedirectUrl().replace(XmasPayConfig.getPayGateReturnUrl(),
-					XmasPayConfig.getPayGateReturnUrlForRecharge());
-			result.setRedirectUrl(newUrl);
-		}
-
-		if (StringUtils.isEmpty(result.getErrorMsg())) {
-			return result.getRedirectUrl();
-		} else {
-			String errMsg = "";
-			try {
-				errMsg = URLEncoder.encode(result.getErrorMsg(), "utf-8");
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return "redirect:" + XmasPayConfig.getPayGateDefaultReURL() + "?errorMsg=" + errMsg;
-
-		}
 	}
 
 	@RequestMapping("payNotifyForRecharge")

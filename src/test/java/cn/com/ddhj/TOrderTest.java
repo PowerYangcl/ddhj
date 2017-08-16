@@ -67,7 +67,7 @@ public class TOrderTest extends BaseTest {
 
 	public void orderAffirm() {
 		String codes = "R161006100001";
-		OrderAffirmResult result = service.orderAffirm(codes,"6a397b4cd42f4d62b3c5c43143d94714");
+		OrderAffirmResult result = service.orderAffirm(codes, "new", "6a397b4cd42f4d62b3c5c43143d94714");
 		System.out.println(JSONObject.toJSON(result));
 	}
 
