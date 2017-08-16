@@ -113,6 +113,14 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	int batchInsertReportToTmp(List<TReport> list);
 
 	/**
+	 * 批量生成H5环境报告
+	 * 
+	 * @param list
+	 * @return
+	 */
+	int batchInsertH5ReportToTmp(List<TReport> list);
+
+	/**
 	 * 
 	 * 方法: importReportFormTmp <br>
 	 * 描述: 从报告临时表将数据同步到报告表 <br>
@@ -144,4 +152,12 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * @return
 	 */
 	int updateReportTime();
+
+	/**
+	 * 根据楼盘和报告等级修改报告信息
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	int updateReportByLpAndLevel(TReport entity);
 }

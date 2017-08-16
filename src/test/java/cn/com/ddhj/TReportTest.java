@@ -17,10 +17,12 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.model.lp.TLpEnvironmentIndex;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.report.TReportSelResult;
 import cn.com.ddhj.service.report.ITReportService;
@@ -183,11 +185,45 @@ public class TReportTest extends BaseTest {
 		mapper.insertReportData(list);
 	}
 
-	@Test
 	public void batchCreateReport() {
-		//service.batchCreateReport();
-		String code="R161009100013";
+		// service.batchCreateReport();
+		String code = "R161009100013";
 		String lpCode = "LP161004101472";
-		service.createPPT(code, lpCode, null,null);
+		service.createPPT(code, lpCode, null, null);
+	}
+
+	@Test
+	public void updateReportByLpAndLevel() {
+		try {
+			List<TLandedProperty> lps = lpMapper.findTLandedPropertyAll();
+			for (TLandedProperty lp : lps) {
+				System.out.println(lp.getCode());
+				lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
+				List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
+				lp.setEnvironmentIndexs(list);
+				lp.setEnvironmentIndexs1(list.subList(0, 3));
+				lp.setEnvironmentIndexs2(list.subList(3, 6));
+				lp.setEnvironmentIndexs3(list.subList(6, 9));
+				lp.setEnvironmentIndexs4(list.subList(9, list.size()));
+				String fullPath =new ReportHelper().createHtml(lp, "full");
+				TReport full = new TReport();
+				full.setHousesCode(lp.getCode());
+				full.setLevelCode("RL161006100002");
+				full.setPath(fullPath);
+				full.setUpdateUser("test");
+				full.setUpdateTime(DateUtil.getSysDateTime());
+				mapper.updateReportByLpAndLevel(full);
+				String simplificationPath = new ReportHelper().createHtml(lp, "simplification");
+				TReport simplification = new TReport();
+				simplification.setHousesCode(lp.getCode());
+				simplification.setLevelCode("RL161006100001");
+				simplification.setPath(simplificationPath);
+				simplification.setUpdateUser("test");
+				simplification.setUpdateTime(DateUtil.getSysDateTime());
+				mapper.updateReportByLpAndLevel(simplification);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

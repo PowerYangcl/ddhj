@@ -246,6 +246,46 @@
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
+	<update id="updateReportByLpAndLevel" parameterType="cn.com.ddhj.model.report.TReport">
+		update t_report
+		<set>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="levelCode != null">
+				level_code = #{levelCode,jdbcType=VARCHAR},
+			</if>
+			<if test="pic != null">
+				pic = #{pic,jdbcType=VARCHAR},
+			</if>
+			<if test="image != null">
+				image = #{image,jdbcType=VARCHAR},
+			</if>
+			<if test="rang != null">
+				rang = #{rang,jdbcType=INTEGER},
+			</if>
+			<if test="price != null">
+				price = #{price,jdbcType=DECIMAL},
+			</if>
+			<if test="path != null">
+				path = #{path,jdbcType=VARCHAR},
+			</if>
+			<if test="reportDate != null and reportDate != ''">
+				report_date =
+				STR_TO_DATE(#{reportDate,jdbcType=VARCHAR},'%Y-%m-%d'),
+			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time =
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			<if test="detail != null">
+				detail = #{detail,jdbcType=LONGVARCHAR}
+			</if>
+		</set>
+		where `houses_code` = #{housesCode,jdbcType=VARCHAR}
+		AND level_code =
+		#{levelCode,jdbcType=VARCHAR}
+	</update>
 	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.report.TReportDto"
 		resultMap="BaseResultMap">
 		SELECT
@@ -327,7 +367,7 @@
 		r.image,
 		r.price,
 		r.path,
-		r.create_time 
+		r.create_time
 		FROM
 		t_report AS r
 		LEFT
@@ -445,6 +485,26 @@
 				#{item.updateUser,jdbcType=VARCHAR},
 				STR_TO_DATE(
 				#{item.updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			</trim>
+		</foreach>
+	</insert>
+	<!-- 存储数据到报告临时表 -->
+	<insert id="batchInsertH5ReportToTmp" parameterType="list">
+		insert into t_report_h5_tmp
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			lp_code,
+			report_level,
+			path,
+			report_date
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.housesCode,jdbcType=VARCHAR},
+				#{item.levelCode,jdbcType=VARCHAR},
+				#{item.path,jdbcType=VARCHAR},
+				#{item.reportDate,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 			</trim>
 		</foreach>
 	</insert>

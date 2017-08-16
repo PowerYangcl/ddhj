@@ -13,6 +13,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -542,7 +543,7 @@ public class ReportHelper extends BaseClass {
 		Double distance = Double.valueOf("0.00");
 		try {
 			Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(), lp.getLng());
-			if (chemical != null) {
+			if (chemical != null && StringUtils.isNotBlank(chemical.get("distance"))) {
 				level = Integer.valueOf(chemical.get("level"));
 				levelName = chemical.get("levelName");
 				distance = Double.valueOf(chemical.get("distance"));
@@ -655,9 +656,85 @@ public class ReportHelper extends BaseClass {
 			Writer writer = new OutputStreamWriter(
 					new FileOutputStream("d:/test/" + lp.getCode() + "/" + reportName + ".html"), "UTF-8");
 			template.process(lp, writer);
+			url=PropHelper.getValue("report_url")+lp.getCode()+"/"+ reportName + ".html";
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return url;
+	}
+	
+	/**
+	 * 获取楼盘环境参数集合
+	 * @param lp
+	 * @return
+	 */
+	public List<TLpEnvironmentIndex> getLpEnvironmentIndexs(TLandedProperty lp) {
+
+		List<TLpEnvironmentIndex> list = new ArrayList<TLpEnvironmentIndex>();
+		try {
+			/**
+			 * 查询环境参数
+			 */
+			TLpEnvironment entity = lpEnvMapper.selectByCode(lp.getCode());
+			/**
+			 * 空气质量
+			 */
+			TLpEnvironmentIndex air = ReportHelper.getInstance().airLevel(this.getCityAirLevel(), lp.getCity());
+			list.add(air);
+			/**
+			 * 噪音
+			 */
+			TLpEnvironmentIndex noise = ReportHelper.getInstance().noiseLevel(lp, entity.getNosie().doubleValue());
+			list.add(noise);
+			/**
+			 * 水质
+			 */
+			TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, entity.getWater().doubleValue());
+			list.add(water);
+			/**
+			 * 土壤
+			 */
+			TLpEnvironmentIndex soil = ReportHelper.getInstance().soilLevel(entity.getSoil().doubleValue(),
+					lp.getCity());
+			list.add(soil);
+			/**
+			 * 高压电辐射
+			 */
+			TLpEnvironmentIndex radiation = ReportHelper.getInstance()
+					.radiationLevel(entity.getRadiation().doubleValue(), lp.getCity());
+			list.add(radiation);
+			/**
+			 * 危险品
+			 */
+			TLpEnvironmentIndex hazardousArticle = ReportHelper.getInstance()
+					.hazardousArticleLevel(entity.getHazardousArticle().doubleValue(), lp.getCity());
+			list.add(hazardousArticle);
+			/**
+			 * 垃圾回收
+			 */
+			TLpEnvironmentIndex rubbish = ReportHelper.getInstance().rubbishLevel(lp);
+			list.add(rubbish);
+			/**
+			 * 化工厂
+			 */
+			TLpEnvironmentIndex chemical = ReportHelper.getInstance().chemicalLevel(lp);
+			list.add(chemical);
+			/**
+			 * 绿化率
+			 */
+			TLpEnvironmentIndex afforest = ReportHelper.getInstance().afforestLevel(entity.getAfforest().doubleValue(),
+					lp.getCity());
+			list.add(afforest);
+			/**
+			 * 容积率
+			 */
+			TLpEnvironmentIndex volume = ReportHelper.getInstance().volumeLevel(entity.getVolume().doubleValue(),
+					lp.getCity());
+			list.add(volume);
+			System.out.println(JSON.toJSON(list));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 }

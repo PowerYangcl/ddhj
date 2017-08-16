@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<base id="base" href="http://localhost:8080/ddhj/">
+<base id="base" href="http://api.sys.ecomapit.com/ddhj/">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>点点-环境报告</title>

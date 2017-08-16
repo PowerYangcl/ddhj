@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONArray;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 import cn.com.ddhj.model.system.SysUser;
@@ -143,6 +144,12 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	 * 时间: 2016年10月26日 下午10:33:04
 	 */
 	int batchCreateReport();
+	
+	/**
+	 * 批量生成H5报告，用于定时任务 
+	 * @return
+	 */
+	int batchCreateH5Report();
 
 	/**
 	 * 
@@ -160,9 +167,19 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	CreateReportResult createPPT(String code, String lpCode, JSONArray cityAir, List<TReportEnvironmentLevel> list);
 
 	/**
-	 * 创建H5环境报告
+	 * 批量创建H5环境报告
 	 * 
 	 * @return
 	 */
 	BaseResult createHtmlAll();
+
+	/**
+	 * 根据楼盘和类型创建报告
+	 * 
+	 * @param lp
+	 * @param type
+	 *            full 完整版 simplification精简版
+	 * @return
+	 */
+	BaseResult createHtmlByLpCode(TLandedProperty lp, String type);
 }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.ctc.wstx.util.StringUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -55,6 +56,7 @@ import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.model.user.TUserLpFollow;
+import cn.com.ddhj.result.ReportResult;
 import cn.com.ddhj.result.report.CreateReportResult;
 import cn.com.ddhj.result.report.TReportDataResult;
 import cn.com.ddhj.result.report.TReportLResult;
@@ -760,6 +762,39 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	}
 
 	/**
+	 * 批量生成H5报告，用于定时任务
+	 */
+	@Override
+	public int batchCreateH5Report() {
+
+		int reCode = 1;
+		Long start = System.currentTimeMillis();
+		String lock = "";
+		try {
+			lock = WebHelper.getInstance().addLock(10, "batchCreateReport");
+			if (StringUtils.isNoneBlank(lock)) {
+				// 获取报告列表
+				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
+				if (lpList != null && lpList.size() > 0) {
+					List<TReport> reports = new ArrayList<TReport>();
+					for (TLandedProperty lp : lpList) {
+					}
+					mapper.batchInsertReportToTmp(reports);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			reCode = 0;
+		} finally {
+			WebHelper.getInstance().unLock(lock);
+		}
+		Long end = System.currentTimeMillis();
+		getLogger().logInfo("定时执行时间为:" + (end - start));
+		return reCode;
+
+	}
+
+	/**
 	 * 
 	 * 方法: createPPT <br>
 	 * 描述: 创建ppt格式环境报告 <br>
@@ -808,14 +843,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (lpList != null && lpList.size() > 0) {
 				for (TLandedProperty lp : lpList) {
 					lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
-					List<TLpEnvironmentIndex> list = this.getLpEnvironmentIndexs(lp);
+					List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
 					lp.setEnvironmentIndexs(list);
 					lp.setEnvironmentIndexs1(list.subList(0, 3));
 					lp.setEnvironmentIndexs2(list.subList(3, 6));
 					lp.setEnvironmentIndexs3(list.subList(6, 9));
 					lp.setEnvironmentIndexs4(list.subList(9, list.size()));
-					new ReportHelper().createHtml(lp,"full");
-					new ReportHelper().createHtml(lp,"simplification");
+					new ReportHelper().createHtml(lp, "full");
+					new ReportHelper().createHtml(lp, "simplification");
 				}
 			}
 			result.setResultCode(Constant.RESULT_SUCCESS);
@@ -826,6 +861,29 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			result.setResultMessage("创建H5报告失败，失败原因：" + e.getMessage());
 		}
 		return result;
+	}
+
+	@Override
+	public ReportResult createHtmlByLpCode(TLandedProperty lp, String type) {
+		ReportResult result = new ReportResult();
+		try {
+			lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
+			List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
+			lp.setEnvironmentIndexs(list);
+			lp.setEnvironmentIndexs1(list.subList(0, 3));
+			lp.setEnvironmentIndexs2(list.subList(3, 6));
+			lp.setEnvironmentIndexs3(list.subList(6, 9));
+			lp.setEnvironmentIndexs4(list.subList(9, list.size()));
+			String url = new ReportHelper().createHtml(lp, type);
+			result.setResultCode(Constant.RESULT_SUCCESS);
+			result.setResultMessage("生成htm报告成功");
+			result.setUrl(url);
+		} catch (Exception e) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("生成html报告失败，失败原因：" + e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -1388,75 +1446,4 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		}
 		return map;
 	}
-
-	private List<TLpEnvironmentIndex> getLpEnvironmentIndexs(TLandedProperty lp) {
-
-		List<TLpEnvironmentIndex> list = new ArrayList<TLpEnvironmentIndex>();
-		try {
-			/**
-			 * 查询环境参数
-			 */
-			TLpEnvironment entity = lpEnvMapper.selectByCode(lp.getCode());
-			/**
-			 * 空气质量
-			 */
-			TLpEnvironmentIndex air = ReportHelper.getInstance().airLevel(this.getCityAirLevel(), lp.getCity());
-			list.add(air);
-			/**
-			 * 噪音
-			 */
-			TLpEnvironmentIndex noise = ReportHelper.getInstance().noiseLevel(lp, entity.getNosie().doubleValue());
-			list.add(noise);
-			/**
-			 * 水质
-			 */
-			TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, entity.getWater().doubleValue());
-			list.add(water);
-			/**
-			 * 土壤
-			 */
-			TLpEnvironmentIndex soil = ReportHelper.getInstance().soilLevel(entity.getSoil().doubleValue(),
-					lp.getCity());
-			list.add(soil);
-			/**
-			 * 高压电辐射
-			 */
-			TLpEnvironmentIndex radiation = ReportHelper.getInstance()
-					.radiationLevel(entity.getRadiation().doubleValue(), lp.getCity());
-			list.add(radiation);
-			/**
-			 * 危险品
-			 */
-			TLpEnvironmentIndex hazardousArticle = ReportHelper.getInstance()
-					.hazardousArticleLevel(entity.getHazardousArticle().doubleValue(), lp.getCity());
-			list.add(hazardousArticle);
-			/**
-			 * 垃圾回收
-			 */
-			TLpEnvironmentIndex rubbish = ReportHelper.getInstance().rubbishLevel(lp);
-			list.add(rubbish);
-			/**
-			 * 化工厂
-			 */
-			TLpEnvironmentIndex chemical = ReportHelper.getInstance().chemicalLevel(lp);
-			list.add(chemical);
-			/**
-			 * 绿化率
-			 */
-			TLpEnvironmentIndex afforest = ReportHelper.getInstance().afforestLevel(entity.getAfforest().doubleValue(),
-					lp.getCity());
-			list.add(afforest);
-			/**
-			 * 容积率
-			 */
-			TLpEnvironmentIndex volume = ReportHelper.getInstance().volumeLevel(entity.getVolume().doubleValue(),
-					lp.getCity());
-			list.add(volume);
-			System.out.println(JSON.toJSON(list));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-
 }
