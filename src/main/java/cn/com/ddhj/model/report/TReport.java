@@ -33,6 +33,8 @@ public class TReport extends BaseModel {
 	private Integer rang;
 
 	private BigDecimal price;
+	
+	private BigDecimal updatePrice;
 
 	private String path;
 
@@ -216,4 +218,13 @@ public class TReport extends BaseModel {
 	public void setReportUpdate(ReportUpdate reportUpdate) {
 		this.reportUpdate = reportUpdate;
 	}
+
+	public BigDecimal getUpdatePrice() {
+		return updatePrice;
+	}
+
+	public void setUpdatePrice(BigDecimal updatePrice) {
+		this.updatePrice = updatePrice;
+	}
+	
 }

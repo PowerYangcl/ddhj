@@ -30,5 +30,9 @@ public class Constant {
 	 */
 	public static Integer RESULT_ERROR = -1;
 	
-	public static String SELLER_CODE = "DDHJ";
+	public static String SELLER_CODE = "ddhj";
+	
+	public static String REPORT_LEVEL_SIMPLE = "RL161006100001";
+	
+	public static String REPORT_LEVEL_FULL = "RL161006100002";
 }

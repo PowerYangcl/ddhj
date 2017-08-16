@@ -76,7 +76,7 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @param codes
 	 * @return
 	 */
-	OrderAffirmResult orderAffirm(String code,String userToken);
+	OrderAffirmResult orderAffirm(String code, String type, String userToken);
 
 	/**
 	 * 订单支付
