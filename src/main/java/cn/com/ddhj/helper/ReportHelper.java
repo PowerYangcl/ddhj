@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.annotation.Inject;
 import cn.com.ddhj.base.BaseClass;
@@ -23,9 +23,10 @@ import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TWaterEnviroment;
+import cn.com.ddhj.model.lp.TLpEnvironmentIndex;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.ITChemicalPlantService;
-import cn.com.ddhj.service.impl.lp.TLpEnvironmentIndex;
+import cn.com.ddhj.service.ITRubbishRecyclingService;
 import cn.com.ddhj.util.CommonUtil;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -42,6 +43,8 @@ public class ReportHelper extends BaseClass {
 	private TWaterEnviromentMapper waterEnvMapper;
 	@Inject
 	private ITAreaNoiseMapper noiseMapper;
+	@Inject
+	private ITRubbishRecyclingService rubbishService;
 
 	private static ReportHelper self;
 
@@ -83,21 +86,15 @@ public class ReportHelper extends BaseClass {
 	 * @param greeningRate
 	 * @return
 	 */
-	public static TLpEnvironmentIndex afforestLevel(String greeningRate) {
+	public static TLpEnvironmentIndex afforestLevel(Double afforest) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
 		Integer level = 1;
-		if (StringUtils.isNotBlank(greeningRate)) {
-			try {
-				Double afforest = Double.valueOf(greeningRate.substring(0, greeningRate.indexOf("%")));
-				entity.setValue(BigDecimal.valueOf(afforest));
-				if (afforest > 25 && afforest < 30) {
-					level = 2;
-				} else if (afforest < 25) {
-					level = 3;
-				}
-			} catch (Exception e) {
-				level = 1;
-				entity.setValue(BigDecimal.valueOf(30));
+		if (afforest != null) {
+			entity.setValue(afforest);
+			if (afforest > 25 && afforest < 30) {
+				level = 2;
+			} else if (afforest < 25) {
+				level = 3;
 			}
 		}
 		entity.setLevel(level);
@@ -112,20 +109,19 @@ public class ReportHelper extends BaseClass {
 	 * @param volumeRate
 	 * @return
 	 */
-	public static TLpEnvironmentIndex volumeLevel(String volumeRate) {
+	public static TLpEnvironmentIndex volumeLevel(Double volume) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
 		Integer level = 1;
-		if (volumeRate != null && !"".equals(volumeRate)) {
+		if (volume != null) {
 			try {
-				Double volume = Double.valueOf(volumeRate);
-				entity.setValue(BigDecimal.valueOf(volume));
+				entity.setValue(volume);
 				if (volume > 3 && volume < 5) {
 					level = 2;
 				} else if (volume > 5) {
 					level = 3;
 				}
 			} catch (Exception e) {
-				entity.setValue(BigDecimal.valueOf(1));
+				entity.setValue(Double.valueOf(1));
 				level = 1;
 			}
 		}
@@ -137,7 +133,7 @@ public class ReportHelper extends BaseClass {
 
 	/**
 	 * 
-	 * 方法: getNoiseLevel <br>
+	 * 方法: noiseLevel <br>
 	 * 描述: 获取楼盘的噪音等级 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月15日 下午9:23:44
@@ -145,7 +141,7 @@ public class ReportHelper extends BaseClass {
 	 * @param lp
 	 * @return
 	 */
-	public TLpEnvironmentIndex getNoiseLevel(TLandedProperty lp) {
+	public TLpEnvironmentIndex noiseLevel(TLandedProperty lp, Double distance) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
 		Integer level = 1;
 		if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
@@ -171,7 +167,6 @@ public class ReportHelper extends BaseClass {
 						areaList.add(e);
 					}
 				}
-				Double distance = Double.NaN;
 				for (TAreaNoise e : areaList) {
 					Double distance_new = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
 					if (distance < distance_new) {
@@ -212,7 +207,7 @@ public class ReportHelper extends BaseClass {
 			level = 1;
 		}
 		if (level == 1 && entity.getValue() == null) {
-			entity.setValue(BigDecimal.valueOf(45));
+			entity.setValue(Double.valueOf(45));
 		}
 		entity.setLevel(level);
 		String evaluate = PropHelper.getValue("volume_level_" + level);
@@ -232,7 +227,7 @@ public class ReportHelper extends BaseClass {
 	 * @param list
 	 * @return
 	 */
-	public TLpEnvironmentIndex waterEnv(TLandedProperty lp) {
+	public TLpEnvironmentIndex waterLevel(TLandedProperty lp, Double oxy) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
 		Integer level = 2;
 		Map<String, String> map = new HashMap<String, String>();
@@ -256,11 +251,9 @@ public class ReportHelper extends BaseClass {
 								Double.valueOf(e.getLng()));
 						map_.put(d, e);
 					}
-					TWaterEnviroment w = map_.get(map_.firstKey());
-					String oxy = w.getOxygenquality();
-					if (StringUtils.isBlank(oxy)) {
+					if (oxy == null) {
 						level = 2;
-						entity.setValue(BigDecimal.ZERO);
+						entity.setValue(Double.NaN);
 					} else {
 						if (oxy.equals("Ⅰ")) {
 							level = 1;
@@ -273,7 +266,7 @@ public class ReportHelper extends BaseClass {
 						} else {
 							level = 3;
 						}
-						entity.setValue(BigDecimal.valueOf(Double.valueOf(oxy)));
+						entity.setValue(oxy);
 					}
 				} else {
 					level = 2;
@@ -283,10 +276,113 @@ public class ReportHelper extends BaseClass {
 			}
 		}
 		if (level == 2 && entity.getValue() == null) {
-			entity.setValue(BigDecimal.valueOf(100));
+			entity.setValue(Double.valueOf(100));
 		}
 		entity.setLevel(level);
 		String evaluate = PropHelper.getValue("volume_level_" + level);
+		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
+		return entity;
+	}
+
+	/**
+	 * 土壤
+	 * 
+	 * @param soil
+	 * @return
+	 */
+	public TLpEnvironmentIndex soilLevel(Double soil) {
+		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		entity.setLevel(2);
+		String evaluate = PropHelper.getValue("soil_level_" + 2);
+		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
+		return entity;
+	}
+
+	/**
+	 * 危险品存放
+	 * 
+	 * @param hazardousArticle
+	 * @return
+	 */
+	public TLpEnvironmentIndex hazardousArticleLevel(Double hazardousArticle) {
+		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		entity.setLevel(2);
+		String evaluate = PropHelper.getValue("hazardous_article_level_" + 2);
+		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
+		return entity;
+	}
+
+	/**
+	 * 高压辐射
+	 */
+	public TLpEnvironmentIndex radiationLevel(Double radiation) {
+		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		entity.setLevel(2);
+		entity.setValue(radiation);
+		String evaluate = PropHelper.getValue("radiation_level_" + 2);
+		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
+		return entity;
+	}
+
+	/**
+	 * 垃圾设施
+	 */
+	public TLpEnvironmentIndex rubbishLevel(TLandedProperty lp) {
+		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		try {
+			Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
+			if (rubbish != null) {
+				Integer level = Integer.valueOf(rubbish.get("level"));
+				entity.setLevel(level);
+				entity.setValue(Double.valueOf(rubbish.get("distance")));
+				String evaluate = PropHelper.getValue("rubbish_level_" + level);
+				entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return entity;
+	}
+
+	/**
+	 * 化工厂
+	 */
+	public TLpEnvironmentIndex chemicalLevel(TLandedProperty lp) {
+		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		try {
+			Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(), lp.getLng());
+			if (chemical != null) {
+				Integer level = Integer.valueOf(chemical.get("level"));
+				entity.setLevel(level);
+				entity.setValue(Double.valueOf(chemical.get("distance")));
+				String evaluate = PropHelper.getValue("chemical_level_" + level);
+				entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return entity;
+	}
+
+	/**
+	 * 空气质量
+	 */
+	public TLpEnvironmentIndex airLevel(JSONArray cityAirLevel, String city) {
+		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		Integer level = 1;
+		Double value = Double.NaN;
+		if (cityAirLevel != null && cityAirLevel.size() > 0) {
+			for (int i = 0; i < cityAirLevel.size(); i++) {
+				JSONObject air = cityAirLevel.getJSONObject(i);
+				if (StringUtils.equals(city, air.getString("city"))) {
+					level = air.getJSONObject("level").getInteger("air");
+					value = air.getJSONObject("level").getDouble("aqi");
+				}
+			}
+		}
+		entity.setLevel(level);
+		entity.setValue(value);
+		String evaluate = PropHelper.getValue("air_level_" + level);
 		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
 		return entity;
 	}

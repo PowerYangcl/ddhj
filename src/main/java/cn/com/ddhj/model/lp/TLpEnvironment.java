@@ -17,6 +17,8 @@ public class TLpEnvironment extends BaseModel {
 	private BigDecimal volume;
 
 	private BigDecimal water;
+	
+	private BigDecimal soil;
 
 	private BigDecimal rubbish;
 
@@ -27,6 +29,15 @@ public class TLpEnvironment extends BaseModel {
 	private BigDecimal radiation;
 
 	private BigDecimal hazardousArticle;
+
+	
+	public BigDecimal getSoil() {
+		return soil;
+	}
+
+	public void setSoil(BigDecimal soil) {
+		this.soil = soil;
+	}
 
 	public String getCity() {
 		return city;

@@ -33,6 +33,7 @@ import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.mapper.TWaterEnviromentMapper;
+import cn.com.ddhj.mapper.lp.TLpEnvironmentMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
 import cn.com.ddhj.mapper.report.TReportLogMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
@@ -44,6 +45,8 @@ import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TWaterEnviroment;
+import cn.com.ddhj.model.lp.TLpEnvironment;
+import cn.com.ddhj.model.lp.TLpEnvironmentIndex;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 import cn.com.ddhj.model.report.TReportLog;
@@ -107,6 +110,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TWaterEnviromentMapper waterEnvMapper;
 	@Autowired
 	private TReportMapper reportMapper;
+	@Autowired
+	private TLpEnvironmentMapper lpEnvMapper;
 
 	/**
 	 * 
@@ -1387,6 +1392,70 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			map.put("lp.lesscount", String.valueOf(count));
 		}
 		return map;
+	}
+
+	private List<TLpEnvironmentIndex> getLpEnvironmentIndexs(TLandedProperty lp) {
+
+		List<TLpEnvironmentIndex> list = new ArrayList<TLpEnvironmentIndex>();
+		try {
+			/**
+			 * 查询环境参数
+			 */
+			TLpEnvironment entity = lpEnvMapper.selectByCode(lp.getCode());
+			/**
+			 * 空气质量
+			 */
+			TLpEnvironmentIndex air = ReportHelper.getInstance().airLevel(this.getCityAirLevel(), lp.getCity());
+			list.add(air);
+			/**
+			 * 噪音
+			 */
+			TLpEnvironmentIndex noise = ReportHelper.getInstance().noiseLevel(lp, entity.getNosie().doubleValue());
+			list.add(noise);
+			/**
+			 * 水质
+			 */
+			TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, entity.getWater().doubleValue());
+			list.add(water);
+			/**
+			 * 土壤
+			 */
+			TLpEnvironmentIndex soil = ReportHelper.getInstance().soilLevel(entity.getSoil().doubleValue());
+			list.add(soil);
+			/**
+			 * 高压电辐射
+			 */
+			TLpEnvironmentIndex radiation = ReportHelper.getInstance()
+					.radiationLevel(entity.getRadiation().doubleValue());
+			list.add(radiation);
+			/**
+			 * 危险品
+			 */
+			TLpEnvironmentIndex hazardousArticle = null;
+			/**
+			 * 垃圾回收
+			 */
+			TLpEnvironmentIndex rubbish = ReportHelper.getInstance().rubbishLevel(lp);
+			list.add(rubbish);
+			/**
+			 * 化工厂
+			 */
+			TLpEnvironmentIndex chemical = ReportHelper.getInstance().chemicalLevel(lp);
+			list.add(chemical);
+			/**
+			 * 绿化率
+			 */
+			TLpEnvironmentIndex afforest = ReportHelper.afforestLevel(entity.getAfforest().doubleValue());
+			list.add(afforest);
+			/**
+			 * 容积率
+			 */
+			TLpEnvironmentIndex volume = ReportHelper.volumeLevel(entity.getVolume().doubleValue());
+			list.add(volume);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 
 }

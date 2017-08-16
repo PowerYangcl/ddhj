@@ -1,4 +1,4 @@
-package cn.com.ddhj.service.impl.lp;
+package cn.com.ddhj.model.lp;
 
 import java.math.BigDecimal;
 
@@ -7,7 +7,7 @@ public class TLpEnvironmentIndex {
 	/**
 	 * 数值
 	 */
-	private BigDecimal value;
+	private Double value;
 	/**
 	 * 等级
 	 */
@@ -21,11 +21,12 @@ public class TLpEnvironmentIndex {
 	 */
 	private String evaluate;
 
-	public BigDecimal getValue() {
+
+	public Double getValue() {
 		return value;
 	}
 
-	public void setValue(BigDecimal value) {
+	public void setValue(Double value) {
 		this.value = value;
 	}
 

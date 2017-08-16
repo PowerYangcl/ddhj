@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
@@ -324,6 +326,7 @@ public class TUserCarbonOperationServiceImpl
 						}
 					}
 				}
+				Collections.reverse(data);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

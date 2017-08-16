@@ -1,8 +1,10 @@
 package cn.com.ddhj.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import cn.com.ddhj.model.lp.TLpEnvironment;
+import cn.com.ddhj.model.lp.TLpEnvironmentIndex;
 
 /**
  * 
@@ -18,7 +20,7 @@ public class TLandedProperty extends BaseModel {
 	private String title;
 
 	private String total;
-	
+
 	private Double score;
 
 	private String city;
@@ -54,7 +56,6 @@ public class TLandedProperty extends BaseModel {
 	private String images;
 
 	private String overview;
-	
 
 	/**
 	 * 报告最小价格
@@ -65,7 +66,7 @@ public class TLandedProperty extends BaseModel {
 	 * 与用户当前位置的距离
 	 */
 	private Integer distance;
-	
+
 	/**
 	 * 环境相关参数
 	 */
@@ -74,8 +75,16 @@ public class TLandedProperty extends BaseModel {
 	 * 气候类型
 	 */
 	private String weatherDistribution;
-	
-	
+
+	private List<TLpEnvironmentIndex> environmentIndexs;
+
+	public List<TLpEnvironmentIndex> getEnvironmentIndexs() {
+		return environmentIndexs;
+	}
+
+	public void setEnvironmentIndexs(List<TLpEnvironmentIndex> environmentIndexs) {
+		this.environmentIndexs = environmentIndexs;
+	}
 
 	public TLpEnvironment getEnvironment() {
 		return environment;

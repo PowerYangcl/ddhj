@@ -10,6 +10,7 @@
 		<result column="afforest" property="afforest" jdbcType="DECIMAL" />
 		<result column="volume" property="volume" jdbcType="DECIMAL" />
 		<result column="water" property="water" jdbcType="DECIMAL" />
+		<result column="soil" property="soil" jdbcType="DECIMAL" />
 		<result column="rubbish" property="rubbish" jdbcType="DECIMAL" />
 		<result column="chemical" property="chemical" jdbcType="DECIMAL" />
 		<result column="nosie" property="nosie" jdbcType="DECIMAL" />
@@ -22,7 +23,8 @@
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, uuid, lp_code, city,air, afforest, volume, water, rubbish,
+		id, uuid, lp_code, city,air, afforest, volume, water,soil,
+		rubbish,
 		chemical,
 		nosie, radiation,
 		hazardous_article,create_user,
@@ -68,6 +70,9 @@
 			<if test="water != null">
 				water,
 			</if>
+			<if test="soil != null">
+				soil,
+			</if>
 			<if test="rubbish != null">
 				rubbish,
 			</if>
@@ -104,6 +109,9 @@
 			<if test="water != null">
 				#{water,jdbcType=DECIMAL},
 			</if>
+			<if test="soil != null">
+				#{soil,jdbcType=DECIMAL},
+			</if>
 			<if test="rubbish != null">
 				#{rubbish,jdbcType=DECIMAL},
 			</if>
@@ -127,6 +135,52 @@
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</trim>
 	</insert>
+	<insert id="batchInsert" parameterType="list">
+		insert into t_lp_environment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			lp_code,
+			city,
+			air,
+			afforest,
+			volume,
+			water,
+			rubbish,
+			chemical,
+			nosie,
+			radiation,
+			hazardous_article,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix=" (" suffix=")" suffixOverrides=",">
+				#{item.uuid,jdbcType=VARCHAR},
+				#{item.lpCode,jdbcType=VARCHAR},
+				#{item.city,jdbcType=VARCHAR},
+				#{item.air,jdbcType=INTEGER},
+				#{item.afforest,jdbcType=INTEGER},
+				#{item.volume,jdbcType=INTEGER},
+				#{item.water,jdbcType=INTEGER},
+				#{item.rubbish,jdbcType=INTEGER},
+				#{item.chemical,jdbcType=INTEGER},
+				#{item.nosie,jdbcType=INTEGER},
+				#{item.radiation,jdbcType=INTEGER},
+				#{item.hazardousArticle,jdbcType=INTEGER},
+				#{item.createUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.createTime,jdbcType=VARCHAR},'%Y-%m-%d
+				%H:%i:%s'),
+				#{item.updateUser,jdbcType=VARCHAR},
+				STR_TO_DATE(
+				#{item.updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			</trim>
+		</foreach>
+	</insert>
 	<update id="updateByCode" parameterType="cn.com.ddhj.model.lp.TLpEnvironment">
 		update t_lp_environment
 		<set>
@@ -141,6 +195,9 @@
 			</if>
 			<if test="water != null">
 				water = #{water,jdbcType=DECIMAL},
+			</if>
+			<if test="soil != null">
+				soil = #{soil,jdbcType=DECIMAL},
 			</if>
 			<if test="rubbish != null">
 				rubbish = #{rubbish,jdbcType=DECIMAL},
@@ -164,4 +221,44 @@
 		</set>
 		where lp_code = #{lpCode,jdbcType=VARCHAR}
 	</update>
+	<!-- 查询环境排名 -->
+	<select id="findEnvironmentSort" parameterType="cn.com.ddhj.model.lp.TLpEnvironment"
+		resultType="java.lang.Integer">
+		select count(1) from t_lp_environment
+		<where>
+			city= #{city,jdbcType=VARCHAR}
+			<if test="air != null">
+				AND air &gt; #{air,jdbcType=DECIMAL}
+			</if>
+			<if test="afforest != null">
+				AND afforest &gt; #{afforest,jdbcType=DECIMAL}
+			</if>
+			<if test="volume != null">
+				AND volume &gt; #{volume,jdbcType=DECIMAL}
+			</if>
+			<if test="water != null">
+				AND water &gt; #{water,jdbcType=DECIMAL}
+			</if>
+			<if test="soil != null">
+				AND soil = #{soil,jdbcType=DECIMAL}
+			</if>
+			<if test="rubbish != null">
+				AND rubbish &gt; #{rubbish,jdbcType=DECIMAL}
+			</if>
+			<if test="chemical != null">
+				AND chemical &gt; #{chemical,jdbcType=DECIMAL}
+			</if>
+			<if test="nosie != null">
+				AND nosie &gt; #{nosie,jdbcType=DECIMAL}
+			</if>
+			<if test="radiation != null">
+				AND radiation &gt; #{radiation,jdbcType=DECIMAL}
+			</if>
+			<if test="hazardousArticle != null">
+				AND hazardous_article &gt;
+				#{hazardousArticle,jdbcType=DECIMAL}
+			</if>
+		</where>
+
+	</select>
 </mapper>
