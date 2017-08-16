@@ -30,6 +30,7 @@ import cn.com.ddhj.annotation.Inject;
 import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.dto.SearchLandPropertyDto;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.apppay.TPayInfoDto;
@@ -92,6 +93,7 @@ import cn.com.ddhj.service.IAppOrderPay;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITAddressEnshrineService;
 import cn.com.ddhj.service.ITCityService;
+import cn.com.ddhj.service.ITLandedPropertyService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.ITradeService;
@@ -112,6 +114,7 @@ import cn.com.ddhj.service.user.ITUserLpFollowService;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.service.user.ITUserStepService;
+import cn.com.ddhj.solr.data.SolrData;
 import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
@@ -161,6 +164,8 @@ public class ApiController extends BaseClass {
 
 	@Autowired
 	private ITAddressEnshrineService addressEnshrineService;
+	@Autowired
+	private ITLandedPropertyService landService;
 
 	@Autowired
 	private IFileService fileService;
@@ -646,15 +651,21 @@ public class ApiController extends BaseClass {
 			BaseResult result = userAddressService.findUserAddressPage(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} 
+		/**
+		 * ================= 点点商城相关 end ======================
+		 */
 		//app楼盘报告订单支付|碳币充值订单支付 -zht
 		else if ("app_order_pay".equals(api.getApiTarget())) {
 			TPayInfoDto dto = obj.toJavaObject(TPayInfoDto.class);
 			BaseResult result = orderPayService.doPay(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		/**
-		 * ================= 点点商城相关 end ======================
-		 */
+		//solr搜索接口
+		else if("search".equals(api.getApiTarget())) {
+			SearchLandPropertyDto dto = obj.toJavaObject(SearchLandPropertyDto.class);
+			List<SolrData> result = landService.search(dto);
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(Constant.RESULT_ERROR);
