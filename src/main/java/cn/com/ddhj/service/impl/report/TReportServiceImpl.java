@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,6 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.ctc.wstx.util.StringUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -28,13 +29,13 @@ import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.mapper.TWaterEnviromentMapper;
-import cn.com.ddhj.mapper.lp.TLpEnvironmentMapper;
 import cn.com.ddhj.mapper.report.TReportEnvironmentLevelMapper;
 import cn.com.ddhj.mapper.report.TReportLogMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
@@ -46,7 +47,6 @@ import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TWaterEnviroment;
-import cn.com.ddhj.model.lp.TLpEnvironment;
 import cn.com.ddhj.model.lp.TLpEnvironmentIndex;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
@@ -112,8 +112,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	private TWaterEnviromentMapper waterEnvMapper;
 	@Autowired
 	private TReportMapper reportMapper;
-	@Autowired
-	private TLpEnvironmentMapper lpEnvMapper;
 
 	/**
 	 * 
@@ -458,24 +456,26 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			result.setResultMessage("楼盘数据不存在");
 			return result;
 		}
-		
+
 		// 如果楼盘不为空
-//		List<TReport> list = mapper.findReportByHousesCode(lpCode);
-//		List<TReport> reports = new ArrayList<TReport>();
-//		List<String> lpCodes = new ArrayList<String>();
-//		if (StringUtils.isNotBlank(lp.getLat()) && StringUtils.isNotBlank(lp.getLng())) {
-//			lpCodes = this.getLpCodes(Double.valueOf(lp.getLat()), Double.valueOf(lp.getLng()), 10 * 1000);
-//		}
-//		if (lpCodes.contains(lpCode)) {
-//			for (TReport r : list) {
-//				if ("RL161006100001".equals(r.getLevelCode())) {
-//					reports.add(r);
-//				}
-//			}
-//		} else {
-//			reports = mapper.findReportByHousesCode(lpCode);
-//		}
-		
+		// List<TReport> list = mapper.findReportByHousesCode(lpCode);
+		// List<TReport> reports = new ArrayList<TReport>();
+		// List<String> lpCodes = new ArrayList<String>();
+		// if (StringUtils.isNotBlank(lp.getLat()) &&
+		// StringUtils.isNotBlank(lp.getLng())) {
+		// lpCodes = this.getLpCodes(Double.valueOf(lp.getLat()),
+		// Double.valueOf(lp.getLng()), 10 * 1000);
+		// }
+		// if (lpCodes.contains(lpCode)) {
+		// for (TReport r : list) {
+		// if ("RL161006100001".equals(r.getLevelCode())) {
+		// reports.add(r);
+		// }
+		// }
+		// } else {
+		// reports = mapper.findReportByHousesCode(lpCode);
+		// }
+
 		List<TReport> del = new ArrayList<TReport>();
 		List<TReport> reports = mapper.findReportByHousesCode(lpCode);
 		for (TReport r : reports) {
@@ -484,7 +484,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			}
 		}
 		reports.removeAll(del);
-		
+
 		// 如果userTocken不为空，查询楼盘是否已关注
 		TUser user = null;
 		int isFollow = 0;
@@ -778,20 +778,90 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 */
 	@Override
 	public int batchCreateH5Report() {
-
+		long start = System.currentTimeMillis();
 		int reCode = 1;
-		Long start = System.currentTimeMillis();
 		String lock = "";
 		try {
 			lock = WebHelper.getInstance().addLock(10, "batchCreateReport");
 			if (StringUtils.isNoneBlank(lock)) {
 				// 获取报告列表
 				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
+				// if (lpList != null && lpList.size() > 0) {
+				// int size = lpList.size() / 5000;
+				// int current = 5000;
+				// ExecutorService pool = Executors.newFixedThreadPool(size +
+				// 1);
+				// for (int i = 0; i < size - 1; i++) {
+				// System.out.println(current * i + "|" + current * (i + 1));
+				// List<TLandedProperty> subList = null;
+				// if (i == 0) {
+				// subList = lpList.subList(current * i, current * (i + 1));
+				// } else {
+				// subList = lpList.subList(current * i - 1, current * (i + 1));
+				// }
+				// pool.execute(new CreateReport(subList));
+				// }
+				// List<TLandedProperty> subList = lpList.subList(current * size
+				// + 1, lpList.size());
+				// pool.execute(new CreateReport(subList));
+				// }
 				if (lpList != null && lpList.size() > 0) {
 					List<TReport> reports = new ArrayList<TReport>();
 					for (TLandedProperty lp : lpList) {
+						long lpStart = System.currentTimeMillis();
+						if (StringUtils.isNotBlank(lp.getLat())) {
+							lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
+						} else {
+							lp.setWeatherDistribution("无法定位小区");
+						}
+						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
+						lp.setEnvironmentIndexs(list);
+						lp.setEnvironmentIndexs1(list.subList(0, 3));
+						lp.setEnvironmentIndexs2(list.subList(3, 6));
+						lp.setEnvironmentIndexs3(list.subList(6, 9));
+						lp.setEnvironmentIndexs4(list.subList(9, list.size()));
+						/*
+						 * 精简版
+						 */
+						TReport simplification = new TReport();
+						simplification.setHousesCode(lp.getCode());
+						simplification.setLevelCode("RL161006100001");
+						String path = ReportHelper.getInstance().createHtml(lp, "simplification");
+						simplification.setPath(path);
+						String reportDate = DateUtil.getSysDateTime();
+						simplification.setCreateTime(reportDate);
+						reports.add(simplification);
+						/*
+						 * 完整版
+						 */
+						TReport full = new TReport();
+						full.setHousesCode(lp.getCode());
+						full.setLevelCode("RL161006100002");
+						String fullPath = ReportHelper.getInstance().createHtml(lp, "full");
+						full.setPath(fullPath);
+						String fullReportDate = DateUtil.getSysDateTime();
+						full.setCreateTime(fullReportDate);
+						reports.add(full);
+						long lpEnd = System.currentTimeMillis();
+						getLogger().logInfo("获取楼盘信息时间为:" + (lpEnd - lpStart));
 					}
-					mapper.batchInsertReportToTmp(reports);
+					/**
+					 * 分批次添加
+					 */
+					int size = reports.size() / 10000;
+					int current = 10000;
+					for (int i = 0; i <= size - 1; i++) {
+						List<TReport> subList = null;
+						if (i == 0) {
+							subList = reports.subList(current * i, current * (i + 1));
+						} else {
+							subList = reports.subList(current * i + 1, current * (i + 1));
+						}
+
+						mapper.batchInsertH5ReportToTmp(subList);
+					}
+					List<TReport> subList = reports.subList(current * size + 1, reports.size());
+					mapper.batchInsertH5ReportToTmp(subList);
 				}
 			}
 		} catch (Exception e) {
@@ -803,7 +873,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		Long end = System.currentTimeMillis();
 		getLogger().logInfo("定时执行时间为:" + (end - start));
 		return reCode;
-
 	}
 
 	/**

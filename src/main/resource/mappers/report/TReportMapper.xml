@@ -477,7 +477,7 @@
 			path,
 			report_date,
 			update_user,
-			update_time,
+			update_time
 		</trim>
 		values
 		<foreach collection="list" item="item" index="index"
@@ -508,7 +508,7 @@
 				#{item.housesCode,jdbcType=VARCHAR},
 				#{item.levelCode,jdbcType=VARCHAR},
 				#{item.path,jdbcType=VARCHAR},
-				#{item.reportDate,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+				STR_TO_DATE(#{item.createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 			</trim>
 		</foreach>
 	</insert>

@@ -13,7 +13,6 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -52,6 +51,7 @@ public class ReportHelper extends BaseClass {
 	@Inject
 	private TLpEnvironmentMapper lpEnvMapper;
 
+	private static final String REPORT_PATH = "/opt/ddhj/report/html/";
 	private static ReportHelper self;
 
 	public static ReportHelper getInstance() {
@@ -641,30 +641,30 @@ public class ReportHelper extends BaseClass {
 	public String createHtml(TLandedProperty lp, String reportName) {
 		String url = "";
 		try {
-			String path = ReportHelper.class.getResource("/report/" + reportName + ".ftl").getPath();
-			// 创建一个合适的Configration对象
-			Configuration configuration = new Configuration(Configuration.VERSION_2_3_23);
-			// 指定模板文件所在路径
-			configuration.setDirectoryForTemplateLoading(new File(path).getParentFile());
-			// 设置模板编码
-			configuration.setDefaultEncoding("UTF-8");
-			Template template = configuration.getTemplate(reportName + ".ftl");
-			File file = new File("d:/test/" + lp.getCode() + "/");
+			File file = new File(REPORT_PATH + lp.getCode() + "/" + reportName + ".html");
 			if (!file.exists()) {
-				file.mkdirs();
+				String path = ReportHelper.class.getResource("/report/" + reportName + ".ftl").getPath();
+				// 创建一个合适的Configration对象
+				Configuration configuration = new Configuration(Configuration.VERSION_2_3_23);
+				// 指定模板文件所在路径
+				configuration.setDirectoryForTemplateLoading(new File(path).getParentFile());
+				// 设置模板编码
+				configuration.setDefaultEncoding("UTF-8");
+				Template template = configuration.getTemplate(reportName + ".ftl");
+				Writer writer = new OutputStreamWriter(
+						new FileOutputStream(REPORT_PATH + lp.getCode() + "/" + reportName + ".html"), "UTF-8");
+				template.process(lp, writer);
 			}
-			Writer writer = new OutputStreamWriter(
-					new FileOutputStream("d:/test/" + lp.getCode() + "/" + reportName + ".html"), "UTF-8");
-			template.process(lp, writer);
-			url=PropHelper.getValue("report_url")+lp.getCode()+"/"+ reportName + ".html";
+			url = PropHelper.getValue("report_url") + lp.getCode() + "/" + reportName + ".html";
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return url;
 	}
-	
+
 	/**
 	 * 获取楼盘环境参数集合
+	 * 
 	 * @param lp
 	 * @return
 	 */
@@ -731,7 +731,6 @@ public class ReportHelper extends BaseClass {
 			TLpEnvironmentIndex volume = ReportHelper.getInstance().volumeLevel(entity.getVolume().doubleValue(),
 					lp.getCity());
 			list.add(volume);
-			System.out.println(JSON.toJSON(list));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

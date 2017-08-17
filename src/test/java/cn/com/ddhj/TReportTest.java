@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
@@ -192,7 +193,6 @@ public class TReportTest extends BaseTest {
 		service.createPPT(code, lpCode, null, null);
 	}
 
-	@Test
 	public void updateReportByLpAndLevel() {
 		try {
 			List<TLandedProperty> lps = lpMapper.findTLandedPropertyAll();
@@ -205,7 +205,7 @@ public class TReportTest extends BaseTest {
 				lp.setEnvironmentIndexs2(list.subList(3, 6));
 				lp.setEnvironmentIndexs3(list.subList(6, 9));
 				lp.setEnvironmentIndexs4(list.subList(9, list.size()));
-				String fullPath =new ReportHelper().createHtml(lp, "full");
+				String fullPath = PropHelper.getValue("report_url") + lp.getCode() + "/full.html";
 				TReport full = new TReport();
 				full.setHousesCode(lp.getCode());
 				full.setLevelCode("RL161006100002");
@@ -213,7 +213,7 @@ public class TReportTest extends BaseTest {
 				full.setUpdateUser("test");
 				full.setUpdateTime(DateUtil.getSysDateTime());
 				mapper.updateReportByLpAndLevel(full);
-				String simplificationPath = new ReportHelper().createHtml(lp, "simplification");
+				String simplificationPath = PropHelper.getValue("report_url") + lp.getCode() + "/simplification.html";
 				TReport simplification = new TReport();
 				simplification.setHousesCode(lp.getCode());
 				simplification.setLevelCode("RL161006100001");
@@ -225,5 +225,10 @@ public class TReportTest extends BaseTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Test
+	public void batchReportTmp() {
+		service.batchCreateH5Report();
 	}
 }
