@@ -26,26 +26,26 @@ public class SolrSearchServer {
 		return new SolrClientAgent().getSearchData(solrQuery,sellerCode);
 	}
 	
-	/**
-	 * 联想词 
-	 * 描述：该方法联想的为商品名称，不是单个的词
-	 * @param params  参数封装类  
-	 * @param sellerCode  索引库分片
-	 * @return
-	 */
-	public List<String> getSuggestProductName(SolrQuery solrQuery,String sellerCode){
-		return new SolrClientAgent().getSuggestProductName(solrQuery,sellerCode);
-	}
-	/**
-	 * 联想词 可根据拼音 拼音首字母联想
-	 * 描述：该方法联想的为词组，不是商品名称
-	 * @param params  参数封装类  
-	 * @param sellerCode  索引库分片
-	 * @return
-	 */
-	public List<String> getSuggestLxc(SolrQuery solrQuery,String sellerCode){
-		return new SolrClientAgent().getSuggestLxc(solrQuery,sellerCode);
-	}
+//	/**
+//	 * 联想词 
+//	 * 描述：该方法联想的为商品名称，不是单个的词
+//	 * @param params  参数封装类  
+//	 * @param sellerCode  索引库分片
+//	 * @return
+//	 */
+//	public List<String> getSuggestProductName(SolrQuery solrQuery,String sellerCode){
+//		return new SolrClientAgent().getSuggestProductName(solrQuery,sellerCode);
+//	}
+//	/**
+//	 * 联想词 可根据拼音 拼音首字母联想
+//	 * 描述：该方法联想的为词组，不是商品名称
+//	 * @param params  参数封装类  
+//	 * @param sellerCode  索引库分片
+//	 * @return
+//	 */
+//	public List<String> getSuggestLxc(SolrQuery solrQuery,String sellerCode){
+//		return new SolrClientAgent().getSuggestLxc(solrQuery,sellerCode);
+//	}
 	/**
 	 * 全量更新solr索引库
 	 * @param product    数据封装类

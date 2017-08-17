@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ import cn.com.ddhj.annotation.Inject;
 import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.dto.SearchLandPropertyDto;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.apppay.TPayInfoDto;
@@ -73,6 +75,8 @@ import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.product.TPageProductListResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
+import cn.com.ddhj.result.search.SearchEntity;
+import cn.com.ddhj.result.search.SearchResult;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealChartResult;
@@ -92,6 +96,7 @@ import cn.com.ddhj.service.IAppOrderPay;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITAddressEnshrineService;
 import cn.com.ddhj.service.ITCityService;
+import cn.com.ddhj.service.ITLandedPropertyService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.ITradeService;
@@ -112,6 +117,7 @@ import cn.com.ddhj.service.user.ITUserLpFollowService;
 import cn.com.ddhj.service.user.ITUserLpVisitService;
 import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.service.user.ITUserStepService;
+import cn.com.ddhj.solr.data.SolrData;
 import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 
@@ -161,6 +167,8 @@ public class ApiController extends BaseClass {
 
 	@Autowired
 	private ITAddressEnshrineService addressEnshrineService;
+	@Autowired
+	private ITLandedPropertyService landService;
 
 	@Autowired
 	private IFileService fileService;
@@ -646,15 +654,35 @@ public class ApiController extends BaseClass {
 			BaseResult result = userAddressService.findUserAddressPage(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} 
+		/**
+		 * ================= 点点商城相关 end ======================
+		 */
 		//app楼盘报告订单支付|碳币充值订单支付 -zht
 		else if ("app_order_pay".equals(api.getApiTarget())) {
 			TPayInfoDto dto = obj.toJavaObject(TPayInfoDto.class);
 			BaseResult result = orderPayService.doPay(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		/**
-		 * ================= 点点商城相关 end ======================
-		 */
+		//solr搜索接口
+		else if("search".equals(api.getApiTarget())) {
+			SearchResult searchResult = new SearchResult();
+			SearchLandPropertyDto dto = obj.toJavaObject(SearchLandPropertyDto.class);
+			List<SolrData> result = landService.search(dto);
+			if(result != null && !result.isEmpty()) {
+				for(SolrData data : result) {
+					SearchEntity entity = new SearchEntity();
+					entity.setCode(data.getK1());
+					entity.setName(data.getS2());
+					entity.setCity(data.getS1());
+					entity.setAddress(data.getS3()); //地址
+					entity.setLat(data.getS4()); //经度
+					entity.setLng(data.getS5()); //纬度
+					entity.setPic(data.getL1()); //图片
+					searchResult.getList().add(entity);
+				}
+			}
+			return JSONObject.parseObject(JSONObject.toJSONString(searchResult));
+		}
 		else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(Constant.RESULT_ERROR);

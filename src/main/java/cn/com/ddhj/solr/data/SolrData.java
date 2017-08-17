@@ -1,6 +1,5 @@
 package cn.com.ddhj.solr.data;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,26 +34,24 @@ public class SolrData {
 	@Field
 	private String s2;	//楼盘名称
 	@Field
-	private String s3;	
+	private String s3;	//地址
 	@Field
-	private String s4;
+	private String s4;  //经度
 	@Field
-	private String s5;
+	private String s5;  //纬度
 
 	
 	/**
 	 * i开头的数字
 	 */
 	@Field
-	private int i1;    //i1代表商品是否有货 1代表有货 0代表没有货
+	private int i1;    //i1
 	
 	/**
 	 * d开头的为双精度数字
 	 */
 	@Field
 	private Double d1; //楼盘的综合评分
-	@Field
-	private Double d2; //d2位人气
 
 	/**
 	 * t为日期格式
@@ -64,63 +61,63 @@ public class SolrData {
 	/**
 	 * l为list集合里面封装String字符串
 	 */
-	@Field
-	private List<String> l1; //l1对应一级分类的名称
-	@Field
-	private List<String> l2; //l2对应一级分类的编号
-	@Field
-	private List<String> l3; //l3对应二级分类的名称
-	@Field
-	private List<String> l4; //l4对应二级分类的编号
-	@Field
-	private List<String> l5;
-	@Field
-	private List<String> l6;
-	@Field
-	private List<String> l7;
-	@Field
-	private List<String> l8;
+//	@Field
+	private String l1;  //主图
+//	@Field
+//	private List<String> l2; //l2对应一级分类的编号
+//	@Field
+//	private List<String> l3; //l3对应二级分类的名称
+//	@Field
+//	private List<String> l4; //l4对应二级分类的编号
+//	@Field
+//	private List<String> l5;
+//	@Field
+//	private List<String> l6;
+//	@Field
+//	private List<String> l7;
+//	@Field
+//	private List<String> l8;
 	/**
 	 * 该字段不会创建索引
 	 * 是为后期搜索返回多少条提供set方法
 	 */
 	private long counts=0;
-	/**
-	 * 该字段不会创建索引
-	 * 是为后期搜索返回分类集合提供set方法
-	 */
-	private List<String> categoryName=new ArrayList<String>();
-	/**
-	 * 该字段不会创建索引
-	 * 是为后期搜索返回品牌集合提供set方法
-	 */
-	private List<String> brandName=new ArrayList<String>();
-	
-	
-	/**
-	 * @return the categoryName
-	 */
-	public List<String> getCategoryName() {
-		return categoryName;
-	}
-	/**
-	 * @param categoryName the categoryName to set
-	 */
-	public void setCategoryName(List<String> categoryName) {
-		this.categoryName = categoryName;
-	}
-	/**
-	 * @return the brandName
-	 */
-	public List<String> getBrandName() {
-		return brandName;
-	}
-	/**
-	 * @param brandName the brandName to set
-	 */
-	public void setBrandName(List<String> brandName) {
-		this.brandName = brandName;
-	}
+//	/**
+//	 * 该字段不会创建索引
+//	 * 是为后期搜索返回分类集合提供set方法
+//	 */
+//	private List<String> categoryName=new ArrayList<String>();
+//	/**
+//	 * 该字段不会创建索引
+//	 * 是为后期搜索返回品牌集合提供set方法
+//	 */
+//	private List<String> brandName=new ArrayList<String>();
+//	
+//	
+//	/**
+//	 * @return the categoryName
+//	 */
+//	public List<String> getCategoryName() {
+//		return categoryName;
+//	}
+//	/**
+//	 * @param categoryName the categoryName to set
+//	 */
+//	public void setCategoryName(List<String> categoryName) {
+//		this.categoryName = categoryName;
+//	}
+//	/**
+//	 * @return the brandName
+//	 */
+//	public List<String> getBrandName() {
+//		return brandName;
+//	}
+//	/**
+//	 * @param brandName the brandName to set
+//	 */
+//	public void setBrandName(List<String> brandName) {
+//		this.brandName = brandName;
+//	}
 	/**
 	 * @return the k1
 	 */
@@ -219,18 +216,6 @@ public class SolrData {
 	public void setD1(Double d1) {
 		this.d1 = d1;
 	}
-	/**
-	 * @return the d2
-	 */
-	public Double getD2() {
-		return d2;
-	}
-	/**
-	 * @param d2 the d2 to set
-	 */
-	public void setD2(Double d2) {
-		this.d2 = d2;
-	}
 	
 	/**
 	 * @return the t1
@@ -243,102 +228,6 @@ public class SolrData {
 	 */
 	public void setT1(Date t1) {
 		this.t1 = t1;
-	}
-	/**
-	 * @return the l1
-	 */
-	public List<String> getL1() {
-		return l1;
-	}
-	/**
-	 * @param l1 the l1 to set
-	 */
-	public void setL1(List<String> l1) {
-		this.l1 = l1;
-	}
-	/**
-	 * @return the l2
-	 */
-	public List<String> getL2() {
-		return l2;
-	}
-	/**
-	 * @param l2 the l2 to set
-	 */
-	public void setL2(List<String> l2) {
-		this.l2 = l2;
-	}
-	/**
-	 * @return the l3
-	 */
-	public List<String> getL3() {
-		return l3;
-	}
-	/**
-	 * @param l3 the l3 to set
-	 */
-	public void setL3(List<String> l3) {
-		this.l3 = l3;
-	}
-	/**
-	 * @return the l4
-	 */
-	public List<String> getL4() {
-		return l4;
-	}
-	/**
-	 * @param l4 the l4 to set
-	 */
-	public void setL4(List<String> l4) {
-		this.l4 = l4;
-	}
-	/**
-	 * @return the l5
-	 */
-	public List<String> getL5() {
-		return l5;
-	}
-	/**
-	 * @param l5 the l5 to set
-	 */
-	public void setL5(List<String> l5) {
-		this.l5 = l5;
-	}
-	/**
-	 * @return the l6
-	 */
-	public List<String> getL6() {
-		return l6;
-	}
-	/**
-	 * @param l6 the l6 to set
-	 */
-	public void setL6(List<String> l6) {
-		this.l6 = l6;
-	}
-	/**
-	 * @return the l7
-	 */
-	public List<String> getL7() {
-		return l7;
-	}
-	/**
-	 * @param l7 the l7 to set
-	 */
-	public void setL7(List<String> l7) {
-		this.l7 = l7;
-	}
-	/**
-	 * @return the l8
-	 */
-	public List<String> getL8() {
-		return l8;
-	}
-	/**
-	 * @param l8 the l8 to set
-	 */
-	public void setL8(List<String> l8) {
-		this.l8 = l8;
 	}
 	
 	/**
@@ -353,7 +242,10 @@ public class SolrData {
 	public void setCounts(long counts) {
 		this.counts = counts;
 	}
-	
-	
-	
+	public String getL1() {
+		return l1;
+	}
+	public void setL1(String l1) {
+		this.l1 = l1;
+	}
 }

@@ -12,11 +12,11 @@ public class BaseDto {
 	/**
 	 * 当前页
 	 */
-	private Integer pageIndex;
+	private Integer pageIndex = Integer.valueOf(1);
 	/**
 	 * 页面显示数据最大数
 	 */
-	private Integer pageSize;
+	private Integer pageSize = Integer.valueOf(10);
 	/**
 	 * 查询开始值
 	 */
