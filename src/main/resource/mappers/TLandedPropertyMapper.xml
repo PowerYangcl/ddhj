@@ -313,7 +313,8 @@
 				lng = #{lng,jdbcType=VARCHAR},
 			</if>
 			update_user = #{updateUser,jdbcType=VARCHAR},
-			update_time = STR_TO_DATE(
+			update_time =
+			STR_TO_DATE(
 			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 			<if test="addressFull != null">
 				addressFull = #{addressFull,jdbcType=LONGVARCHAR},
@@ -456,7 +457,8 @@
 		</where>
 	</select>
 	<!-- 获取一定范围内环境综合评分小于当前楼盘的总数 2017-02-28 zhy -->
-	<select id="findScoreLessThanLpCount" parameterType="cn.com.ddhj.dto.TLandedPropertyDto" resultType="java.lang.Integer">
+	<select id="findScoreLessThanLpCount" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
+		resultType="java.lang.Integer">
 		SELECT count(1) FROM t_landed_property AS lp
 		<where>
 			( lp.lat BETWEEN #{minLat,jdbcType=VARCHAR} AND
@@ -465,7 +467,7 @@
 			(lp.lng BETWEEN
 			#{minLng,jdbcType=VARCHAR} AND #{maxLng,jdbcType=VARCHAR})
 			<if test="score != null">
-				<![CDATA[ AND score &lt; #{score,jdbcType=DOUBLE} ]]>     
+				<![CDATA[ AND score &lt; #{score,jdbcType=DOUBLE} ]]>
 			</if>
 		</where>
 	</select>
@@ -474,7 +476,7 @@
 		select
 		*
 		from
-		t_landed_property 
+		t_landed_property
 	</select>
 	<update id="batchUpdateScore" parameterType="java.util.List">
 		<foreach collection="list" item="item" index="index" open=""

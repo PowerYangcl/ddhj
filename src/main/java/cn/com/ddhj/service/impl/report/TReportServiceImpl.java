@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +27,6 @@ import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
-import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
@@ -786,25 +783,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (StringUtils.isNoneBlank(lock)) {
 				// 获取报告列表
 				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
-				// if (lpList != null && lpList.size() > 0) {
-				// int size = lpList.size() / 5000;
-				// int current = 5000;
-				// ExecutorService pool = Executors.newFixedThreadPool(size +
-				// 1);
-				// for (int i = 0; i < size - 1; i++) {
-				// System.out.println(current * i + "|" + current * (i + 1));
-				// List<TLandedProperty> subList = null;
-				// if (i == 0) {
-				// subList = lpList.subList(current * i, current * (i + 1));
-				// } else {
-				// subList = lpList.subList(current * i - 1, current * (i + 1));
-				// }
-				// pool.execute(new CreateReport(subList));
-				// }
-				// List<TLandedProperty> subList = lpList.subList(current * size
-				// + 1, lpList.size());
-				// pool.execute(new CreateReport(subList));
-				// }
 				if (lpList != null && lpList.size() > 0) {
 					List<TReport> reports = new ArrayList<TReport>();
 					for (TLandedProperty lp : lpList) {
@@ -845,23 +823,26 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						long lpEnd = System.currentTimeMillis();
 						getLogger().logInfo("获取楼盘信息时间为:" + (lpEnd - lpStart));
 					}
-//					/**
-//					 * 分批次添加
-//					 */
-//					int size = reports.size() / 10000;
-//					int current = 10000;
-//					for (int i = 0; i <= size - 1; i++) {
-//						List<TReport> subList = null;
-//						if (i == 0) {
-//							subList = reports.subList(current * i, current * (i + 1));
-//						} else {
-//							subList = reports.subList(current * i + 1, current * (i + 1));
-//						}
-//
-//						mapper.batchInsertH5ReportToTmp(subList);
-//					}
-//					List<TReport> subList = reports.subList(current * size + 1, reports.size());
-//					mapper.batchInsertH5ReportToTmp(subList);
+					// /**
+					// * 分批次添加
+					// */
+					// int size = reports.size() / 10000;
+					// int current = 10000;
+					// for (int i = 0; i <= size - 1; i++) {
+					// List<TReport> subList = null;
+					// if (i == 0) {
+					// subList = reports.subList(current * i, current * (i +
+					// 1));
+					// } else {
+					// subList = reports.subList(current * i + 1, current * (i +
+					// 1));
+					// }
+					//
+					// mapper.batchInsertH5ReportToTmp(subList);
+					// }
+					// List<TReport> subList = reports.subList(current * size +
+					// 1, reports.size());
+					// mapper.batchInsertH5ReportToTmp(subList);
 				}
 			}
 		} catch (Exception e) {

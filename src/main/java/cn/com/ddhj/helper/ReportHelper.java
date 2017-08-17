@@ -27,6 +27,7 @@ import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.model.lp.TLpEnvironment;
 import cn.com.ddhj.model.lp.TLpEnvironmentIndex;
+import cn.com.ddhj.result.ReportResult;
 import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.ITChemicalPlantService;
 import cn.com.ddhj.service.ITRubbishRecyclingService;
@@ -51,7 +52,16 @@ public class ReportHelper extends BaseClass {
 	@Inject
 	private TLpEnvironmentMapper lpEnvMapper;
 
-	private static final String REPORT_PATH = "/opt/ddhj/report/html/";
+	/**
+	 * 楼盘报告存放地址
+	 */
+	// private static final String REPORT_PATH = "/opt/ddhj/report/html/";
+	private static final String REPORT_PATH = "d:/test/";
+	/**
+	 * 用户购买楼盘报告存放地址
+	 */
+	// private static final String USER_REPORT_PATH = "/opt/ddhj/report/user/";
+	private static final String USER_REPORT_PATH = "d:/report/";
 	private static ReportHelper self;
 
 	public static ReportHelper getInstance() {
@@ -736,5 +746,36 @@ public class ReportHelper extends BaseClass {
 			e.printStackTrace();
 		}
 		return list;
+	}
+
+	/**
+	 * 
+	 * 方法: createUserReport <br>
+	 * 描述: 将环境报告复制到用户购买楼盘报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月17日 下午12:41:12
+	 * 
+	 * @param lp
+	 * @param userCode
+	 * @return
+	 */
+	public ReportResult createUserReport(String lpCode, String userCode) {
+		ReportResult result = new ReportResult();
+		try {
+			File file = new File(REPORT_PATH + lpCode + "/full.html");
+			File userReport = new File(USER_REPORT_PATH + userCode + "/" + lpCode);
+			if (!userReport.exists()) {
+				userReport.mkdirs();
+			}
+			boolean flag = FileHelper.copyFile(file,
+					new File(USER_REPORT_PATH + userCode + "/" + lpCode + "/full.html"));
+			if (flag) {
+				String url = PropHelper.getValue("user_report_url") + lpCode + "/full.html";
+				result.setUrl(url);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }
