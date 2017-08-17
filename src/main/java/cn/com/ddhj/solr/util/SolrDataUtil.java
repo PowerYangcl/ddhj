@@ -35,13 +35,32 @@ public class SolrDataUtil {
 			sd.setK1(landCode.toLowerCase());
 			//所在城市
 			String city = land.getCity();
-			sd.setS1(city);
+			if(StringUtils.isNotBlank(city))
+				sd.setS1(city);
 			//楼盘名称
 			String title = land.getTitle();
-			sd.setS2(title.toLowerCase());
+			if(StringUtils.isNotBlank(title))
+				sd.setS2(title.toLowerCase());
+			//地址
+			String address = land.getAddressFull();
+			if(StringUtils.isNotBlank(address))
+				sd.setS3(address.toLowerCase());
+			//经度
+			String lat = land.getLat();
+			if(StringUtils.isNotBlank(lat))
+				sd.setS4(lat);
+			//纬度
+			String lng = land.getLng();
+			if(StringUtils.isNotBlank(lng))
+				sd.setS5(lng);
 			//楼盘综合评分
 			Double score = land.getScore();
-			sd.setD1(score);
+			if(score != null)
+				sd.setD1(score);
+			//主图
+			String images = land.getImages();
+			if(StringUtils.isNotBlank(images))
+				sd.setL1(images);
 			String updateTime = land.getUpdateTime();
 			if(StringUtils.isNotBlank(updateTime)) {
 				Date up;

@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.beans.Field;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.request.UpdateRequest;
@@ -117,10 +118,13 @@ public class SolrClientAgent {
 	 */
 	public  SolrInputDocument entityParese(SolrData data){
 		SolrInputDocument doc = new SolrInputDocument();
-		    doc.addField("k1", data.getK1());
-	        doc.addField("s1", data.getS1());
-	        doc.addField("s2", data.getS2());
-	        doc.addField("d1",data.getD1());
+		    doc.addField("k1", data.getK1());//楼盘编号
+	        doc.addField("s1", data.getS1());//城市
+	        doc.addField("s2", data.getS2());//楼盘名称
+	        doc.addField("s3", data.getS3());//地址
+	        doc.addField("s4", data.getS4());//经度
+	        doc.addField("s5", data.getS5());//纬度
+	        doc.addField("l1", data.getL1());//图片
 		return doc;
 	}
 	

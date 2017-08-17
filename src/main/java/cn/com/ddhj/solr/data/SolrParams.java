@@ -49,6 +49,8 @@ public class SolrParams {
 	 */
 	private double maxScore;
 	
+	private String city;
+	
 	public String getKeyWord() {
 		return keyWord;
 	}
@@ -108,5 +110,11 @@ public class SolrParams {
 	}
 	public void setMaxScore(double maxScore) {
 		this.maxScore = maxScore;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
 	}
 }

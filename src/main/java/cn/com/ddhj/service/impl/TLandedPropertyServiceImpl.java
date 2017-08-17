@@ -133,6 +133,8 @@ public class TLandedPropertyServiceImpl extends
 		SolrParams solrparams = new SolrParams();
 		if(StringUtils.isNotBlank(dto.getKeyWord()))
 			solrparams.setKeyWord(dto.getKeyWord());
+		if(StringUtils.isNotBlank(dto.getCity()))
+			solrparams.setCity(dto.getCity());
 		solrparams.setPageSize(dto.getPageSize());
 		solrparams.setPageNo(dto.getPageIndex());
 		solrparams.setSortType(dto.getSortType());

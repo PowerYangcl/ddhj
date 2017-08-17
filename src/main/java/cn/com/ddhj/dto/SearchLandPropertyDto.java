@@ -2,6 +2,7 @@ package cn.com.ddhj.dto;
 
 public class SearchLandPropertyDto extends BaseDto {
 	private String keyWord;
+	private String city;
 	private Integer sortType = Integer.valueOf(0);
 	private Integer sortFlag = Integer.valueOf(0);
 	private Double minScore;
@@ -43,5 +44,11 @@ public class SearchLandPropertyDto extends BaseDto {
 	}
 	public void setBase64(String base64) {
 		this.base64 = base64;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
 	}
 }

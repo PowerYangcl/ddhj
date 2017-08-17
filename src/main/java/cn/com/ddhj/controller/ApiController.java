@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,7 +62,6 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
-import cn.com.ddhj.result.SearchResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.file.FileResult;
@@ -75,6 +75,8 @@ import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.product.TPageProductListResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
+import cn.com.ddhj.result.search.SearchEntity;
+import cn.com.ddhj.result.search.SearchResult;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealChartResult;
@@ -663,11 +665,23 @@ public class ApiController extends BaseClass {
 		}
 		//solr搜索接口
 		else if("search".equals(api.getApiTarget())) {
+			SearchResult searchResult = new SearchResult();
 			SearchLandPropertyDto dto = obj.toJavaObject(SearchLandPropertyDto.class);
 			List<SolrData> result = landService.search(dto);
-			SearchResult sr = new SearchResult();
-			sr.setList(result);
-			return JSONObject.parseObject(JSONObject.toJSONString(sr));
+			if(result != null && !result.isEmpty()) {
+				for(SolrData data : result) {
+					SearchEntity entity = new SearchEntity();
+					entity.setCode(data.getK1());
+					entity.setName(data.getS2());
+					entity.setCity(data.getS1());
+					entity.setAddress(data.getS3()); //地址
+					entity.setLat(data.getS4()); //经度
+					entity.setLng(data.getS5()); //纬度
+					entity.setPic(data.getL1()); //图片
+					searchResult.getList().add(entity);
+				}
+			}
+			return JSONObject.parseObject(JSONObject.toJSONString(searchResult));
 		}
 		else {
 			BaseResult result = new BaseResult();
