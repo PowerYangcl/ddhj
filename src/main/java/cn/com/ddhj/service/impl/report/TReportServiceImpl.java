@@ -812,7 +812,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						if (StringUtils.isNotBlank(lp.getLat())) {
 							lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
 						} else {
-							lp.setWeatherDistribution("无法定位小区");
+							continue;
 						}
 						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
 						lp.setEnvironmentIndexs(list);
@@ -845,23 +845,23 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						long lpEnd = System.currentTimeMillis();
 						getLogger().logInfo("获取楼盘信息时间为:" + (lpEnd - lpStart));
 					}
-					/**
-					 * 分批次添加
-					 */
-					int size = reports.size() / 10000;
-					int current = 10000;
-					for (int i = 0; i <= size - 1; i++) {
-						List<TReport> subList = null;
-						if (i == 0) {
-							subList = reports.subList(current * i, current * (i + 1));
-						} else {
-							subList = reports.subList(current * i + 1, current * (i + 1));
-						}
-
-						mapper.batchInsertH5ReportToTmp(subList);
-					}
-					List<TReport> subList = reports.subList(current * size + 1, reports.size());
-					mapper.batchInsertH5ReportToTmp(subList);
+//					/**
+//					 * 分批次添加
+//					 */
+//					int size = reports.size() / 10000;
+//					int current = 10000;
+//					for (int i = 0; i <= size - 1; i++) {
+//						List<TReport> subList = null;
+//						if (i == 0) {
+//							subList = reports.subList(current * i, current * (i + 1));
+//						} else {
+//							subList = reports.subList(current * i + 1, current * (i + 1));
+//						}
+//
+//						mapper.batchInsertH5ReportToTmp(subList);
+//					}
+//					List<TReport> subList = reports.subList(current * size + 1, reports.size());
+//					mapper.batchInsertH5ReportToTmp(subList);
 				}
 			}
 		} catch (Exception e) {
