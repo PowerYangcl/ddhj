@@ -137,15 +137,16 @@ public class TLandedPropertyServiceImpl extends
 		solrparams.setPageNo(dto.getPageIndex());
 		solrparams.setSortType(dto.getSortType());
 		solrparams.setSortFlag(dto.getSortFlag());
+		solrparams.setKey("key");
 		solrparams.setSellercode(Constant.SELLER_CODE);
 
 		if(StringUtils.isNoneBlank(dto.getBase64())){
 			solrparams.setBase64(dto.getBase64());
 		}
-		if(dto.getMinScore() != 0) {
+		if(dto.getMinScore() != null) {
 			solrparams.setMinScore(dto.getMinScore());
 		}
-		if(dto.getMaxScore() != 0) {
+		if(dto.getMaxScore() != null) {
 			solrparams.setMaxScore(dto.getMaxScore());
 		}
 		

@@ -61,6 +61,7 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
+import cn.com.ddhj.result.SearchResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.file.FileResult;
@@ -664,7 +665,9 @@ public class ApiController extends BaseClass {
 		else if("search".equals(api.getApiTarget())) {
 			SearchLandPropertyDto dto = obj.toJavaObject(SearchLandPropertyDto.class);
 			List<SolrData> result = landService.search(dto);
-			return JSONObject.parseObject(JSONObject.toJSONString(result));
+			SearchResult sr = new SearchResult();
+			sr.setList(result);
+			return JSONObject.parseObject(JSONObject.toJSONString(sr));
 		}
 		else {
 			BaseResult result = new BaseResult();
