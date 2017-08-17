@@ -20,7 +20,7 @@
        <li>
             <img class="bg_logo01" src="images/report/bg_logo01.png">
             <h1><span>楼盘质量报告</span></h1>
-            <div class="time">有效期至2017年6月1日</div>
+            <div class="time">更新日期2017年6月1日</div>
             <div class="position">${title}</div>
             <div class="copyright">北京亿科云科有限公司版权所有</div>
             <div class="point"></div>
