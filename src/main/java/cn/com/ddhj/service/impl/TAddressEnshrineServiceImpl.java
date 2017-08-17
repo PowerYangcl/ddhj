@@ -69,6 +69,13 @@ public class TAddressEnshrineServiceImpl implements ITAddressEnshrineService {
 		e.setUserCode(userCode);
 		e.setCreateTime(new Date());
 		
+		List<TAddressEnshrine> clist = mapper.getListByUserCode(userCode);
+		if(clist != null && clist.size() >= 10){
+			re.put("resultCode", -1);
+			re.put("resultMessage", "每个用户只能收藏10条地址");
+			return re;
+		}
+		
 		
 		int count = mapper.selectCountByName(e);
 		if(count != 0){
