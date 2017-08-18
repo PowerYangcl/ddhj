@@ -61,7 +61,6 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
-import cn.com.ddhj.result.SearchResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.file.FileResult;
@@ -75,6 +74,8 @@ import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.product.TPageProductListResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
+import cn.com.ddhj.result.search.SearchEntity;
+import cn.com.ddhj.result.search.SearchResult;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
 import cn.com.ddhj.result.trade.TradeDealChartResult;
@@ -666,11 +667,23 @@ public class ApiController extends BaseClass {
 		}
 		//solr搜索接口
 		else if("search".equals(api.getApiTarget())) {
+			SearchResult searchResult = new SearchResult();
 			SearchLandPropertyDto dto = obj.toJavaObject(SearchLandPropertyDto.class);
 			List<SolrData> result = searchService.search(dto, api.getUserToken());
-			SearchResult sr = new SearchResult();
-			sr.setList(result);
-			return JSONObject.parseObject(JSONObject.toJSONString(sr));
+			if(result != null && !result.isEmpty()) {
+				for(SolrData data : result) {
+					SearchEntity entity = new SearchEntity();
+					entity.setCode(data.getK1());
+					entity.setName(data.getS2());
+					entity.setCity(data.getS1());
+					entity.setAddress(data.getS3()); //地址
+					entity.setLat(data.getS4()); //经度
+					entity.setLng(data.getS5()); //纬度
+					entity.setPic(data.getL1()); //图片
+					searchResult.getList().add(entity);
+				}
+			}
+			return JSONObject.parseObject(JSONObject.toJSONString(searchResult));
 		}
 //		//搜索历史接口
 //		else if("search_history".equals(api.getApiTarget())) {

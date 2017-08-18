@@ -1,6 +1,7 @@
 package cn.com.ddhj.solr.data;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.solr.client.solrj.beans.Field;
 
@@ -33,11 +34,11 @@ public class SolrData {
 	@Field
 	private String s2;	//楼盘名称
 	@Field
-	private String s3;	
+	private String s3;	//地址
 	@Field
-	private String s4;
+	private String s4;  //经度
 	@Field
-	private String s5;
+	private String s5;  //纬度
 
 	
 	/**
@@ -61,7 +62,7 @@ public class SolrData {
 	 * l为list集合里面封装String字符串
 	 */
 //	@Field
-//	private List<String> l1; //l1对应一级分类的名称
+	private String l1;  //主图
 //	@Field
 //	private List<String> l2; //l2对应一级分类的编号
 //	@Field
@@ -241,7 +242,10 @@ public class SolrData {
 	public void setCounts(long counts) {
 		this.counts = counts;
 	}
-	
-	
-	
+	public String getL1() {
+		return l1;
+	}
+	public void setL1(String l1) {
+		this.l1 = l1;
+	}
 }

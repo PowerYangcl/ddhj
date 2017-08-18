@@ -10,12 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.ddhj.dto.SearchLandPropertyDto;
-import cn.com.ddhj.dto.search.TSearchHistoryDto;
 import cn.com.ddhj.mapper.search.ISearchHistoryMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.search.TSearchHistory;
 import cn.com.ddhj.model.user.TUser;
-import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.search.ISearchService;
 import cn.com.ddhj.solr.data.SolrData;
 import cn.com.ddhj.solr.data.SolrParams;

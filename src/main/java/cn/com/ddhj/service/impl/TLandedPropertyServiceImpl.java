@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,17 +14,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
-import cn.com.ddhj.dto.SearchLandPropertyDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.result.lp.TLandedPropertyDataResult;
 import cn.com.ddhj.service.ITLandedPropertyService;
-import cn.com.ddhj.solr.data.SolrData;
-import cn.com.ddhj.solr.data.SolrParams;
-import cn.com.ddhj.solr.query.SolrParamsQuery;
-import cn.com.ddhj.solr.server.SolrSearchServer;
 import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.PureNetUtil;
