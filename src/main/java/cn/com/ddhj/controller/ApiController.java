@@ -655,7 +655,7 @@ public class ApiController extends BaseClass {
 		// 收货地址列表-zht
 		else if ("address_list".equals(api.getApiTarget())) {
 			TUserAddressDto dto = obj.toJavaObject(TUserAddressDto.class);
-			BaseResult result = userAddressService.findUserAddressPage(dto);
+			BaseResult result = userAddressService.findUserAddressPage(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} 
 		/**
@@ -691,6 +691,11 @@ public class ApiController extends BaseClass {
 		else if("search_history".equals(api.getApiTarget())) {
 			SearchResult<TSearchHistory> result = searchService.getSearchHistoryByUserToken(api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//删除搜索历史接口
+		else if("del_search_history".equals(api.getApiTarget())) {
+			JSONObject result = searchService.delSearchHistoryByUserToken(api.getUserToken());
+			return result;
 		}
 		//热搜接口
 		else if("hot_search".equals(api.getApiTarget())) {

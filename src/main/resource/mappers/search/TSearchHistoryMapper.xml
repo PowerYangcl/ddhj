@@ -29,6 +29,10 @@
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from t_search_history where zid = #{zid,jdbcType=INTEGER}
 	</delete>
+	<delete id="delSearchHistoryByUserCode" parameterType="java.lang.String">
+		delete from t_search_history where user_code=#{userCode,jdbcType=VARCHAR}
+	</delete>
+	
 	
 	<insert id="insertSelective" parameterType="cn.com.ddhj.model.search.TSearchHistory">
 		insert into t_search_history
