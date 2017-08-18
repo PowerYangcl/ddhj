@@ -2,8 +2,8 @@ package cn.com.ddhj.service;
 
 import java.util.List;
 
-import cn.com.ddhj.dto.SearchLandPropertyDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
+import cn.com.ddhj.dto.search.SearchLandPropertyDto;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.result.lp.TLandedPropertyDataResult;
 import cn.com.ddhj.solr.data.SolrData;
@@ -37,12 +37,4 @@ public interface ITLandedPropertyService extends IBaseService<TLandedProperty, T
 	 * @return
 	 */
 	TLandedPropertyDataResult getLpData(TLandedPropertyDto dto);
-	
-	/**
-	 * 搜索楼盘接口
-	 * @param dto
-	 * @author zht
-	 * @return
-	 */
-	List<SolrData> search(SearchLandPropertyDto dto);
 }
