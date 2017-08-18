@@ -9,6 +9,8 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.com.ddhj.dto.search.SearchLandPropertyDto;
 import cn.com.ddhj.mapper.search.TSearchHistoryMapper;
 import cn.com.ddhj.mapper.search.TSearchHotWordMapper;
@@ -130,6 +132,33 @@ public class ISearchServiceImpl implements ISearchService {
 		SearchResult<TSearchHotWord> result = new SearchResult<TSearchHotWord>();
 		List<TSearchHotWord> list = hotWordMapper.getSearchHotWord();
 		result.setList(list);
+		return result;
+	}
+
+	@Override
+	public JSONObject delSearchHistoryByUserToken(String userToken) {
+		JSONObject result = new JSONObject();
+		if(StringUtils.isBlank(userToken)) {
+			result.put("resultCode", Constant.RESULT_ERROR);
+			result.put("resultMessage", "用户token为空");
+		}
+		
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if(login == null) {
+			result.put("resultCode", Constant.RESULT_ERROR);
+			result.put("resultMessage", "无法查询到用户登录信息");
+		}
+		
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if(user == null) {
+			result.put("resultCode", Constant.RESULT_ERROR);
+			result.put("resultMessage", "无法查询到用户信息");
+		}
+		
+		String userCode = user.getUserCode();
+		Integer count = mapper.delSearchHistoryByUserCode(userCode);
+		result.put("resultCode", Constant.RESULT_SUCCESS);
+		result.put("resultMessage", "删除了" + count + "条收货地址");
 		return result;
 	}
 }

@@ -199,8 +199,21 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 	}
 
 	
-	public PageResult findUserAddressPage(TUserAddressDto dto) {
+	public PageResult findUserAddressPage(TUserAddressDto dto, String userToken) {
 		PageResult result = new PageResult();
+		String userCode = "";
+		UserDataResult userResult = userService.getUser(userToken);
+		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+			TUser user = userResult.getUser();
+			userCode = user.getUserCode();
+			dto.setUserCode(userCode);
+		}else{
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("用户尚未登录");
+			return result;
+		}
+		
+		
 		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
 		List<TUserAddress> list = mapper.findEntityAll(dto);
 		if (list != null && list.size() > 0) {
@@ -208,7 +221,7 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		} else {
 			list = new ArrayList<TUserAddress>();
 			result.setResultCode(Constant.RESULT_NULL);
-			result.setResultMessage("查询商品列表为空");
+			result.setResultMessage("查询用户收货地址列表为空");
 		}
 		PageInfo<TUserAddress> page = new PageInfo<TUserAddress>(list);
 		result.setPage(page);

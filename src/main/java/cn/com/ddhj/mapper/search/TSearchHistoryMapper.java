@@ -8,4 +8,6 @@ import cn.com.ddhj.model.search.TSearchHistory;
 
 public interface TSearchHistoryMapper extends BaseMapper<TSearchHistory, TSearchHistoryDto> {
 	List<TSearchHistory> getSearchHistoryByUserCode(String userCode);
+	
+	Integer delSearchHistoryByUserCode(String userCode);
 }
