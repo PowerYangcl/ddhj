@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * solr数据校验转换类 <br/>
  * 描述 : solr数据校验类 <br/>
@@ -365,9 +367,11 @@ public class StringUtil {
      * @return
      */
     public static String StringFilter(String str) {
-		str = str.replaceAll("[^\\u4e00-\\u9fa5\\w\\s]", " ");
-		str = str.replaceAll("\\s+", " ");
-		str = str.replace("_", " ");
+    	if(StringUtils.isNotBlank(str)) {
+			str = str.replaceAll("[^\\u4e00-\\u9fa5\\w\\s]", " ");
+			str = str.replaceAll("\\s+", " ");
+			str = str.replace("_", " ");
+    	}
 		return str;
 	}
     

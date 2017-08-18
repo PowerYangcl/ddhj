@@ -1,4 +1,4 @@
-package cn.com.ddhj.service.solr;
+package cn.com.ddhj.service.search;
 
 import java.util.List;
 

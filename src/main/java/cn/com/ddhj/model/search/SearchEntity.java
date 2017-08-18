@@ -1,4 +1,4 @@
-package cn.com.ddhj.result.search;
+package cn.com.ddhj.model.search;
 
 public class SearchEntity {
 	private String code;

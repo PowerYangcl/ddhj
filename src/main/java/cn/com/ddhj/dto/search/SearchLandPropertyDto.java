@@ -1,4 +1,6 @@
-package cn.com.ddhj.dto;
+package cn.com.ddhj.dto.search;
+
+import cn.com.ddhj.dto.BaseDto;
 
 public class SearchLandPropertyDto extends BaseDto {
 	private String keyWord;
