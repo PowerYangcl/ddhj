@@ -37,12 +37,4 @@ public interface ITLandedPropertyService extends IBaseService<TLandedProperty, T
 	 * @return
 	 */
 	TLandedPropertyDataResult getLpData(TLandedPropertyDto dto);
-	
-	/**
-	 * 搜索楼盘接口
-	 * @param dto
-	 * @author zht
-	 * @return
-	 */
-	List<SolrData> search(SearchLandPropertyDto dto);
 }

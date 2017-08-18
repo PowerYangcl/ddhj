@@ -1,7 +1,7 @@
 package cn.com.ddhj.solr.job;
 
 import cn.com.ddhj.annotation.Inject;
-import cn.com.ddhj.service.solr.SolrDataService;
+import cn.com.ddhj.service.search.SolrDataService;
 
 public class ReindexLandPropertyForSolr {
 	@Inject

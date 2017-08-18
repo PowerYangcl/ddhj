@@ -123,49 +123,4 @@ public class TLandedPropertyServiceImpl extends
 		result.setPage(page);
 		return result;
 	}
-
-	@Override
-	public List<SolrData> search(SearchLandPropertyDto dto) {
-		//楼盘搜索接口
-		Map<String,Object> map = null;
-		List<SolrData> list = null;
-		
-		SolrParams solrparams = new SolrParams();
-		if(StringUtils.isNotBlank(dto.getKeyWord()))
-			solrparams.setKeyWord(dto.getKeyWord());
-		solrparams.setPageSize(dto.getPageSize());
-		solrparams.setPageNo(dto.getPageIndex());
-		solrparams.setSortType(dto.getSortType());
-		solrparams.setSortFlag(dto.getSortFlag());
-		solrparams.setKey("key");
-		solrparams.setSellercode(Constant.SELLER_CODE);
-
-		if(StringUtils.isNoneBlank(dto.getBase64())){
-			solrparams.setBase64(dto.getBase64());
-		}
-		if(dto.getMinScore() != null) {
-			solrparams.setMinScore(dto.getMinScore());
-		}
-		if(dto.getMaxScore() != null) {
-			solrparams.setMaxScore(dto.getMaxScore());
-		}
-		
-//		if(mRequestDate.containsKey("key")){
-//			solrparams.setKey(mRequestDate.get("key"));
-//		}
-		map = new SolrSearchServer().getSolrSearchData(SolrParamsQuery.getParams(solrparams), Constant.SELLER_CODE);
-		if(map!=null && !map.isEmpty()) {
-			if(map.containsKey("items_rep")){
-				list=(List<SolrData>)map.get("items_rep");
-			}
-			
-			if(map.containsKey("counts")){
-				list.get(0).setCounts(Long.parseLong(map.get("counts")==null?"0":map.get("counts").toString()));
-			}
-			
-		}
-	 
-		return list;
-	}
-
 }

@@ -105,6 +105,7 @@ import cn.com.ddhj.service.impl.orderpay.config.XmasPayConfig;
 import cn.com.ddhj.service.impl.orderpay.notify.NotifyPayProcess.PaymentResult;
 import cn.com.ddhj.service.impl.orderpay.notify.PayGateNotifyPayProcess;
 import cn.com.ddhj.service.report.ITReportService;
+import cn.com.ddhj.service.search.ISearchService;
 import cn.com.ddhj.service.store.ITAreaService;
 import cn.com.ddhj.service.store.ITProductInfoService;
 import cn.com.ddhj.service.store.ITProductOrderService;
@@ -167,6 +168,8 @@ public class ApiController extends BaseClass {
 	private ITAddressEnshrineService addressEnshrineService;
 	@Autowired
 	private ITLandedPropertyService landService;
+	@Autowired
+	private ISearchService searchService;
 
 	@Autowired
 	private IFileService fileService;
@@ -664,11 +667,19 @@ public class ApiController extends BaseClass {
 		//solr搜索接口
 		else if("search".equals(api.getApiTarget())) {
 			SearchLandPropertyDto dto = obj.toJavaObject(SearchLandPropertyDto.class);
-			List<SolrData> result = landService.search(dto);
+			List<SolrData> result = searchService.search(dto, api.getUserToken());
 			SearchResult sr = new SearchResult();
 			sr.setList(result);
 			return JSONObject.parseObject(JSONObject.toJSONString(sr));
 		}
+//		//搜索历史接口
+//		else if("search_history".equals(api.getApiTarget())) {
+//			
+//		}
+//		//热搜接口
+//		else if("hot_search".equals(api.getApiTarget())) {
+//			
+//		}
 		else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(Constant.RESULT_ERROR);
