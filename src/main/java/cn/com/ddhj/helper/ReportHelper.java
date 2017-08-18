@@ -55,13 +55,13 @@ public class ReportHelper extends BaseClass {
 	/**
 	 * 楼盘报告存放地址
 	 */
-	// private static final String REPORT_PATH = "/opt/ddhj/report/html/";
-	private static final String REPORT_PATH = "d:/test/";
+	private static final String REPORT_PATH = "/opt/ddhj/report/html/";
+	// private static final String REPORT_PATH = "d:/test/";
 	/**
 	 * 用户购买楼盘报告存放地址
 	 */
-	// private static final String USER_REPORT_PATH = "/opt/ddhj/report/user/";
-	private static final String USER_REPORT_PATH = "d:/report/";
+	private static final String USER_REPORT_PATH = "/opt/ddhj/report/user/";
+	// private static final String USER_REPORT_PATH = "d:/report/";
 	private static ReportHelper self;
 
 	public static ReportHelper getInstance() {
@@ -679,7 +679,7 @@ public class ReportHelper extends BaseClass {
 	 * @param lp
 	 * @return
 	 */
-	public List<TLpEnvironmentIndex> getLpEnvironmentIndexs(TLandedProperty lp,JSONArray airArray) {
+	public List<TLpEnvironmentIndex> getLpEnvironmentIndexs(TLandedProperty lp, JSONArray airArray) {
 
 		List<TLpEnvironmentIndex> list = new ArrayList<TLpEnvironmentIndex>();
 		try {
