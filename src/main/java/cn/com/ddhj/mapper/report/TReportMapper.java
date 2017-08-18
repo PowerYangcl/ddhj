@@ -160,4 +160,6 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	 * @return
 	 */
 	int updateReportByLpAndLevel(TReport entity);
+	
+	List<Map<String, Object>> fineTreportTmp();
 }

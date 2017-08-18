@@ -3,6 +3,7 @@ package cn.com.ddhj;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
@@ -196,10 +198,11 @@ public class TReportTest extends BaseTest {
 	public void updateReportByLpAndLevel() {
 		try {
 			List<TLandedProperty> lps = lpMapper.findTLandedPropertyAll();
+			JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 			for (TLandedProperty lp : lps) {
 				System.out.println(lp.getCode());
 				lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
-				List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
+				List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp, airArray);
 				lp.setEnvironmentIndexs(list);
 				lp.setEnvironmentIndexs1(list.subList(0, 3));
 				lp.setEnvironmentIndexs2(list.subList(3, 6));
@@ -230,5 +233,57 @@ public class TReportTest extends BaseTest {
 	@Test
 	public void batchReportTmp() {
 		service.batchCreateH5Report();
+	}
+
+	public void createTReport() {
+		/**
+		 * 查询所有已生成的报告添加到t_report表
+		 */
+		List<TReport> reports = new ArrayList<TReport>();
+		List<Map<String, Object>> list = mapper.fineTreportTmp();
+		String time = DateUtil.getSysDateTime();
+		String code = WebHelper.getInstance().getUniqueCode("");
+		for (int i = 0; i < list.size(); i++) {
+			Map<String, Object> map = list.get(i);
+			TReport entity = new TReport();
+			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+			entity.setCode("R" + (Long.valueOf(code) + i));
+			entity.setHousesCode(map.get("lp_code").toString());
+			entity.setTitle(map.get("report_title").toString());
+			entity.setLevelCode(map.get("report_level").toString());
+			entity.setPath(map.get("path").toString());
+			entity.setPic("");
+			entity.setImage("");
+			entity.setRang(10);
+			entity.setPrice(BigDecimal.TEN);
+			entity.setDetail(map.get("report_title").toString());
+			entity.setCreateUser("system");
+			entity.setCreateTime(time);
+			entity.setUpdateUser("system");
+			entity.setUpdateTime(time);
+			reports.add(entity);
+		}
+		System.out.println(reports.size());
+		int size = reports.size() / 5000;
+		System.out.println(size);
+		int current = 5000;
+		try {
+			for (int i = 0; i < size; i++) {
+				if (i == 0) {
+					System.out.println(current * i + "|" + current * (i + 1));
+					List<TReport> subList = reports.subList(current * i, current * (i + 1));
+					mapper.insertReportData(subList);
+				} else {
+					System.out.println((current * i) + "|" + current * (i + 1));
+					List<TReport> subList = reports.subList(current * i, current * (i + 1));
+					mapper.insertReportData(subList);
+				}
+			}
+			System.out.println(current * size + 1 + "|" + reports.size());
+			List<TReport> subList = reports.subList(current * size, reports.size());
+			mapper.insertReportData(subList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

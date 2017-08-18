@@ -17,6 +17,7 @@ public class DateUtil {
 
 	public static final String DATE_FORMAT_DATEONLY = "yyyy-MM-dd"; // 年/月/日
 
+	public static final String DATE_FORMAT_DATE_ = "yyyy年MM月dd日"; // 年/月/日
 	public static final String DATE_FORMAT_DATETIME = "yyyy-MM-dd HH:mm:ss"; // 年/月/日
 
 	public static final SimpleDateFormat sdfDateOnly = new SimpleDateFormat(DateUtil.DATE_FORMAT_DATEONLY);
@@ -114,5 +115,9 @@ public class DateUtil {
 	
 	public static String sysDateToStrForFile(){
 		return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+	}
+	
+	public static String getCurrentDate(){
+		return new SimpleDateFormat(DATE_FORMAT_DATE_).format(new Date());
 	}
 }

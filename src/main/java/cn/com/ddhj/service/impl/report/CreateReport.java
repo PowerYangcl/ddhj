@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSONArray;
+
 import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.model.TLandedProperty;
@@ -29,13 +31,14 @@ public class CreateReport implements Runnable {
 		long start = System.currentTimeMillis();
 		try {
 			List<TReport> reports = new ArrayList<TReport>();
+			JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 			for (TLandedProperty lp : list) {
 				if (StringUtils.isNotBlank(lp.getLat())) {
 					lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
 				} else {
 					lp.setWeatherDistribution("无法定位小区");
 				}
-				List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
+				List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp,airArray);
 				lp.setEnvironmentIndexs(list);
 				lp.setEnvironmentIndexs1(list.subList(0, 3));
 				lp.setEnvironmentIndexs2(list.subList(3, 6));

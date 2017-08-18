@@ -679,7 +679,7 @@ public class ReportHelper extends BaseClass {
 	 * @param lp
 	 * @return
 	 */
-	public List<TLpEnvironmentIndex> getLpEnvironmentIndexs(TLandedProperty lp) {
+	public List<TLpEnvironmentIndex> getLpEnvironmentIndexs(TLandedProperty lp,JSONArray airArray) {
 
 		List<TLpEnvironmentIndex> list = new ArrayList<TLpEnvironmentIndex>();
 		try {
@@ -690,7 +690,7 @@ public class ReportHelper extends BaseClass {
 			/**
 			 * 空气质量
 			 */
-			TLpEnvironmentIndex air = ReportHelper.getInstance().airLevel(this.getCityAirLevel(), lp.getCity());
+			TLpEnvironmentIndex air = ReportHelper.getInstance().airLevel(airArray, lp.getCity());
 			list.add(air);
 			/**
 			 * 噪音

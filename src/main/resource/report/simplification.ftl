@@ -36,6 +36,14 @@
        </li>
        <li>
             <img class="bg_logo02" src="images/report/bg_logo02.png">
+            <div class="dir02">区域环境质量总述</div>
+            <div class="point"></div>
+            <div class="detail">
+                <p class="txt">您所在小区位于（北纬${lat},东经${lng}），属于${weatherDistribution}</p>
+            </div>
+       </li>
+       <li>
+            <img class="bg_logo02" src="images/report/bg_logo02.png">
             <div class="point"></div>
             <div class="detail detail02">
                 <p class="txt">区域附近一个月内各项自然环境质量参数 如下表所示</p>
