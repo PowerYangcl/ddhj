@@ -47,21 +47,10 @@
 		<property name="suffix" value=".jsp"></property>
 	</bean>
 	<!-- 文件上传限制 -->
-	<!-- 
-	<bean id="multipartResolver"
-		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<property name="defaultEncoding">
-			<value>UTF-8</value>
-		</property>
-		<property name="maxUploadSize">
-			<value>32505856</value>
-		</property>
-		<property name="maxInMemorySize">
-			<value>4096</value>
-		</property>
-	</bean>
-	
-	 -->
+	<!-- <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"> 
+		<property name="defaultEncoding"> <value>UTF-8</value> </property> <property 
+		name="maxUploadSize"> <value>32505856</value> </property> <property name="maxInMemorySize"> 
+		<value>4096</value> </property> </bean> -->
 
 	<!-- Quartz http://www.cnblogs.com/jianzhi/p/3384436.html -->
 	<!-- bean name="jobResyncEstateScore" class="cn.com.ddhj.service.impl.EstateEnvironmentServiceImpl" 
@@ -95,7 +84,7 @@
 		<!-- 修改为每周六晚上00:00运行定时任务 -->
 		<property name="cronExpression" value="0 00 23 ? * SAT"></property>
 	</bean>
-	
+
 	<!-- 定时抓取中国碳交易网的行情数据 -->
 	<bean name="carbonDealData" class="cn.com.ddhj.job.CarbonDealData" />
 	<bean id="quartzCarbonDealData"
@@ -111,7 +100,7 @@
 		<!-- 每分钟运行定时任务 -->
 		<property name="cronExpression" value="0 0 12 * * ?"></property>
 	</bean>
-	
+
 	<!-- 定时更新楼盘solr索引 -->
 	<bean name="reindexLandProperty" class="cn.com.ddhj.solr.job.ReindexLandPropertyForSolr" />
 	<bean id="quartzReindexLandProperty"
@@ -134,9 +123,7 @@
 				<!-- ref bean="quartzTrigger" / -->
 				<ref bean="carbonDealDataTrigger" />
 				<ref bean="reindexLandPropertyTrigger" />
-				<!--
-					<ref bean="createReportTrigger" /> 
-				 -->
+				<ref bean="createReportTrigger" />
 			</list>
 		</property>
 	</bean>

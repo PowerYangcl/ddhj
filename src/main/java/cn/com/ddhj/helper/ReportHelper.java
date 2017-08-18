@@ -651,6 +651,7 @@ public class ReportHelper extends BaseClass {
 	public String createHtml(TLandedProperty lp, String reportName) {
 		String url = "";
 		try {
+			System.out.println("楼盘" + lp.getCode() + "开始生成报告");
 			File file = new File(REPORT_PATH + lp.getCode() + "/");
 			if (!file.exists()) {
 				file.mkdir();
