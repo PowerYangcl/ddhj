@@ -531,4 +531,7 @@
 	<update id="updateReportTime">
 		update t_report set update_time = now()
 	</update>
+	<select id="fineTreportTmp" resultType="java.util.Map">
+		select * from t_report_h5_tmp
+	</select>
 </mapper>

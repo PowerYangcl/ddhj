@@ -285,13 +285,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		BaseResult result = new BaseResult();
 		if (list != null && list.size() > 0) {
 			// 生成pdf环境报告
-			for (int i = 0; i < list.size(); i++) {
-				CreateReportResult createResult = createPDF(list.get(i).getCode(), list.get(i).getHousesCode(), "E:/",
-						this.getCityAirLevel());
-				if (createResult.getResultCode() == Constant.RESULT_SUCCESS) {
-					list.get(i).setPath(createResult.getPath());
-				}
-			}
+			// for (int i = 0; i < list.size(); i++) {
+			// CreateReportResult createResult =
+			// createPDF(list.get(i).getCode(), list.get(i).getHousesCode(),
+			// "E:/",
+			// this.getCityAirLevel());
+			// if (createResult.getResultCode() == Constant.RESULT_SUCCESS) {
+			// list.get(i).setPath(createResult.getPath());
+			// }
+			// }
 			boolean flag = false;
 			if (list.size() <= 10000) {
 				mapper.insertReportData(list);
@@ -784,6 +786,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				// 获取报告列表
 				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
 				if (lpList != null && lpList.size() > 0) {
+					JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 					List<TReport> reports = new ArrayList<TReport>();
 					for (TLandedProperty lp : lpList) {
 						long lpStart = System.currentTimeMillis();
@@ -792,12 +795,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						} else {
 							continue;
 						}
-						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
+						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp,
+								airArray);
 						lp.setEnvironmentIndexs(list);
 						lp.setEnvironmentIndexs1(list.subList(0, 3));
 						lp.setEnvironmentIndexs2(list.subList(3, 6));
 						lp.setEnvironmentIndexs3(list.subList(6, 9));
 						lp.setEnvironmentIndexs4(list.subList(9, list.size()));
+						lp.setUpdateTime(DateUtil.getCurrentDate());
 						/*
 						 * 精简版
 						 */
@@ -823,26 +828,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						long lpEnd = System.currentTimeMillis();
 						getLogger().logInfo("获取楼盘信息时间为:" + (lpEnd - lpStart));
 					}
-					// /**
-					// * 分批次添加
-					// */
-					// int size = reports.size() / 10000;
-					// int current = 10000;
-					// for (int i = 0; i <= size - 1; i++) {
-					// List<TReport> subList = null;
-					// if (i == 0) {
-					// subList = reports.subList(current * i, current * (i +
-					// 1));
-					// } else {
-					// subList = reports.subList(current * i + 1, current * (i +
-					// 1));
-					// }
-					//
-					// mapper.batchInsertH5ReportToTmp(subList);
-					// }
-					// List<TReport> subList = reports.subList(current * size +
-					// 1, reports.size());
-					// mapper.batchInsertH5ReportToTmp(subList);
 				}
 			}
 		} catch (Exception e) {
@@ -902,15 +887,18 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		BaseResult result = new BaseResult();
 		try {
 			List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
+			JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
+			String date = DateUtil.getCurrentDate();
 			if (lpList != null && lpList.size() > 0) {
 				for (TLandedProperty lp : lpList) {
 					lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
-					List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
+					List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp, airArray);
 					lp.setEnvironmentIndexs(list);
 					lp.setEnvironmentIndexs1(list.subList(0, 3));
 					lp.setEnvironmentIndexs2(list.subList(3, 6));
 					lp.setEnvironmentIndexs3(list.subList(6, 9));
 					lp.setEnvironmentIndexs4(list.subList(9, list.size()));
+					lp.setUpdateTime(date);
 					new ReportHelper().createHtml(lp, "full");
 					new ReportHelper().createHtml(lp, "simplification");
 				}
@@ -926,20 +914,27 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	}
 
 	@Override
-	public ReportResult createHtmlByLpCode(TLandedProperty lp, String type) {
+	public ReportResult createHtmlByLpCode(String lpCode, String type) {
 		ReportResult result = new ReportResult();
 		try {
-			lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
-			List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
-			lp.setEnvironmentIndexs(list);
-			lp.setEnvironmentIndexs1(list.subList(0, 3));
-			lp.setEnvironmentIndexs2(list.subList(3, 6));
-			lp.setEnvironmentIndexs3(list.subList(6, 9));
-			lp.setEnvironmentIndexs4(list.subList(9, list.size()));
-			String url = new ReportHelper().createHtml(lp, type);
-			result.setResultCode(Constant.RESULT_SUCCESS);
-			result.setResultMessage("生成htm报告成功");
-			result.setUrl(url);
+			TLandedProperty lp = lpMapper.selectByCode(lpCode);
+			if (lp != null) {
+				JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
+				lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
+				List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp, airArray);
+				lp.setEnvironmentIndexs(list);
+				lp.setEnvironmentIndexs1(list.subList(0, 3));
+				lp.setEnvironmentIndexs2(list.subList(3, 6));
+				lp.setEnvironmentIndexs3(list.subList(6, 9));
+				lp.setEnvironmentIndexs4(list.subList(9, list.size()));
+				String url = new ReportHelper().createHtml(lp, type);
+				result.setResultCode(Constant.RESULT_SUCCESS);
+				result.setResultMessage("生成htm报告成功");
+				result.setUrl(url);
+			} else {
+				result.setResultCode(Constant.RESULT_ERROR);
+				result.setResultMessage("楼盘不存在");
+			}
 		} catch (Exception e) {
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("生成html报告失败，失败原因：" + e.getMessage());

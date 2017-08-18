@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSONArray;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.report.TReportDto;
-import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.report.TReportEnvironmentLevel;
 import cn.com.ddhj.model.system.SysUser;
@@ -176,10 +175,10 @@ public interface ITReportService extends IBaseService<TReport, BaseDto> {
 	/**
 	 * 根据楼盘和类型创建报告
 	 * 
-	 * @param lp
+	 * @param lpCode
 	 * @param type
 	 *            full 完整版 simplification精简版
 	 * @return
 	 */
-	BaseResult createHtmlByLpCode(TLandedProperty lp, String type);
+	BaseResult createHtmlByLpCode(String lpCode, String type);
 }
