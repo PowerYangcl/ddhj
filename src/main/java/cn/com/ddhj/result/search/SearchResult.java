@@ -5,14 +5,14 @@ import java.util.List;
 
 import cn.com.ddhj.base.BaseResult;
 
-public class SearchResult extends BaseResult {
-	private List<SearchEntity> list = new LinkedList<SearchEntity>();
+public class SearchResult<T> extends BaseResult {
+	private List<T> list = new LinkedList<T>();
 
-	public List<SearchEntity> getList() {
+	public List<T> getList() {
 		return list;
 	}
 
-	public void setList(List<SearchEntity> list) {
+	public void setList(List<T> list) {
 		this.list = list;
 	}
 }

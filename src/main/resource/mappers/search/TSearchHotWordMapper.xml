@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.com.ddhj.mapper.search.ISearchHotWordMapper">
+<mapper namespace="cn.com.ddhj.mapper.search.TSearchHotWordMapper">
 	
 	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.search.TSearchHotWord">
 		<id column="zid" property="zid" jdbcType="INTEGER" />
@@ -21,6 +21,15 @@
 		where 
 			zid = #{zid,jdbcType=INTEGER}
 	</select>
+	
+	<select id="getSearchHotWord" resultMap="BaseResultMap">
+		select
+			distinct key_word, score
+		from 
+			t_search_hot_word
+		order by score desc limit 20
+	</select>
+	
 	
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from t_search_hot_word where zid = #{zid,jdbcType=INTEGER}

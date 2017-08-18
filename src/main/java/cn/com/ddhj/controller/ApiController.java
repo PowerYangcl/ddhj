@@ -30,11 +30,11 @@ import cn.com.ddhj.annotation.Inject;
 import cn.com.ddhj.base.BaseAPI;
 import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.base.BaseResult;
-import cn.com.ddhj.dto.SearchLandPropertyDto;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.apppay.TPayInfoDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.dto.search.SearchLandPropertyDto;
 import cn.com.ddhj.dto.store.TProductInfoDto;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.dto.store.TUserAddressUpdateDto;
@@ -54,6 +54,9 @@ import cn.com.ddhj.model.TLpComment;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.TOrderRecharge;
 import cn.com.ddhj.model.TPayment;
+import cn.com.ddhj.model.search.SearchEntity;
+import cn.com.ddhj.model.search.TSearchHistory;
+import cn.com.ddhj.model.search.TSearchHotWord;
 import cn.com.ddhj.model.trade.TTradeOrder;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
@@ -74,7 +77,6 @@ import cn.com.ddhj.result.order.TOrderResult;
 import cn.com.ddhj.result.product.TPageProductListResult;
 import cn.com.ddhj.result.report.TReportLResult;
 import cn.com.ddhj.result.report.TReportSelResult;
-import cn.com.ddhj.result.search.SearchEntity;
 import cn.com.ddhj.result.search.SearchResult;
 import cn.com.ddhj.result.trade.TradeBalanceResult;
 import cn.com.ddhj.result.trade.TradeCityResult;
@@ -667,7 +669,7 @@ public class ApiController extends BaseClass {
 		}
 		//solr搜索接口
 		else if("search".equals(api.getApiTarget())) {
-			SearchResult searchResult = new SearchResult();
+			SearchResult<SearchEntity> searchResult = new SearchResult<SearchEntity>();
 			SearchLandPropertyDto dto = obj.toJavaObject(SearchLandPropertyDto.class);
 			List<SolrData> result = searchService.search(dto, api.getUserToken());
 			if(result != null && !result.isEmpty()) {
@@ -685,14 +687,16 @@ public class ApiController extends BaseClass {
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(searchResult));
 		}
-//		//搜索历史接口
-//		else if("search_history".equals(api.getApiTarget())) {
-//			
-//		}
-//		//热搜接口
-//		else if("hot_search".equals(api.getApiTarget())) {
-//			
-//		}
+		//搜索历史接口
+		else if("search_history".equals(api.getApiTarget())) {
+			SearchResult<TSearchHistory> result = searchService.getSearchHistoryByUserToken(api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		//热搜接口
+		else if("hot_search".equals(api.getApiTarget())) {
+			SearchResult<TSearchHotWord> result = searchService.getSearchHotWord();
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(Constant.RESULT_ERROR);
