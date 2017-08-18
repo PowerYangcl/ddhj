@@ -787,7 +787,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
 				if (lpList != null && lpList.size() > 0) {
 					JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
-					List<TReport> reports = new ArrayList<TReport>();
 					for (TLandedProperty lp : lpList) {
 						long lpStart = System.currentTimeMillis();
 						if (StringUtils.isNotBlank(lp.getLat())) {
@@ -813,7 +812,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						simplification.setPath(path);
 						String reportDate = DateUtil.getSysDateTime();
 						simplification.setCreateTime(reportDate);
-						reports.add(simplification);
 						/*
 						 * 完整版
 						 */
@@ -824,10 +822,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						full.setPath(fullPath);
 						String fullReportDate = DateUtil.getSysDateTime();
 						full.setCreateTime(fullReportDate);
-						reports.add(full);
 						long lpEnd = System.currentTimeMillis();
 						getLogger().logInfo("获取楼盘信息时间为:" + (lpEnd - lpStart));
 					}
+					
+					/**
+					 * 查询用户最新下单购买报告记录<br>
+					 * 根据用户报告将指定楼盘报告复制到用户文件下<br>
+					 */
 				}
 			}
 		} catch (Exception e) {
