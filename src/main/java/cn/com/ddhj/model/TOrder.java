@@ -13,7 +13,10 @@ public class TOrder extends BaseModel {
 
 	private String code;
 
+	private String lpCode;
 	private String reportCode;
+	private String reportFull;
+	private String reportSimplification;
 
 	private BigDecimal payPrice;
 
@@ -95,8 +98,32 @@ public class TOrder extends BaseModel {
 	 * 发票内容
 	 */
 	private String invoiceContent;
-	
+
 	private ReportUpdate reportUpdate = new ReportUpdate();
+
+	public String getLpCode() {
+		return lpCode;
+	}
+
+	public void setLpCode(String lpCode) {
+		this.lpCode = lpCode;
+	}
+
+	public String getReportFull() {
+		return reportFull;
+	}
+
+	public void setReportFull(String reportFull) {
+		this.reportFull = reportFull;
+	}
+
+	public String getReportSimplification() {
+		return reportSimplification;
+	}
+
+	public void setReportSimplification(String reportSimplification) {
+		this.reportSimplification = reportSimplification;
+	}
 
 	/**
 	 * ==============新加字段 end ===============
@@ -309,7 +336,7 @@ public class TOrder extends BaseModel {
 	public void setInvoiceTitle(String invoiceTitle) {
 		this.invoiceTitle = invoiceTitle;
 	}
-	
+
 	public ReportUpdate getReportUpdate() {
 		return reportUpdate;
 	}

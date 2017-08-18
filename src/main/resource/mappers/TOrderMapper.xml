@@ -5,7 +5,11 @@
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
 		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="lp_code" property="lpCode" jdbcType="VARCHAR" />
 		<result column="report_code" property="reportCode" jdbcType="VARCHAR" />
+		<result column="report_full" property="reportFull" jdbcType="VARCHAR" />
+		<result column="report_Simplification" property="reportSimplification"
+			jdbcType="VARCHAR" />
 		<result column="pay_price" property="payPrice" jdbcType="DECIMAL" />
 		<result column="pay_code" property="payCode" jdbcType="VARCHAR" />
 		<result column="invoice_title" property="invoiceTitle"
@@ -35,7 +39,8 @@
 			jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, uuid, code, report_code,
+		id, uuid, code,lp_code,
+		report_code,report_full,report_simplification,
 		pay_price,pay_code,invoice_title, status,
 		create_user,
 		DATE_FORMAT(
@@ -64,14 +69,16 @@
 		from t_order
 		where `code` = #{code,jdbcType=VARCHAR}
 	</select>
-	<select id="findOrderByReportCodeAndUserCode" resultMap="BaseResultMap" parameterType="cn.com.ddhj.dto.TOrderDto">
+	<select id="findOrderByReportCodeAndUserCode" resultMap="BaseResultMap"
+		parameterType="cn.com.ddhj.dto.TOrderDto">
 		select
 		<include refid="Base_Column_List" />
 		from t_order
-		where report_code = #{reportCode,jdbcType=VARCHAR} and create_user=#{createUser,jdbcType=VARCHAR}
-		order by create_time desc 
+		where report_code = #{reportCode,jdbcType=VARCHAR} and
+		create_user=#{createUser,jdbcType=VARCHAR}
+		order by create_time desc
 	</select>
-	
+
 	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from t_order
 		where `code` = #{code,jdbcType=VARCHAR}
@@ -81,7 +88,10 @@
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			uuid,
 			code,
+			lp_code,
 			report_code,
+			report_full,
+			report_simplification,
 			pay_price,
 			pay_code,
 			<if test="invoiceTitle != null">
@@ -125,7 +135,10 @@
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			#{uuid,jdbcType=VARCHAR},
 			#{code,jdbcType=VARCHAR},
+			#{lpCode,jdbcType=VARCHAR},
 			#{reportCode,jdbcType=VARCHAR},
+			#{reportFull,jdbcType=VARCHAR},
+			#{reportSimplification,jdbcType=VARCHAR},
 			#{payPrice,jdbcType=DECIMAL},
 			#{payCode,jdbcType=VARCHAR},
 			<if test="invoiceTitle != null">
@@ -202,7 +215,8 @@
 		r.image AS image,
 		r.path,
 		rl.`name` AS level_name,
-		lp.addressFull AS address,
+		lp.addressFull AS
+		address,
 		o.report_code AS report_code,
 		o.create_time AS create_time,
 		o.update_time AS update_time
@@ -223,7 +237,7 @@
 			<if test="status != null">
 				AND o.`status` = #{status,jdbcType=INTEGER}
 			</if>
-			AND o.`status`!=4 	
+			AND o.`status`!=4
 		</where>
 		order by o.update_time desc
 		limit
@@ -334,20 +348,21 @@
 		id =
 		#{id}
 	</delete>
-	
-	
+
+
 	<update id="updateOrderStatus" parameterType="cn.com.ddhj.model.TOrder">
 		update t_order
-		<set>  
+		<set>
 			<if test="status != null">
 				`status` = #{status , jdbcType=INTEGER},
 			</if>
-			update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s')
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
-	
-	
+
+
 </mapper>
 
 
