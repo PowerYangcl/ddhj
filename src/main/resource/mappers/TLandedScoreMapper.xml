@@ -46,7 +46,7 @@
 				 ls.city = #{city , jdbcType=VARCHAR}
 		and  ls.create_time between #{startTime , jdbcType=VARCHAR}  and #{endTime , jdbcType=VARCHAR}
 		group by ls.`code` 
-		order by scoreavg desc limit #{pageIndex , jdbcType=VARCHAR} , #{pageSize , jdbcType=VARCHAR} 
+		order by scoreavg desc 
 	</select>
 	
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
