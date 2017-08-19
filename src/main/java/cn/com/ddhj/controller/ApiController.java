@@ -64,6 +64,7 @@ import cn.com.ddhj.model.user.TUserLogin;
 import cn.com.ddhj.result.CityResult;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
+import cn.com.ddhj.result.ReportResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
 import cn.com.ddhj.result.file.FileResult;
@@ -361,7 +362,11 @@ public class ApiController extends BaseClass {
 			BaseResult result = orderService.updateByCode(entity, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		} else if ("order_affirm".equals(api.getApiTarget())) {
-			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"), obj.getString("type"), api.getUserToken());
+			OrderAffirmResult result = orderService.orderAffirm(obj.getString("codes"), obj.getString("type"),
+					api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		} else if ("order_report_url".equals(api.getApiTarget())) {
+			ReportResult result = orderService.getOrderReportUrl(obj.getString("code"));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 订单数量
@@ -657,52 +662,51 @@ public class ApiController extends BaseClass {
 			TUserAddressDto dto = obj.toJavaObject(TUserAddressDto.class);
 			BaseResult result = userAddressService.findUserAddressPage(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} 
+		}
 		/**
 		 * ================= 点点商城相关 end ======================
 		 */
-		//app楼盘报告订单支付|碳币充值订单支付 -zht
+		// app楼盘报告订单支付|碳币充值订单支付 -zht
 		else if ("app_order_pay".equals(api.getApiTarget())) {
 			TPayInfoDto dto = obj.toJavaObject(TPayInfoDto.class);
 			BaseResult result = orderPayService.doPay(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//solr搜索接口
-		else if("search".equals(api.getApiTarget())) {
+		// solr搜索接口
+		else if ("search".equals(api.getApiTarget())) {
 			SearchResult<SearchEntity> searchResult = new SearchResult<SearchEntity>();
 			SearchLandPropertyDto dto = obj.toJavaObject(SearchLandPropertyDto.class);
 			List<SolrData> result = searchService.search(dto, api.getUserToken());
-			if(result != null && !result.isEmpty()) {
-				for(SolrData data : result) {
+			if (result != null && !result.isEmpty()) {
+				for (SolrData data : result) {
 					SearchEntity entity = new SearchEntity();
 					entity.setCode(data.getK1());
 					entity.setName(data.getS2());
 					entity.setCity(data.getS1());
-					entity.setAddress(data.getS3()); //地址
-					entity.setLat(data.getS4()); //经度
-					entity.setLng(data.getS5()); //纬度
-					entity.setPic(data.getL1()); //图片
+					entity.setAddress(data.getS3()); // 地址
+					entity.setLat(data.getS4()); // 经度
+					entity.setLng(data.getS5()); // 纬度
+					entity.setPic(data.getL1()); // 图片
 					searchResult.getList().add(entity);
 				}
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(searchResult));
 		}
-		//搜索历史接口
-		else if("search_history".equals(api.getApiTarget())) {
+		// 搜索历史接口
+		else if ("search_history".equals(api.getApiTarget())) {
 			SearchResult<TSearchHistory> result = searchService.getSearchHistoryByUserToken(api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		//删除搜索历史接口
-		else if("del_search_history".equals(api.getApiTarget())) {
+		// 删除搜索历史接口
+		else if ("del_search_history".equals(api.getApiTarget())) {
 			JSONObject result = searchService.delSearchHistoryByUserToken(api.getUserToken());
 			return result;
 		}
-		//热搜接口
-		else if("hot_search".equals(api.getApiTarget())) {
+		// 热搜接口
+		else if ("hot_search".equals(api.getApiTarget())) {
 			SearchResult<TSearchHotWord> result = searchService.getSearchHotWord();
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		}
-		else {
+		} else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("调用接口失败");
@@ -758,7 +762,7 @@ public class ApiController extends BaseClass {
 
 		}
 	}
-	
+
 	@RequestMapping("payNotify")
 	@ResponseBody
 	public String payNotify(HttpServletRequest request, HttpServletResponse response) {
@@ -897,7 +901,7 @@ public class ApiController extends BaseClass {
 	public FileResult uploadFile(HttpServletRequest request) {
 		return fileService.uploadUserHeader(request);
 	}
-	
+
 	public String getIpAddr(HttpServletRequest request) {
 		String ip = request.getHeader("X-Real-IP");
 		if (!StringUtils.isBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
