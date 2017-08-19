@@ -123,20 +123,20 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			return userResult;
 		}
 
-		// 检验地址
-		String addressCode = dto.getAddressCode();
-		if (StringUtils.isBlank(addressCode)) {
-			result.setResultCode(Constant.RESULT_ERROR);
-			result.setResultMessage("获取订单收货地址为空");
-			return result;
-		}
-
-		TUserAddress address = addressMapper.selectByCode(addressCode);
-		if (address == null) {
-			result.setResultCode(Constant.RESULT_ERROR);
-			result.setResultMessage("获取订单收货地址为空");
-			return result;
-		}
+		// 检验地址 (前端要求去掉)
+//		String addressCode = dto.getAddressCode();
+//		if (StringUtils.isBlank(addressCode)) {
+//			result.setResultCode(Constant.RESULT_ERROR);
+//			result.setResultMessage("获取订单收货地址为空");
+//			return result;
+//		}
+		//(前端要求去掉)
+//		TUserAddress address = addressMapper.selectByCode(addressCode);
+//		if (address == null) {
+//			result.setResultCode(Constant.RESULT_ERROR);
+//			result.setResultMessage("获取订单收货地址为空");
+//			return result;
+//		}
 
 		// 验证商品是否存在，库存是否可用
 		DataResult res = getProductList(dto.getProductList());
