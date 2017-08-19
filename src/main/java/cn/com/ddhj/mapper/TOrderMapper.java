@@ -5,7 +5,6 @@ import java.util.Map;
 
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.model.TOrder;
-import cn.com.ddhj.model.report.TReport;
 
 /**
  * 
@@ -27,20 +26,22 @@ public interface TOrderMapper extends BaseMapper<TOrder, TOrderDto> {
 	 * @return
 	 */
 	TOrder findOrderByComment(TOrder order);
-	
+
 	/**
 	 * 
 	 * 方法: findOrderAll <br>
 	 * 描述: 查询所有订单 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2016年10月21日 下午9:57:17
+	 * 
 	 * @param dto
 	 * @return
 	 */
 	List<Map<String, String>> findOrderAll(TOrderDto dto);
-	
+
 	/**
 	 * 根据楼盘报告编号和用户编号查询楼盘报告订单信息
+	 * 
 	 * @author zht
 	 * @param reportCode
 	 * @param userCode
@@ -50,22 +51,16 @@ public interface TOrderMapper extends BaseMapper<TOrder, TOrderDto> {
 
 	public Integer deleteOne(Integer id);
 
-	public Integer updateOrderStatus(TOrder e);  
+	public Integer updateOrderStatus(TOrder e);
+
+	/**
+	 * 
+	 * 方法: findOrderLPAndCreateUser <br>
+	 * 描述: 查询已支付订单的楼盘编码和创建人 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月19日 上午11:00:35
+	 * 
+	 * @return
+	 */
+	public List<TOrder> findOrderLPAndCreateUser();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

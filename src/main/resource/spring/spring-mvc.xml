@@ -82,7 +82,7 @@
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="quartzCreateReport" />
 		<!-- 修改为每周六晚上00:00运行定时任务 -->
-		<property name="cronExpression" value="0 00 23 ? * SAT"></property>
+		<property name="cronExpression" value="0 30 15 * * ?"></property>
 	</bean>
 
 	<!-- 定时抓取中国碳交易网的行情数据 -->

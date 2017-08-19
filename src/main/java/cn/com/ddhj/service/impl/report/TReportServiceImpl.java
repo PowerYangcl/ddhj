@@ -825,11 +825,17 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						long lpEnd = System.currentTimeMillis();
 						getLogger().logInfo("获取楼盘信息时间为:" + (lpEnd - lpStart));
 					}
-					
+
 					/**
 					 * 查询用户最新下单购买报告记录<br>
 					 * 根据用户报告将指定楼盘报告复制到用户文件下<br>
 					 */
+					List<TOrder> orders = orderMapper.findOrderLPAndCreateUser();
+					if (orders != null && orders.size() > 0) {
+						for (TOrder order : orders) {
+							ReportHelper.getInstance().createUserReport(order.getLpCode(), order.getCreateUser());
+						}
+					}
 				}
 			}
 		} catch (Exception e) {

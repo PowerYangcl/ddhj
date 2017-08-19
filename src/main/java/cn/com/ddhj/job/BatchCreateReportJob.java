@@ -24,7 +24,7 @@ public class BatchCreateReportJob extends BaseClass {
 	 * 时间: 2016年10月26日 下午10:34:18
 	 */
 	public void batchCreateReport() {
-//		service.batchCreateReport();
+		// service.batchCreateReport();
 		service.batchCreateH5Report();
 	}
 

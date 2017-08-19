@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -26,19 +25,17 @@ import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
-import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
-import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TOrder;
-import cn.com.ddhj.model.lp.TLpEnvironmentIndex;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
+import cn.com.ddhj.result.ReportResult;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
@@ -71,8 +68,6 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	private TReportMapper reportMapper;
 	@Autowired
 	private TUserCarbonOperationMapper carbonOperationMapper;
-	@Autowired
-	private TLandedPropertyMapper lpMapper;
 
 	@Override
 	public TOrderResult findEntityToPage(TOrderDto dto, String userToken, HttpServletRequest request) {
@@ -182,6 +177,20 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 					if (entity.getCheckPayMoney().compareTo(carbonToMoney) == 0) {
 						entity.setStatus(1);
 					}
+				}
+				/**
+				 * 根据楼盘编码获取报告信息
+				 */
+				TReport report = reportMapper.findSimplificationReport(entity.getLpCode());
+				entity.setReportSimplification(report.getPath());
+				ReportResult reportResult = ReportHelper.getInstance().createUserReport(entity.getLpCode(),
+						user.getUserCode());
+				if (reportResult.getResultCode() == Constant.RESULT_SUCCESS) {
+					entity.setReportFull(reportResult.getUrl());
+				} else {
+					result.setResultCode(reportResult.getResultCode());
+					result.setResultMessage(reportResult.getResultMessage());
+					return result;
 				}
 				mapper.insertSelective(entity);
 				if (carbonMoney.compareTo(BigDecimal.ZERO) > 0) {
@@ -517,7 +526,6 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		BaseResult result = new BaseResult();
 		try {
 			TOrder order = mapper.selectByCode(code);
-			System.out.println(JSON.toJSON(order));
 			if (order != null) {
 				ReportHelper.getInstance().createUserReport(order.getLpCode(), order.getCreateUser());
 				result.setResultCode(Constant.RESULT_SUCCESS);

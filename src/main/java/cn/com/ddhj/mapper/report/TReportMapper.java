@@ -162,4 +162,15 @@ public interface TReportMapper extends BaseMapper<TReport, BaseDto> {
 	int updateReportByLpAndLevel(TReport entity);
 	
 	List<Map<String, Object>> fineTreportTmp();
+	
+	/**
+	 * 
+	 * 方法: findSimplificationReport <br>
+	 * 描述: 根据楼盘编码查询精简版访问地址 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月19日 下午1:04:03
+	 * @param lpCode
+	 * @return
+	 */
+	TReport findSimplificationReport(String lpCode);
 }

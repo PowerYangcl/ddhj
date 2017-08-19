@@ -78,7 +78,13 @@
 		create_user=#{createUser,jdbcType=VARCHAR}
 		order by create_time desc
 	</select>
-
+	<!-- 查询已支付订单的楼盘编码和创建人 2017-08-19 zhy -->
+	<select id="findOrderLPAndCreateUser" resultMap="BaseResultMap">
+		select
+		lp_code,create_user from t_order where `status` in(1,2) and
+		DATE_ADD(update_time,INTERVAL 3 MONTH)>NOW() group by
+		create_user,lp_code
+	</select>
 	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from t_order
 		where `code` = #{code,jdbcType=VARCHAR}
@@ -361,8 +367,6 @@
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
-
-
 </mapper>
 
 
