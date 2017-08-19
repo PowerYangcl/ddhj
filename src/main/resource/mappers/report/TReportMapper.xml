@@ -473,7 +473,7 @@
 		</where>
 	</select>
 	<!-- 查询精简版访问地址 -->
-	<select id="findSimplificationReport" parameterType="java.lang.String">
+	<select id="findSimplificationReport" parameterType="java.lang.String" resultMap="BaseResultMap" >
 		select
 		path
 		from t_report where level_code = 'RL161006100001'

@@ -184,7 +184,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				TReport report = reportMapper.findSimplificationReport(entity.getLpCode());
 				entity.setReportSimplification(report.getPath());
 				ReportResult reportResult = ReportHelper.getInstance().createUserReport(entity.getLpCode(),
-						user.getUserCode());
+						entity.getBuyerCode());
 				if (reportResult.getResultCode() == Constant.RESULT_SUCCESS) {
 					entity.setReportFull(reportResult.getUrl());
 				} else {
