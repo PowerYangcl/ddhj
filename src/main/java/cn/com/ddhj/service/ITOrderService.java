@@ -115,37 +115,31 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 *
 	 * @param input
 	 * @date 2017年8月8日 上午10:57:02
-	 * @author Yangcl 
+	 * @author Yangcl
 	 * @version 1.0.0.1
 	 */
-	public JSONObject deleteReportOrder(JSONObject input); 
-	
+	public JSONObject deleteReportOrder(JSONObject input);
+
 	/**
 	 * @descriptions 取消订单
 	 *
 	 * @param input
 	 * @date 2017年8月8日 上午10:57:15
-	 * @author Yangcl 
+	 * @author Yangcl
 	 * @version 1.0.0.1
 	 */
 	public JSONObject cancelReportOrder(JSONObject input);
 
-	public JSONObject deleteOne(Integer id);  
+	public JSONObject deleteOne(Integer id);
+
+	/**
+	 * 
+	 * 方法: refreshReport <br>
+	 * 描述: 刷新订单报告 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月19日 上午8:27:11
+	 * 
+	 * @return
+	 */
+	public BaseResult refreshReport(String code);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

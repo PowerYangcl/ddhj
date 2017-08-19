@@ -67,6 +67,7 @@
 				html +='<td>'+obj.levelName+'</td>';
 				html +='<td>'+obj.createTime+'</td>';
 				html +='<td>';
+				html +='<a onclick="refreshReport(\'' + obj.code + '\')" style="cursor: pointer;margin-right:10px" >刷新报告</a>';
 				html +='<a onclick="deleteOne(\'' + obj.id + '\')" style="cursor: pointer;" >删除</a>';
 				html +='</td>';
 				html +='</tr>';
@@ -92,6 +93,24 @@
 				aForm.formPaging(pageIndex);
 			} else {
 				alert(obj.msg);
+			}
+		}
+	}
+	
+	function refreshReport(code_){
+		if (confirm('您确定要刷新这条记录吗？')) {
+			var type_ = 'post';
+			var url_ = '${basePath}order/refresh_report.htm';
+			var data_ = {
+				code : code_
+			};
+			var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
+			if (obj.resultCode == '1') {
+				alert(obj.resultMessage);
+				var pageIndex = $(".paginate_active").html();
+				aForm.formPaging(pageIndex);
+			} else {
+				alert(obj.resultMessage);
 			}
 		}
 	}

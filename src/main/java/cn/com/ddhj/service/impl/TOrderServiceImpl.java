@@ -15,6 +15,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -22,13 +24,17 @@ import com.github.pagehelper.PageInfo;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.helper.PropHelper;
+import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
+import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.model.lp.TLpEnvironmentIndex;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
@@ -65,6 +71,8 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	private TReportMapper reportMapper;
 	@Autowired
 	private TUserCarbonOperationMapper carbonOperationMapper;
+	@Autowired
+	private TLandedPropertyMapper lpMapper;
 
 	@Override
 	public TOrderResult findEntityToPage(TOrderDto dto, String userToken, HttpServletRequest request) {
@@ -85,16 +93,16 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 						for (int i = 0; i < list.size(); i++) {
 							TOrder order = list.get(i);
 							order.setPath(basePath + order.getPath());
-							//报告订单已支付
-							if(order.getStatus() == 1 || order.getStatus() == 2) {
-								//计算报告购买时间与当前时间差值,大于半年则提示更新
+							// 报告订单已支付
+							if (order.getStatus() == 1 || order.getStatus() == 2) {
+								// 计算报告购买时间与当前时间差值,大于半年则提示更新
 								try {
 									Date buyTime = DateUtil.strToDate(order.getUpdateTime());
 									Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
-									if(new Date().compareTo(deadLine) >= 0) {
-										//报告要更新
+									if (new Date().compareTo(deadLine) >= 0) {
+										// 报告要更新
 										String reportCode = order.getReportCode();
-										if(StringUtils.isNotBlank(reportCode)) {
+										if (StringUtils.isNotBlank(reportCode)) {
 											TReport report = reportMapper.selectByCode(reportCode);
 											order.getReportUpdate().setAddress(order.getAddress());
 											order.getReportUpdate().setCity(report.getCity());
@@ -252,8 +260,10 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	 * 
 	 * 方法: orderAffirm <br>
 	 * 
-	 * @param codes 报告编号
-	 * @param type new|update 报告购买类型(new新购, update更新购买)
+	 * @param codes
+	 *            报告编号
+	 * @param type
+	 *            new|update 报告购买类型(new新购, update更新购买)
 	 * @return
 	 * @see cn.com.ddhj.service.ITOrderService#orderAffirm(java.lang.String)
 	 */
@@ -265,28 +275,28 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			result.setResultMessage("无效参数");
 			return result;
 		}
-		
+
 		List<String> list = Arrays.asList(codes.split(","));
 		if (list == null || list.isEmpty()) {
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("无效参数");
 			return result;
 		}
-		
+
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		if (login == null) {
 			result.setResultCode(-1);
 			result.setResultMessage("用户未登录");
 			return result;
 		}
-		
+
 		TUser user = userMapper.findTUserByUuid(login.getUserToken());
 		if (user == null) {
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户不存在");
 			return result;
 		}
-		
+
 		String carbon_money_ratio = PropHelper.getValue("carbon_money_ratio");
 		result.setCarbonMoney(user.getCarbonMoney());
 		result.setCarbonToMoneyRatio(BigDecimal.valueOf(Double.valueOf(carbon_money_ratio)));
@@ -297,14 +307,14 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			result.setResultMessage("环境报告为空");
 			return result;
 		}
-		
+
 		double payMoney = 0;
 		for (int i = 0; i < reports.size(); i++) {
 			TReport r = reports.get(i);
 			r.setLevelList(reportMapper.findReportByHousesCode(r.getHousesCode()));
-			if(StringUtils.isBlank(type) || type.equals("new")) {
+			if (StringUtils.isBlank(type) || type.equals("new")) {
 				payMoney += r.getPrice().doubleValue();
-			} else if(type.equals("update")) {
+			} else if (type.equals("update")) {
 				payMoney += r.getUpdatePrice().doubleValue();
 			}
 		}
@@ -396,6 +406,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		SysOrderDataResult result = new SysOrderDataResult();
 		PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
 		List<Map<String, String>> list = mapper.findOrderAll(dto);
+		System.out.println(JSON.toJSON(list));
 		if (list != null && list.size() > 0) {
 			result.setResultCode(Constant.RESULT_SUCCESS);
 		} else {
@@ -408,33 +419,32 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		return result;
 	}
 
-
 	/**
-	 * @descriptions 根据order code删除一条记录 
+	 * @descriptions 根据order code删除一条记录
 	 *
 	 * @param input
 	 * @date 2017年8月8日 上午10:45:33
-	 * @author Yangcl 
+	 * @author Yangcl
 	 * @version 1.0.0.1
 	 */
-	public JSONObject deleteReportOrder(JSONObject input){
+	public JSONObject deleteReportOrder(JSONObject input) {
 		JSONObject re = new JSONObject();
-		String orderCode	 = input.getString("orderCode");
+		String orderCode = input.getString("orderCode");
 		Integer status = input.getInteger("status");
-		if(StringUtils.isBlank(orderCode) || status == null){
+		if (StringUtils.isBlank(orderCode) || status == null) {
 			re.put("resultCode", -1);
 			re.put("resultMessage", "关键参数不得为空");
 			return re;
 		}
-		if(status != 3){
+		if (status != 3) {
 			re.put("resultCode", -1);
 			re.put("resultMessage", "已作取消态的订单才能删除，请先取消订单");
 			return re;
 		}
-		
+
 		TOrder e = new TOrder();
 		e.setCode(orderCode);
-		e.setStatus(4);  // 作废该订单
+		e.setStatus(4); // 作废该订单
 		Integer flag = mapper.updateOrderStatus(e);
 		if (flag == 1) {
 			re.put("resultCode", Constant.RESULT_SUCCESS);
@@ -449,22 +459,22 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	@Override
 	public JSONObject cancelReportOrder(JSONObject input) {
 		JSONObject re = new JSONObject();
-		String orderCode	 = input.getString("orderCode");
+		String orderCode = input.getString("orderCode");
 		Integer status = input.getInteger("status");
-		if(StringUtils.isBlank(orderCode) || status == null){
+		if (StringUtils.isBlank(orderCode) || status == null) {
 			re.put("resultCode", -1);
 			re.put("resultMessage", "关键参数不得为空");
 			return re;
 		}
-		if(status != 0){
+		if (status != 0) {
 			re.put("resultCode", -1);
 			re.put("resultMessage", "未支付状态的订单才能取消");
 			return re;
 		}
-		
+
 		TOrder e = new TOrder();
 		e.setCode(orderCode);
-		e.setStatus(3);  // 取消该订单
+		e.setStatus(3); // 取消该订单
 		Integer flag = mapper.updateOrderStatus(e);
 		if (flag == 1) {
 			re.put("resultCode", Constant.RESULT_SUCCESS);
@@ -490,37 +500,38 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 
 		return result;
 	}
+
+	/**
+	 * 
+	 * 方法: refreshReport <br>
+	 * 描述: TODO
+	 * 
+	 * @param lpCode
+	 * @param userCode
+	 * @return
+	 * @see cn.com.ddhj.service.ITOrderService#refreshReport(java.lang.String,
+	 *      java.lang.String)
+	 */
+	@Override
+	public BaseResult refreshReport(String code) {
+		BaseResult result = new BaseResult();
+		try {
+			TOrder order = mapper.selectByCode(code);
+			System.out.println(JSON.toJSON(order));
+			if (order != null) {
+				ReportHelper.getInstance().createUserReport(order.getLpCode(), order.getCreateUser());
+				result.setResultCode(Constant.RESULT_SUCCESS);
+				result.setResultMessage("刷新成功");
+			} else {
+				result.setResultCode(Constant.RESULT_ERROR);
+				result.setResultMessage("订单不存在");
+			}
+
+		} catch (Exception e) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("刷新报告失败，失败原因：" + e.getMessage());
+			e.printStackTrace();
+		}
+		return result;
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

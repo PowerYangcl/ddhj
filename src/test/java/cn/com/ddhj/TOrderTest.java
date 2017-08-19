@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.helper.WebHelper;
+import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.TOrderResult;
@@ -26,8 +27,9 @@ public class TOrderTest extends BaseTest {
 
 	@Autowired
 	private ITOrderService service;
+	@Autowired
+	private TOrderMapper mapper;
 
-	@Test
 	public void insert() {
 		TOrder entity = new TOrder();
 		entity.setCode(WebHelper.getInstance().getUniqueCode("D"));
@@ -75,5 +77,12 @@ public class TOrderTest extends BaseTest {
 		double goodPercent = BigDecimal.valueOf(12).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
 				.doubleValue();
 		System.out.println(goodPercent);
+	}
+
+	@Test
+	public void selByCode() {
+		String code = "D161009100110";
+		TOrder order = mapper.selectByCode(code);
+		System.out.println(JSON.toJSON(order));
 	}
 }

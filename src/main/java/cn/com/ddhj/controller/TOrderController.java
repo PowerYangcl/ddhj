@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.result.order.SysOrderDataResult;
 import cn.com.ddhj.service.ITOrderService;
@@ -28,27 +29,16 @@ public class TOrderController {
 	public SysOrderDataResult getData(TOrderDto dto) {
 		return service.getOrderBySys(dto);
 	}
-	
+
 	@RequestMapping("deleteOne")
 	@ResponseBody
 	public JSONObject deleteOne(Integer id) {
 		return service.deleteOne(id);
 	}
-	
-	
+
+	@RequestMapping("refresh_report")
+	@ResponseBody
+	public BaseResult refreshReport(String code) {
+		return service.refreshReport(code);
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -942,7 +942,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			result.setResultMessage("生成html报告失败，失败原因：" + e.getMessage());
 			e.printStackTrace();
 		}
-		return null;
+		return result;
 	}
 
 	/**
