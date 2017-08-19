@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.dto.CityAqi;
 import cn.com.ddhj.dto.CityAqiData;
@@ -47,6 +49,7 @@ import cn.com.ddhj.model.TChemicalPlant;
 import cn.com.ddhj.model.TCityWeatherForecast;
 import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.TRubbishRecycling;
+import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.model.report.TReport;
 import cn.com.ddhj.result.LandedScoreResult;
@@ -1029,10 +1032,12 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 			}
 			LandedScoreAverageDto dto = new LandedScoreAverageDto(); 	// 保存数据库查询条件
 			dto.setCity(city);
-			dto.setStartTime(startTime);
-			dto.setEndTime(endTime);
 			dto.setPageIndex(pageIndex);
 			dto.setPageSize(pageSize);
+			dto.setStartTime(startTime);
+			dto.setEndTime(endTime);
+
+			PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
 			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(dto);
 			if(list != null && list.size() != 0){
 				result.put("data", list);
@@ -1040,6 +1045,31 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 				result.put("resultCode", Constant.RESULT_NULL);
 				result.put("resultMessage", "数据为空");
 			}
+			PageInfo<LandedScoreResult> page = new PageInfo<LandedScoreResult>(list);
+			result.put("data", page);
+//			return result;
+//			List<TUserAddress> list = mapper.findEntityAll(dto);
+//			if (list != null && list.size() > 0) {
+//				result.setResultCode(Constant.RESULT_SUCCESS);
+//			} else {
+//				list = new ArrayList<TUserAddress>();
+//				result.setResultCode(Constant.RESULT_NULL);
+//				result.setResultMessage("查询用户收货地址列表为空");
+//			}
+//			PageInfo<TUserAddress> page = new PageInfo<TUserAddress>(list);
+//			result.setPage(page);
+//			return result;
+			
+			
+//			dto.setPageIndex(pageIndex);
+//			dto.setPageSize(pageSize);
+//			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(dto);
+//			if(list != null && list.size() != 0){
+//				result.put("data", list);
+//			}else {
+//				result.put("resultCode", Constant.RESULT_NULL);
+//				result.put("resultMessage", "数据为空");
+//			}
 //			else{
 //				result.put("resultCode", 1);  // 无数据 
 //			}
@@ -1047,6 +1077,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 		} catch (ParseException e) {
 			e.printStackTrace();
 			result.put("resultCode", -1);  // 系统异常
+			result.put("resultMessage", e.getLocalizedMessage());
 		}
 		return result;
 	}
