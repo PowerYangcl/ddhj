@@ -210,83 +210,89 @@ public class ReportHelper extends BaseClass {
 		Integer level = 2;
 		String levelName = "良";
 		Double value = Double.valueOf("0.00");
-		if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
-			Double lat = Double.valueOf(lp.getLat());
-			Double lng = Double.valueOf(lp.getLng());
-			Double nlat = null; // 北纬
-			Double slat = null; // 南纬
-			Double elng = null; // 东经
-			Double wlng = null; // 西经
-			List<TAreaNoise> list = noiseMapper.selectByArea(lp.getCity());
-			List<TAreaNoise> areaList = new ArrayList<>();
-			if (list != null && list.size() > 0) {
-				for (TAreaNoise e : list) {
-					if (e.getFlag() == 2) {
-						if (e.getName().equals("WN")) { // 坐标西北点
-							nlat = e.getLat();
-							wlng = e.getLng();
-						} else if (e.getName().equals("ES")) {// 坐标东南点
-							elng = e.getLng();
-							slat = e.getLat();
+		try {
+			if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
+				Double lat = Double.valueOf(lp.getLat());
+				Double lng = Double.valueOf(lp.getLng());
+				Double nlat = null; // 北纬
+				Double slat = null; // 南纬
+				Double elng = null; // 东经
+				Double wlng = null; // 西经
+				List<TAreaNoise> list = noiseMapper.selectByArea(lp.getCity());
+				List<TAreaNoise> areaList = new ArrayList<>();
+				if (list != null && list.size() > 0) {
+					for (TAreaNoise e : list) {
+						if (e.getFlag() == 2) {
+							if (e.getName().equals("WN")) { // 坐标西北点
+								nlat = e.getLat();
+								wlng = e.getLng();
+							} else if (e.getName().equals("ES")) {// 坐标东南点
+								elng = e.getLng();
+								slat = e.getLat();
+							}
+						} else {
+							areaList.add(e);
 						}
-					} else {
-						areaList.add(e);
 					}
-				}
-				for (TAreaNoise e : areaList) {
-					Double distance_new = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
-					if (distance < distance_new) {
-						continue;
-					} else {
-						distance = distance_new;
-					}
-					if (distance < 2000) {
-						if (e.getFlag() == 1) { // e.getLevel().equals("0类")
-							level = 1;
-							levelName = "优";
-						} else if (e.getFlag() == 3) { // e.getLevel().equals("III类")
-							level = 3;
-							levelName = "差";
-						} else if (e.getFlag() == 4) { // IV类 距离机场2000米以内的，4类
-							level = 3;
-							levelName = "差";
-						} else if (e.getFlag() == 5) { // IV类 距离候车站地点2km以内的，4类
-							level = 3;
-							levelName = "差";
+					for (TAreaNoise e : areaList) {
+						Double distance_new = CommonUtil.getDistanceFromLL(lat, lng, e.getLat(), e.getLng());
+						if (distance < distance_new) {
+							continue;
+						} else {
+							distance = distance_new;
 						}
-					} else if (distance < 5000 && e.getFlag() == 4) { // 机场5km以内
-						level = 3;
-						levelName = "差";
-					}
-				}
-				if (level == 0) {
-					try {
-						if (lat != null && lng != null) {
-							if ((slat < lat && lat < nlat) && (wlng < lng && lng < elng)) { // 五环里
-								level = 2;
-								levelName = "良";
-								value = Double.valueOf(60);
-							} else { // 北京：五环外 |上海：外环外
-										// |广州：外环外|天津：外环外|深圳：关外全部划为I类标准
+						if (distance < 2000) {
+							if (e.getFlag() == 1) { // e.getLevel().equals("0类")
 								level = 1;
 								levelName = "优";
-								value = Double.valueOf(45);
+							} else if (e.getFlag() == 3) { // e.getLevel().equals("III类")
+								level = 3;
+								levelName = "差";
+							} else if (e.getFlag() == 4) { // IV类
+															// 距离机场2000米以内的，4类
+								level = 3;
+								levelName = "差";
+							} else if (e.getFlag() == 5) { // IV类
+															// 距离候车站地点2km以内的，4类
+								level = 3;
+								levelName = "差";
 							}
+						} else if (distance < 5000 && e.getFlag() == 4) { // 机场5km以内
+							level = 3;
+							levelName = "差";
 						}
-					} catch (Exception e) {
-						level = 2;
-						levelName = "良";
-						value = Double.valueOf(60);
 					}
+					if (level == 0) {
+						try {
+							if (lat != null && lng != null) {
+								if ((slat < lat && lat < nlat) && (wlng < lng && lng < elng)) { // 五环里
+									level = 2;
+									levelName = "良";
+									value = Double.valueOf(60);
+								} else { // 北京：五环外 |上海：外环外
+											// |广州：外环外|天津：外环外|深圳：关外全部划为I类标准
+									level = 1;
+									levelName = "优";
+									value = Double.valueOf(45);
+								}
+							}
+						} catch (Exception e) {
+							level = 2;
+							levelName = "良";
+							value = Double.valueOf(60);
+						}
+					}
+				} else {
+					level = 1;
 				}
 			} else {
 				level = 1;
 			}
-		} else {
-			level = 1;
-		}
-		if (level == 1 && value == null) {
-			value = Double.valueOf(45);
+			if (level == 1 && value == null) {
+				value = Double.valueOf(45);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		entity.setName("噪音");
 		entity.setValue(value);
@@ -651,7 +657,7 @@ public class ReportHelper extends BaseClass {
 	public String createHtml(TLandedProperty lp, String reportName) {
 		String url = "";
 		try {
-			System.out.println("楼盘" + lp.getCode() + "开始生成报告");
+			logger.logInfo("楼盘" + lp.getCode() + "开始生成报告");
 			File file = new File(REPORT_PATH + lp.getCode() + "/");
 			if (!file.exists()) {
 				file.mkdir();
