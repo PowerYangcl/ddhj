@@ -842,7 +842,10 @@ public class ApiController extends BaseClass {
 			user = userService.selectByCode(user.getUserCode());
 			user.setCarbonMoney(
 					user.getCarbonMoney().add(rechargeRec.getCarbonMoney()).setScale(2, BigDecimal.ROUND_DOWN));
-
+			user.setUpdateUser(user.getUserCode());
+			user.setUpdateTime(DateUtil.getSysDateTime());
+			userService.updateByCode(user);
+			
 			// 更新用户充值记录状态为已支付
 			rechargeRec.setStatus(new Integer(3));
 			userCarbonOperService.updateRechargeRec(rechargeRec);

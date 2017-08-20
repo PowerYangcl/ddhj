@@ -396,6 +396,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			if (pcArr.length != 0) {
 				for (int i = 0; i < pcArr.length; i++) {
 					TProductInfoResult view = productMapper.getProductInfo(pcArr[i]);
+					if(view == null) continue;
 					ProductResult p = new ProductResult();
 					p.setProductCode(pcArr[i]);
 					p.setProductName(view.getProductName());

@@ -140,6 +140,7 @@
 	<resultMap id="ProductOrderListResultMap" type="cn.com.ddhj.result.order.ProductOrderListResult"></resultMap>
 	<select id="findProductOrderList" parameterType="cn.com.ddhj.dto.ProductOrderDto" resultMap="ProductOrderListResultMap">
 		 select 
+		        d.product_code as productCode,
 				o.code as orderCode,
 				o.order_status as orderStatus,
 				o.pay_money as payMoney,
