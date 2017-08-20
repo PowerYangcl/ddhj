@@ -68,6 +68,7 @@ import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
 import cn.com.ddhj.util.PPTUtil;
 import cn.com.ddhj.util.PdfUtil;
+import freemarker.template.Configuration;
 
 /**
  * 
@@ -802,28 +803,49 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						lp.setEnvironmentIndexs3(list.subList(6, 9));
 						lp.setEnvironmentIndexs4(list.subList(9, list.size()));
 						lp.setUpdateTime(DateUtil.getCurrentDate());
-						/*
-						 * 精简版
-						 */
-						TReport simplification = new TReport();
-						simplification.setHousesCode(lp.getCode());
-						simplification.setLevelCode("RL161006100001");
-						String path = ReportHelper.getInstance().createHtml(lp, "simplification");
-						simplification.setPath(path);
-						String reportDate = DateUtil.getSysDateTime();
-						simplification.setCreateTime(reportDate);
-						/*
-						 * 完整版
-						 */
-						TReport full = new TReport();
-						full.setHousesCode(lp.getCode());
-						full.setLevelCode("RL161006100002");
-						String fullPath = ReportHelper.getInstance().createHtml(lp, "full");
-						full.setPath(fullPath);
-						String fullReportDate = DateUtil.getSysDateTime();
-						full.setCreateTime(fullReportDate);
-						long lpEnd = System.currentTimeMillis();
-						getLogger().logInfo("获取楼盘信息时间为:" + (lpEnd - lpStart));
+						// /*
+						// * 精简版
+						// */
+						// TReport simplification = new TReport();
+						// simplification.setHousesCode(lp.getCode());
+						// simplification.setLevelCode("RL161006100001");
+						// String path =
+						// ReportHelper.getInstance().createHtml(lp,
+						// "simplification");
+						// simplification.setPath(path);
+						// String reportDate = DateUtil.getSysDateTime();
+						// simplification.setCreateTime(reportDate);
+						// /*
+						// * 完整版
+						// */
+						// TReport full = new TReport();
+						// full.setHousesCode(lp.getCode());
+						// full.setLevelCode("RL161006100002");
+						// String fullPath =
+						// ReportHelper.getInstance().createHtml(lp, "full");
+						// full.setPath(fullPath);
+						// String fullReportDate = DateUtil.getSysDateTime();
+						// full.setCreateTime(fullReportDate);
+						// long lpEnd = System.currentTimeMillis();
+						// getLogger().logInfo("获取楼盘信息时间为:" + (lpEnd -
+						// lpStart));
+					}
+					/**
+					 * 开启线程池
+					 */
+					Configuration config = new Configuration(Configuration.VERSION_2_3_23);
+					try {
+						int size = lpList.size() / 10000;
+						int current = 10000;
+						for (int i = 0; i < size; i++) {
+							List<TLandedProperty> subList = lpList.subList(current * i, current * (i + 1));
+							new CreateReport(subList, config).run();
+						}
+						List<TLandedProperty> subList = lpList.subList(current * size, lpList.size());
+						new CreateReport(subList, config).run();
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
 					}
 
 					/**
@@ -899,16 +921,22 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			String date = DateUtil.getCurrentDate();
 			if (lpList != null && lpList.size() > 0) {
 				for (TLandedProperty lp : lpList) {
-					lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
-					List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp, airArray);
-					lp.setEnvironmentIndexs(list);
-					lp.setEnvironmentIndexs1(list.subList(0, 3));
-					lp.setEnvironmentIndexs2(list.subList(3, 6));
-					lp.setEnvironmentIndexs3(list.subList(6, 9));
-					lp.setEnvironmentIndexs4(list.subList(9, list.size()));
-					lp.setUpdateTime(date);
-					new ReportHelper().createHtml(lp, "full");
-					new ReportHelper().createHtml(lp, "simplification");
+					try {
+						lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
+						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp,
+								airArray);
+						lp.setEnvironmentIndexs(list);
+						lp.setEnvironmentIndexs1(list.subList(0, 3));
+						lp.setEnvironmentIndexs2(list.subList(3, 6));
+						lp.setEnvironmentIndexs3(list.subList(6, 9));
+						lp.setEnvironmentIndexs4(list.subList(9, list.size()));
+						lp.setUpdateTime(date);
+						new ReportHelper().createHtml(lp, "full");
+						new ReportHelper().createHtml(lp, "simplification");
+					} catch (Exception e) {
+						e.printStackTrace();
+						continue;
+					}
 				}
 			}
 			result.setResultCode(Constant.RESULT_SUCCESS);

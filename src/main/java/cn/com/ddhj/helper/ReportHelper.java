@@ -55,13 +55,11 @@ public class ReportHelper extends BaseClass {
 	/**
 	 * 楼盘报告存放地址
 	 */
-	private static final String REPORT_PATH = "/opt/ddhj/report/html/";
-	// private static final String REPORT_PATH = "d:/test/";
+	public static final String REPORT_PATH = "/opt/ddhj/report/html/";
 	/**
 	 * 用户购买楼盘报告存放地址
 	 */
-	private static final String USER_REPORT_PATH = "/opt/ddhj/report/user/";
-	// private static final String USER_REPORT_PATH = "d:/report/";
+	public static final String USER_REPORT_PATH = "/opt/ddhj/report/user/";
 	private static ReportHelper self;
 
 	public static ReportHelper getInstance() {
@@ -670,6 +668,7 @@ public class ReportHelper extends BaseClass {
 			// 设置模板编码
 			configuration.setDefaultEncoding("UTF-8");
 			Template template = configuration.getTemplate(reportName + ".ftl");
+
 			Writer writer = new OutputStreamWriter(
 					new FileOutputStream(REPORT_PATH + lp.getCode() + "/" + reportName + ".html"), "UTF-8");
 			template.process(lp, writer);
@@ -702,30 +701,34 @@ public class ReportHelper extends BaseClass {
 			/**
 			 * 噪音
 			 */
-			TLpEnvironmentIndex noise = ReportHelper.getInstance().noiseLevel(lp, entity.getNosie().doubleValue());
+			Double noiseValue = entity.getNosie() != null ? entity.getNosie().doubleValue() : 0;
+			TLpEnvironmentIndex noise = ReportHelper.getInstance().noiseLevel(lp, noiseValue);
 			list.add(noise);
 			/**
 			 * 水质
 			 */
-			TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, entity.getWater().doubleValue());
+			Double waterValue = entity.getWater() != null ? entity.getWater().doubleValue() : 0;
+			TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, waterValue);
 			list.add(water);
 			/**
 			 * 土壤
 			 */
-			TLpEnvironmentIndex soil = ReportHelper.getInstance().soilLevel(entity.getSoil().doubleValue(),
-					lp.getCity());
+			Double soilValue = entity.getSoil() != null ? entity.getSoil().doubleValue() : 0;
+			TLpEnvironmentIndex soil = ReportHelper.getInstance().soilLevel(soilValue, lp.getCity());
 			list.add(soil);
 			/**
 			 * 高压电辐射
 			 */
-			TLpEnvironmentIndex radiation = ReportHelper.getInstance()
-					.radiationLevel(entity.getRadiation().doubleValue(), lp.getCity());
+			Double radiationValue = entity.getRadiation() != null ? entity.getRadiation().doubleValue() : 0;
+			TLpEnvironmentIndex radiation = ReportHelper.getInstance().radiationLevel(radiationValue, lp.getCity());
 			list.add(radiation);
 			/**
 			 * 危险品
 			 */
+			Double hazardousArticleValue = entity.getHazardousArticle() != null
+					? entity.getHazardousArticle().doubleValue() : 0;
 			TLpEnvironmentIndex hazardousArticle = ReportHelper.getInstance()
-					.hazardousArticleLevel(entity.getHazardousArticle().doubleValue(), lp.getCity());
+					.hazardousArticleLevel(hazardousArticleValue, lp.getCity());
 			list.add(hazardousArticle);
 			/**
 			 * 垃圾回收
@@ -740,14 +743,14 @@ public class ReportHelper extends BaseClass {
 			/**
 			 * 绿化率
 			 */
-			TLpEnvironmentIndex afforest = ReportHelper.getInstance().afforestLevel(entity.getAfforest().doubleValue(),
-					lp.getCity());
+			Double afforestValue = entity.getAfforest() != null ? entity.getAfforest().doubleValue() : 0;
+			TLpEnvironmentIndex afforest = ReportHelper.getInstance().afforestLevel(afforestValue, lp.getCity());
 			list.add(afforest);
 			/**
 			 * 容积率
 			 */
-			TLpEnvironmentIndex volume = ReportHelper.getInstance().volumeLevel(entity.getVolume().doubleValue(),
-					lp.getCity());
+			Double volumeValue = entity.getVolume() != null ? entity.getVolume().doubleValue() : 0;
+			TLpEnvironmentIndex volume = ReportHelper.getInstance().volumeLevel(volumeValue, lp.getCity());
 			list.add(volume);
 		} catch (Exception e) {
 			e.printStackTrace();
