@@ -186,17 +186,20 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		TUserAddress e = new TUserAddress();
 		e.setUserCode(userCode);
 		e.setCode(addrCode);
+		TUserAddress delAddress = mapper.selectByCode(addrCode);
 		int flag = mapper.deleteUserAddress(e);
 		if(flag == 1) {
 			//把用户收货地址的第一个设置为默认
-			TUserAddressDto dto = new TUserAddressDto();
-			PageResult page = findUserAddressPage(dto, userToken);
-			@SuppressWarnings("unchecked")
-			List<TUserAddress> list = (List<TUserAddress>) page.getPage().getList();
-			if(list != null && !list.isEmpty()) {
-				TUserAddress address = list.get(0);
-				address.setIsDefault(1);
-				updateByCode(address);
+			if(delAddress != null && delAddress.getIsDefault() == 1) {
+				TUserAddressDto dto = new TUserAddressDto();
+				PageResult page = findUserAddressPage(dto, userToken);
+				@SuppressWarnings("unchecked")
+				List<TUserAddress> list = (List<TUserAddress>) page.getPage().getList();
+				if(list != null && !list.isEmpty()) {
+					TUserAddress address = list.get(0);
+					address.setIsDefault(1);
+					updateByCode(address);
+				}
 			}
 			re.put("resultCode", 1);
 			re.put("resultMessage", "用户收货地址删除成功");
