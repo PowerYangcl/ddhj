@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.model.TOrder;
+import cn.com.ddhj.result.ReportResult;
 import cn.com.ddhj.result.order.OrderAddResult;
 import cn.com.ddhj.result.order.OrderAffirmResult;
 import cn.com.ddhj.result.order.OrderPayResult;
@@ -142,4 +143,15 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @return
 	 */
 	public BaseResult refreshReport(String code);
+	
+	/**
+	 * 
+	 * 方法: getOrderReportUrl <br>
+	 * 描述: 根据订单编码查询订单环境报告访问地址信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月19日 下午6:20:18
+	 * @param code
+	 * @return
+	 */
+	ReportResult getOrderReportUrl(String code);
 }

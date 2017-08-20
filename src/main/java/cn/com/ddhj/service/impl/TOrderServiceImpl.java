@@ -82,12 +82,9 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				int total = mapper.findEntityAllCount(dto);
 				if (list != null && list.size() > 0) {
 					if (request != null) {
-						String path = request.getContextPath();
-						String basePath = request.getScheme() + "://" + request.getServerName() + ":"
-								+ request.getServerPort() + path + "/";
 						for (int i = 0; i < list.size(); i++) {
 							TOrder order = list.get(i);
-							order.setPath(basePath + order.getPath());
+							order.setPath(order.getPath());
 							// 报告订单已支付
 							if (order.getStatus() == 1 || order.getStatus() == 2) {
 								// 计算报告购买时间与当前时间差值,大于半年则提示更新
@@ -184,7 +181,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				TReport report = reportMapper.findSimplificationReport(entity.getLpCode());
 				entity.setReportSimplification(report.getPath());
 				ReportResult reportResult = ReportHelper.getInstance().createUserReport(entity.getLpCode(),
-						user.getUserCode());
+						entity.getBuyerCode());
 				if (reportResult.getResultCode() == Constant.RESULT_SUCCESS) {
 					entity.setReportFull(reportResult.getUrl());
 				} else {
@@ -539,6 +536,29 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("刷新报告失败，失败原因：" + e.getMessage());
 			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public ReportResult getOrderReportUrl(String code) {
+		ReportResult result = new ReportResult();
+		try {
+			TOrder order = mapper.selectByCode(code);
+			if (order != null && StringUtils.isNotBlank(order.getReportFull())) {
+				result.setUrl(order.getReportFull());
+				result.setResultCode(Constant.RESULT_SUCCESS);
+				result.setResultMessage("获取订单报告访问地址成功");
+			} else {
+				result.setResultCode(Constant.RESULT_ERROR);
+				result.setResultMessage("获取订单报告访问地址失败");
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("获取订单报告访问地址失败");
 		}
 		return result;
 	}

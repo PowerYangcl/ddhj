@@ -132,6 +132,10 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						 */
 						List<TUser> carbonUsers = userCarbonList(list);
 						for (TUser uCarbon : carbonUsers) {
+							/**
+							 * 碳币保留两位小数
+							 */
+							uCarbon.setCarbonMoney(uCarbon.getCarbonMoney().setScale(2, BigDecimal.ROUND_HALF_UP));
 							uCarbon.setUpdateTime(DateUtil.getSysDateTime());
 							userMapper.updateCarbonByUserCode(uCarbon);
 						}
@@ -362,7 +366,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			month = trimData(month, startDate, endDate);
 			Integer total = 0;
 			for (TUserStep step : month) {
-				total += step.getStep()!=null?step.getStep():0;
+				total += step.getStep() != null ? step.getStep() : 0;
 			}
 			Map<String, Integer> map = new HashMap<String, Integer>();
 			map.put("month", i);
