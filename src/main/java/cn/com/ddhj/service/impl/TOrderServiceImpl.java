@@ -105,6 +105,9 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 								} catch (ParseException e) {
 									e.printStackTrace();
 								}
+							} else if (order.getStatus() == 0) {
+								//未支付环境报告完整版返回为空
+								order.setReportFull("");
 							}
 						}
 					}

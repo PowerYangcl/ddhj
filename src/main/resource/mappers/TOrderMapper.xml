@@ -216,6 +216,8 @@
 		o.`status` AS
 		`status`,
 		o.carbon_money,
+		o.report_simplification,
+		o.report_full,
 		r.title,
 		r.pic AS pic,
 		r.image AS image,
