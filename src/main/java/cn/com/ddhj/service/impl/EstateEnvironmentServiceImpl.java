@@ -148,7 +148,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			String[] arr = position.split(",");
 			String lat = arr[0];
 			String lng = arr[1];
-long start = System.currentTimeMillis();
+			long start = System.currentTimeMillis();
 			ExecutorService executor = Executors.newCachedThreadPool();
 			Task1025Position pos = new Task1025Position();
 			pos.setLlService(llService);
@@ -193,8 +193,8 @@ long start = System.currentTimeMillis();
 			JSONObject obj = weaTask.get();
 			JSONObject tw = twTask.get();
 	        executor.shutdown();
-long end = System.currentTimeMillis();
-logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
+	        long end = System.currentTimeMillis();
+	        logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
 	        			
 			
 			if(addr.getString("code").equals("1") && StringUtils.isNotBlank(addr.getString("business")) ){
@@ -205,7 +205,7 @@ logger.info("1025接口 - 聚合接口耗时：" + (end - start) + " 毫秒");
 				return result;
 			}
 			
-			if(obj.getString("resultcode").equals("200")){
+			if(obj.getString("resultcode").equals("200")) {
 				JSONObject result_ = JSONObject.parseObject(obj.getString("result")); 
 				JSONObject today = JSONObject.parseObject(result_.getString("today")); 
 				String weather = today.getString("weather");

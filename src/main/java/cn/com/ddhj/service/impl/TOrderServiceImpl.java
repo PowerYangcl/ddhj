@@ -86,7 +86,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 							TOrder order = list.get(i);
 							order.setPath(order.getPath());
 							// 报告订单已支付
-							if (order.getStatus() == 1 || order.getStatus() == 2) {
+							if (order.getStatus() == 1 || order.getStatus() == 2 || order.getStatus() == 3) {
 								// 计算报告购买时间与当前时间差值,大于半年则提示更新
 								try {
 									Date buyTime = DateUtil.strToDate(order.getUpdateTime());
