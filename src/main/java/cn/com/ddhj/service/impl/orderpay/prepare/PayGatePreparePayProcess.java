@@ -126,16 +126,16 @@ public abstract class PayGatePreparePayProcess<I extends PayGatePreparePayProces
 		}else{
 			if ("PT161007100003".equals(input.payType)) {
 				param.put("c_paygate", PayGateConfig.getPayGateVal(PayGateConfig.Type.WECHAT_APP)+"");
-				param.put("c_retflag", "2");
-				param.remove("c_signstr");
-				param.put("c_signstr", PayGateUtils.createSign(param, XmasPayConfig.getPayGatePass()));
+//				param.remove("c_signstr");
+//				param.put("c_signstr", PayGateUtils.createSign(param, XmasPayConfig.getPayGatePass()));
 			} else if ("PT161007100004".equals(input.payType)) {
 				param.put("c_paygate", PayGateConfig.getPayGateVal(PayGateConfig.Type.ALIPAY_APP)+"");
-				param.put("c_retflag", "2");
-				param.remove("c_signstr");
-				param.put("c_signstr", PayGateUtils.createSign(param, XmasPayConfig.getPayGatePass()));
+//				param.remove("c_signstr");
+//				param.put("c_signstr", PayGateUtils.createSign(param, XmasPayConfig.getPayGatePass()));
 			}
-			
+			param.put("c_retflag", "2");
+			param.remove("c_signstr");
+			param.put("c_signstr", PayGateUtils.createSign(param, XmasPayConfig.getPayGatePass()));
 //			&c_paygate_account=653
 //					&c_paygate_type=4
 //					c_memo2=15210383700%7
