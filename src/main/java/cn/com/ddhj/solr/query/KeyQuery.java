@@ -42,16 +42,27 @@ public class KeyQuery {
 			    solrQuery.set("qf","k1^100.0 s2^100.0");
 			} else if(StringUtil.IsLetter(keyWord)){
 				/**全为字母   只查询商品名称   商品名称拼音  和 拼音首字母   品牌   关键词**/
-				String keyLower = keyWord.toLowerCase();
-				String keyUpper = keyWord.toUpperCase();
-				
 				if(price!=null){
-					solrQuery.setQuery("("+SolrSearch.s1+":" + keyLower + " OR " + SolrSearch.s2 + ":*"+keyLower+"*) AND ("+price+")" );
+					if(StringUtils.isNotBlank(keyWord) && StringUtils.isNotBlank(city)) {
+						solrQuery.setQuery("("+SolrSearch.s1+":"+city+" AND "+SolrSearch.s2+":*"+keyWord+"*) AND ("+price+")");
+					} else if(StringUtils.isBlank(keyWord) && StringUtils.isNotBlank(city)) {
+						solrQuery.setQuery("("+SolrSearch.s1+":"+city+") AND ("+price+")");
+					} else if(StringUtils.isNotBlank(keyWord) && StringUtils.isBlank(city)) {
+						solrQuery.setQuery("(" + SolrSearch.s2 + ":*"+keyWord+"*) AND ("+price+")");
+					}
+					
 				}else{
-					solrQuery.setQuery(SolrSearch.s1 + ":" + keyLower + " OR " + SolrSearch.s2 + ":*" + keyLower + "*");
-				}	
+					if(StringUtils.isNotBlank(keyWord) && StringUtils.isNotBlank(city)) {
+						solrQuery.setQuery(SolrSearch.s1+":"+city+" AND "+SolrSearch.s2+":*"+keyWord+"*");
+					} else if(StringUtils.isBlank(keyWord) && StringUtils.isNotBlank(city)) {
+						solrQuery.setQuery(SolrSearch.s1+":"+city);
+					} else if(StringUtils.isNotBlank(keyWord) && StringUtils.isBlank(city)) {
+						solrQuery.setQuery(SolrSearch.s2+":*"+keyWord+"*");
+					}
+
+				}
 				solrQuery.set("defType","edismax");
-				solrQuery.set("qf","s1^100.0 s2^100");
+				solrQuery.set("qf","s1^100.0 s2^40");
 			/**字母数字组合   必须以字母开头  关键词  商品名称**/
 			}else if(StringUtil.IsString(keyWord)){
 //				String query = "";
