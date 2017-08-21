@@ -22,7 +22,7 @@
 			success : function(data) {
 				data = JSON.parse(data);
 				if (data.resultCode == 1) {
-					alert(JSON.stringify(data));
+					$("#data").val(JSON.stringify(data));
 				} else {
 					alert("调用接口失败");
 				}
@@ -66,6 +66,9 @@
 					</td>
 				</tr>
 			</table>
+		</div>
+		<div>
+			<textarea id="data" rows="10" style="width:100%"></textarea>
 		</div>
 	</form>
 </body>

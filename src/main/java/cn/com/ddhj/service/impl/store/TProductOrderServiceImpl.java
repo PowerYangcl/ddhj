@@ -371,7 +371,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		ProductOrderDto d = new ProductOrderDto();
 		d.setBuyerCode(buyerCode);
 		d.setPageSize(pageSize);
-		d.setPageIndex(pageIndex);
+		d.setPageIndex(pageIndex*10);
 		d.setOrderStatus(obj.getString("orderStatus")); 
 
 		List<ProductOrderListResult> list = mapper.findProductOrderList(d);
