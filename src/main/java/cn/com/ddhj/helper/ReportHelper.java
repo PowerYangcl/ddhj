@@ -687,71 +687,75 @@ public class ReportHelper extends BaseClass {
 	 */
 	public List<TLpEnvironmentIndex> getLpEnvironmentIndexs(TLandedProperty lp, JSONArray airArray) {
 
-		List<TLpEnvironmentIndex> list = new ArrayList<TLpEnvironmentIndex>();
+		List<TLpEnvironmentIndex> list = null;
 		try {
 			/**
 			 * 查询环境参数
 			 */
 			TLpEnvironment entity = lpEnvMapper.selectByCode(lp.getCode());
-			/**
-			 * 空气质量
-			 */
-			TLpEnvironmentIndex air = ReportHelper.getInstance().airLevel(airArray, lp.getCity());
-			list.add(air);
-			/**
-			 * 噪音
-			 */
-			Double noiseValue = entity.getNosie() != null ? entity.getNosie().doubleValue() : 0;
-			TLpEnvironmentIndex noise = ReportHelper.getInstance().noiseLevel(lp, noiseValue);
-			list.add(noise);
-			/**
-			 * 水质
-			 */
-			Double waterValue = entity.getWater() != null ? entity.getWater().doubleValue() : 0;
-			TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, waterValue);
-			list.add(water);
-			/**
-			 * 土壤
-			 */
-			Double soilValue = entity.getSoil() != null ? entity.getSoil().doubleValue() : 0;
-			TLpEnvironmentIndex soil = ReportHelper.getInstance().soilLevel(soilValue, lp.getCity());
-			list.add(soil);
-			/**
-			 * 高压电辐射
-			 */
-			Double radiationValue = entity.getRadiation() != null ? entity.getRadiation().doubleValue() : 0;
-			TLpEnvironmentIndex radiation = ReportHelper.getInstance().radiationLevel(radiationValue, lp.getCity());
-			list.add(radiation);
-			/**
-			 * 危险品
-			 */
-			Double hazardousArticleValue = entity.getHazardousArticle() != null
-					? entity.getHazardousArticle().doubleValue() : 0;
-			TLpEnvironmentIndex hazardousArticle = ReportHelper.getInstance()
-					.hazardousArticleLevel(hazardousArticleValue, lp.getCity());
-			list.add(hazardousArticle);
-			/**
-			 * 垃圾回收
-			 */
-			TLpEnvironmentIndex rubbish = ReportHelper.getInstance().rubbishLevel(lp);
-			list.add(rubbish);
-			/**
-			 * 化工厂
-			 */
-			TLpEnvironmentIndex chemical = ReportHelper.getInstance().chemicalLevel(lp);
-			list.add(chemical);
-			/**
-			 * 绿化率
-			 */
-			Double afforestValue = entity.getAfforest() != null ? entity.getAfforest().doubleValue() : 0;
-			TLpEnvironmentIndex afforest = ReportHelper.getInstance().afforestLevel(afforestValue, lp.getCity());
-			list.add(afforest);
-			/**
-			 * 容积率
-			 */
-			Double volumeValue = entity.getVolume() != null ? entity.getVolume().doubleValue() : 0;
-			TLpEnvironmentIndex volume = ReportHelper.getInstance().volumeLevel(volumeValue, lp.getCity());
-			list.add(volume);
+			if (entity != null) {
+				list = new ArrayList<TLpEnvironmentIndex>();
+				/**
+				 * 空气质量
+				 */
+				TLpEnvironmentIndex air = ReportHelper.getInstance().airLevel(airArray, lp.getCity());
+				list.add(air);
+				/**
+				 * 噪音
+				 */
+				Double noiseValue = entity.getNosie() != null ? entity.getNosie().doubleValue() : 0;
+				TLpEnvironmentIndex noise = ReportHelper.getInstance().noiseLevel(lp, noiseValue);
+				list.add(noise);
+				/**
+				 * 水质
+				 */
+				Double waterValue = entity.getWater() != null ? entity.getWater().doubleValue() : 0;
+				TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, waterValue);
+				list.add(water);
+				/**
+				 * 土壤
+				 */
+				Double soilValue = entity.getSoil() != null ? entity.getSoil().doubleValue() : 0;
+				TLpEnvironmentIndex soil = ReportHelper.getInstance().soilLevel(soilValue, lp.getCity());
+				list.add(soil);
+				/**
+				 * 高压电辐射
+				 */
+				Double radiationValue = entity.getRadiation() != null ? entity.getRadiation().doubleValue() : 0;
+				TLpEnvironmentIndex radiation = ReportHelper.getInstance().radiationLevel(radiationValue, lp.getCity());
+				list.add(radiation);
+				/**
+				 * 危险品
+				 */
+				Double hazardousArticleValue = entity.getHazardousArticle() != null
+						? entity.getHazardousArticle().doubleValue() : 0;
+				TLpEnvironmentIndex hazardousArticle = ReportHelper.getInstance()
+						.hazardousArticleLevel(hazardousArticleValue, lp.getCity());
+				list.add(hazardousArticle);
+				/**
+				 * 垃圾回收
+				 */
+				TLpEnvironmentIndex rubbish = ReportHelper.getInstance().rubbishLevel(lp);
+				list.add(rubbish);
+				/**
+				 * 化工厂
+				 */
+				TLpEnvironmentIndex chemical = ReportHelper.getInstance().chemicalLevel(lp);
+				list.add(chemical);
+				/**
+				 * 绿化率
+				 */
+				Double afforestValue = entity.getAfforest() != null ? entity.getAfforest().doubleValue() : 0;
+				TLpEnvironmentIndex afforest = ReportHelper.getInstance().afforestLevel(afforestValue, lp.getCity());
+				list.add(afforest);
+				/**
+				 * 容积率
+				 */
+				Double volumeValue = entity.getVolume() != null ? entity.getVolume().doubleValue() : 0;
+				TLpEnvironmentIndex volume = ReportHelper.getInstance().volumeLevel(volumeValue, lp.getCity());
+				list.add(volume);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

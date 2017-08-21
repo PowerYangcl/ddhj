@@ -786,6 +786,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			if (StringUtils.isNoneBlank(lock)) {
 				// 获取报告列表
 				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
+				List<TLandedProperty> reportLps = new ArrayList<TLandedProperty>();
 				if (lpList != null && lpList.size() > 0) {
 					JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 					for (TLandedProperty lp : lpList) {
@@ -797,12 +798,17 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						}
 						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp,
 								airArray);
-						lp.setEnvironmentIndexs(list);
-						lp.setEnvironmentIndexs1(list.subList(0, 3));
-						lp.setEnvironmentIndexs2(list.subList(3, 6));
-						lp.setEnvironmentIndexs3(list.subList(6, 9));
-						lp.setEnvironmentIndexs4(list.subList(9, list.size()));
-						lp.setUpdateTime(DateUtil.getCurrentDate());
+						if (list != null && list.size() > 0) {
+							lp.setEnvironmentIndexs(list);
+							lp.setEnvironmentIndexs1(list.subList(0, 3));
+							lp.setEnvironmentIndexs2(list.subList(3, 6));
+							lp.setEnvironmentIndexs3(list.subList(6, 9));
+							lp.setEnvironmentIndexs4(list.subList(9, list.size()));
+							lp.setUpdateTime(DateUtil.getCurrentDate());
+							reportLps.add(lp);
+						} else {
+							continue;
+						}
 						// /*
 						// * 精简版
 						// */
@@ -830,18 +836,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						// getLogger().logInfo("获取楼盘信息时间为:" + (lpEnd -
 						// lpStart));
 					}
-					/**
-					 * 开启线程池
-					 */
 					Configuration config = new Configuration(Configuration.VERSION_2_3_23);
 					try {
-						int size = lpList.size() / 10000;
+						int size = reportLps.size() / 10000;
 						int current = 10000;
 						for (int i = 0; i < size; i++) {
-							List<TLandedProperty> subList = lpList.subList(current * i, current * (i + 1));
+							List<TLandedProperty> subList = reportLps.subList(current * i, current * (i + 1));
 							new CreateReport(subList, config).run();
 						}
-						List<TLandedProperty> subList = lpList.subList(current * size, lpList.size());
+						List<TLandedProperty> subList = reportLps.subList(current * size, lpList.size());
 						new CreateReport(subList, config).run();
 					} catch (Exception e) {
 						e.printStackTrace();
