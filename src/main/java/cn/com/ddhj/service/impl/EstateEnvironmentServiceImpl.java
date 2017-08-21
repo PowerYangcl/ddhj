@@ -994,6 +994,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	
 	/**
 	 * @description: 楼盘分数平局值统计
+	 * @test: http://api.sys.ecomapit.com/ddhj/api.htm?apiTarget=2052&api_key=appfamilyhas&apiInput={"city":"北京","type":"year","date":"2017","pageIndex":0,"pageSize":10}
 	 * 
 	 * @param city "北京"
 	 * @param type year：按年份平均|quarter：按季度平均|month：按月份平均  
