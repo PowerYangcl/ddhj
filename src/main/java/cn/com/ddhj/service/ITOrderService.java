@@ -154,4 +154,14 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @return
 	 */
 	ReportResult getOrderReportUrl(String code);
+	
+	/**
+	 * 
+	 * 方法: refreshUserReport <br>
+	 * 描述: 刷新已支付订单报告信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月21日 下午4:57:05
+	 * @return
+	 */
+	BaseResult refreshUserReport();
 }

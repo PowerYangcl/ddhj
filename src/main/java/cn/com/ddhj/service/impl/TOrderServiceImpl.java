@@ -562,4 +562,32 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		}
 		return result;
 	}
+
+	/**
+	 * 
+	 * 方法: refreshUserReport <br>
+	 * 描述: TODO
+	 * 
+	 * @return
+	 * @see cn.com.ddhj.service.ITOrderService#refreshUserReport()
+	 */
+	@Override
+	public BaseResult refreshUserReport() {
+		BaseResult result = new BaseResult();
+		try {
+			List<TOrder> orders = mapper.findOrderLPAndCreateUser();
+			if (orders != null && orders.size() > 0) {
+				for (TOrder order : orders) {
+					ReportHelper.getInstance().createUserReport(order.getLpCode(), order.getCreateUser());
+				}
+			}
+			result.setResultCode(Constant.RESULT_SUCCESS);
+			result.setResultMessage("更新已支付订单环境报告成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("更新已支付订单环境报告失败，失败原因：" + e.getMessage());
+		}
+		return result;
+	}
 }

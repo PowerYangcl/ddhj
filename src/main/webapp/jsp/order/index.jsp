@@ -114,7 +114,20 @@
 			}
 		}
 	}
-
+	
+	function refreshUserReport(){
+		if (confirm('您确定要刷新订单环境报告吗？')) {
+			var type_ = 'post';
+			var url_ = '${basePath}order/refresh_user_report.htm';
+			var data_ = {};
+			var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
+			if (obj.resultCode == '1') {
+				alert(obj.resultMessage);
+			} else {
+				alert(obj.resultMessage);
+			}
+		}
+	}
 	function searchReport(){
 		aForm.formPaging(0);
 	}
@@ -160,6 +173,11 @@
 							</span>
 
 							<a onclick="searchReport()" style="cursor: pointer;">【搜索】</a>
+						</p>
+					</div>
+					<div>
+						<p style="margin:5px 0px 0px 0px;">
+							<button type="button" onclick="refreshUserReport();" class="btn">刷新用户环境报告</a>
 						</p>
 					</div>
 				</div>
