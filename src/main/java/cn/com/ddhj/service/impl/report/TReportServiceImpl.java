@@ -539,8 +539,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							e.printStackTrace();
 						}
 						break;
+					} else if (order.getStatus() == 0) {
+						order.setReportFull("");
 					}
 				}
+			}
+		} else if (user == null && reports != null && !reports.isEmpty()) {
+			for (TReport treport : reports) {
+				treport.setPath("");
 			}
 		}
 
