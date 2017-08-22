@@ -2,6 +2,8 @@ package cn.com.ddhj.service.impl.report;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,6 +29,7 @@ import cn.com.ddhj.dto.BaseDto;
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.TOrderDto;
 import cn.com.ddhj.dto.report.TReportDto;
+import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.ITAreaNoiseMapper;
@@ -538,9 +541,15 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						} catch (ParseException e) {
 							e.printStackTrace();
 						}
+						String url = PropHelper.getValue("user_report_url") + user.getUserCode() + order.getLpCode() + "full.html";
+						if(isConnect(url))
+							report.setPath(url);
+						else 
+							report.setPath("");
 						break;
 					} else if (order.getStatus() == 0) {
-						order.setReportFull("");
+//						order.setReportFull("");
+						report.setPath("");
 					}
 				}
 			}
@@ -560,6 +569,30 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		result.setResultCode(Constant.RESULT_SUCCESS);
 		result.setResultMessage("查询报告成功");
 
+		return result;
+	}
+	
+	private boolean isConnect(String urlStr) {
+		boolean result = false;
+		int counts = 0;
+		if (urlStr == null || urlStr.length() <= 0) {
+			return result;
+		}
+		while (counts < 5) {
+			try {
+				URL url = new URL(urlStr);
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				int state = con.getResponseCode();
+				if (state == 200) {
+					result = true;
+				}
+				break;
+			} catch (Exception ex) {
+				counts++;
+				urlStr = null;
+				continue;
+			}
+		}
 		return result;
 	}
 
