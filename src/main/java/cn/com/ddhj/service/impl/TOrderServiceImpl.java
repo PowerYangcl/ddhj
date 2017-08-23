@@ -454,6 +454,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		TOrder e = new TOrder();
 		e.setCode(orderCode);
 		e.setStatus(4); // 作废该订单
+		e.setUpdateTime(DateUtil.getSysDateTime());
 		Integer flag = mapper.updateOrderStatus(e);
 		if (flag == 1) {
 			re.put("resultCode", Constant.RESULT_SUCCESS);
@@ -483,6 +484,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 
 		TOrder e = new TOrder();
 		e.setCode(orderCode);
+		e.setUpdateTime(DateUtil.getSysDateTime());
 		e.setStatus(3); // 取消该订单
 		Integer flag = mapper.updateOrderStatus(e);
 		if (flag == 1) {

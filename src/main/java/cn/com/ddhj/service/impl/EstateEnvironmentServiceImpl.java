@@ -205,118 +205,118 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				return result;
 			}
 			
-			if(obj.getString("resultcode").equals("200")) {
-				JSONObject result_ = JSONObject.parseObject(obj.getString("result")); 
-				JSONObject today = JSONObject.parseObject(result_.getString("today")); 
-				String weather = today.getString("weather");
-				JSONObject weatherId = JSONObject.parseObject(today.getString("weather_id"));  // 序列话成对象，避免出现转义json串的情况，方便页面调用
-				String windpower = today.getString("wind");
-				String tempmin = today.getString("temperature").split("~")[0].split("℃")[0];
-				String tempmax = today.getString("temperature").split("~")[1].split("℃")[0];
-				String tiptitle = today.getString("dressing_advice");
-				SimpleDateFormat sdf= new SimpleDateFormat("yyyy.MM.dd");
-				String tiptime = sdf.format(new Date()) + today.getString("week");  
-				
-				String hourAqi = "80";
-				String dayAqi = "";
-				CityAqi aqi = cityAirService.getCityAqi(city);
-				if(aqi.getEntity() != null) {
-					hourAqi = aqi.getEntity().getAQI();
-					for(CityAqiData d : aqi.getList()){
-						dayAqi += d.getAQI() + ",";
-					}
-					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
-				}
-				
-				String greeningRate = "1";  // 如下条件不满足则用默认值
-				String volumeRate = "0.4";	   // 如下条件不满足则用默认值
-				JSONObject estate = this.estateList(position, "1" , "1" , "1000"); // 获取楼盘信息 
-				if(estate.getString("code").equals("1")) {
-					List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
-					try {
-						if(estateList != null && estateList.size() > 0){
-							EData e = estateList.get(0);               // 因为精度是1米 所以只有一条记录，且就是这个楼盘
-							result.put("name", e.getTitle()); // 位置名称
-							if(StringUtils.isNoneBlank(e.getGreeningRate())){
-								if(Double.valueOf(e.getGreeningRate().split("%")[0])/100 < 0.5){   // 潜在的异常点
-									greeningRate = "0.5"; //教授接口返回HTTP Status 500 - 绿化率指数l只能是0.5或1|真坑爹
-								}
-							}
-							// 聚合接口的容积率均返回错误数据，"volumeRate": "一期2.45元/平米/月;二期2.45/平米/月；三期3.1元/",	
-							// volumeRate = "0.4"; // 这里写定一个默认值		
-						}
-					} catch (Exception e) {
-						greeningRate = "1";
-					}
-				}
-				
-				String z1 = "1";
-				String z2 = "0";
-				Double nscore = 0.00;
-				String nlevel = noiFuture.get().split("@")[0];
-				if(nlevel.equals("0类")){
-					z1 = "0"; 
-					z2 = "0"; 
-				}else if(nlevel.equals("I类")){
-					z1 = "1"; 
-					z2 = "0"; 
-				}else if(nlevel.equals("II类")){
-					z1 = "2"; 
-					z2 = "1"; 
-				}else if(nlevel.equals("III类")){
-					z1 = "3"; 
-					z2 = "2"; 
-				}else if(nlevel.equals("IV类")){
-					z1 = "4"; 
-					z2 = "3"; 
-					nscore = -10.00;
-				}
-				String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
-				if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
-					score = String.valueOf( (Double.valueOf(score) + nscore + Double.valueOf(rubFuture.get().get("score"))) );
-					if(score.length() > 5){
-						logger.info("exception score = " + score); 
-						score = score.substring(0, 5);
-					}
-				}
-				result.put("score", score); // 环境综合评分
-				result.put("level", this.scoreLevel(score));  // 环境等级
-//				result.put("value", "16");// 环境值 经过讨论，这个值不再显示
-				
-				result.put("humidity", tw.getString("humidity"));
-				result.put("temperature", tw.getString("temperature"));
-				result.put("updateTime", tw.getString("updateTime"));  
-				result.put("pm25", tw.getString("pm25"));   
-				result.put("weather", weather); 
-				result.put("weatherId", weatherId);
-				result.put("windpower", windpower); 
-				result.put("tempmin", tempmin); 
-				result.put("tempmax", tempmax); 
-				result.put("tiptitle", tiptitle); 
-				result.put("tiptime", tiptime); 
-				
-				// 明日数据 tw
-				JSONObject futureData = new JSONObject();
-				JSONObject objFuture = JSONObject.parseObject(result_.getString("future")); 
-				JSONObject tomorrow = JSONObject.parseObject(objFuture.getString("day_" + this.getNextDate(new Date(), "yyyyMMdd")));   
-				if(tomorrow != null){
-					futureData.put("futureTemperature", tw.getString("futureTemperature"));  
-					futureData.put("futureHumidity", "0");
-					futureData.put("wind", tomorrow.getString("wind")); 
-					futureData.put("weather", tomorrow.getString("weather")); 
-					futureData.put("weatherId", JSONObject.parseObject(tomorrow.getString("weather_id")));     
-					futureData.put("pm25", tw.getString("pm25"));  //  今日pm2.5数据，但无法取得明日的数据 
-				}
-				result.put("futureData", futureData);  
-				
-				result.put("resultCode", 1); 
-				result.put("resultMessage", "SUCCESS"); 
-				return result;
-			}else{
+			if(obj == null || obj.getString("resultcode") == null || !obj.getString("resultcode").equals("200")) {
 				result.put("resultCode", -1); 
 				result.put("resultMessage", "天气查询接口返回空"); 
 				return result;
 			}
+			
+			JSONObject result_ = JSONObject.parseObject(obj.getString("result")); 
+			JSONObject today = JSONObject.parseObject(result_.getString("today")); 
+			String weather = today.getString("weather");
+			JSONObject weatherId = JSONObject.parseObject(today.getString("weather_id"));  // 序列话成对象，避免出现转义json串的情况，方便页面调用
+			String windpower = today.getString("wind");
+			String tempmin = today.getString("temperature").split("~")[0].split("℃")[0];
+			String tempmax = today.getString("temperature").split("~")[1].split("℃")[0];
+			String tiptitle = today.getString("dressing_advice");
+			SimpleDateFormat sdf= new SimpleDateFormat("yyyy.MM.dd");
+			String tiptime = sdf.format(new Date()) + today.getString("week");  
+			
+			String hourAqi = "80";
+			String dayAqi = "";
+			CityAqi aqi = cityAirService.getCityAqi(city);
+			if(aqi.getEntity() != null) {
+				hourAqi = aqi.getEntity().getAQI();
+				for(CityAqiData d : aqi.getList()){
+					dayAqi += d.getAQI() + ",";
+				}
+				dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
+			}
+			
+			String greeningRate = "1";  // 如下条件不满足则用默认值
+			String volumeRate = "0.4";	   // 如下条件不满足则用默认值
+			JSONObject estate = this.estateList(position, "1" , "1" , "1000"); // 获取楼盘信息 
+			if(estate.getString("code").equals("1")) {
+				List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
+				try {
+					if(estateList != null && estateList.size() > 0){
+						EData e = estateList.get(0);               // 因为精度是1米 所以只有一条记录，且就是这个楼盘
+						result.put("name", e.getTitle()); // 位置名称
+						if(StringUtils.isNoneBlank(e.getGreeningRate())){
+							if(Double.valueOf(e.getGreeningRate().split("%")[0])/100 < 0.5){   // 潜在的异常点
+								greeningRate = "0.5"; //教授接口返回HTTP Status 500 - 绿化率指数l只能是0.5或1|真坑爹
+							}
+						}
+						// 聚合接口的容积率均返回错误数据，"volumeRate": "一期2.45元/平米/月;二期2.45/平米/月；三期3.1元/",	
+						// volumeRate = "0.4"; // 这里写定一个默认值		
+					}
+				} catch (Exception e) {
+					greeningRate = "1";
+				}
+			}
+			
+			String z1 = "1";
+			String z2 = "0";
+			Double nscore = 0.00;
+			String nlevel = noiFuture.get().split("@")[0];
+			if(nlevel.equals("0类")){
+				z1 = "0"; 
+				z2 = "0"; 
+			}else if(nlevel.equals("I类")){
+				z1 = "1"; 
+				z2 = "0"; 
+			}else if(nlevel.equals("II类")){
+				z1 = "2"; 
+				z2 = "1"; 
+			}else if(nlevel.equals("III类")){
+				z1 = "3"; 
+				z2 = "2"; 
+			}else if(nlevel.equals("IV类")){
+				z1 = "4"; 
+				z2 = "3"; 
+				nscore = -10.00;
+			}
+			String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
+			if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
+				score = String.valueOf( (Double.valueOf(score) + nscore + Double.valueOf(rubFuture.get().get("score"))) );
+				if(score.length() > 5){
+					logger.info("exception score = " + score); 
+					score = score.substring(0, 5);
+				}
+			}
+			result.put("score", score); // 环境综合评分
+			result.put("level", this.scoreLevel(score));  // 环境等级
+//				result.put("value", "16");// 环境值 经过讨论，这个值不再显示
+			
+			result.put("humidity", tw.getString("humidity"));
+			result.put("temperature", tw.getString("temperature"));
+			result.put("updateTime", tw.getString("updateTime"));  
+			result.put("pm25", tw.getString("pm25"));   
+			result.put("weather", weather); 
+			result.put("weatherId", weatherId);
+			result.put("windpower", windpower); 
+			result.put("tempmin", tempmin); 
+			result.put("tempmax", tempmax); 
+			result.put("tiptitle", tiptitle); 
+			result.put("tiptime", tiptime); 
+			
+			// 明日数据 tw
+			JSONObject futureData = new JSONObject();
+			JSONObject objFuture = JSONObject.parseObject(result_.getString("future")); 
+			JSONObject tomorrow = JSONObject.parseObject(objFuture.getString("day_" + this.getNextDate(new Date(), "yyyyMMdd")));   
+			if(tomorrow != null){
+				futureData.put("futureTemperature", tw.getString("futureTemperature"));  
+				futureData.put("futureHumidity", "0");
+				futureData.put("wind", tomorrow.getString("wind")); 
+				futureData.put("weather", tomorrow.getString("weather")); 
+				futureData.put("weatherId", JSONObject.parseObject(tomorrow.getString("weather_id")));     
+				futureData.put("pm25", tw.getString("pm25"));  //  今日pm2.5数据，但无法取得明日的数据 
+			}
+			result.put("futureData", futureData);  
+			
+			result.put("resultCode", 1); 
+			result.put("resultMessage", "SUCCESS"); 
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.put("resultCode", -1); 

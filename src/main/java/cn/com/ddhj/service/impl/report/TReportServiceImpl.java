@@ -508,58 +508,65 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		}
 
 		// 检查报告是否需要更新
-		if (user != null && reports != null && !reports.isEmpty()) {
-			TOrderDto orderDto = new TOrderDto();
-			for (TReport report : reports) {
-				orderDto.setCreateUser(user.getUserCode());
-				orderDto.setReportCode(report.getCode());
-				List<TOrder> orderList = orderMapper.findOrderByReportCodeAndUserCode(orderDto);
-				if (orderList == null || orderList.isEmpty())
-					continue;
-
-				for (TOrder order : orderList) {
-					// 报告订单已支付
-					if (order.getStatus() == 1 || order.getStatus() == 2) {
-						// 计算报告购买时间与当前时间差值,大于半年则提示更新
-						try {
-							Date buyTime = DateUtil.strToDate(order.getUpdateTime());
-							Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
-							if (new Date().compareTo(deadLine) >= 0) {
-								// 报告要更新
-								String reportCode = order.getReportCode();
-								if (StringUtils.isNotBlank(reportCode)) {
-									// report对象中没有address,city,lpcode,
-									// position信息
-									// 用reportMapper的selectByCode方法左联合查询一下四个lp属性
-									TReport reportJoinInfo = reportMapper.selectByCode(reportCode);
-									report.getReportUpdate().setAddress(reportJoinInfo.getAddress());
-									report.getReportUpdate().setCity(reportJoinInfo.getCity());
-									report.getReportUpdate().setLpCode(reportJoinInfo.getHousesCode());
-									report.getReportUpdate().setPosition(reportJoinInfo.getPosition());
+		if (user != null) {
+			if(reports != null && !reports.isEmpty()) {
+				TOrderDto orderDto = new TOrderDto();
+				for (TReport report : reports) {
+					orderDto.setCreateUser(user.getUserCode());
+					orderDto.setReportCode(report.getCode());
+					List<TOrder> orderList = orderMapper.findOrderByReportCodeAndUserCode(orderDto);
+					if (orderList == null || orderList.isEmpty()) {
+						//用户未购买该楼盘报告,把报告模板中的报告路径设为空
+						report.setPath("");
+						continue;
+					}
+						
+					//用户购买过该楼盘报告,检验报告是否要更新并返回用户目录下的报告路径
+					for (TOrder order : orderList) {
+						// 报告订单已支付
+						if (order.getStatus() == 1 || order.getStatus() == 2) {
+							// 计算报告购买时间与当前时间差值,大于半年则提示更新
+							try {
+								Date buyTime = DateUtil.strToDate(order.getUpdateTime());
+								Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
+								if (new Date().compareTo(deadLine) >= 0) {
+									// 报告要更新
+									String reportCode = order.getReportCode();
+									if (StringUtils.isNotBlank(reportCode)) {
+										// report对象中没有address,city,lpcode,
+										// position信息
+										// 用reportMapper的selectByCode方法左联合查询一下四个lp属性
+										TReport reportJoinInfo = reportMapper.selectByCode(reportCode);
+										report.getReportUpdate().setAddress(reportJoinInfo.getAddress());
+										report.getReportUpdate().setCity(reportJoinInfo.getCity());
+										report.getReportUpdate().setLpCode(reportJoinInfo.getHousesCode());
+										report.getReportUpdate().setPosition(reportJoinInfo.getPosition());
+									}
+								}
+							} catch (ParseException e) {
+								e.printStackTrace();
+							}
+							String url = PropHelper.getValue("user_report_url") + user.getUserCode()  + "/" + order.getLpCode() + "/full.html";
+							if(isConnect(url)) {
+								report.setPath(url);
+							} else {
+								ReportResult rr = ReportHelper.getInstance().createUserReport(order.getLpCode(), user.getUserCode());
+								if(rr.getResultCode() == Constant.RESULT_SUCCESS) {
+									report.setPath(rr.getUrl());
+								} else {
+									report.setPath("");
 								}
 							}
-						} catch (ParseException e) {
-							e.printStackTrace();
+							break;
+						} else if (order.getStatus() == 0) {
+//							order.setReportFull("");
+							report.setPath("");
 						}
-						String url = PropHelper.getValue("user_report_url") + user.getUserCode()  + "/" + order.getLpCode() + "/full.html";
-						if(isConnect(url))
-							report.setPath(url);
-						else {
-							ReportResult rr = ReportHelper.getInstance().createUserReport(order.getLpCode(), user.getUserCode());
-							if(rr.getResultCode() == Constant.RESULT_SUCCESS) {
-								report.setPath(rr.getUrl());
-							} else {
-								report.setPath("");
-							}
-						}
-						break;
-					} else if (order.getStatus() == 0) {
-//						order.setReportFull("");
-						report.setPath("");
 					}
 				}
 			}
 		} else if (user == null && reports != null && !reports.isEmpty()) {
+			//用户未登录把报告模板中的报告路径设为空
 			for (TReport treport : reports) {
 				treport.setPath("");
 			}
@@ -576,6 +583,12 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 		result.setResultMessage("查询报告成功");
 
 		return result;
+	}
+	
+	public static void main(String[] args) {
+		String url = "http://api.sys.ecomapit.com/ddhj/report/user/U161009100001/LP161004113677/full.html";
+		TReportServiceImpl imp = new TReportServiceImpl();
+		imp.isConnect(url);
 	}
 	
 	private boolean isConnect(String urlStr) {
