@@ -32,6 +32,7 @@ import cn.com.ddhj.service.ICityAirService;
 import cn.com.ddhj.service.ITChemicalPlantService;
 import cn.com.ddhj.service.ITRubbishRecyclingService;
 import cn.com.ddhj.util.CommonUtil;
+import cn.com.ddhj.util.Constant;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
@@ -786,9 +787,11 @@ public class ReportHelper extends BaseClass {
 			if (flag) {
 				String url = PropHelper.getValue("user_report_url") + "/" + userCode + "/" + lpCode + "/full.html";
 				result.setUrl(url);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage(e.getLocalizedMessage());
 		}
 		return result;
 	}

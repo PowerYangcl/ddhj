@@ -541,11 +541,17 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						} catch (ParseException e) {
 							e.printStackTrace();
 						}
-						String url = PropHelper.getValue("user_report_url") + user.getUserCode() + order.getLpCode() + "full.html";
+						String url = PropHelper.getValue("user_report_url") + user.getUserCode()  + "/" + order.getLpCode() + "/full.html";
 						if(isConnect(url))
 							report.setPath(url);
-						else 
-							report.setPath("");
+						else {
+							ReportResult rr = ReportHelper.getInstance().createUserReport(order.getLpCode(), user.getUserCode());
+							if(rr.getResultCode() == Constant.RESULT_SUCCESS) {
+								report.setPath(rr.getUrl());
+							} else {
+								report.setPath("");
+							}
+						}
 						break;
 					} else if (order.getStatus() == 0) {
 //						order.setReportFull("");
