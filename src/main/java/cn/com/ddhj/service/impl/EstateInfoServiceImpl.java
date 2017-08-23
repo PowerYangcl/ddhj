@@ -118,7 +118,8 @@ public class EstateInfoServiceImpl implements IEstateInfoService{
 	public JSONObject estateInfoList(String lng, String lat  , String page , String count ,String radius) {
 		double[] around = CommonUtil.getAround(Double.valueOf(lat), Double.valueOf(lng), Integer.valueOf(radius)); 
 		LandLatLngDto dto = new LandLatLngDto(); 
-		dto.setPage(Integer.valueOf(page)*10);
+//		dto.setPage(Integer.valueOf(page)*10);
+		dto.setPage(Integer.valueOf(page));
 		dto.setMinLat(String.valueOf(around[0]));
 		dto.setMinLng(String.valueOf(around[1]));
 		dto.setMaxLat(String.valueOf(around[2]));
