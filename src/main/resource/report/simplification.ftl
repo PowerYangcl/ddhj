@@ -72,7 +72,7 @@
        <li>
             <img class="bg_logo02" src="images/report/bg_logo02.png">
             <div class="point"></div>
-            <p class="botm">点击下载<a href="javascript:;">《区域环境质量报告正式版》</a>可了解更多环境质量参数数值、等级划分标准，以及区域环境质量详细评价。</p>
+            <p class="botm">点击下载<a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.huijiayou.pedometer">《区域环境质量报告正式版》</a>可了解更多环境质量参数数值、等级划分标准，以及区域环境质量详细评价。</p>
             <div class="downloadBtn">立即下载正式版</div>
        </li>
 

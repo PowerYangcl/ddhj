@@ -150,8 +150,6 @@ public class TUserLpFollowServiceImpl extends BaseServiceImpl<TUserLpFollow, TUs
 				List<TLandedProperty> list = mapper.findLpForFollow(dto);
 				if (list != null && list.size() > 0) {
 					for (TLandedProperty lp : list) {
-						System.out.println(dto.getLat() + "|" + dto.getLng());
-						System.out.println(lp.getLat() + "|" + lp.getLat());
 						Double distance = CommonUtil.getDistanceFromLL(Double.parseDouble(dto.getLat()),
 								Double.parseDouble(dto.getLng()), Double.parseDouble(lp.getLat()),
 								Double.parseDouble(lp.getLng())) / 1000;
