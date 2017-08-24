@@ -97,6 +97,7 @@
 		AND f.user_code=#{userCode,jdbcType=VARCHAR}
 		order
 		by f.create_time desc
+		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
 	<select id="findLpForFollowCount" parameterType="cn.com.ddhj.dto.user.TUserLpFollowDto"
 		resultType="java.lang.Integer">

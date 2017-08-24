@@ -98,6 +98,7 @@
 		AND v.user_code=#{userCode,jdbcType=VARCHAR}
 		order
 		by v.create_time desc
+		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
 	<!-- 查询浏览楼盘记录总数 -->
 	<select id="findLpForVisitCount" parameterType="cn.com.ddhj.dto.user.TUserLpVisitDto"
