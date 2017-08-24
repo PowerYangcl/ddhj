@@ -395,7 +395,7 @@ public class ApiController extends BaseClass {
 		}
 		// 添加关注楼盘
 		else if ("lp_follow_add".equals(api.getApiTarget())) {
-			String code = obj.getString("lpCode");
+			String code = obj.getString("idList");
 			BaseResult result = ufService.insert(code, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
@@ -413,7 +413,7 @@ public class ApiController extends BaseClass {
 		}
 		// 添加楼盘浏览记录
 		else if ("lp_visit_add".equals(api.getApiTarget())) {
-			String code = obj.getString("lpCode");
+			String code = obj.getString("idList");
 			BaseResult result = uvService.insert(code, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
