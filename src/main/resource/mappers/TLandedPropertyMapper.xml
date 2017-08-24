@@ -379,50 +379,6 @@
 		select DISTINCT
 		city from t_landed_property
 	</select>
-	<!-- 获取楼盘信息 针对 用户关注楼盘和楼盘浏览记录 2016-10-11 zhy -->
-	<select id="findLpForUser" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
-		resultMap="BaseResultMap">
-		SELECT
-		lp.`code`,
-		lp.title,
-		lp.addressFull,
-		lp.lat,
-		lp.lng,
-		(
-		SELECT
-		min(r.price)
-		FROM
-		t_report AS r
-		WHERE
-		r.houses_code = lp.`code`
-		) r_price
-		FROM
-		t_landed_property AS lp
-		<where>
-			lp.`code` in(
-			<foreach collection="codes" item="item" index="index"
-				separator=",">
-				#{item,jdbcType=VARCHAR}
-			</foreach>
-			)
-		</where>
-		limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
-	</select>
-	<select id="findLpForUserCount" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
-		resultType="java.lang.Integer">
-		SELECT
-		count(1)
-		FROM
-		t_landed_property AS lp
-		<where>
-			lp.`code` in(
-			<foreach collection="codes" item="item" index="index"
-				separator=",">
-				#{item,jdbcType=VARCHAR}
-			</foreach>
-			)
-		</where>
-	</select>
 	<!-- 管理后台查询楼盘列表 2016-10-21 zhy -->
 	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.TLandedPropertyDto"
 		resultMap="BaseResultMap">

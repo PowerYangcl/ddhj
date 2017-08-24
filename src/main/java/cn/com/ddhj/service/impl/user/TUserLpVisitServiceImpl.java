@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
-import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
-import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserLpVisitMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
@@ -46,9 +44,6 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 	private TUserLoginMapper loginMapper;
 	@Autowired
 	private TUserMapper userMapper;
-	@Autowired
-	private TLandedPropertyMapper lpMapper;
-	
 	@Autowired
 	private ITUserService userService;
 
@@ -127,33 +122,25 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 		if (login != null) {
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
-				// 查询关注楼盘列表
-				List<String> lpCodes = mapper.findLpCodeAll(user.getUserCode());
-				if (lpCodes != null && lpCodes.size() > 0) {
-					TLandedPropertyDto lpDto = new TLandedPropertyDto();
-					lpDto.setCodes(lpCodes);
-					lpDto.setStart(dto.getPageIndex() * dto.getPageSize());
-					lpDto.setPageSize(dto.getPageSize());
-					List<TLandedProperty> list = lpMapper.findLpForUser(lpDto);
-
-					if (list != null && list.size() > 0) {
-						for (TLandedProperty lp : list) {
-							Double distance = CommonUtil.getDistanceFromLL(Double.parseDouble(dto.getLat()),
-									Double.parseDouble(dto.getLng()), Double.parseDouble(lp.getLat()),
-									Double.parseDouble(lp.getLng())) / 1000;
-							lp.setDistance(distance.intValue());
-						}
-						result.setList(list);
-						result.setTotal(lpMapper.findLpForUserCount(lpDto));
-						result.setResultCode(Constant.RESULT_SUCCESS);
-						result.setResultMessage("获取浏览记录成功");
-					} else {
-						result.setResultCode(Constant.RESULT_NULL);
-						result.setResultMessage("暂无浏览记录");
+				// 查询浏览楼盘列表
+				dto.setUserCode(user.getUserCode());
+				dto.setStart(dto.getPageIndex() * dto.getPageSize());
+				dto.setPageSize(dto.getPageSize());
+				List<TLandedProperty> list = mapper.findLpForVisit(dto);
+				if (list != null && list.size() > 0) {
+					for (TLandedProperty lp : list) {
+						Double distance = CommonUtil.getDistanceFromLL(Double.parseDouble(dto.getLat()),
+								Double.parseDouble(dto.getLng()), Double.parseDouble(lp.getLat()),
+								Double.parseDouble(lp.getLng())) / 1000;
+						lp.setDistance(distance.intValue());
 					}
+					result.setList(list);
+					result.setTotal(mapper.findLpForVisitCount(dto));
+					result.setResultCode(Constant.RESULT_SUCCESS);
+					result.setResultMessage("获取浏览记录成功");
 				} else {
 					result.setResultCode(Constant.RESULT_NULL);
-					result.setResultMessage("暂无关注楼盘");
+					result.setResultMessage("暂无浏览记录");
 				}
 			} else {
 				result.setResultCode(Constant.RESULT_ERROR);
@@ -172,7 +159,7 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 	 * @param userToken
 	 * @return
 	 * @date 2017年8月6日 下午9:46:19
-	 * @author Yangcl 
+	 * @author Yangcl
 	 * @version 1.0.0.1
 	 */
 	public JSONObject deleteLpVisitByUserCode(String userToken) {
@@ -182,42 +169,22 @@ public class TUserLpVisitServiceImpl extends BaseServiceImpl<TUserLpVisit, TUser
 		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
 			TUser user = userResult.getUser();
 			userCode = user.getUserCode();
-		}else{
+		} else {
 			result.put("resultCode", -1);
 			result.put("resultMessage", "用户尚未登录");
 			return result;
 		}
-		
+
 		int flag = mapper.deleteByUserCode(userCode);
-		if(flag == 1){
+		if (flag == 1) {
 			result.put("resultCode", 1);
 			result.put("resultMessage", "访问记录删除成功");
-		}else{
+		} else {
 			result.put("resultCode", -1);
 			result.put("resultMessage", "访问记录删除失败");
 		}
-		
-		return result; 
+
+		return result;
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

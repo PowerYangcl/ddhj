@@ -19,6 +19,18 @@ public class TLandedPropertyDto extends BaseDto {
 	private Double maxLng;
 
 	private Double score;
+	
+	private String userCode;
+	
+	
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
 
 	public Double getScore() {
 		return score;
