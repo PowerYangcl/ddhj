@@ -312,13 +312,15 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		                    "productCode": "801613242",
 		                    "productName": "测试0",
 		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/2729e/31c4f7b50a9e4a779dd7b57ccbf0b1aa.jpg",
-		                    "productPrice": 1000
+		                    "productPrice": 1000,
+		                    "buyNum":"4"
 		                },
 		                {
 		                    "productCode": "801613243",
 		                    "productName": "测试1",
 		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/29ada/f69f89d6601840df9560e4d9b5dcd4d8.jpg",
-		                    "productPrice": 500
+		                    "productPrice": 500,
+		                    "buyNum":"4"
 		                }
 		            ]
 		        },
@@ -331,13 +333,15 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		                    "productCode": "TP170726100003",
 		                    "productName": "测试2",
 		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275be/7391618ccf58429aaec031ba998c4654.jpg",
-		                    "productPrice": 800
+		                    "productPrice": 800,
+		                    "buyNum":"4"
 		                },
 		                {
 		                    "productCode": "TP170726100004",
 		                    "productName": "测试3",
 		                    "imgUrl": "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/299ad/01baed55e9184e48a1061cfa7c2f712f.jpg",
-		                    "productPrice": 400
+		                    "productPrice": 400,
+		                    "buyNum":"4"
 		                }
 		            ]
 		        }
@@ -393,6 +397,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 //			String[] mpArr = r.getMpurl().split(",");
 //			String[] ppArr = r.getProductPrices().split(",");
 			String[] pcArr = r.getProductCode().split(",");
+			String[] bnArr = r.getBuyNums().split(",");
 			if (pcArr.length != 0) {
 				for (int i = 0; i < pcArr.length; i++) {
 					TProductInfoResult view = productMapper.getProductInfo(pcArr[i]);
@@ -402,6 +407,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 					p.setProductName(view.getProductName());
 					p.setProductPrice(Double.valueOf(view.getCurrentPrice()));
 					p.setImgUrl(view.getMainPicUrl());  
+					p.setBuyNum(bnArr[i]); 
 					productList.add(p);
 				}
 			}

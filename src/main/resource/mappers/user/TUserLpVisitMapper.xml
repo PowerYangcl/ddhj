@@ -45,11 +45,13 @@
 		</trim>
 	</insert>
 	<!-- 获取用户浏览记录的所有楼盘编码 2016-10-11 zhy -->
-	<select id="findLpCodeAll" parameterType="cn.com.ddhj.dto.user.TUserLpVisitDto"
-		resultType="java.lang.String">
-		select lp_code from
-		t_user_lp_visit where user_code =
-		#{userCode,jdbcType=VARCHAR}
+	<select id="findLpCodeAll" parameterType="cn.com.ddhj.dto.user.TUserLpVisitDto" resultType="java.lang.String">
+		select 
+			lp_code 
+		from t_user_lp_visit 
+		where 
+			user_code = #{userCode,jdbcType=VARCHAR}    
+		order by create_time desc
 	</select>
 	<!-- 查询浏览记录是否已存在 2016-10-11 zhy -->
 	<select id="findVisitIsExists" parameterType="cn.com.ddhj.model.user.TUserLpFollow"
