@@ -65,4 +65,50 @@
 			#{lpCode,jdbcType=VARCHAR}
 		</where>
 	</select>
+	<resultMap id="LpResultMap" type="cn.com.ddhj.model.TLandedProperty">
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="lat" property="lat" jdbcType="VARCHAR" />
+		<result column="lng" property="lng" jdbcType="VARCHAR" />
+		<result column="addressFull" property="addressFull" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<!-- 查询浏览楼盘记录列表 -->
+	<select id="findLpForVisit" parameterType="cn.com.ddhj.dto.user.TUserLpVisitDto"
+		resultMap="LpResultMap">
+		SELECT
+		lp.`code`,
+		lp.title,
+		lp.addressFull,
+		lp.lat,
+		lp.lng,
+		(
+		SELECT
+		min(r.price)
+		FROM
+		t_report AS r
+		WHERE
+		r.houses_code = lp.`code`
+		)
+		r_price
+		FROM
+		t_landed_property AS lp,
+		t_user_lp_visit as v
+		where
+		lp.`code`=v.lp_code
+		AND v.user_code=#{userCode,jdbcType=VARCHAR}
+		order
+		by v.create_time desc
+	</select>
+	<!-- 查询浏览楼盘记录总数 -->
+	<select id="findLpForVisitCount" parameterType="cn.com.ddhj.dto.user.TUserLpVisitDto"
+		resultType="java.lang.Integer">
+		SELECT count(1)
+		FROM
+		t_landed_property AS lp,
+		t_user_lp_visit as v
+		where
+		lp.`code`=v.lp_code
+		AND
+		v.user_code=#{userCode,jdbcType=VARCHAR}
+	</select>
 </mapper>
