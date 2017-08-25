@@ -7,8 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.github.pagehelper.PageInfo;
-
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
@@ -150,8 +148,6 @@ public class TUserLpFollowServiceImpl extends BaseServiceImpl<TUserLpFollow, TUs
 				List<TLandedProperty> list = mapper.findLpForFollow(dto);
 				if (list != null && list.size() > 0) {
 					for (TLandedProperty lp : list) {
-						System.out.println(dto.getLat() + "|" + dto.getLng());
-						System.out.println(lp.getLat() + "|" + lp.getLat());
 						Double distance = CommonUtil.getDistanceFromLL(Double.parseDouble(dto.getLat()),
 								Double.parseDouble(dto.getLng()), Double.parseDouble(lp.getLat()),
 								Double.parseDouble(lp.getLng())) / 1000;
