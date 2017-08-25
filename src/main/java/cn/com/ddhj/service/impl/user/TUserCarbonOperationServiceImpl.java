@@ -359,7 +359,7 @@ public class TUserCarbonOperationServiceImpl
 		Double rmb = carbon * Double.parseDouble(ratio);
 		Double limit = Double.valueOf(PropHelper.getValue("present_carbon_total_rmb"));
 		if(rmb >= limit) {
-			result.setResultCode(Constant.RESULT_SUCCESS);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("该用户分享送碳币额度已满");
 			return result;
 		}
@@ -404,11 +404,11 @@ public class TUserCarbonOperationServiceImpl
 				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("赠送碳币成功.增加" + once + "个碳币");
 			} else {
-				result.setResultCode(Constant.RESULT_SUCCESS);
+				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("赠送碳币失败");
 			}
 		} else {
-			result.setResultCode(Constant.RESULT_SUCCESS);
+			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("赠送碳币失败");
 		}
 		return result;
