@@ -385,6 +385,9 @@ public class TUserCarbonOperationServiceImpl
 			tc.setUpdateUser(user.getUserCode());
 			tc.setUpdateTime(DateUtil.getSysDateTime());
 			count = presentCarbonMapper.insertSelective(tc);
+			
+			
+			
 		} else {
 			tc.setUserCode(user.getUserCode());
 			tc.setCarbonMoney(presentThis);
@@ -394,13 +397,20 @@ public class TUserCarbonOperationServiceImpl
 		}
 		
 		if(count == 1) {
-			result.setResultCode(Constant.RESULT_SUCCESS);
-			result.setResultMessage("赠送碳币成功.增加" + once + "个碳币");
-			return result;
+//			user = userMapper.selectByCode(user.getUserCode());
+			user.setCarbonMoney(new BigDecimal(once).setScale(2, BigDecimal.ROUND_HALF_UP));
+			count = userMapper.updateCarbonByUserCode(user);
+			if(count == 1) {
+				result.setResultCode(Constant.RESULT_SUCCESS);
+				result.setResultMessage("赠送碳币成功.增加" + once + "个碳币");
+			} else {
+				result.setResultCode(Constant.RESULT_SUCCESS);
+				result.setResultMessage("赠送碳币失败");
+			}
 		} else {
 			result.setResultCode(Constant.RESULT_SUCCESS);
 			result.setResultMessage("赠送碳币失败");
-			return result;
 		}
+		return result;
 	 }
 }
