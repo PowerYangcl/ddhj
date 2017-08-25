@@ -100,6 +100,19 @@ public class TOrder extends BaseModel {
 	private String invoiceContent;
 
 	private ReportUpdate reportUpdate = new ReportUpdate();
+	
+	
+	private String realPrice;
+	
+	
+
+	public String getRealPrice() {
+		return realPrice;
+	}
+
+	public void setRealPrice(String realPrice) {
+		this.realPrice = realPrice;
+	}
 
 	public String getLpCode() {
 		return lpCode;
