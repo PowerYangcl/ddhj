@@ -13,15 +13,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
+import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TOrderRechargeMapper;
+import cn.com.ddhj.mapper.TPresentCarbonMapper;
 import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.TOrderRecharge;
+import cn.com.ddhj.model.TPresentCarbon;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
@@ -53,6 +55,8 @@ public class TUserCarbonOperationServiceImpl
 	private TUserMapper userMapper;
 	@Autowired
 	private TOrderRechargeMapper rechargeMapper;
+	@Autowired
+	private TPresentCarbonMapper presentCarbonMapper;
 
 	private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -333,4 +337,70 @@ public class TUserCarbonOperationServiceImpl
 		}
 		return data;
 	}
+	
+	public BaseResult presentCarbon(String userToken) {
+		BaseResult result = new BaseResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if (login == null) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("用户未登录");
+			return result;
+		}
+
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if (user == null) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("用户不存在");
+			return result;
+		}
+		Double carbon = presentCarbonMapper.selectSumCarbonByUserCode(user.getUserCode());
+		if(carbon == null) carbon = 0.0;
+		String ratio = PropHelper.getValue("carbon_money_ratio");
+		Double rmb = carbon * Double.parseDouble(ratio);
+		Double limit = Double.valueOf(PropHelper.getValue("present_carbon_total_rmb"));
+		if(rmb >= limit) {
+			result.setResultCode(Constant.RESULT_SUCCESS);
+			result.setResultMessage("该用户分享送碳币额度已满");
+			return result;
+		}
+		
+		Double once = Double.valueOf(PropHelper.getValue("present_carbon_once"));
+		Double presentThis = (carbon + once) * Double.parseDouble(ratio);
+		if(presentThis >= limit) {
+			BigDecimal b = new BigDecimal(limit / Double.parseDouble(ratio));  
+			presentThis = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();  
+		} else {
+			presentThis = carbon + once;
+		}
+		
+		int count = 0;
+		TPresentCarbon tc = presentCarbonMapper.selectByCode(user.getUserCode());
+		if(tc == null) {
+			tc = new TPresentCarbon();
+			tc.setUserCode(user.getUserCode());
+			tc.setCarbonMoney(presentThis);
+			tc.setUuid(UUID.randomUUID().toString().replaceAll("-",""));
+			tc.setCreateTime(DateUtil.getSysDateTime());
+			tc.setCreateUser(user.getUserCode());
+			tc.setUpdateUser(user.getUserCode());
+			tc.setUpdateTime(DateUtil.getSysDateTime());
+			count = presentCarbonMapper.insertSelective(tc);
+		} else {
+			tc.setUserCode(user.getUserCode());
+			tc.setCarbonMoney(presentThis);
+			tc.setUpdateUser(user.getUserCode());
+			tc.setUpdateTime(DateUtil.getSysDateTime());
+			count = presentCarbonMapper.updateByCode(tc);
+		}
+		
+		if(count == 1) {
+			result.setResultCode(Constant.RESULT_SUCCESS);
+			result.setResultMessage("赠送碳币成功.增加" + once + "个碳币");
+			return result;
+		} else {
+			result.setResultCode(Constant.RESULT_SUCCESS);
+			result.setResultMessage("赠送碳币失败");
+			return result;
+		}
+	 }
 }

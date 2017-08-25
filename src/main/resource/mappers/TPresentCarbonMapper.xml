@@ -19,15 +19,20 @@
 		parameterType="java.lang.String">
 		select
 		<include refid="Base_Column_List" />
-		from t_present_money
+		from t_present_carbon
+		where user_code = #{userCode,jdbcType=VARCHAR}
+	</select>
+	<select id="selectSumCarbonByUserCode" resultType="java.lang.Double" parameterType="java.lang.String">
+		select sum(carbon_money) as carbonMoney 
+		from t_present_carbon
 		where user_code = #{userCode,jdbcType=VARCHAR}
 	</select>
 	<delete id="deleteByCode" parameterType="java.lang.String">
-		delete from t_present_money
+		delete from t_present_carbon
 		where user_code = #{userCode,jdbcType=VARCHAR}
 	</delete>
 	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TPresentCarbon">
-		insert into t_present_money
+		insert into t_present_carbon
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			uuid,
 			user_code,
@@ -48,7 +53,7 @@
 		</trim>
 	</insert>
 	<update id="updateByCode" parameterType="cn.com.ddhj.model.TPresentCarbon">
-		update t_present_money
+		update t_present_carbon
 		<set>
 			carbon_money = #{carbonMoney,jdbcType=DECIMAL},
 			update_user = #{updateUser,jdbcType=VARCHAR},

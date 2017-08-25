@@ -709,7 +709,7 @@ public class ApiController extends BaseClass {
 		} 
 		// 赠送碳币接口
 		else if ("present_carbon".equals(api.getApiTarget())) {
-			SearchResult<TSearchHotWord> result = searchService.getSearchHotWord();
+			BaseResult result = userCarbonOperService.presentCarbon(api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		else {
