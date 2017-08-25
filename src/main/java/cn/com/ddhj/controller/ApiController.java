@@ -706,7 +706,13 @@ public class ApiController extends BaseClass {
 		else if ("hot_search".equals(api.getApiTarget())) {
 			SearchResult<TSearchHotWord> result = searchService.getSearchHotWord();
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} else {
+		} 
+		// 赠送碳币接口
+		else if ("present_carbon".equals(api.getApiTarget())) {
+			SearchResult<TSearchHotWord> result = searchService.getSearchHotWord();
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("调用接口失败");

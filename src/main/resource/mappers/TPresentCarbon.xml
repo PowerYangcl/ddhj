@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TPresentCarbonMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TPresentCarbon">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="user_code" property="userCode" jdbcType="VARCHAR" />
+		<result column="carbon_money" property="carbonMoney" jdbcType="DECIMAL" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, user_code, carbon_money, create_user, create_time,
+		update_user, update_time
+	</sql>
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_present_money
+		where user_code = #{userCode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from t_present_money
+		where user_code = #{userCode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TPresentCarbon">
+		insert into t_present_money
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			user_code,
+			carbon_money,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{userCode,jdbcType=VARCHAR},
+			#{carbonMoney,jdbcType=DECIMAL},
+			#{createUser,jdbcType=VARCHAR},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updateUser,jdbcType=VARCHAR},
+			#{updateTime,jdbcType=TIMESTAMP},
+		</trim>
+	</insert>
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.TPresentCarbon">
+		update t_present_money
+		<set>
+			carbon_money = #{carbonMoney,jdbcType=DECIMAL},
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time = #{updateTime,jdbcType=TIMESTAMP},
+		</set>
+		where user_code = #{userCode,jdbcType=VARCHAR}
+	</update>
+</mapper>
