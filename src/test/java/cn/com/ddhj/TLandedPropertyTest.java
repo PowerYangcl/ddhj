@@ -43,18 +43,6 @@ public class TLandedPropertyTest extends BaseTest {
 		System.out.println(afforest);
 	}
 
-	public void getDataForUser() {
-		List<String> list = new ArrayList<String>();
-		list.add("LP161004101471");
-		TLandedPropertyDto dto = new TLandedPropertyDto();
-		dto.setCodes(list);
-		dto.setPageSize(10);
-		dto.setStart(0);
-		List<TLandedProperty> lp = mapper.findLpForUser(dto);
-		System.out.println(lp.size());
-		System.out.println(mapper.findLpForUserCount(dto));
-	}
-
 	public void findLP() {
 		double[] r = CommonUtil.getAround(39.9659730000, 116.3325020000, 10 * 1000);
 		TLandedPropertyDto dto = new TLandedPropertyDto();
@@ -85,7 +73,8 @@ public class TLandedPropertyTest extends BaseTest {
 		TLandedPropertyDto dto = new TLandedPropertyDto();
 		dto.setPageIndex(0);
 		dto.setPageSize(10);
-		System.out.println(JSON.toJSON(service.getLpData(dto)));;
+		System.out.println(JSON.toJSON(service.getLpData(dto)));
+		;
 	}
 
 }

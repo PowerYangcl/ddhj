@@ -263,9 +263,9 @@ public class TUserCarbonOperationServiceImpl
 				}
 				list = mapper.findCarbonOperationDetail(dto);
 				if (list != null && list.size() > 0) {
-					if (dto.getDay() != null) {
-						list = trimData(list, dto.getDay());
-					}
+//					if (dto.getDay() != null) {
+//						list = trimData(list, dto.getDay());
+//					}
 					result.setData(list);
 					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("获取数据成功");

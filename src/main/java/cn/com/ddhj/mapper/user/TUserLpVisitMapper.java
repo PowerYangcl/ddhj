@@ -4,6 +4,7 @@ import java.util.List;
 
 import cn.com.ddhj.dto.user.TUserLpVisitDto;
 import cn.com.ddhj.mapper.BaseMapper;
+import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.user.TUserLpVisit;
 
 /**
@@ -62,4 +63,29 @@ public interface TUserLpVisitMapper extends BaseMapper<TUserLpVisit, TUserLpVisi
 	 * @return
 	 */
 	TUserLpVisit findVisitIsExists(TUserLpVisit entity);
+
+	/**
+	 * 
+	 * 方法: findLpForVisit <br>
+	 * 描述: 查询浏览楼盘记录 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月24日 下午10:44:42
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	List<TLandedProperty> findLpForVisit(TUserLpVisitDto dto);
+
+
+	/**
+	 * 
+	 * 方法: findLpForVisit <br>
+	 * 描述: 查询浏览楼盘记录总数 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月24日 下午10:44:42
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	Integer findLpForVisitCount(TUserLpVisitDto dto);
 }

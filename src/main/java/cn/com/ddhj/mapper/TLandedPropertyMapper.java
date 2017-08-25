@@ -65,30 +65,6 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, TLand
 
 	/**
 	 * 
-	 * 方法: findLpForUser <br>
-	 * 描述: 获取楼盘信息 针对 用户关注楼盘和楼盘浏览记录 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月11日 下午4:27:12
-	 * 
-	 * @param list
-	 * @return
-	 */
-	List<TLandedProperty> findLpForUser(TLandedPropertyDto dto);
-
-	/**
-	 * 
-	 * 方法: findLpForUserCount <br>
-	 * 描述: 获取楼盘信息 针对 用户关注楼盘和楼盘浏览记录总数 <br>
-	 * 作者: zhy<br>
-	 * 时间: 2016年10月11日 下午4:27:32
-	 * 
-	 * @param list
-	 * @return
-	 */
-	int findLpForUserCount(TLandedPropertyDto dto);
-
-	/**
-	 * 
 	 * 方法: findLpAllByCoord <br>
 	 * 描述: 根据坐标查询指定范围内的所有楼盘数据 <br>
 	 * 作者: zhy<br>

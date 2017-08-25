@@ -4,6 +4,7 @@ import java.util.List;
 
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
 import cn.com.ddhj.mapper.BaseMapper;
+import cn.com.ddhj.model.TLandedProperty;
 import cn.com.ddhj.model.user.TUserLpFollow;
 
 /**
@@ -62,4 +63,28 @@ public interface TUserLpFollowMapper extends BaseMapper<TUserLpFollow, TUserLpFo
 	 * @return
 	 */
 	TUserLpFollow findFollowIsExists(TUserLpFollow entity);
+
+	/**
+	 * 
+	 * 方法: findLpForFollow <br>
+	 * 描述: 查询用户关注楼盘列表 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月24日 下午10:42:52
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	List<TLandedProperty> findLpForFollow(TUserLpFollowDto dto);
+
+	/**
+	 * 
+	 * 方法: findLpForFollowCount <br>
+	 * 描述: 查询用户关注楼盘列表总数 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月24日 下午10:51:02
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	Integer findLpForFollowCount(TUserLpFollowDto dto);
 }

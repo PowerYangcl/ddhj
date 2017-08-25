@@ -27,65 +27,56 @@
 		<result column="rDesc" property="rDesc" jdbcType="LONGVARCHAR" />
 		<!-- reportDate -->
 		<result column="report_date" property="reportDate" jdbcType="LONGVARCHAR" />
+		<result column="pay_price" property="payPrice" jdbcType="DOUBLE" />
+		
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, uuid, code, houses_code, title, level_code, pic, image,
-		rang, price,
-		path,detail, create_user,
-		DATE_FORMAT(
-		create_time,
-		'%Y-%m-%d'
-		) AS
-		create_time,
+		id, 
+		uuid, 
+		code, 
+		houses_code, 
+		title, 
+		level_code, 
+		pic, 
+		image,
+		rang, 
+		price,
+		path,
+		detail, 
+		create_user,
+		DATE_FORMAT( create_time, '%Y-%m-%d' ) AS create_time,
 		update_user,
-		DATE_FORMAT(
-		update_time,
-		'%Y-%m-%d'
-		) AS
-		update_time,
-		DATE_FORMAT(
-		report_date,
-		'%Y-%m-%d'
-		) AS
-		report_date
+		DATE_FORMAT( update_time, '%Y-%m-%d' ) AS update_time,
+		DATE_FORMAT( report_date, '%Y-%m-%d' ) AS report_date
 	</sql>
-	<select id="selectByCode" resultMap="BaseResultMap"
-		parameterType="java.lang.String">
+	
+	<select id="selectByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
 		SELECT
-		r.id,
-		r.`code`,
-		r.title,
-		r.pic,
-		r.image,
-		r.rang,
-		r.price,
-		r.updatePrice,
-		lp.overview AS detail,
-		lp.city AS city,
-		concat(ifnull(lp.lat,""),",",ifnull(lp.lng,"")) AS position,
-		r.houses_code,
-		DATE_FORMAT(
-		r.create_time,
-		'%Y-%m-%d'
-		) AS
-		create_time,
-		lp.title AS houses_name,
-		lp.addressFull as address,
-		r.price,
-		r.path,
-		lp.title as lpName,
-		r.detail as rDesc
+			r.id,
+			r.`code`,
+			r.title,
+			r.pic,
+			r.image,
+			r.rang,
+			r.price,
+			r.updatePrice,
+			lp.overview AS detail,
+			lp.city AS city,
+			concat(ifnull(lp.lat,""),",",ifnull(lp.lng,"")) AS position,
+			r.houses_code,
+			DATE_FORMAT( r.create_time, '%Y-%m-%d' ) AS create_time,
+			lp.title AS houses_name,
+			lp.addressFull as address,
+			r.price,
+			r.path,
+			lp.title as lpName,
+			r.detail as rDesc
 		FROM
-		t_report AS r
-		LEFT JOIN
-		t_landed_property
-		AS lp ON
-		r.houses_code =
-		lp.`code`
+			t_report AS r LEFT JOIN t_landed_property AS lp ON r.houses_code = lp.`code` 
 		where
-		r.`code` =
-		#{code,jdbcType=VARCHAR}
+			r.`code` = #{code,jdbcType=VARCHAR}
 	</select>
+	
 	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from t_report
 		where `code` = #{code,jdbcType=VARCHAR}

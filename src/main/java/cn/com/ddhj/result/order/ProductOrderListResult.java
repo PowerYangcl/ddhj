@@ -16,7 +16,14 @@ public class ProductOrderListResult {
 	private String mpurl;
 	private String productPrices;
 	private String productCode;
+	private String buyNums;
 	
+	public String getBuyNums() {
+		return buyNums;
+	}
+	public void setBuyNums(String buyNums) {
+		this.buyNums = buyNums;
+	}
 	public String getProductPrices() {
 		return productPrices;
 	}

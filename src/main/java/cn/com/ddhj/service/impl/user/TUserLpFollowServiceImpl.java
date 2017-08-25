@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.ddhj.base.BaseResult;
-import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.dto.user.TUserLpFollowDto;
-import cn.com.ddhj.mapper.TLandedPropertyMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserLpFollowMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
@@ -42,8 +40,6 @@ public class TUserLpFollowServiceImpl extends BaseServiceImpl<TUserLpFollow, TUs
 	private TUserLoginMapper loginMapper;
 	@Autowired
 	private TUserMapper userMapper;
-	@Autowired
-	private TLandedPropertyMapper lpMapper;
 
 	/**
 	 * 
@@ -146,29 +142,21 @@ public class TUserLpFollowServiceImpl extends BaseServiceImpl<TUserLpFollow, TUs
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
 				// 查询关注楼盘列表
-				List<String> lpCodes = mapper.findLpCodeAll(user.getUserCode());
-				if (lpCodes != null && lpCodes.size() > 0) {
-					TLandedPropertyDto lpDto = new TLandedPropertyDto();
-					lpDto.setCodes(lpCodes);
-					lpDto.setStart(dto.getPageIndex() * dto.getPageSize());
-					lpDto.setPageSize(dto.getPageSize());
-					List<TLandedProperty> list = lpMapper.findLpForUser(lpDto);
-
-					if (list != null && list.size() > 0) {
-						for (TLandedProperty lp : list) {
-							Double distance = CommonUtil.getDistanceFromLL(Double.parseDouble(dto.getLat()),
-									Double.parseDouble(dto.getLng()), Double.parseDouble(lp.getLat()),
-									Double.parseDouble(lp.getLng())) / 1000;
-							lp.setDistance(distance.intValue());
-						}
-						result.setList(list);
-						result.setTotal(lpMapper.findLpForUserCount(lpDto));
-						result.setResultCode(Constant.RESULT_SUCCESS);
-						result.setResultMessage("获取关注楼盘列表成功");
-					} else {
-						result.setResultCode(Constant.RESULT_NULL);
-						result.setResultMessage("暂无关注楼盘");
+				dto.setUserCode(user.getUserCode());
+				dto.setStart(dto.getPageIndex() * dto.getPageSize());
+				dto.setPageSize(dto.getPageSize());
+				List<TLandedProperty> list = mapper.findLpForFollow(dto);
+				if (list != null && list.size() > 0) {
+					for (TLandedProperty lp : list) {
+						Double distance = CommonUtil.getDistanceFromLL(Double.parseDouble(dto.getLat()),
+								Double.parseDouble(dto.getLng()), Double.parseDouble(lp.getLat()),
+								Double.parseDouble(lp.getLng())) / 1000;
+						lp.setDistance(distance.intValue());
 					}
+					result.setList(list);
+					result.setTotal(mapper.findLpForFollowCount(dto));
+					result.setResultCode(Constant.RESULT_SUCCESS);
+					result.setResultMessage("获取关注楼盘列表成功");
 				} else {
 					result.setResultCode(Constant.RESULT_NULL);
 					result.setResultMessage("暂无关注楼盘");

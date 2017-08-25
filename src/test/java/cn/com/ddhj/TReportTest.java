@@ -230,11 +230,6 @@ public class TReportTest extends BaseTest {
 		}
 	}
 
-	@Test
-	public void batchReportTmp() {
-		service.batchCreateH5Report();
-	}
-
 	public void createTReport() {
 		/**
 		 * 查询所有已生成的报告添加到t_report表
@@ -285,5 +280,10 @@ public class TReportTest extends BaseTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Test
+	public void createH5Report() {
+		service.batchCreateH5Report();
 	}
 }

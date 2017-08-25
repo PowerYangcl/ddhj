@@ -5,7 +5,14 @@ public class ProductResult {
 	private String productName;
 	private String imgUrl;
 	private Double productPrice;
+	private String buyNum;  // 商品购买数量
 	
+	public String getBuyNum() {
+		return buyNum;
+	}
+	public void setBuyNum(String buyNum) {
+		this.buyNum = buyNum;
+	}
 	public String getProductCode() {
 		return productCode;
 	}

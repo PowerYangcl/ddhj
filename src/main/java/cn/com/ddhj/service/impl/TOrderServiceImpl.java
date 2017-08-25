@@ -100,6 +100,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 											order.getReportUpdate().setCity(report.getCity());
 											order.getReportUpdate().setLpCode(report.getHousesCode());
 											order.getReportUpdate().setPosition(report.getPosition());
+											order.setRealPrice(report.getPrice().toString()); 
 										}
 									}
 								} catch (ParseException e) {
