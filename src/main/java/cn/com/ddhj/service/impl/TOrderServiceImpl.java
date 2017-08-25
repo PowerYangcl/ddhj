@@ -51,6 +51,7 @@ import cn.com.ddhj.util.DateUtil;
 /**
  * 
  * 类: TOrderServiceImpl <br>
+ * 测试地址：http://api.sys.ecomapit.com/ddhj/api.htm?apiTarget=order_data&api_key=appfamilyhas&apiInput={"pageSize":20,"pageIndex":0,"status":"1"}&api_timespan=2017-08-25+11:35:12&userToken=3b6aa52ba7ea47f093a995660cfa2d6f&api_secret=7b5ab856eb03ebbf6e99119c7b75e611
  * 描述: 订单表业务处理接口 <br>
  * 作者: zhy<br>
  * 时间: 2016年10月7日 下午12:59:33
@@ -100,7 +101,6 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 											order.getReportUpdate().setCity(report.getCity());
 											order.getReportUpdate().setLpCode(report.getHousesCode());
 											order.getReportUpdate().setPosition(report.getPosition());
-											order.setRealPrice(report.getPrice().toString()); 
 										}
 									}
 								} catch (ParseException e) {

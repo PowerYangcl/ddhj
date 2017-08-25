@@ -865,7 +865,7 @@ public class ApiController extends BaseClass {
 			carbonOperation.setUuid(WebHelper.getInstance().genUuid());
 			carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
 			carbonOperation.setUserCode(user.getUserCode());
-			carbonOperation.setOperationType("DC170208100003");
+			carbonOperation.setOperationType("DC170208100002");
 			carbonOperation.setOperationTypeChild("DC170208100006");
 			carbonOperation.setCarbonSum(rechargeRec.getCarbonMoney());
 			carbonOperation.setCreateUser(user.getUserCode());

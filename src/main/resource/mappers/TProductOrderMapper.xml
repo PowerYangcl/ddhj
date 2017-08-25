@@ -147,7 +147,7 @@
 				GROUP_CONCAT(d.product_code order by d.id) as productCode,
 				GROUP_CONCAT(d.buy_num order by d.id) as buyNums 
 			from 
-				t_product_order o left join t_product_order_detail d on o.code = d.order_code left join t_product_info p on p.product_code = d.product_code
+				t_product_order o left join t_product_order_detail d on o.code = d.order_code 
 			where 
 				o.buyer_code = #{buyerCode , jdbcType=VARCHAR}
 				<if test="orderStatus != null and orderStatus !=''">

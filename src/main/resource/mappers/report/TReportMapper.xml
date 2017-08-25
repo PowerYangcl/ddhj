@@ -27,8 +27,6 @@
 		<result column="rDesc" property="rDesc" jdbcType="LONGVARCHAR" />
 		<!-- reportDate -->
 		<result column="report_date" property="reportDate" jdbcType="LONGVARCHAR" />
-		<result column="pay_price" property="payPrice" jdbcType="DOUBLE" />
-		
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, 
