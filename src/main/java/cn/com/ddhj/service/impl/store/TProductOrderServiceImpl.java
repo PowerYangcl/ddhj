@@ -357,7 +357,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 	 */
 	public JSONObject findProductOrderList(JSONObject obj, String userToken) {
 		JSONObject re = new JSONObject();
-		
+		long start = System.currentTimeMillis();
 		String buyerCode = "";
 		UserDataResult userResult = userService.getUser(userToken);
 		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
@@ -418,6 +418,8 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		re.put("resultMessage", "查询成功");
 		re.put("orderList", olist);
 		re.put("telCS", "010-66668888");
+		long end = System.currentTimeMillis();
+		System.out.println("商品订单 order_list接口总共耗时：" + +(end - start) + " 毫秒");
 		return re;
 	}
 
