@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -27,14 +26,12 @@ import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TOrderMapper;
-import cn.com.ddhj.mapper.report.TReportLevelMapper;
 import cn.com.ddhj.mapper.report.TReportMapper;
 import cn.com.ddhj.mapper.user.TUserCarbonOperationMapper;
 import cn.com.ddhj.mapper.user.TUserLoginMapper;
 import cn.com.ddhj.mapper.user.TUserMapper;
 import cn.com.ddhj.model.TOrder;
 import cn.com.ddhj.model.report.TReport;
-import cn.com.ddhj.model.report.TReportLevel;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
@@ -72,12 +69,9 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	private TReportMapper reportMapper;
 	@Autowired
 	private TUserCarbonOperationMapper carbonOperationMapper;
-	@Autowired
-	private TReportLevelMapper rlMapper;  
 
 	@Override
 	public TOrderResult findEntityToPage(TOrderDto dto, String userToken, HttpServletRequest request) {
-		long start = System.currentTimeMillis();
 		TOrderResult result = new TOrderResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
 		if (login != null) {
@@ -89,22 +83,9 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				int total = mapper.findEntityAllCount(dto);
 				if (list != null && list.size() > 0) {
 					if (request != null) {
-						List<TReportLevel> rls = rlMapper.findEntityAll();
-						Map<String , String> rldict = new HashMap<String, String>();     								// 报告等级字典
-						if(rls != null && rls.size() != 0){
-							for(TReportLevel e : rls){
-								rldict.put(e.getCode(), e.getName());
-							}
-						}else{
-							result.setResultCode(Constant.RESULT_ERROR);
-							result.setResultMessage("字典数据-报告等级为空");
-							return result;
-						}
 						for (int i = 0; i < list.size(); i++) {
 							TOrder order = list.get(i);
 							order.setPath(order.getPath());
-							String levelName = rldict.get(order.getLevelCode());
-							order.setLevelName(levelName); 
 							// 报告订单已支付
 							if (order.getStatus() == 1 || order.getStatus() == 2 || order.getStatus() == 3) {
 								// 计算报告购买时间与当前时间差值,大于半年则提示更新
@@ -147,8 +128,6 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
 		}
-		long end = System.currentTimeMillis();
-		System.out.println("楼盘订单 order_data接口总共耗时：" + +(end - start) + " 毫秒");
 		return result;
 	}
 
