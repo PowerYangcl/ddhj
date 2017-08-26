@@ -73,96 +73,105 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		int isBinding = 0;
 		String userCode = "";
 		BaseResult result = new BaseResult();
-		if (StringUtils.isNotBlank(data)) {
-			JSONObject step = JSONObject.parseObject(data);
-			if (step != null) {
-				TUser user = userMapper.findUserByPhone(step.getString("phone"));
-				if (user != null) {
-					isBinding = 1;
-					userCode = user.getUserCode();
-				}
-				String equipmentCode = step.getString("equipmentCode");
-				JSONArray array = JSONArray.parseArray(step.getString("data"));
-				if (array != null && array.size() > 0) {
-					List<TUserStep> list = new ArrayList<TUserStep>();
-					for (int i = 0; i < array.size(); i++) {
-						JSONObject obj = array.getJSONObject(i);
-						TUserStep entity = new TUserStep();
-						entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
-						entity.setEquipmentCode(equipmentCode);
-						entity.setStep(obj.getInteger("step") != null ? obj.getInteger("step") : 0);
-						entity.setCreateDate(obj.getString("date"));
-						entity.setCreateTime(DateUtil.getSysDateTime());
-						entity.setUpdateTime(DateUtil.getSysDateTime());
-						entity.setIsBinding(isBinding);
-						entity.setUserCode(userCode);
-						if (StringUtils.isNotBlank(userCode)) {
-							entity.setIsSync(1);
-						}
-						list.add(entity);
-					}
-					Collections.sort(list, new Comparator<TUserStep>() {
-						@Override
-						public int compare(TUserStep s1, TUserStep s2) {
-							return s1.getCreateDate().compareTo(s2.getCreateDate());
-						}
-					});
-					// 获取开始日期和结束日期
-					String startDate = "";
-					String endDate = "";
-					for (int i = 0; i < list.size(); i++) {
-						if (i == 0) {
-							startDate = list.get(i).getCreateDate();
-						} else if (i == list.size() - 1) {
-							endDate = list.get(i).getCreateDate();
-						}
-					}
-					// 根据设备识别码和时间段删除原有数据
-					TUserStepDto dto = new TUserStepDto();
-					dto.setEquipmentCode(equipmentCode);
-					dto.setEndDate(endDate);
-					dto.setStartDate(startDate);
-					mapper.deletByEquipmentCode(dto);
-					// 批量添加数据到计步表
-					int flag = mapper.batchInsert(list);
-					if (flag > 0) {
-						result.setResultCode(Constant.RESULT_SUCCESS);
-						/**
-						 * 汇总兑换碳币数量,同步到t_user表中
-						 */
-						List<TUser> carbonUsers = userCarbonList(list);
-						for (TUser uCarbon : carbonUsers) {
-							/**
-							 * 碳币保留两位小数
-							 */
-							uCarbon.setCarbonMoney(uCarbon.getCarbonMoney().setScale(2, BigDecimal.ROUND_HALF_UP));
-							uCarbon.setUpdateTime(DateUtil.getSysDateTime());
-							userMapper.updateCarbonByUserCode(uCarbon);
-						}
-						/**
-						 * 同步到碳币操作日志表
-						 */
-						List<TUserCarbonOperation> operations = carbonOperationData(carbonUsers);
-						if (operations != null && operations.size() > 0) {
-							carbonOperationMapper.batchInsert(operations);
-						}
-						result.setResultMessage("同步成功");
-					} else {
-						result.setResultCode(Constant.RESULT_ERROR);
-						result.setResultMessage("批量同步计步数据错误");
-					}
-				} else {
-					result.setResultCode(Constant.RESULT_ERROR);
-					result.setResultMessage("同步计步数据为空");
-				}
-			} else {
-				result.setResultCode(Constant.RESULT_ERROR);
-				result.setResultMessage("请确认数据是否为json");
-			}
-		} else {
+		if (StringUtils.isBlank(data)) {
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("参数错误");
+			return result;
 		}
+		
+		JSONObject step = JSONObject.parseObject(data);
+		if (step == null) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("请确认数据是否为json");
+			return result;
+		}
+		
+		TUser user = userMapper.findUserByPhone(step.getString("phone"));
+		if (user != null) {
+			isBinding = 1;
+			userCode = user.getUserCode();
+		}
+		
+		String equipmentCode = step.getString("equipmentCode");
+		JSONArray array = JSONArray.parseArray(step.getString("data"));
+		if (array == null || array.size() == 0) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("同步计步数据为空");
+		}
+		
+		List<TUserStep> list = new ArrayList<TUserStep>();
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject obj = array.getJSONObject(i);
+			TUserStep entity = new TUserStep();
+			entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+			entity.setEquipmentCode(equipmentCode);
+			entity.setStep(obj.getInteger("step") != null ? obj.getInteger("step") : 0);
+			entity.setCreateDate(obj.getString("date"));
+			entity.setCreateTime(DateUtil.getSysDateTime());
+			entity.setUpdateTime(DateUtil.getSysDateTime());
+			entity.setIsBinding(isBinding);
+			entity.setUserCode(userCode);
+			if (StringUtils.isNotBlank(userCode)) {
+				entity.setIsSync(1);
+			}
+			list.add(entity);
+		}
+		Collections.sort(list, new Comparator<TUserStep>() {
+			@Override
+			public int compare(TUserStep s1, TUserStep s2) {
+				return s1.getCreateDate().compareTo(s2.getCreateDate());
+			}
+		});
+		// 获取开始日期和结束日期
+		String startDate = "";
+		String endDate = "";
+		if(list.size() > 0) {
+			startDate = list.get(0).getCreateDate();
+			endDate = list.get(list.size() - 1).getCreateDate();
+		}
+//		for (int i = 0; i < list.size(); i++) {
+//			if (i == 0) {
+//				startDate = list.get(i).getCreateDate();
+//			} else if (i == list.size() - 1) {
+//				endDate = list.get(i).getCreateDate();
+//			}
+//		}
+		// 根据设备识别码和时间段删除原有数据
+		TUserStepDto dto = new TUserStepDto();
+		dto.setEquipmentCode(equipmentCode);
+		dto.setEndDate(endDate);
+		dto.setStartDate(startDate);
+		mapper.deletByEquipmentCode(dto);
+		// 批量添加数据到计步表
+		int flag = mapper.batchInsert(list);
+		if (flag > 0) {
+			result.setResultCode(Constant.RESULT_SUCCESS);
+			/**
+			 * 汇总兑换碳币数量,同步到t_user表中
+			 */
+			List<TUser> carbonUsers = userCarbonList(list);
+			for (TUser uCarbon : carbonUsers) {
+				/**
+				 * 碳币保留两位小数
+				 */
+				uCarbon.setCarbonMoney(uCarbon.getCarbonMoney().setScale(2, BigDecimal.ROUND_HALF_UP));
+				uCarbon.setUpdateTime(DateUtil.getSysDateTime());
+				userMapper.updateCarbonByUserCode(uCarbon);
+			}
+			/**
+			 * 同步到碳币操作日志表
+			 */
+			List<TUserCarbonOperation> operations = carbonOperationData(carbonUsers);
+			if (operations != null && operations.size() > 0) {
+				carbonOperationMapper.batchInsert(operations);
+			}
+			result.setResultMessage("同步成功");
+		} else {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("批量同步计步数据错误");
+		}
+			
+		
 		return result;
 	}
 

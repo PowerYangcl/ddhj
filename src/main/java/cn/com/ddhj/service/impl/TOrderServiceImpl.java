@@ -74,60 +74,71 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 	public TOrderResult findEntityToPage(TOrderDto dto, String userToken, HttpServletRequest request) {
 		TOrderResult result = new TOrderResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
-		if (login != null) {
-			TUser user = userMapper.findTUserByUuid(login.getUserToken());
-			if (user != null) {
-				dto.setStart(dto.getPageIndex() * dto.getPageSize());
-				dto.setCreateUser(user.getUserCode());
-				List<TOrder> list = mapper.findEntityAll(dto);
-				int total = mapper.findEntityAllCount(dto);
-				if (list != null && list.size() > 0) {
-					if (request != null) {
-						for (int i = 0; i < list.size(); i++) {
-							TOrder order = list.get(i);
-							order.setPath(order.getPath());
-							// 报告订单已支付
-							if (order.getStatus() == 1 || order.getStatus() == 2 || order.getStatus() == 3) {
-								// 计算报告购买时间与当前时间差值,大于半年则提示更新
-								try {
-									Date buyTime = DateUtil.strToDate(order.getUpdateTime());
-									Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
-									if (new Date().compareTo(deadLine) >= 0) {
-										// 报告要更新
-										String reportCode = order.getReportCode();
-										if (StringUtils.isNotBlank(reportCode)) {
-											TReport report = reportMapper.selectByCode(reportCode);
-											order.getReportUpdate().setAddress(order.getAddress());
-											order.getReportUpdate().setCity(report.getCity());
-											order.getReportUpdate().setLpCode(report.getHousesCode());
-											order.getReportUpdate().setPosition(report.getPosition());
-										}
-									}
-								} catch (ParseException e) {
-									e.printStackTrace();
-								}
-							} else if (order.getStatus() == 0) {
-								//未支付环境报告完整版返回为空
-								order.setReportFull("");
-							}
-						}
-					}
-					result.setResultCode(Constant.RESULT_SUCCESS);
-				} else {
-					result.setResultCode(Constant.RESULT_NULL);
-					result.setResultMessage("获取数据为空");
-					list = new ArrayList<TOrder>();
-				}
-				result.setRepList(list);
-				result.setRepCount(total);
-			} else {
-				result.setResultCode(Constant.RESULT_ERROR);
-				result.setResultMessage("用户不存在");
-			}
-		} else {
+		if (login == null) {
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("用户未登录");
+			return result;
 		}
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if (user == null) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("用户不存在");
+			return result;
+		}
+		
+		dto.setStart(dto.getPageIndex() * dto.getPageSize());
+		dto.setCreateUser(user.getUserCode());
+		List<TOrder> list = mapper.findEntityAll(dto);
+		int total = mapper.findEntityAllCount(dto);
+		if (list == null && list.size() == 0) {
+			result.setResultCode(Constant.RESULT_NULL);
+			result.setResultMessage("获取数据为空");
+			list = new ArrayList<TOrder>();
+			result.setRepList(list);
+			result.setRepCount(total);
+			return result;
+		}
+		
+		if (request != null) {
+			for (int i = 0; i < list.size(); i++) {
+				TOrder order = list.get(i);
+				order.setPath(order.getPath());
+				// 报告订单已支付
+				if (order.getStatus() == 1 || order.getStatus() == 2 || order.getStatus() == 3) {
+					// 计算报告购买时间与当前时间差值,大于半年则提示更新
+					try {
+						Date buyTime = DateUtil.strToDate(order.getUpdateTime());
+						Date deadLine = DateUtil.addDays(buyTime, 31 * 6);
+						if (new Date().compareTo(deadLine) >= 0) {
+							// 报告要更新
+							String reportCode = order.getReportCode();
+							if (StringUtils.isNotBlank(reportCode)) {
+								TReport report = reportMapper.selectByCode(reportCode);
+								order.getReportUpdate().setAddress(order.getAddress());
+								order.getReportUpdate().setCity(report.getCity());
+								order.getReportUpdate().setLpCode(report.getHousesCode());
+								order.getReportUpdate().setPosition(report.getPosition());
+							}
+						}
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+				} else if (order.getStatus() == 0) {
+					//未支付环境报告完整版返回为空
+					order.setReportFull("");
+				}
+			}
+		}
+		String ratio = PropHelper.getValue("carbon_money_ratio");
+		if(ratio != null) {
+			Double limit = Double.valueOf(PropHelper.getValue("present_carbon_total_rmb"));
+			BigDecimal b = new BigDecimal(limit / Double.parseDouble(ratio));  
+			Double max = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); 
+			result.setMaxCarbon((int) Math.ceil(max));
+		}
+		result.setResultCode(Constant.RESULT_SUCCESS);
+		result.setRepList(list);
+		result.setRepCount(total);
 		return result;
 	}
 
