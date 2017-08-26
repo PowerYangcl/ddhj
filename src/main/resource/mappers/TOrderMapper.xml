@@ -211,10 +211,8 @@
 		SELECT
 			o.`code` AS `code`,
 			o.pay_price AS pay_price,
-			o.pay_code as
-			pay_code,
-			o.`status` AS
-			`status`,
+			o.pay_code as pay_code,
+			o.`status` AS `status`,
 			o.carbon_money,
 			o.report_simplification,
 			o.report_full,
@@ -222,15 +220,14 @@
 			r.pic AS pic,
 			r.image AS image,
 			r.path,
-			rl.`name` AS level_name,
+			r.level_code AS levelCode,
 			lp.addressFull AS address,
 			o.report_code AS report_code,
 			o.create_time AS create_time,
 			o.update_time AS update_time,
 			r.price as realPrice
 		FROM
-			t_order AS o LEFT JOIN t_report AS r ON o.report_code = r.`code` LEFT JOIN t_landed_property AS lp ON r.houses_code = lp.`code`
-		LEFT JOIN t_report_level AS rl ON r.level_code = rl.`code`
+			t_order AS o LEFT JOIN t_report AS r ON o.report_code = r.`code` LEFT JOIN t_landed_property AS lp ON r.houses_code = lp.`code`  
 		<where>
 			o.create_user = #{createUser,jdbcType=VARCHAR}
 			<if test="status != null">
