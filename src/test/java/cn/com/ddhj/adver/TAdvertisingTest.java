@@ -69,7 +69,7 @@ public class TAdvertisingTest extends BaseTest {
 		TAdvertisingDto dto = new TAdvertisingDto();
 		dto.setUserCode("U161009100001");
 		dto.setAdCode("AD170826100009");
-		EntityResult result = service.findUserAdver(dto);
+		EntityResult result = service.findUserAdver(dto,"");
 		System.out.println(JSON.toJSON(result));
 	}
 }

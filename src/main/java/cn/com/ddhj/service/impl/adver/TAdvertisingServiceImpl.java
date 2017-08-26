@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service;
 import cn.com.ddhj.dto.adver.TAdvertisingDto;
 import cn.com.ddhj.mapper.adver.TAdvertisingMapper;
 import cn.com.ddhj.model.adver.TAdvertising;
+import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.result.EntityResult;
+import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.adver.ITAdvertisingService;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
+import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.util.Constant;
 
 @Service
@@ -18,6 +21,8 @@ public class TAdvertisingServiceImpl extends BaseServiceImpl<TAdvertising, TAdve
 		implements ITAdvertisingService {
 	@Autowired
 	private TAdvertisingMapper mapper;
+	@Autowired
+	private ITUserService userService;
 
 	/**
 	 * 
@@ -28,13 +33,29 @@ public class TAdvertisingServiceImpl extends BaseServiceImpl<TAdvertising, TAdve
 	 * @see cn.com.ddhj.service.adver.ITAdvertisingService#findUserAdver(cn.com.ddhj.dto.adver.TAdvertisingDto)
 	 */
 	@Override
-	public EntityResult findUserAdver(TAdvertisingDto dto) {
+	public EntityResult findUserAdver(TAdvertisingDto dto, String usertoken) {
 		EntityResult result = new EntityResult();
 		try {
-			TAdvertising entity = getAdver(dto);
+			TAdvertising entity = null;
+			UserDataResult userResult = userService.getUser(usertoken);
+			if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
+				TUser user = userResult.getUser();
+				dto.setUserCode(user.getUserCode());
+				entity = getAdver(dto);
+			} else {
+				/**
+				 * 如果用户为空，查询所有已发布的广告中的第一条
+				 */
+				TAdvertisingDto dto_ = new TAdvertisingDto();
+				dto_.setStatus(1);
+				List<TAdvertising> list = mapper.findEntityAll(dto);
+				if (list != null && list.size() > 0) {
+					entity = list.get(0);
+				}
+			}
 			result.setEntity(entity);
 			result.setResultCode(Constant.RESULT_SUCCESS);
-			result.setResultMessage("查询用户广告失败");
+			result.setResultMessage("查询用户广告成功");
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.setResultCode(Constant.RESULT_ERROR);

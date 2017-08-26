@@ -46,6 +46,17 @@
 		from t_advertising
 		where ad_code = #{adCode,jdbcType=VARCHAR}
 	</select>
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.adver.TAdvertisingDto">
+		select
+		<include refid="Base_Column_List" />
+		from t_advertising
+		<where>
+			<if test="status != null">
+				`status` = #{status,jdbcType=INTEGER}
+			</if>
+		</where>
+		order by create_time desc
+	</select>
 	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from
 		t_advertising

@@ -16,5 +16,5 @@ public interface ITAdvertisingService extends IBaseService<TAdvertising, TAdvert
 	 * @param dto
 	 * @return
 	 */
-	EntityResult findUserAdver(TAdvertisingDto dto);
+	EntityResult findUserAdver(TAdvertisingDto dto,String userTocken);
 }
