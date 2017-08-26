@@ -338,6 +338,10 @@ public class TUserCarbonOperationServiceImpl
 		return data;
 	}
 	
+	/**
+	 * 分享报告赠送碳币接口
+	 * @author zht
+	 */
 	public BaseResult presentCarbon(String userToken) {
 		BaseResult result = new BaseResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
@@ -353,12 +357,15 @@ public class TUserCarbonOperationServiceImpl
 			result.setResultMessage("用户不存在");
 			return result;
 		}
+		
+		//查询已赠送该用户的碳币数
 		Double carbon = presentCarbonMapper.selectSumCarbonByUserCode(user.getUserCode());
 		if(carbon == null) carbon = 0.0;
 		String ratio = PropHelper.getValue("carbon_money_ratio");
 		Double rmb = carbon * Double.parseDouble(ratio);
 		Double limit = Double.valueOf(PropHelper.getValue("present_carbon_total_rmb"));
 		if(rmb >= limit) {
+			//将已赠送而碳币转换成人民币,判断是否超额
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("该用户分享送碳币额度已满");
 			return result;
@@ -367,12 +374,15 @@ public class TUserCarbonOperationServiceImpl
 		Double once = Double.valueOf(PropHelper.getValue("present_carbon_once"));
 		Double presentThis = (carbon + once) * Double.parseDouble(ratio);
 		if(presentThis >= limit) {
+			//本次赠送后就超额,则取最大额度(RMB)对应的碳币数为本次赠送碳币数
 			BigDecimal b = new BigDecimal(limit / Double.parseDouble(ratio));  
 			presentThis = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();  
 		} else {
+			//本次赠送后不超额,赠送碳币数为原碳币数加本次赠送数
 			presentThis = carbon + once;
 		}
 		
+		//新增或修改用户分享报告赠送碳币数
 		int count = 0;
 		TPresentCarbon tc = presentCarbonMapper.selectByCode(user.getUserCode());
 		if(tc == null) {
@@ -385,9 +395,6 @@ public class TUserCarbonOperationServiceImpl
 			tc.setUpdateUser(user.getUserCode());
 			tc.setUpdateTime(DateUtil.getSysDateTime());
 			count = presentCarbonMapper.insertSelective(tc);
-			
-			
-			
 		} else {
 			tc.setUserCode(user.getUserCode());
 			tc.setCarbonMoney(presentThis);
@@ -397,12 +404,28 @@ public class TUserCarbonOperationServiceImpl
 		}
 		
 		if(count == 1) {
-//			user = userMapper.selectByCode(user.getUserCode());
+			//修改用户表中用户碳币总数
 			user.setCarbonMoney(new BigDecimal(once).setScale(2, BigDecimal.ROUND_HALF_UP));
 			count = userMapper.updateCarbonByUserCode(user);
 			if(count == 1) {
-				result.setResultCode(Constant.RESULT_SUCCESS);
-				result.setResultMessage("赠送碳币成功.增加" + once + "个碳币");
+				// 增加碳币购买记录
+				TUserCarbonOperation carbonOperation = new TUserCarbonOperation();
+				carbonOperation.setUuid(WebHelper.getInstance().genUuid());
+				carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+				carbonOperation.setUserCode(user.getUserCode());
+				carbonOperation.setOperationType("DC170208100002");
+				carbonOperation.setOperationTypeChild("DC170208100011");
+				carbonOperation.setCarbonSum(new BigDecimal(once).setScale(2,  BigDecimal.ROUND_HALF_UP));
+				carbonOperation.setCreateUser(user.getUserCode());
+				carbonOperation.setCreateTime(DateUtil.getSysDateTime());
+				count = mapper.insertSelective(carbonOperation);
+				if(count == 1) {
+					result.setResultCode(Constant.RESULT_SUCCESS);
+					result.setResultMessage("赠送碳币成功.增加" + once + "个碳币");
+				} else {
+					result.setResultCode(Constant.RESULT_ERROR);
+					result.setResultMessage("赠送碳币失败");
+				}
 			} else {
 				result.setResultCode(Constant.RESULT_ERROR);
 				result.setResultMessage("赠送碳币失败");
