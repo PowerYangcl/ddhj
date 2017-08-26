@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.ddhj.mapper.adver.TAdvertisingMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.adver.TAdvertising">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="uuid" jdbcType="VARCHAR" property="uuid" />
+		<result column="ad_code" jdbcType="VARCHAR" property="adCode" />
+		<result column="title" jdbcType="VARCHAR" property="title" />
+		<result column="pic" jdbcType="VARCHAR" property="pic" />
+		<result column="start_time" jdbcType="VARCHAR" property="startTime" />
+		<result column="end_time" jdbcType="VARCHAR" property="endTime" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="create_user" jdbcType="VARCHAR" property="createUser" />
+		<result column="create_time" jdbcType="VARCHAR" property="createTime" />
+		<result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+		<result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+		<result column="content" jdbcType="LONGVARCHAR" property="content" />
+		<result column="next_ad_code" jdbcType="VARCHAR" property="nextAdCode" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, uuid, ad_code, title, pic, DATE_FORMAT(
+		start_time,
+		'%Y-%m-%d'
+		) AS start_time, DATE_FORMAT(
+		end_time,
+		'%Y-%m-%d'
+		) AS
+		end_time,
+		`status`,content,create_user,
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) AS
+		create_time,
+		update_user,
+		DATE_FORMAT(
+		update_time,
+		'%Y-%m-%d'
+		) AS
+		update_time
+	</sql>
+	<select id="selectByCode" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_advertising
+		where ad_code = #{adCode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByCode" parameterType="java.lang.String">
+		delete from
+		t_advertising
+		where ad_code = #{adCode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.adver.TAdvertising">
+		insert into t_advertising
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			ad_code,
+			title,
+			pic,
+			start_time,
+			end_time,
+			<if test="status != null">
+				status,
+			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			content,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{adCode,jdbcType=VARCHAR},
+			#{title,jdbcType=VARCHAR},
+			#{pic,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{startTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			STR_TO_DATE(
+			#{endTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{content,jdbcType=LONGVARCHAR},
+		</trim>
+	</insert>
+	<update id="updateByCode" parameterType="cn.com.ddhj.model.adver.TAdvertising">
+		update t_advertising
+		<set>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="pic != null">
+				pic = #{pic,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime != null">
+				start_time = STR_TO_DATE(
+				#{startTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			</if>
+			<if test="endTime != null">
+				end_time = STR_TO_DATE(
+				#{endTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			update_user = #{updateUser,jdbcType=VARCHAR},
+			update_time =
+			STR_TO_DATE(
+			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			<if test="content != null">
+				content = #{content,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where ad_code = #{adCode,jdbcType=VARCHAR}
+	</update>
+	<select id="findUserAdver" resultMap="BaseResultMap"
+		parameterType="cn.com.ddhj.dto.adver.TAdvertisingDto">
+		SELECT
+		a.*,
+		ua.next_ad_code
+		FROM
+		t_user_advertising AS ua,
+		t_advertising AS
+		a
+		WHERE
+		ua.ad_code = a.ad_code
+		and
+		ua.user_code=#{userCode,jdbcType=VARCHAR}
+		<if test="adCode != null and adCode != ''">
+			and ua.ad_code >#{adCode,jdbcType=VARCHAR}
+		</if>
+		order by a.create_time desc
+	</select>
+</mapper>
