@@ -472,7 +472,7 @@ public class ApiController extends BaseClass {
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		/**
-		 * ================= 碳币相关 start zht ======================
+		 * ================= 碳币相关 start ======================
 		 */
 		// 获取用户碳币交易详情
 		else if ("user_carbon_detail".equals(api.getApiTarget())) {
@@ -493,41 +493,41 @@ public class ApiController extends BaseClass {
 			DataResult result = userCarbonOperationserivce.findCarbonOperationDetail(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 查询支持碳交易的城市列表
+		// 查询支持碳交易的城市列表-zht
 		else if ("trade_city".equals(api.getApiTarget())) {
 			TradeCityResult result = tradeService.queryAllTradeCity();
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 按城市ID/全国(cityId为空)分页查询碳交易行情
+		// 按城市ID/全国(cityId为空)分页查询碳交易行情-zht
 		else if ("trade_deals".equals(api.getApiTarget())) {
 			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
 			TradeDealResult result = tradeService.queryDealsByCityId(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 按城市ID/全国(cityId为空)和时间(当前时间向前查询1月|3月|6月|1年)碳交易行情用于绘制折线图
+		// 按城市ID/全国(cityId为空)和时间(当前时间向前查询1月|3月|6月|1年)碳交易行情用于绘制折线图-zht
 		else if ("trade_deals_chart".equals(api.getApiTarget())) {
 			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
 			TradeDealChartResult result = tradeService.queryDealsByCityIdAndPeriod(dto);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 用户委托买/卖
+		// 用户委托买/卖-zht
 		else if ("trade_send_order".equals(api.getApiTarget())) {
 			TTradeOrder tradeOrder = obj.toJavaObject(TTradeOrder.class);
 			BaseResult result = tradeService.sendTradeOrder(tradeOrder, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 查询用户在某个标的上的可买,可卖,现价
+		// 查询用户在某个标的上的可买,可卖,现价-zht
 		else if ("trade_deal_price_amount".equals(api.getApiTarget())) {
 			TTradeDealDto dto = obj.toJavaObject(TTradeDealDto.class);
 			TradePriceAvaiAmountResult result = tradeService.getCurrentPriceAndAvailableAmount(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 查询当前用户持仓
+		// 查询当前用户持仓-zht
 		else if ("trade_balance".equals(api.getApiTarget())) {
 			TradeBalanceResult result = tradeService.getUserBalance(api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 查询用户委托(成交)
+		// 查询用户委托(成交)-zht
 		else if ("trade_query_order".equals(api.getApiTarget())) {
 			TTradeOrderDto dto = null;
 			if (obj != null) {
@@ -672,7 +672,7 @@ public class ApiController extends BaseClass {
 			BaseResult result = orderPayService.doPay(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// solr搜索接口
+		// solr搜索接口-zht
 		else if ("search".equals(api.getApiTarget())) {
 			SearchResult<SearchEntity> searchResult = new SearchResult<SearchEntity>();
 			SearchLandPropertyDto dto = obj.toJavaObject(SearchLandPropertyDto.class);
@@ -692,21 +692,27 @@ public class ApiController extends BaseClass {
 			}
 			return JSONObject.parseObject(JSONObject.toJSONString(searchResult));
 		}
-		// 搜索历史接口
+		// 搜索历史接口-zht
 		else if ("search_history".equals(api.getApiTarget())) {
 			SearchResult<TSearchHistory> result = searchService.getSearchHistoryByUserToken(api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 删除搜索历史接口
+		// 删除搜索历史接口-zht
 		else if ("del_search_history".equals(api.getApiTarget())) {
 			JSONObject result = searchService.delSearchHistoryByUserToken(api.getUserToken());
 			return result;
 		}
-		// 热搜接口
+		// 热搜接口-zht
 		else if ("hot_search".equals(api.getApiTarget())) {
 			SearchResult<TSearchHotWord> result = searchService.getSearchHotWord();
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} else {
+		} 
+		// 赠送碳币接口-zht
+		else if ("present_carbon".equals(api.getApiTarget())) {
+			BaseResult result = userCarbonOperService.presentCarbon(api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
+		else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("调用接口失败");

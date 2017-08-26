@@ -90,4 +90,11 @@ public interface ITUserCarbonOperationService extends IBaseService<TUserCarbonOp
 	  */
 	 BaseResult insertSelective(TUserCarbonOperation carbonOperation);
 	 
+	 /**
+	  * 赠送碳币接口
+	  * @param userToken
+	  * @return
+	  */
+	 BaseResult presentCarbon(String userToken);
+	 
 }

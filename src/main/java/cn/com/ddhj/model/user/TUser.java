@@ -51,17 +51,17 @@ public class TUser extends BaseModel {
 	/**
 	 * 炭币
 	 */
-	private BigDecimal carbonMoney = BigDecimal.ZERO;
+	private BigDecimal carbonMoney;
 	
 	/**
 	 * 昨天碳币收入
 	 */
-	private BigDecimal income = BigDecimal.ZERO;
+	private BigDecimal income;
 	
 	/**
 	 * 昨天碳币支出
 	 */
-	private BigDecimal expense = BigDecimal.ZERO;
+	private BigDecimal expense;
 
 	public BigDecimal getCarbonMoney() {
 		return carbonMoney;
