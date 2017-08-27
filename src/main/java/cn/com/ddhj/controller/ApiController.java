@@ -32,6 +32,7 @@ import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLpCommentDto;
 import cn.com.ddhj.dto.TOrderDto;
+import cn.com.ddhj.dto.adver.TAdvertisingDto;
 import cn.com.ddhj.dto.apppay.TPayInfoDto;
 import cn.com.ddhj.dto.report.TReportDto;
 import cn.com.ddhj.dto.search.SearchLandPropertyDto;
@@ -102,6 +103,7 @@ import cn.com.ddhj.service.ITLandedPropertyService;
 import cn.com.ddhj.service.ITLpCommentService;
 import cn.com.ddhj.service.ITOrderService;
 import cn.com.ddhj.service.ITradeService;
+import cn.com.ddhj.service.adver.ITAdvertisingService;
 import cn.com.ddhj.service.file.IFileService;
 import cn.com.ddhj.service.impl.TPaymentServiceImpl;
 import cn.com.ddhj.service.impl.orderpay.PayServiceSupport;
@@ -177,6 +179,8 @@ public class ApiController extends BaseClass {
 
 	@Autowired
 	private IFileService fileService;
+	@Autowired
+	private ITAdvertisingService advertService;
 
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
@@ -706,13 +710,20 @@ public class ApiController extends BaseClass {
 		else if ("hot_search".equals(api.getApiTarget())) {
 			SearchResult<TSearchHotWord> result = searchService.getSearchHotWord();
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
-		} 
+		}
 		// 赠送碳币接口-zht
 		else if ("present_carbon".equals(api.getApiTarget())) {
 			BaseResult result = userCarbonOperService.presentCarbon(api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		else {
+		/**
+		 * ########## 广告相关接口 ##########
+		 */
+		else if ("user_advert".equals(api.getApiTarget())) {
+			TAdvertisingDto dto = obj.toJavaObject(TAdvertisingDto.class);
+			EntityResult result = advertService.findUserAdver(dto, api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		} else {
 			BaseResult result = new BaseResult();
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("调用接口失败");
@@ -855,7 +866,7 @@ public class ApiController extends BaseClass {
 			user.setUpdateUser(user.getUserCode());
 			user.setUpdateTime(DateUtil.getSysDateTime());
 			userService.updateByCode(user);
-			
+
 			// 更新用户充值记录状态为已支付
 			rechargeRec.setStatus(new Integer(3));
 			userCarbonOperService.updateRechargeRec(rechargeRec);

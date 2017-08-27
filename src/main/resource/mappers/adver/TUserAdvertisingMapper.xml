@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.ddhj.mapper.adver.TUserAdvertisingMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.adver.TUserAdvertising">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="user_code" jdbcType="VARCHAR" property="userCode" />
+		<result column="ad_code" jdbcType="VARCHAR" property="adCode" />
+		<result column="next_ad_code" jdbcType="VARCHAR" property="nextAdCode" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, user_code, ad_code, next_ad_code
+	</sql>
+	<select id="selectByUserAndAdver" parameterType="cn.com.ddhj.model.adver.TUserAdvertising"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_user_advertising
+		where user_code = #{userCode,jdbcType=VARCHAR}
+		and ad_code = #{adCode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByUserAndAdver" parameterType="cn.com.ddhj.model.adver.TUserAdvertising">
+		delete from
+		t_user_advertising
+		where user_code = #{userCode,jdbcType=VARCHAR}
+		and
+		ad_code = #{adCode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.adver.TUserAdvertising">
+		insert into t_user_advertising
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			user_code,
+			ad_code,
+			next_ad_code,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{userCode,jdbcType=VARCHAR},
+			#{adCode,jdbcType=VARCHAR},
+			#{nextAdCode,jdbcType=VARCHAR},
+		</trim>
+	</insert>
+</mapper>
