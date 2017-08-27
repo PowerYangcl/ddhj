@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.impl.user;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -468,6 +469,9 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 							result.getUser().setExpense(oper.getCarbonSum());
 						}
 					}
+				}else{
+					result.getUser().setIncome(BigDecimal.valueOf(0));
+					result.getUser().setExpense(BigDecimal.valueOf(0));
 				}
 			} else {
 				result.setResultCode(Constant.RESULT_ERROR);
