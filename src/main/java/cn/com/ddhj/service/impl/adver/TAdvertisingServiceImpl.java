@@ -42,6 +42,17 @@ public class TAdvertisingServiceImpl extends BaseServiceImpl<TAdvertising, TAdve
 				TUser user = userResult.getUser();
 				dto.setUserCode(user.getUserCode());
 				entity = getAdver(dto);
+				if (entity == null) {
+					/**
+					 * 如果用户没有关注广告，查询所有已发布的广告中的第一条
+					 */
+					TAdvertisingDto dto_ = new TAdvertisingDto();
+					dto_.setStatus(1);
+					List<TAdvertising> list = mapper.findEntityAll(dto);
+					if (list != null && list.size() > 0) {
+						entity = list.get(0);
+					}
+				}
 			} else {
 				/**
 				 * 如果用户为空，查询所有已发布的广告中的第一条
