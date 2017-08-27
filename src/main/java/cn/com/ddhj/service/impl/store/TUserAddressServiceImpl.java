@@ -56,7 +56,7 @@ public class TUserAddressServiceImpl extends BaseServiceImpl<TUserAddress, TUser
 		if (userResult.getResultCode() == Constant.RESULT_SUCCESS) {
 			TUser user = userResult.getUser();
 			entity.setUpdateUser(user.getUserCode());
-//			entity.setCode(entity.getAddressID());
+			entity.setCode(entity.getAddressID());
 			entity.setUpdateTime(DateUtil.getSysDateTime());
 			if(entity.getIsDefault() == 1){
 				mapper.updateAddressByUsercode(user.getUserCode()); 
