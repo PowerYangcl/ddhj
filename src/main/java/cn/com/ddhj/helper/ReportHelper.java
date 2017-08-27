@@ -56,8 +56,7 @@ public class ReportHelper extends BaseClass {
 	/**
 	 * 楼盘报告存放地址
 	 */
-//	public static final String REPORT_PATH = "/opt/ddhj/report/html/";
-	public static final String REPORT_PATH = "d:/test/";
+	public static final String REPORT_PATH = "/opt/ddhj/report/html/";
 	/**
 	 * 用户购买楼盘报告存放地址
 	 */
