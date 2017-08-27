@@ -462,11 +462,13 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 				if (list != null && !list.isEmpty()) {
 					for (TUserCarbonOperation oper : list) {
 						if ("DC170208100002".equals(oper.getOperationType())) {
+							BigDecimal income = oper.getCarbonSum()!=null?oper.getCarbonSum():BigDecimal.valueOf(0);
 							// 收入
-							result.getUser().setIncome(oper.getCarbonSum());
+							result.getUser().setIncome(income);
 						} else if ("DC170208100003".equals(oper.getOperationType())) {
+							BigDecimal expense = oper.getCarbonSum()!=null?oper.getCarbonSum():BigDecimal.valueOf(0);
 							// 支出
-							result.getUser().setExpense(oper.getCarbonSum());
+							result.getUser().setExpense(expense);
 						}
 					}
 				}else{
