@@ -46,7 +46,8 @@
 		from t_advertising
 		where ad_code = #{adCode,jdbcType=VARCHAR}
 	</select>
-	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.adver.TAdvertisingDto">
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.adver.TAdvertisingDto"
+		resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from t_advertising

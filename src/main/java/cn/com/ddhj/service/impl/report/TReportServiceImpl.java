@@ -858,10 +858,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 								airArray);
 						if (list != null && list.size() > 0) {
 							lp.setEnvironmentIndexs(list);
-							lp.setEnvironmentIndexs1(list.subList(0, 3));
-							lp.setEnvironmentIndexs2(list.subList(3, 6));
-							lp.setEnvironmentIndexs3(list.subList(6, 9));
-							lp.setEnvironmentIndexs4(list.subList(9, list.size()));
 							lp.setUpdateTime(DateUtil.getCurrentDate());
 							reportLps.add(lp);
 						} else {
@@ -913,12 +909,12 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 					 * 查询用户最新下单购买报告记录<br>
 					 * 根据用户报告将指定楼盘报告复制到用户文件下<br>
 					 */
-					List<TOrder> orders = orderMapper.findOrderLPAndCreateUser();
-					if (orders != null && orders.size() > 0) {
-						for (TOrder order : orders) {
-							ReportHelper.getInstance().createUserReport(order.getLpCode(), order.getCreateUser());
-						}
-					}
+//					List<TOrder> orders = orderMapper.findOrderLPAndCreateUser();
+//					if (orders != null && orders.size() > 0) {
+//						for (TOrder order : orders) {
+//							ReportHelper.getInstance().createUserReport(order.getLpCode(), order.getCreateUser());
+//						}
+//					}
 				}
 			}
 		} catch (Exception e) {
