@@ -56,7 +56,8 @@ public class ReportHelper extends BaseClass {
 	/**
 	 * 楼盘报告存放地址
 	 */
-	public static final String REPORT_PATH = "/opt/ddhj/report/html/";
+//	public static final String REPORT_PATH = "/opt/ddhj/report/html/";
+	public static final String REPORT_PATH = "d:/test/";
 	/**
 	 * 用户购买楼盘报告存放地址
 	 */
@@ -524,7 +525,7 @@ public class ReportHelper extends BaseClass {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		entity.setName("污染源-垃圾设施");
+		entity.setName("污染源<br>垃圾设施");
 		entity.setLevel(level);
 		entity.setLevelName(levelName);
 		entity.setValue(distance);
@@ -566,7 +567,7 @@ public class ReportHelper extends BaseClass {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		entity.setName("污染源-化工厂");
+		entity.setName("污染源<br>化工厂");
 		entity.setLevel(level);
 		entity.setLevelName(levelName);
 		entity.setValue(distance);
