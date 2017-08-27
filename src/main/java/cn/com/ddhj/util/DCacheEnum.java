@@ -19,6 +19,9 @@ public enum DCacheEnum {
 	chemical_plant,
 	
 	// 高压电线
-	high_voltage
+	high_voltage,
+	
+	// 2001接口 
+	app_init
 	
 }
