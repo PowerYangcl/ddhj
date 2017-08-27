@@ -80,15 +80,16 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					login.setCreateUser(user.getUserCode());
 					login.setCreateTime(DateUtil.getSysDateTime());
 					loginMapper.insertSelective(login);
-					// 根据设备号同步计步数据
-					if (StringUtils.isNoneBlank(dto.getEquipmentCode())) {
-						TUserStep step = new TUserStep();
-						step.setEquipmentCode(dto.getEquipmentCode());
-						step.setUserCode(user.getUserCode());
-						step.setIsBinding(1);
-						step.setUpdateTime(DateUtil.getSysDateTime());
-						stepMapper.updateByEquipmentCode(step);
-					}
+					//commented by zht
+//					// 根据设备号同步计步数据   
+//					if (StringUtils.isNoneBlank(dto.getEquipmentCode())) {
+//						TUserStep step = new TUserStep();
+//						step.setEquipmentCode(dto.getEquipmentCode());
+//						step.setUserCode(user.getUserCode());
+//						step.setIsBinding(1);
+//						step.setUpdateTime(DateUtil.getSysDateTime());
+//						stepMapper.updateByEquipmentCode(step);
+//					}
 					result.setResultCode(Constant.RESULT_SUCCESS);
 					user.setPassword("");
 					result.setUser(user);

@@ -462,7 +462,7 @@ public class ApiController extends BaseClass {
 		}
 		// 批量导入计步数据
 		else if ("step_sync".equals(api.getApiTarget())) {
-			BaseResult result = stepService.batchInsert(api.getApiInput());
+			BaseResult result = stepService.batchInsert(api.getApiInput(), api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 获取用户步数信息

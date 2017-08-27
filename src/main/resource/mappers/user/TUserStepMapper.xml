@@ -67,17 +67,29 @@
 			</if>
 		</trim>
 	</insert>
+
 	<!-- 根据设备码修改绑定状态的用户编码 -->
 	<update id="updateByEquipmentCode" parameterType="cn.com.ddhj.model.user.TUserStep">
 		update t_user_step
 		<set>
 			is_binding = #{isBinding,jdbcType=INTEGER},
-			user_code =
-			#{userCode,jdbcType=VARCHAR},
-			update_date = STR_TO_DATE(
-			#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			user_code =	#{userCode,jdbcType=VARCHAR},
+			update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 		</set>
 		where equipment_code = #{equipmentCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByEquipCodeAndUserCodeAndCreateDate" parameterType="cn.com.ddhj.model.user.TUserStep">
+		update t_user_step
+		<set>
+			<if test="isSync != null and isSync !=''">
+				is_sync = #{isSync,jdbcType=INTEGER},
+			</if>
+			<if test="step != null and step !=''">
+				step = #{step,jdbcType=INTEGER},
+			</if>
+			update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+		</set>
+		where equipment_code = #{equipmentCode,jdbcType=VARCHAR} and user_code = #{userCode,jdbcType=VARCHAR}  and create_date = #{createDate,jdbcType=VARCHAR}
 	</update>
 	<!-- 批量同步计步数据 -->
 	<insert id="batchInsert" parameterType="list">
@@ -136,6 +148,24 @@
 					AND user_code = #{userCode,jdbcType=VARCHAR}
 				</otherwise>
 			</choose>
+		</where>
+	</select>
+	<select id="findUserStepOne" resultMap="BaseResultMap" parameterType="cn.com.ddhj.dto.user.TUserStepDto">
+		select
+		step,equipment_code,user_code,is_sync,
+		DATE_FORMAT(create_date,'%Y-%m-%d') AS create_date 
+		from t_user_step
+		<where>
+			user_code = #{userCode,jdbcType=VARCHAR} 
+			<if test="createDate != null and createDate != ''">
+				and create_date = #{createDate,jdbcType=VARCHAR} 
+			</if>
+			<if test="equipmentCode != null and equipmentCode != ''">
+				and equipment_code = #{equipmentCode,jdbcType=VARCHAR} 
+			</if>
+			<if test="equipmentCode != null and equipmentCode != ''">
+				and equipment_code = #{equipmentCode,jdbcType=VARCHAR}
+			</if>
 		</where>
 	</select>
 	<!-- 根据设备号和时间段批量删除计步数据 -->

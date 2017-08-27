@@ -38,6 +38,13 @@ public interface TUserStepMapper extends BaseMapper<TUserStep, TUserStepDto> {
 	 * @return
 	 */
 	int updateByEquipmentCode(TUserStep entity);
+	
+	/**
+	 * 通过设备号用户编号生成日期更新记录
+	 * @param entity
+	 * @return
+	 */
+	int updateByEquipCodeAndUserCodeAndCreateDate(TUserStep entity);
 
 	/**
 	 * 
@@ -50,6 +57,14 @@ public interface TUserStepMapper extends BaseMapper<TUserStep, TUserStepDto> {
 	 * @return
 	 */
 	List<TUserStep> findUserStepData(TUserStepDto dto);
+	
+	/**
+	 * 根据userCode, equipmentCode, createDate查询某一天该用户一个设备的同步步数
+	 * @author zht
+	 * @param dto
+	 * @return
+	 */
+	List<TUserStep> findUserStepOne(TUserStepDto dto);
 
 	/**
 	 * 

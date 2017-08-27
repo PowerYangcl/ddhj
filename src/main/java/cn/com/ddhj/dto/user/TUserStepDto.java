@@ -24,6 +24,8 @@ public class TUserStepDto extends BaseDto {
 	private String userCode;
 
 	private String date;
+	
+	private String createDate;
 
 	public String getUserCode() {
 		return userCode;
@@ -73,4 +75,11 @@ public class TUserStepDto extends BaseDto {
 		this.type = type;
 	}
 
+	public String getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(String createDate) {
+		this.createDate = createDate;
+	}
 }
