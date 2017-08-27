@@ -95,6 +95,7 @@ import cn.com.ddhj.result.tuser.RegisterResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.result.tuser.UserStepResult;
 import cn.com.ddhj.result.tuser.VisitResult;
+import cn.com.ddhj.service.IAppInitService;
 import cn.com.ddhj.service.IAppOrderPay;
 import cn.com.ddhj.service.IEstateEnvironmentService;
 import cn.com.ddhj.service.ITAddressEnshrineService;
@@ -181,6 +182,9 @@ public class ApiController extends BaseClass {
 	private IFileService fileService;
 	@Autowired
 	private ITAdvertisingService advertService;
+	
+	@Autowired
+	private IAppInitService appInitService;
 
 	private WebApplicationContext webApplicationContext;
 	private ServletContext application;
@@ -643,6 +647,14 @@ public class ApiController extends BaseClass {
 		// 取消报告订单 - Yangcl
 		else if ("cancel_report_order".equals(api.getApiTarget())) {
 			return orderService.cancelReportOrder(obj);
+		}
+		// app应用相关信息接口  - Yangcl
+		else if ("2001".equals(api.getApiTarget())) {
+			return appInitService.appInitialization(obj , application);
+		}
+		// app版本接口  - Yangcl
+		else if ("2002".equals(api.getApiTarget())) {
+			return appInitService.appVersionInfo(obj , application);
 		}
 
 		// 商品列表 - zht

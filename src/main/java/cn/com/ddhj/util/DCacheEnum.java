@@ -22,6 +22,9 @@ public enum DCacheEnum {
 	high_voltage,
 	
 	// 2001接口 
-	app_init
+	app_init,
+	
+	// 2002接口 
+	app_version
 	
 }

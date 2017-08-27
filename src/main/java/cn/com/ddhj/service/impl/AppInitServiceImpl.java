@@ -155,29 +155,90 @@ public class AppInitServiceImpl implements IAppInitService {
 			
 			return result;
 		}
-		
-		
 	}
 
 	
 	
 	/**
-	 * @descriptions 2002	app版本接口
+	 * @descriptions 2002	app版本接口 | 以当天日期和Key作为唯一性标识，创建缓存对象。
 	 *
 	 * @param obj
-	 * @return
 	 * @date 2017年8月27日 下午8:23:09
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */
 	public JSONObject appVersionInfo(JSONObject obj , ServletContext application) {
 		JSONObject result = new JSONObject();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String today = format.format(new Date());
+		JSONObject version = null;
+		Object o = application.getAttribute(DCacheEnum.app_version.toString() + "-" + today);  //   app_version-2017-08-27
+		if(o != null){
+			version = JSONObject.parseObject(String.valueOf( o ));
+			return this.versionInfo(obj , version);  
+		}
 
-		
-		return result;
+		synchronized(Object.class){
+			// 取锁后再次判断
+			Object o_ = application.getAttribute(DCacheEnum.app_version.toString() + "-" + today);  //   app_version-2017-08-27
+			if(o_ != null){
+				version = JSONObject.parseObject(String.valueOf( o_ ));
+				return this.versionInfo(obj , version);   
+			}
+			// 删除前一天的缓存 
+			application.removeAttribute(DCacheEnum.app_version.toString() + "-" + this.getYestady(new Date())); 
+			
+			TAppVersion av = new TAppVersion();
+			List<TAppVersion> avList = avMapper.findEntityList(); // 取得倒序中的第一个记录，视为最新版本 
+			if(avList !=  null && avList.size() != 0){
+				av = avList.get(0);  // 取得倒序中的第一个记录，视为最新配置
+				JSONObject info = new JSONObject();
+				info.put("appCode" ,  av.getAppCode());
+				info.put("appVersion" ,  av.getVersionApp());
+				info.put("andriodUrl" ,  av.getAndriodUrl());
+				info.put("iosUrl" ,  av.getIosUrl());
+				info.put("iosAndriod" ,  av.getIosAndriod());
+				info.put("upgradeSelect" ,  av.getUpgradeSelect());
+				info.put("upgradeContent" ,  av.getUpgradeContent());
+				info.put("channelNumber" ,  av.getChannelNumber());
+				application.setAttribute(DCacheEnum.app_version.toString() + "-" + today  , info.toJSONString());
+				
+				return this.versionInfo(obj , info);
+			}else{
+				result.put("resultCode", -1);
+				result.put("resultMessage", "后台app启动配置项异常！t_app_version未配置相关信息，请在管理后台核实");
+				return result;
+			}
+		}
 	}
 	
-	
+	private JSONObject versionInfo(JSONObject obj , JSONObject info){
+		JSONObject result = new JSONObject();
+		String iosAndriod = obj.getString("iosAndriod");
+		String version = obj.getString("versionApp");
+		if(version.equals(info.getString("versionApp"))){
+			result.put("resultCode", -1);
+			result.put("resultMessage", "版本相同，无需升级");
+			return result;
+		}
+		
+		String appUrl = "";
+		if(iosAndriod.equals("1")){
+			// 1 IOS
+			appUrl = info.getString("iosUrl");
+		}else{
+			// 2 Andriod   
+			appUrl = info.getString("andriodUrl");
+		}
+		
+		result.put("appUrl", appUrl);
+		result.put("upgradeSelect", info.getString("upgradeSelect"));    
+		result.put("appVersion", info.getString("appVersion"));
+		result.put("upgradeContent", info.getString("upgradeContent"));
+		result.put("resultCode", 1);
+		result.put("resultMessage", "操作成功");
+		return result;
+	}
 	
 	private String getYestady(Date date){
 		 Calendar calendar = new GregorianCalendar();
