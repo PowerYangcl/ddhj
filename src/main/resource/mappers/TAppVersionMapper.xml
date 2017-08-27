@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TAppVersionMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TAppVersion">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="app_version" property="appVersion" jdbcType="VARCHAR" />
+		<result column="app_code" property="appCode" jdbcType="VARCHAR" />
+		<result column="version_app" property="versionApp" jdbcType="VARCHAR" />
+		<result column="andriod_url" property="andriodUrl" jdbcType="VARCHAR" />
+		<result column="ios_url" property="iosUrl" jdbcType="VARCHAR" />
+		<result column="ios_andriod" property="iosAndriod" jdbcType="CHAR" />
+		<result column="upgrade_select" property="upgradeSelect" jdbcType="VARCHAR" />
+		<result column="upgrade_content" property="upgradeContent" jdbcType="VARCHAR" />
+		<result column="channel_number" property="channelNumber" jdbcType="VARCHAR" />
+		<result column="APP_type" property="appType" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="cretae_user" property="cretaeUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+			*
+		from 
+			t_app_version
+		where 
+			id = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="findEntityList" resultMap="BaseResultMap" >
+		select
+			*
+		from 
+			t_app_version
+		order by id desc  
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_app_version where id = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	 
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TAppVersion">
+		insert into t_app_version
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="uuid != null">
+				uuid,
+			</if>
+			<if test="appVersion != null">
+				app_version,
+			</if>
+			<if test="appCode != null">
+				app_code,
+			</if>
+			<if test="versionApp != null">
+				version_app,
+			</if>
+			<if test="andriodUrl != null">
+				andriod_url,
+			</if>
+			<if test="iosUrl != null">
+				ios_url,
+			</if>
+			<if test="iosAndriod != null">
+				ios_andriod,
+			</if>
+			<if test="upgradeSelect != null">
+				upgrade_select,
+			</if>
+			<if test="upgradeContent != null">
+				upgrade_content,
+			</if>
+			<if test="channelNumber != null">
+				channel_number,
+			</if>
+			<if test="appType != null">
+				APP_type,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="cretaeUser != null">
+				cretae_user,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="uuid != null">
+				#{uuid,jdbcType=VARCHAR},
+			</if>
+			<if test="appVersion != null">
+				#{appVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="appCode != null">
+				#{appCode,jdbcType=VARCHAR},
+			</if>
+			<if test="versionApp != null">
+				#{versionApp,jdbcType=VARCHAR},
+			</if>
+			<if test="andriodUrl != null">
+				#{andriodUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="iosUrl != null">
+				#{iosUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="iosAndriod != null">
+				#{iosAndriod,jdbcType=CHAR},
+			</if>
+			<if test="upgradeSelect != null">
+				#{upgradeSelect,jdbcType=VARCHAR},
+			</if>
+			<if test="upgradeContent != null">
+				#{upgradeContent,jdbcType=VARCHAR},
+			</if>
+			<if test="channelNumber != null">
+				#{channelNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="appType != null">
+				#{appType,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="cretaeUser != null">
+				#{cretaeUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateSelective" parameterType="cn.com.ddhj.model.TAppVersion">
+		update t_app_version
+		<set>
+			<if test="appVersion != null">
+				app_version = #{appVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="appCode != null">
+				app_code = #{appCode,jdbcType=VARCHAR},
+			</if>
+			<if test="versionApp != null">
+				version_app = #{versionApp,jdbcType=VARCHAR},
+			</if>
+			<if test="andriodUrl != null">
+				andriod_url = #{andriodUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="iosUrl != null">
+				ios_url = #{iosUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="iosAndriod != null">
+				ios_andriod = #{iosAndriod,jdbcType=CHAR},
+			</if>
+			<if test="upgradeSelect != null">
+				upgrade_select = #{upgradeSelect,jdbcType=VARCHAR},
+			</if>
+			<if test="upgradeContent != null">
+				upgrade_content = #{upgradeContent,jdbcType=VARCHAR},
+			</if>
+			<if test="channelNumber != null">
+				channel_number = #{channelNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="appType != null">
+				APP_type = #{appType,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="cretaeUser != null">
+				cretae_user = #{cretaeUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

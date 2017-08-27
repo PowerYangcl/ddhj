@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TAppConfigMapper">
+	<resultMap id="BaseResultMap" type="cn.com.ddhj.model.TAppConfig">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="app_version" property="appVersion" jdbcType="VARCHAR" />
+		<result column="wechat_app_id" property="wechatAppId" jdbcType="VARCHAR" />
+		<result column="wechat_app_secret" property="wechatAppSecret" jdbcType="VARCHAR" />
+		<result column="um_key_android" property="umKeyAndroid" jdbcType="VARCHAR" />
+		<result column="um_key_ios" property="umKeyIos" jdbcType="VARCHAR" />
+		<result column="qq_app_key" property="qqAppKey" jdbcType="VARCHAR" />
+		<result column="qq_app_id" property="qqAppId" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+			*
+		from 
+			t_app_config
+		where 
+			id = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="findEntityList" resultMap="BaseResultMap">
+		select
+			*
+		from 
+			t_app_config
+		order by id desc
+	</select>
+	
+	
+	<delete id="deleteByKey" parameterType="java.lang.Integer">
+		delete from t_app_config where id = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TAppConfig">
+		insert into t_app_config
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="uuid != null">
+				uuid,
+			</if>
+			<if test="appVersion != null">
+				app_version,
+			</if>
+			<if test="wechatAppId != null">
+				wechat_app_id,
+			</if>
+			<if test="wechatAppSecret != null">
+				wechat_app_secret,
+			</if>
+			<if test="umKeyAndroid != null">
+				um_key_android,
+			</if>
+			<if test="umKeyIos != null">
+				um_key_ios,
+			</if>
+			<if test="qqAppKey != null">
+				qq_app_key,
+			</if>
+			<if test="qqAppId != null">
+				qq_app_id,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="createUser != null">
+				create_user,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="uuid != null">
+				#{uuid,jdbcType=VARCHAR},
+			</if>
+			<if test="appVersion != null">
+				#{appVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="wechatAppId != null">
+				#{wechatAppId,jdbcType=VARCHAR},
+			</if>
+			<if test="wechatAppSecret != null">
+				#{wechatAppSecret,jdbcType=VARCHAR},
+			</if>
+			<if test="umKeyAndroid != null">
+				#{umKeyAndroid,jdbcType=VARCHAR},
+			</if>
+			<if test="umKeyIos != null">
+				#{umKeyIos,jdbcType=VARCHAR},
+			</if>
+			<if test="qqAppKey != null">
+				#{qqAppKey,jdbcType=VARCHAR},
+			</if>
+			<if test="qqAppId != null">
+				#{qqAppId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateSelective" parameterType="cn.com.ddhj.model.TAppConfig">
+		update t_app_config
+		<set>
+			<if test="appVersion != null">
+				app_version = #{appVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="wechatAppId != null">
+				wechat_app_id = #{wechatAppId,jdbcType=VARCHAR},
+			</if>
+			<if test="wechatAppSecret != null">
+				wechat_app_secret = #{wechatAppSecret,jdbcType=VARCHAR},
+			</if>
+			<if test="umKeyAndroid != null">
+				um_key_android = #{umKeyAndroid,jdbcType=VARCHAR},
+			</if>
+			<if test="umKeyIos != null">
+				um_key_ios = #{umKeyIos,jdbcType=VARCHAR},
+			</if>
+			<if test="qqAppKey != null">
+				qq_app_key = #{qqAppKey,jdbcType=VARCHAR},
+			</if>
+			<if test="qqAppId != null">
+				qq_app_id = #{qqAppId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null">
+				create_user = #{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
