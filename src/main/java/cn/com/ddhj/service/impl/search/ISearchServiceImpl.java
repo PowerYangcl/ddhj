@@ -163,4 +163,8 @@ public class ISearchServiceImpl implements ISearchService {
 		result.put("resultMessage", "删除了" + count + "条收货地址");
 		return result;
 	}
+	
+	public void statSearchHotWord() {
+		
+	}
 }

@@ -40,4 +40,9 @@ public interface ISearchService {
 	 * @return
 	 */
 	SearchResult<TSearchHotWord> getSearchHotWord();
+	
+	/**
+	 * 定时统计搜索热词
+	 */
+	void statSearchHotWord();
 }
