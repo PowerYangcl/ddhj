@@ -372,7 +372,7 @@
 	<select id="findTLandedPropertyAll" resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
-		from t_landed_property limit 1
+		from t_landed_property
 	</select>
 	<!-- 查询楼盘数据中的所有城市 -->
 	<select id="findTLandedPropertyCity" resultType="java.lang.String">
