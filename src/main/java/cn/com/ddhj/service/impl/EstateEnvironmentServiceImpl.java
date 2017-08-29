@@ -349,7 +349,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			return result;
 		}
 		try {
-long start = System.currentTimeMillis();
+			long start = System.currentTimeMillis();
 			ExecutorService executor = Executors.newCachedThreadPool();
 			Task1032Weather twea = new Task1032Weather();
 			twea.setCityAirService(cityAirService);
@@ -392,8 +392,8 @@ long start = System.currentTimeMillis();
 	        JSONObject weather = weaTask.get();
 	        CityAqi aqi = aqiFuture.get();
 	        executor.shutdown();
-long end = System.currentTimeMillis();
-logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
+			long end = System.currentTimeMillis();
+			logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒"); 
 	        
 	        
 	        String hourAqi = "80";
@@ -514,17 +514,13 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 			radiation.setName("辐射");
 			radiation.setMemo("无");
 			radiation.setLevel("优"); 
-			
-			
-			
-			
+
 			envList.add(land);
 			envList.add(dang);
 			envList.add(radiation);
 			// 绿化率 和 容积率 (距离最近的楼盘)
 			envList.addAll(estFuture.get());
-			
-			
+		
 			result.put("detailList", envList);  // 环境明细
 			result.put("level", this.scoreLevel(score));  // 环境等级
 			result.put("tiptitle", weather.getString("des"));  // 提示标题
@@ -766,7 +762,7 @@ logger.info("1032号接口 - 聚合接口耗时：" + (end - start) + " 毫秒")
 	 * @date 2016年11月3日 下午3:07:54 
 	 * @version 1.0.0.1
 	 */
-	public void resyncWaterEnviroment(){
+	public void resyncWaterEnviroment() {
 		List<String> stateList = new ArrayList<String>(); // 保存检测站点名称
 		String key = "935ddb80b6c973938852bd9e38d1777b";
 		String url = "http://web.juhe.cn:8080/environment/water/stateList";
