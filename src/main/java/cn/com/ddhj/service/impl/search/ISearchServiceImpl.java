@@ -165,6 +165,20 @@ public class ISearchServiceImpl implements ISearchService {
 	}
 	
 	public void statSearchHotWord() {
-		
+		List<TSearchHistory> list = mapper.getSearchHotWord();
+		if(null != list && !list.isEmpty()) {
+			hotWordMapper.deleteAll();
+			for(TSearchHistory hotWord : list) {
+				TSearchHotWord entity = new TSearchHotWord();
+				entity.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
+				entity.setKeyWord(hotWord.getKeyWord());
+				entity.setScore(hotWord.getScore());
+				entity.setCreateUser("system-job");
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				entity.setUpdateUser("system-job");
+				entity.setUpdateTime(DateUtil.getSysDateTime());
+				hotWordMapper.insertSelective(entity);
+			}
+		}
 	}
 }

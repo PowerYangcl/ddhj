@@ -13,6 +13,6 @@ public class StatSearchHotWord extends BaseClass {
 	@Inject
 	private ISearchService searchService;
 	public void stat() {
-		
+		searchService.statSearchHotWord();
 	}
 }

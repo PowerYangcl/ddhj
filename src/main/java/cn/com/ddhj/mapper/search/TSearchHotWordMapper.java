@@ -8,4 +8,6 @@ import cn.com.ddhj.model.search.TSearchHotWord;
 
 public interface TSearchHotWordMapper extends BaseMapper<TSearchHotWord, TSearchHotWordDto> {
 	List<TSearchHotWord> getSearchHotWord();
+	
+	void deleteAll();
 }

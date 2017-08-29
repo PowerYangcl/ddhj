@@ -1,7 +1,5 @@
 package cn.com.ddhj.model;
 
-import java.util.Date;
-
 public class TAppBootPic extends BaseModel{ 
     private String appVersion;
     private String picUrl;

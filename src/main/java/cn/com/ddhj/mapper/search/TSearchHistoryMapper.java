@@ -10,4 +10,6 @@ public interface TSearchHistoryMapper extends BaseMapper<TSearchHistory, TSearch
 	List<TSearchHistory> getSearchHistoryByUserCode(String userCode);
 	
 	Integer delSearchHistoryByUserCode(String userCode);
+	
+	List<TSearchHistory> getSearchHotWord();
 }

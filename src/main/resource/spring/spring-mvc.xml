@@ -116,6 +116,23 @@
 		<!-- 凌晨5分运行定时任务 -->
 		<property name="cronExpression" value="0 5 0 * * ?"></property>
 	</bean>
+	
+	<!-- 定时统计solr搜索热词 -->
+	<bean name="statSearchHotword" class="cn.com.ddhj.job.StatSearchHotWord" />
+	<bean id="quartzStatSearchHotword"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="statSearchHotword"></property>
+		<property name="targetMethod" value="stat"></property>
+		<!-- 设定多个job不会并发运行 -->
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="StatSearchHotwordTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="quartzStatSearchHotword" />
+		<!-- 凌晨5分运行定时任务 -->
+		<property name="cronExpression" value="0 5 0 * * ?"></property>
+	</bean>
+	
 	<bean name="quartzScheduler"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
@@ -124,6 +141,7 @@
 				<ref bean="carbonDealDataTrigger" />
 				<ref bean="reindexLandPropertyTrigger" />
 				<ref bean="createReportTrigger" />
+				<ref bean="StatSearchHotwordTrigger" />
 			</list>
 		</property>
 	</bean>
