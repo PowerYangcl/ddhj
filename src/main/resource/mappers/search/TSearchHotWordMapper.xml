@@ -35,6 +35,10 @@
 		delete from t_search_hot_word where zid = #{zid,jdbcType=INTEGER}
 	</delete>
 	
+	<delete id="deleteAll">
+		delete from t_search_hot_word
+	</delete>
+	
 	<insert id="insertSelective" parameterType="cn.com.ddhj.model.search.TSearchHotWord">
 		insert into t_search_hot_word
 		<trim prefix="(" suffix=")" suffixOverrides=",">
