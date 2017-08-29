@@ -86,7 +86,13 @@ public interface IEstateEnvironmentService {
 	public JSONObject perpetualCalendar(ServletContext application);
 
 
-	public JSONObject landedScoreAverage(String city, String type, String date, String year , Integer pageIndex ,  Integer pageSize); 
+	public JSONObject landedScoreAverage(String city, String type, String date, String year , Integer pageIndex ,  Integer pageSize);
+	
+	/**
+	 * 根据楼盘得分动态生成月,季,年的楼盘排行静态数据存储在t_land_score_month,t_land_score_quarter,t_land_score_year
+	 * @author zht
+	 */
+	public void jobForStatLandScore();
 }
 
 
