@@ -200,9 +200,13 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			if(addr.getString("code").equals("1") && StringUtils.isNotBlank(addr.getString("business")) ){
 				result.put("name", addr.getString("business").split(",")[0]); // 位置名称
 			}else{
-				result.put("resultCode", -1); 
-				result.put("resultMessage", "附近未发现可用位置信息"); 
-				return result;
+				if(StringUtils.isNotBlank(addr.getString("address"))){
+					result.put("name", addr.getString("address")); // 位置名称
+				}else{
+					result.put("resultCode", -1); 
+					result.put("resultMessage", "附近未发现可用位置信息"); 
+					return result;
+				}
 			}
 			
 			if(obj == null || obj.getString("resultcode") == null || !obj.getString("resultcode").equals("200")) {
