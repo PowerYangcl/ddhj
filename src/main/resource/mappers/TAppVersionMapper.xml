@@ -16,7 +16,7 @@
 		<result column="APP_type" property="appType" jdbcType="VARCHAR" />
 		<result column="status" property="status" jdbcType="VARCHAR" />
 		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-		<result column="cretae_user" property="cretaeUser" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
 		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
 	</resultMap>
@@ -88,8 +88,8 @@
 			<if test="createTime != null">
 				create_time,
 			</if>
-			<if test="cretaeUser != null">
-				cretae_user,
+			<if test="createUser != null">
+				create_user,
 			</if>
 			<if test="updateTime != null">
 				update_time,
@@ -141,8 +141,8 @@
 			<if test="createTime != null">
 				#{createTime,jdbcType=TIMESTAMP},
 			</if>
-			<if test="cretaeUser != null">
-				#{cretaeUser,jdbcType=VARCHAR},
+			<if test="createUser != null">
+				#{createUser,jdbcType=VARCHAR},
 			</if>
 			<if test="updateTime != null">
 				#{updateTime,jdbcType=TIMESTAMP},
@@ -192,8 +192,8 @@
 			<if test="createTime != null">
 				create_time = #{createTime,jdbcType=TIMESTAMP},
 			</if>
-			<if test="cretaeUser != null">
-				cretae_user = #{cretaeUser,jdbcType=VARCHAR},
+			<if test="createUser != null">
+				create_user = #{createUser,jdbcType=VARCHAR},
 			</if>
 			<if test="updateTime != null">
 				update_time = #{updateTime,jdbcType=TIMESTAMP},
