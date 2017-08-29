@@ -192,6 +192,11 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			tw_.setCityAirService(cityAirService); 
 			Future<JSONObject> twTask =  executor.submit(tw_); 
 			
+	        Task1032Estate est = new Task1032Estate();
+	        est.setPosition(position);
+	        est.setRadius("2000");
+	        est.setEstateService(estateService);
+	        Future<List<EnvInfo>> estFuture = executor.submit(est);
 			
 			JSONObject addr = posTask.get();
 			JSONObject obj = weaTask.get();
@@ -242,7 +247,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			}
 			
 			String greeningRate = "1";  // 如下条件不满足则用默认值
-			String volumeRate = "0.4";	   // 如下条件不满足则用默认值
+			String volumeRate = estFuture.get().get(0).getMemo();	   // 如下条件不满足则用默认值
 			JSONObject estate = this.estateList(position, "1" , "1" , "1000"); // 获取楼盘信息 
 			if(estate.getString("code").equals("1")) {
 				List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
@@ -417,7 +422,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			
 			
 			String greeningRate = "1";  // 如下条件不满足则用默认值
-			String volumeRate = "0.4";	   // 如下条件不满足则用默认值
+			String volumeRate = estFuture.get().get(0).getMemo();	   // 如下条件不满足则用默认值
 			JSONObject estate = this.estateList(position, "1" , "1" , radius); // 获取楼盘信息
 			if(estate.getString("code").equals("1")) {
 				List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
@@ -677,7 +682,12 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	public void resyncEstateScore(){ 
 		List<String> clist = new ArrayList<String>();
 		clist.add("北京");
+		clist.add("上海");
 		clist.add("天津");
+		clist.add("广州");
+		clist.add("深圳");
+		clist.add("重庆");
+		clist.add("青岛");
 		
 		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
 		ExecutorService executor = Executors.newCachedThreadPool();
