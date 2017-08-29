@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.impl.user;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -80,16 +81,16 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 					login.setCreateUser(user.getUserCode());
 					login.setCreateTime(DateUtil.getSysDateTime());
 					loginMapper.insertSelective(login);
-					//commented by zht
-//					// 根据设备号同步计步数据   
-//					if (StringUtils.isNoneBlank(dto.getEquipmentCode())) {
-//						TUserStep step = new TUserStep();
-//						step.setEquipmentCode(dto.getEquipmentCode());
-//						step.setUserCode(user.getUserCode());
-//						step.setIsBinding(1);
-//						step.setUpdateTime(DateUtil.getSysDateTime());
-//						stepMapper.updateByEquipmentCode(step);
-//					}
+					// commented by zht
+					// // 根据设备号同步计步数据
+					// if (StringUtils.isNoneBlank(dto.getEquipmentCode())) {
+					// TUserStep step = new TUserStep();
+					// step.setEquipmentCode(dto.getEquipmentCode());
+					// step.setUserCode(user.getUserCode());
+					// step.setIsBinding(1);
+					// step.setUpdateTime(DateUtil.getSysDateTime());
+					// stepMapper.updateByEquipmentCode(step);
+					// }
 					result.setResultCode(Constant.RESULT_SUCCESS);
 					user.setPassword("");
 					result.setUser(user);
@@ -468,6 +469,14 @@ public class TUserServiceImpl extends BaseServiceImpl<TUser, TUserMapper, TUserD
 							result.getUser().setExpense(oper.getCarbonSum());
 						}
 					}
+					if (result.getUser().getIncome() == null) {
+						result.getUser().setIncome(BigDecimal.valueOf(0));
+					} else if (result.getUser().getExpense() == null) {
+						result.getUser().setExpense(BigDecimal.valueOf(0));
+					}
+				} else {
+					result.getUser().setIncome(BigDecimal.valueOf(0));
+					result.getUser().setExpense(BigDecimal.valueOf(0));
 				}
 			} else {
 				result.setResultCode(Constant.RESULT_ERROR);
