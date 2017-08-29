@@ -39,7 +39,9 @@ public class Task1032Estate implements Callable<List<EnvInfo>> {
 				map.put(distance , e);
 			}
 			if(map.size() == 0){
-				rj.setLevel("1.2");
+				rj.setLevel("住宅");
+				rj.setMemo("1.2"); 
+				lh.setMemo("一般");  
 				lh.setLevel("28%");
 				list.add(rj);
 				list.add(lh);
@@ -47,8 +49,6 @@ public class Task1032Estate implements Callable<List<EnvInfo>> {
 			}
 			
 			EData e = map.get(map.firstKey());
-			rj.setMemo(e.getTitle());
-			lh.setMemo(e.getTitle()); 
 			if(e.getVolumeRate() != null){
 				Double v = null;
 				String vol = e.getVolumeRate();
@@ -64,10 +64,11 @@ public class Task1032Estate implements Callable<List<EnvInfo>> {
 					vol = "1.2";
 					v = 1.2;
 				}
+				rj.setMemo(this.getRjLevel(e.getPropertyType()).split("@")[1]);  
+				rj.setLevel(this.getRjLevel(e.getPropertyType()).split("@")[0]); 
 				
-				rj.setLevel(vol);
 			}else{
-				rj.setLevel("1.2");
+				rj.setLevel("住宅");
 			}
 			
 			if(e.getGreeningRate() != null){
@@ -83,15 +84,54 @@ public class Task1032Estate implements Callable<List<EnvInfo>> {
 				lh.setLevel("28%");
 			}
 		}else{
-			rj.setLevel("1.2");
+			rj.setLevel("住宅");
 			lh.setLevel("28%");
 		}
+		
 		list.add(rj);
+		lh.setMemo(this.getLhMemo(lh.getLevel()));  
 		list.add(lh);
 		return list; 
 	}
 
+	// 绿化率大于30%，色块显示“好”，25%-30%，显示“一般”，小于25%，显示“差”
+	private String getLhMemo(String str){
+		Integer num = 0;
+		try {
+			num = Integer.valueOf(str.split("%")[0]) ;
+		} catch (Exception e) {
+			return "一般";
+		}
+		
+		if(num > 30){
+			return "好";
+		}else if(num >= 25 && num <= 30){
+			return "一般";
+		}else{
+			return "差";
+		} 
+	}
 	
+	// 1.2那里要么显示普通or公寓or别墅  楼盘信息那里就是显示一个数字 - 程艳
+	private String getRjLevel(String str){
+		String re = "";
+		if(str.equals("普通住宅")){
+			re = "住宅@2";
+		}else if(str.equals("公寓、普通住宅")){
+			re = "公寓@1.6";
+		}else if(str.equals("公寓")){
+			re = "公寓@0.9";
+		}else if(str.equals("别墅")){
+			re = "别墅@0.3";
+		}else if(str.equals("别墅、普通住宅")){
+			re = "别墅@0.5";
+		}else if(str.equals("公寓、其它")){
+			re = "公寓@1.4";
+		}else{
+			re = "住宅@2";
+		}
+		return re;
+	}
 	
 	public IEstateInfoService getEstateService() {
 		return estateService;
