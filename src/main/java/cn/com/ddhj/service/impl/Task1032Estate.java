@@ -89,7 +89,8 @@ public class Task1032Estate implements Callable<List<EnvInfo>> {
 		}
 		
 		list.add(rj);
-		lh.setMemo(this.getLhMemo(lh.getLevel()));  
+		lh.setMemo(lh.getLevel()); 
+		lh.setLevel(this.getLhMemo(lh.getLevel()));
 		list.add(lh);
 		return list; 
 	}
