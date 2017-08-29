@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.dto.BaseDto;
+import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.mapper.TAppBootPicMapper;
 import cn.com.ddhj.mapper.TAppConfigMapper;
 import cn.com.ddhj.mapper.TAppStartMapper;
@@ -147,7 +148,8 @@ public class AppInitServiceImpl implements IAppInitService {
 			result.put("pageJump", pageJump);  
 			result.put("firstUrl", as.getFirstUrl());
 			result.put("serialNumber", serialNumber);
-			result.put("bootView", bootView); 
+			result.put("bootView", bootView);                               
+			result.put("iosPayEnabled", PropHelper.getValue("iosPayEnabled"));       // IOS 隐藏支付方式              1是可用,0就不可用
 			result.put("resultCode", 1);
 			result.put("resultMessage", "操作成功");
 			
