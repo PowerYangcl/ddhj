@@ -97,4 +97,7 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, TLand
 	 * @return
 	 */
 	Integer findScoreLessThanLpCount(TLandedPropertyDto dto);
+	
+	
+	List<TLandedProperty> selectAllEstateInfoByCity(String city);
 }

@@ -93,6 +93,9 @@ public interface IEstateEnvironmentService {
 	 * @author zht
 	 */
 	public void jobForStatLandScore();
+	
+	
+	public void ressssyncEstateLoad(String city);   
 }
 
 

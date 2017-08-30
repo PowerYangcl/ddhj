@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.impl;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -553,6 +555,8 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	/**
 	 * @descriptions 楼盘列表|检索该经纬度附近10Km内的楼盘信息|1033
 	 * 								 城市名称|北京，上海，广州，深圳
+	 *@测试路径 http://api.sys.ecomapit.com/ddhj/api.htm?apiTarget=1033&api_key=appfamilyhas&apiInput={"position":"39.91433068500728,116.51123072649193" , "city":"北京" , "page":"1" , "radius":"5000" , "count":"100"}
+	 *
 	 *
 	 * @param position|经纬度逗号分隔，纬度在前经度在后
 	 * @param city |当前城市名称 如：北京，注意不是北京市
@@ -632,6 +636,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 						projectList.add(new Estate(e.getTitle() , distance , e.getAddressFull() , price , lpcode, position_, img , e.getScore() , updateTime) );		
 					}
 
+					System.out.println(JSONObject.toJSONString(projectList));   
 					Collections.sort(projectList); 
 					Collections.reverse(projectList); 
 					for(Estate e : projectList){
@@ -682,12 +687,18 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	public void resyncEstateScore(){ 
 		List<String> clist = new ArrayList<String>();
 		clist.add("北京");
-		clist.add("上海");
 		clist.add("天津");
-		clist.add("广州");
 		clist.add("深圳");
-		clist.add("重庆");
+		clist.add("唐山");
+		clist.add("廊坊");
+		clist.add("沈阳");
+		clist.add("武汉");
+		clist.add("烟台");
+		clist.add("长沙");
 		clist.add("青岛");
+		clist.add("重庆");
+		clist.add("大连");
+		clist.add("成都"); 
 		
 		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
 		ExecutorService executor = Executors.newCachedThreadPool();
@@ -771,6 +782,120 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			executor.shutdown();  
 		}
 	}
+	
+	public void ressssyncEstateLoad(String city){
+		List<String> list = new ArrayList<>();
+		String begin = "2017-01-01 06:06:08";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+		try {
+			list.add(begin);
+			list.add("2017-01-15 06:06:08");
+			list.add("2017-01-30 06:06:08");
+			list.add("2017-02-01 06:06:08");
+			list.add("2017-02-15 06:06:08");
+			list.add("2017-02-28 06:06:08");
+			list.add("2017-03-01 06:06:08");
+			list.add("2017-03-15 06:06:08");
+			list.add("2017-03-31 06:06:08");
+			list.add("2017-04-01 06:06:08");
+			list.add("2017-04-15 06:06:08");
+			list.add("2017-04-30 06:06:08");
+			list.add("2017-05-01 06:06:08");
+			list.add("2017-05-15 06:06:08");
+			list.add("2017-05-31 06:06:08");
+			list.add("2017-06-01 06:06:08");
+			list.add("2017-06-15 06:06:08");
+			list.add("2017-06-30 06:06:08");
+			list.add("2017-07-01 06:06:08");
+			list.add("2017-07-15 06:06:08");
+			list.add("2017-07-31 06:06:08");
+			list.add("2017-08-01 06:06:08");
+			list.add("2017-08-15 06:06:08");
+			list.add("2017-08-30 06:06:08");
+			
+			for(String s : list){
+				System.out.println(s + "  数据开始刷新"); 
+				this.resyncEstateScoredddddd(sdf.parse(s) , city);
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println(city +  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + JSONObject.toJSONString(list)); 
+	}
+	
+	 
+	
+	private String getNextDate(Date date){
+		 Calendar calendar = new GregorianCalendar();
+		 calendar.setTime(date);
+		 calendar.add(calendar.DATE , 1);   // 把日期往后增加一天.整数往后推,负数往前移动
+		 date=calendar.getTime();      // 这个时间就是日期往后推一天的结果 
+		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		 
+		 return formatter.format(date);
+	}
+	
+	private void resyncEstateScoredddddd(Date currentDate , String city_){ 
+		List<String> clist = new ArrayList<String>();
+		clist.add(city_);
+//		clist.add("北京");
+//		clist.add("天津");
+//		clist.add("深圳");
+//		clist.add("唐山");
+//		clist.add("廊坊");
+//		clist.add("沈阳");
+//		clist.add("武汉");
+//		clist.add("烟台");
+//		clist.add("长沙");
+//		clist.add("青岛");
+//		clist.add("重庆");
+//		clist.add("大连");
+//		clist.add("成都"); 
+		
+		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
+		ExecutorService executor = Executors.newCachedThreadPool();
+		for(int i = 0 ; i < clist.size() ; i ++){
+			Task1032Aqi taqi = new Task1032Aqi();
+	        taqi.setCityAirService(cityAirService);
+	        taqi.setCity(clist.get(i));  
+	        futureList.add(executor.submit(taqi));
+		}
+
+		Map<String , List<TLandedProperty>> map = new TreeMap<String , List<TLandedProperty>>();
+		for(String city : clist){  // 默认初始化
+			List<TLandedProperty> elist = new ArrayList<TLandedProperty>();
+			map.put(city, elist);
+		}
+//		List<TLandedProperty> estateList = lrMapper.selectAllEstateInfo();
+		List<TLandedProperty> estateList = lrMapper.selectAllEstateInfoByCity(city_);
+		for(TLandedProperty e : estateList){
+			if(map.containsKey(e.getCity())){
+				map.get(e.getCity()).add(e);
+			}
+		}
+		
+		List<TLandedProperty> nestateList = estateList ;   //new ArrayList<>();
+		List<Future<List<TLandedProperty>>> tlpFutureList = new ArrayList<Future<List<TLandedProperty>>>();   
+			int size = 5000; // 单组list大小
+			int count = nestateList.size() / size; // TreeMap 的分组数       10008/20 = 500 余 8 
+			int count_ = nestateList.size() - count * size; // 余数 
+			Map<Integer , List<TLandedProperty>> mapgroup = new TreeMap<Integer , List<TLandedProperty>>();
+			for(int i = 0 ; i < count ; i ++){
+				mapgroup.put(i , nestateList.subList(i*size , size*(i+1)));
+			}
+			if(count_ != 0){
+				mapgroup.put(count, nestateList.subList(count*size, nestateList.size())); 
+			}
+			for (Map.Entry<Integer, List<TLandedProperty>> entry : mapgroup.entrySet()) {
+				Task2048LandedPropertyUpdate lpu = new Task2048LandedPropertyUpdate(entry.getValue(), lrMapper , landedScoreMapper , currentDate);
+				executor.submit(lpu);
+			}
+			
+	}
+	
+	
 	
 	
 	/**
