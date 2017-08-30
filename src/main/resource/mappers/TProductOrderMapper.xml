@@ -144,6 +144,26 @@
 				o.order_status as orderStatus,
 				o.pay_money as payMoney,
 				o.buyer_phone as mobile, 
+				d.product_code as productCode,
+				d.buy_num as buyNums 
+			from 
+				t_product_order o left join t_product_order_detail d on o.code = d.order_code 
+			where 
+				o.buyer_code = #{buyerCode , jdbcType=VARCHAR}
+				<if test="orderStatus != null and orderStatus !=''">
+					and o.order_status = #{orderStatus , jdbcType=VARCHAR} 
+				</if>
+			group by o.code 
+			order by o.create_time desc 
+			limit  #{pageIndex,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<select id="findProductOrderListdddddddddddddddddd" parameterType="cn.com.ddhj.dto.ProductOrderDto" resultMap="ProductOrderListResultMap">
+		 select 
+				o.code as orderCode,
+				o.order_status as orderStatus,
+				o.pay_money as payMoney,
+				o.buyer_phone as mobile, 
 				GROUP_CONCAT(d.product_code order by d.id) as productCode,
 				GROUP_CONCAT(d.buy_num order by d.id) as buyNums 
 			from 

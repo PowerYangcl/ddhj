@@ -1,7 +1,9 @@
 package cn.com.ddhj.service.impl.store;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -384,32 +386,39 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			re.put("resultMessage", "用户订单列表为空");
 			return re;
 		}
+		//		ordercode         pcode  byNums
+		Map<String , Map<String , String>> map = new HashMap<>();
+		for (ProductOrderListResult r : list){
+			if(map.containsKey(r.getOrderCode())){
+				map.get(r.getOrderCode() +"@" + r.getPayMoney() + "@" + r.getOrderStatus()).put(r.getProductCode(), r.getBuyNums());
+			}else{
+				Map<String , String> val = new HashMap<>();
+				val.put(r.getProductCode(), r.getBuyNums());
+				map.put(r.getOrderCode() +"@" + r.getPayMoney() + "@" + r.getOrderStatus(), val);
+			}
+		}
+		
 
 		List<ProductOrderApiResult> olist = new ArrayList<>();
-		for (ProductOrderListResult r : list) {
+		for(Map.Entry<String , Map<String , String>> r : map.entrySet()){
 			ProductOrderApiResult m = new ProductOrderApiResult();
-			m.setOrderCode(r.getOrderCode());
-			m.setOrderMoney(Double.valueOf(r.getPayMoney()));
-			m.setOrderStatus(r.getOrderStatus());
-
+			String key = r.getKey();
+			m.setOrderCode(key.split("@")[0]);
+			m.setOrderMoney(Double.valueOf(key.split("@")[1]));
+			m.setOrderStatus(key.split("@")[2]);
+			
+			Map<String , String> value = r.getValue();
 			List<ProductResult> productList = new ArrayList<>();
-//			String[] pnArr = r.getProductNames().split(",");
-//			String[] mpArr = r.getMpurl().split(",");
-//			String[] ppArr = r.getProductPrices().split(",");
-			String[] pcArr = r.getProductCode().split(",");
-			String[] bnArr = r.getBuyNums().split(",");
-			if (pcArr.length != 0) {
-				for (int i = 0; i < pcArr.length; i++) {
-					TProductInfoResult view = productMapper.getProductInfo(pcArr[i]);
-					if(view == null) continue;
-					ProductResult p = new ProductResult();
-					p.setProductCode(pcArr[i]);
-					p.setProductName(view.getProductName());
-					p.setProductPrice(Double.valueOf(view.getCurrentPrice()));
-					p.setImgUrl(view.getMainPicUrl());  
-					p.setBuyNum(bnArr[i]); 
-					productList.add(p);
-				}
+			for (Map.Entry<String, String> v : value.entrySet()) {
+				TProductInfoResult view = productMapper.getProductInfo(v.getKey());
+				if(view == null) continue;
+				ProductResult p = new ProductResult();
+				p.setProductCode(v.getKey());
+				p.setProductName(view.getProductName());
+				p.setProductPrice(Double.valueOf(view.getCurrentPrice()));
+				p.setImgUrl(view.getMainPicUrl());  
+				p.setBuyNum(v.getValue()); 
+				productList.add(p);
 			}
 			m.setProductList(productList);
 			olist.add(m);
