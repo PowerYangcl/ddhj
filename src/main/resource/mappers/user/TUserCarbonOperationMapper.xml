@@ -149,7 +149,7 @@
 		FROM
 		t_user_carbon_operation
 		WHERE
-		user_code =	#{userCode,jdbcType=VARCHAR} AND carbon_sum > 0 
+		user_code =	#{userCode,jdbcType=VARCHAR}
 		<if test="operationType != null and operationType != ''">
 			AND operation_type
 			=#{operationType,jdbcType=VARCHAR}
@@ -214,7 +214,7 @@
 		t_user_carbon_operation
 		WHERE
 		user_code =
-		#{userCode,jdbcType=VARCHAR}
+		#{userCode,jdbcType=VARCHAR} and carbon_sum>0 
 		<if test="operationType != null and operationType != ''">
 			AND operation_type
 			=#{operationType,jdbcType=VARCHAR}
