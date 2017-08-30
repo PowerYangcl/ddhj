@@ -1021,40 +1021,60 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	public JSONObject landedScoreAverage(String city, String type, String date_ , String year , Integer pageIndex ,  Integer pageSize) {
 		JSONObject result = new JSONObject();
 		result.put("resultCode", 1);
-		try {
+//		try {
 			String startTime = "";
 			String endTime = "";
+			String querydate = "";
 			if(type.equals("year")){ 
-				startTime = date_ + "-01-01 00:00:00" ;  // this.getFormatDate(date_ , ""); 
-				endTime = date_ + "-12-31 23:59:59" ;   
+//				startTime = date_ + "-01-01 00:00:00" ;  // this.getFormatDate(date_ , ""); 
+//				endTime = date_ + "-12-31 23:59:59" ; 
+				querydate = date_;
 			}else if(type.equals("quarter")){
 				if(date_.equals("1")){ 
-					startTime = year +"-01-01 00:00:00";   
-					endTime = year +"-03-31 23:59:59";  
+//					startTime = year +"-01-01 00:00:00";   
+//					endTime = year +"-03-31 23:59:59"; 
+					querydate = year + "Q1";
 				}else if(date_.equals("2")){
-					startTime = year +"-04-01 00:00:00";   
-					endTime = year +"-06-30 23:59:59";  
+//					startTime = year +"-04-01 00:00:00";   
+//					endTime = year +"-06-30 23:59:59";  
+					querydate = year + "Q2";
 				}else if(date_.equals("3")){
-					startTime = year +"-07-01 00:00:00";   
-					endTime = year +"-09-30 23:59:59";  
+//					startTime = year +"-07-01 00:00:00";   
+//					endTime = year +"-09-30 23:59:59";  
+					querydate = year + "Q3";
 				}else {
-					startTime = year +"-10-01 00:00:00";     
-					endTime = year +"-12-31 23:59:59";  
+//					startTime = year +"-10-01 00:00:00";     
+//					endTime = year +"-12-31 23:59:59";  
+					querydate = year + "Q4";
 				}
 			}else{  // month  
-				startTime = date_ + "-01 00:00:00";   
-				endTime = this.dateCount(startTime, 1); 
+//				startTime = date_ + "-01 00:00:00";   
+//				endTime = this.dateCount(startTime, 1); 
+				querydate = date_;
 			}
+			
 			LandedScoreAverageDto dto = new LandedScoreAverageDto(); 	// 保存数据库查询条件
 			dto.setCity(city);
 			dto.setPageIndex(pageIndex);
 			dto.setPageSize(pageSize);
-			dto.setStartTime(startTime);
-			dto.setEndTime(endTime);
+//			dto.setStartTime(startTime);
+//			dto.setEndTime(endTime);
+			dto.setQuerydate(querydate);
 
 			PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
-			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(dto);
-			if(list != null && list.size() != 0){
+			List<LandedScoreResult> list = null;
+			if(type.equals("year")) { 
+				//年
+				list = landedScoreMapper.findLandedScoreAverageYear(dto);
+			} else if(type.equals("quarter")) {
+				//季
+				list = landedScoreMapper.findLandedScoreAverageQuarter(dto);
+			} else if(type.equals("month")) {
+				//月
+				list = landedScoreMapper.findLandedScoreAverageMonth(dto);
+			}
+			
+			if(list != null && list.size() != 0) {
 				result.put("data", list);
 			}else {
 				result.put("resultCode", Constant.RESULT_NULL);
@@ -1089,11 +1109,11 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 //				result.put("resultCode", 1);  // 无数据 
 //			}
 			
-		} catch (ParseException e) {
-			e.printStackTrace();
-			result.put("resultCode", -1);  // 系统异常
-			result.put("resultMessage", e.getLocalizedMessage());
-		}
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//			result.put("resultCode", -1);  // 系统异常
+//			result.put("resultMessage", e.getLocalizedMessage());
+//		}
 		return result;
 	}
 

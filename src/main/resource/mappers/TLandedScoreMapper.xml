@@ -26,10 +26,10 @@
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
 		<result column="code" property="code" jdbcType="VARCHAR" /> 
 	</resultMap>
-	<select id="findLandedScoreAverage" resultMap="LandedScoreResultMap" parameterType="cn.com.ddhj.dto.LandedScoreAverageDto">
+	<select id="findLandedScoreAverageYear" resultMap="LandedScoreResultMap" parameterType="cn.com.ddhj.dto.LandedScoreAverageDto">
 		select  
-				sum(ls.score)/count(*) as scoreavg ,
-				ls.`code`  ,
+				sum(lp.score_avg)/count(*) as scoreavg ,
+				lp.`code`  ,
 				lp.title,
 				lp.addressFull,
 				lp.total,
@@ -41,12 +41,60 @@
 				lp.images,
 				lp.overview
 		from 
-				t_landed_score  ls left join t_landed_property lp on lp.code = ls.code
+				t_land_score_year lp
 		where 
-				 ls.city = #{city , jdbcType=VARCHAR}
+				 lp.city = #{city , jdbcType=VARCHAR}
 		and  
-			ls.create_time between #{startTime , jdbcType=VARCHAR}  and #{endTime , jdbcType=VARCHAR}
-		group by ls.`code` 
+			lp.querydate = #{querydate , jdbcType=VARCHAR} 
+		group by lp.`code` 
+		order by scoreavg desc  
+	</select>
+	
+	<select id="findLandedScoreAverageQuarter" resultMap="LandedScoreResultMap" parameterType="cn.com.ddhj.dto.LandedScoreAverageDto">
+		select  
+				sum(lp.score_avg)/count(*) as scoreavg ,
+				lp.`code`  ,
+				lp.title,
+				lp.addressFull,
+				lp.total,
+				lp.propertyCompany,
+				lp.propertyType,
+				lp.bus,
+				lp.lat,
+				lp.lng,
+				lp.images,
+				lp.overview
+		from 
+				t_land_score_quarter lp
+		where 
+				 lp.city = #{city , jdbcType=VARCHAR}
+		and  
+			lp.querydate = #{querydate , jdbcType=VARCHAR} 
+		group by lp.`code` 
+		order by scoreavg desc 
+	</select>
+	
+	<select id="findLandedScoreAverageMonth" resultMap="LandedScoreResultMap" parameterType="cn.com.ddhj.dto.LandedScoreAverageDto">
+		select  
+				sum(lp.score_avg)/count(*) as scoreavg ,
+				lp.`code`  ,
+				lp.title,
+				lp.addressFull,
+				lp.total,
+				lp.propertyCompany,
+				lp.propertyType,
+				lp.bus,
+				lp.lat,
+				lp.lng,
+				lp.images,
+				lp.overview
+		from 
+				t_land_score_month lp
+		where 
+				 lp.city = #{city , jdbcType=VARCHAR}
+		and  
+			lp.querydate = #{querydate , jdbcType=VARCHAR} 
+		group by lp.`code` 
 		order by scoreavg desc 
 	</select>
 	
