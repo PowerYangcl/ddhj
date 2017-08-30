@@ -1,7 +1,9 @@
 package cn.com.ddhj.service.impl;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -18,24 +20,38 @@ public class Task2048LandedPropertyUpdate implements Callable<Integer> {
 	
 	private TLandedScoreMapper landedScoreMapper;
 
+	private Date currentDate;
 
 	public Task2048LandedPropertyUpdate(List<TLandedProperty> list, TLandedPropertyMapper lrMapper , TLandedScoreMapper landedScoreMapper) {
 		this.list = list;
 		this.lrMapper = lrMapper;
 		this.landedScoreMapper = landedScoreMapper;
 	}
+	
+	public Task2048LandedPropertyUpdate(List<TLandedProperty> list, TLandedPropertyMapper lrMapper , TLandedScoreMapper landedScoreMapper , Date currentDate) {
+		this.list = list;
+		this.lrMapper = lrMapper;
+		this.landedScoreMapper = landedScoreMapper;
+		this.currentDate = currentDate;
+	}
 
 
 	public Integer call() throws Exception {
 		Integer flag = 0;
 		try {
-			flag = this.getLrMapper().batchUpdateScore(this.getList());
+			flag = 1 ; //this.getLrMapper().batchUpdateScore(this.getList());
 			for(TLandedProperty e : list){
 				TLandedScore ls = new TLandedScore();
 				ls.setUuid(UUID.randomUUID().toString().replace("-", ""));
 				ls.setCode(e.getCode());
-				ls.setScore(e.getScore());
-				ls.setCreateTime(new Date());
+				
+				DecimalFormat df = new DecimalFormat("#.00");
+				Random rand = new Random();  
+		        Double score = Double.valueOf(df.format (Double.valueOf( rand.nextInt(50)+55 + Math.random()) ));
+				ls.setScore(score); 
+				
+				
+				ls.setCreateTime(currentDate);
 				ls.setCity(e.getCity());  
 				landedScoreMapper.insertSelective(ls);
 				System.out.println("Task2048LandedPropertyUpdate -> TLandedScore insert already! ");

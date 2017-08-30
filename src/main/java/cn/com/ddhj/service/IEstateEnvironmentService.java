@@ -87,6 +87,9 @@ public interface IEstateEnvironmentService {
 
 
 	public JSONObject landedScoreAverage(String city, String type, String date, String year , Integer pageIndex ,  Integer pageSize); 
+	
+	
+	public void ressssyncEstateLoad();   
 }
 
 
