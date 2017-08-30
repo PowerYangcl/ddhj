@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.ddhj.mapper.TLandedScoreJobMapper">
+
+	<resultMap id="LandedScoreResultMap" type="cn.com.ddhj.model.TLandedScoreJob">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="score_avg" property="scoreavg" jdbcType="DOUBLE" />
+		<result column="addressFull" property="addressFull" jdbcType="VARCHAR" />
+		<result column="total" property="total" jdbcType="VARCHAR" />
+		<result column="propertyCompany" property="propertyCompany" jdbcType="VARCHAR" />
+		<result column="propertyType" property="propertyType" jdbcType="VARCHAR" />
+		<result column="bus" property="bus" jdbcType="VARCHAR" />
+		<result column="lat" property="lat" jdbcType="VARCHAR" />
+		<result column="lng" property="lng" jdbcType="VARCHAR" />
+		<result column="images" property="images" jdbcType="VARCHAR" />
+		<result column="overview" property="overview" jdbcType="VARCHAR" />
+		<result column="querydate" property="querydate" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<insert id="insertSelectiveYear" parameterType="cn.com.ddhj.model.TLandedScoreJob">
+		insert into t_land_score_year
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			code,
+			city,
+			score_avg,
+			title,
+			querydate,
+			<if test="addressFull != null and addressFull != ''">
+				addressFull,
+			</if>
+			<if test="total != null and total != ''">
+				total,
+			</if>
+			<if test="propertyCompany != null and propertyCompany != ''">
+				propertyCompany,
+			</if>
+			<if test="propertyType != null and propertyType != ''">
+				propertyType,
+			</if>
+			<if test="bus != null and bus != ''">
+				bus,
+			</if>
+			<if test="lat != null and lat != ''">
+				lat,
+			</if>
+			<if test="lng != null and lng != ''">
+				lng,
+			</if>
+			<if test="images != null and images != ''">
+				images,
+			</if>
+			<if test="overview != null and overview != ''">
+				overview,
+			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			#{city,jdbcType=VARCHAR},
+			#{scoreavg,jdbcType=DOUBLE},
+			#{title,jdbcType=VARCHAR},
+			#{querydate,jdbcType=VARCHAR},
+			<if test="addressFull != null and addressFull != ''">
+				#{addressFull,jdbcType=VARCHAR},
+			</if>
+			<if test="total != null and total != ''">
+				#{total,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyCompany != null and propertyCompany != ''">
+				#{propertyCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyType != null and propertyType != ''">
+				#{propertyType,jdbcType=VARCHAR},
+			</if>
+			<if test="bus != null and bus != ''">
+				#{bus,jdbcType=VARCHAR},
+			</if>
+			<if test="lat != null and lat != ''">
+				#{lat,jdbcType=VARCHAR},
+			</if>
+			<if test="lng != null and lng != ''">
+				#{lng,jdbcType=VARCHAR},
+			</if>
+			<if test="images != null and images != ''">
+				#{images,jdbcType=VARCHAR},
+			</if>
+			<if test="overview != null and overview != ''">
+				#{overview,jdbcType=VARCHAR},
+			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</trim>
+	</insert>	
+	
+	<insert id="insertSelectiveQuarter" parameterType="cn.com.ddhj.model.TLandedScoreJob">
+		insert into t_land_score_quarter
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			code,
+			city,
+			score_avg,
+			title,
+			querydate,
+			<if test="addressFull != null and addressFull != ''">
+				addressFull,
+			</if>
+			<if test="total != null and total != ''">
+				total,
+			</if>
+			<if test="propertyCompany != null and propertyCompany != ''">
+				propertyCompany,
+			</if>
+			<if test="propertyType != null and propertyType != ''">
+				propertyType,
+			</if>
+			<if test="bus != null and bus != ''">
+				bus,
+			</if>
+			<if test="lat != null and lat != ''">
+				lat,
+			</if>
+			<if test="lng != null and lng != ''">
+				lng,
+			</if>
+			<if test="images != null and images != ''">
+				images,
+			</if>
+			<if test="overview != null and overview != ''">
+				overview,
+			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			#{city,jdbcType=VARCHAR},
+			#{scoreavg,jdbcType=DOUBLE},
+			#{title,jdbcType=VARCHAR},
+			#{querydate,jdbcType=VARCHAR},
+			<if test="addressFull != null and addressFull != ''">
+				#{addressFull,jdbcType=VARCHAR},
+			</if>
+			<if test="total != null and total != ''">
+				#{total,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyCompany != null and propertyCompany != ''">
+				#{propertyCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyType != null and propertyType != ''">
+				#{propertyType,jdbcType=VARCHAR},
+			</if>
+			<if test="bus != null and bus != ''">
+				#{bus,jdbcType=VARCHAR},
+			</if>
+			<if test="lat != null and lat != ''">
+				#{lat,jdbcType=VARCHAR},
+			</if>
+			<if test="lng != null and lng != ''">
+				#{lng,jdbcType=VARCHAR},
+			</if>
+			<if test="images != null and images != ''">
+				#{images,jdbcType=VARCHAR},
+			</if>
+			<if test="overview != null and overview != ''">
+				#{overview,jdbcType=VARCHAR},
+			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</trim>
+	</insert>
+	
+	<insert id="insertSelectiveMonth" parameterType="cn.com.ddhj.model.TLandedScoreJob">
+		insert into t_land_score_month
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			uuid,
+			code,
+			city,
+			score_avg,
+			title,
+			querydate,
+			<if test="addressFull != null and addressFull != ''">
+				addressFull,
+			</if>
+			<if test="total != null and total != ''">
+				total,
+			</if>
+			<if test="propertyCompany != null and propertyCompany != ''">
+				propertyCompany,
+			</if>
+			<if test="propertyType != null and propertyType != ''">
+				propertyType,
+			</if>
+			<if test="bus != null and bus != ''">
+				bus,
+			</if>
+			<if test="lat != null and lat != ''">
+				lat,
+			</if>
+			<if test="lng != null and lng != ''">
+				lng,
+			</if>
+			<if test="images != null and images != ''">
+				images,
+			</if>
+			<if test="overview != null and overview != ''">
+				overview,
+			</if>
+			create_user,
+			create_time,
+			update_user,
+			update_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{uuid,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			#{city,jdbcType=VARCHAR},
+			#{scoreavg,jdbcType=DOUBLE},
+			#{title,jdbcType=VARCHAR},
+			#{querydate,jdbcType=VARCHAR},
+			<if test="addressFull != null and addressFull != ''">
+				#{addressFull,jdbcType=VARCHAR},
+			</if>
+			<if test="total != null and total != ''">
+				#{total,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyCompany != null and propertyCompany != ''">
+				#{propertyCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyType != null and propertyType != ''">
+				#{propertyType,jdbcType=VARCHAR},
+			</if>
+			<if test="bus != null and bus != ''">
+				#{bus,jdbcType=VARCHAR},
+			</if>
+			<if test="lat != null and lat != ''">
+				#{lat,jdbcType=VARCHAR},
+			</if>
+			<if test="lng != null and lng != ''">
+				#{lng,jdbcType=VARCHAR},
+			</if>
+			<if test="images != null and images != ''">
+				#{images,jdbcType=VARCHAR},
+			</if>
+			<if test="overview != null and overview != ''">
+				#{overview,jdbcType=VARCHAR},
+			</if>
+			#{createUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{createTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			#{updateUser,jdbcType=VARCHAR},
+			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+		</trim>
+	</insert>			
+</mapper>

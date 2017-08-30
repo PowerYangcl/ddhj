@@ -334,7 +334,6 @@ public class ApiController extends BaseClass {
 			JSONObject result_ = estateEnvService.perpetualCalendar(application);
 			return result_;
 		} else if ("2052".equals(api.getApiTarget())) { // t_landed_score
-														// 楼盘综合评分统计接口
 			String city = obj.getString("city"); // "北京"
 			String type = obj.getString("type"); // year：按年份平均|quarter：按季度平均|month：按月份平均
 			String date = obj.getString("date"); // 2016 1|2|3|4 2016-01

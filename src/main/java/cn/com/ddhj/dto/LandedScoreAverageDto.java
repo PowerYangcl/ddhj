@@ -6,6 +6,7 @@ public class LandedScoreAverageDto {
 	private String endTime;
 	private Integer pageSize; 
 	private Integer pageIndex;
+	private String querydate;
 	
 	public String getCity() {
 		return city;
@@ -36,5 +37,11 @@ public class LandedScoreAverageDto {
 	}
 	public void setPageIndex(Integer pageIndex) {
 		this.pageIndex = pageIndex;
-	} 
+	}
+	public String getQuerydate() {
+		return querydate;
+	}
+	public void setQuerydate(String querydate) {
+		this.querydate = querydate;
+	}
 }
