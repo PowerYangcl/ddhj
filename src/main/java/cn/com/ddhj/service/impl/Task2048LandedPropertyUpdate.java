@@ -39,23 +39,37 @@ public class Task2048LandedPropertyUpdate implements Callable<Integer> {
 	public Integer call() throws Exception {
 		Integer flag = 0;
 		try {
-			flag = 1 ; //this.getLrMapper().batchUpdateScore(this.getList());
-			for(TLandedProperty e : list){
-				TLandedScore ls = new TLandedScore();
-				ls.setUuid(UUID.randomUUID().toString().replace("-", ""));
-				ls.setCode(e.getCode());
-				
-				DecimalFormat df = new DecimalFormat("#.00");
-				Random rand = new Random();  
-		        Double score = Double.valueOf(df.format (Double.valueOf( rand.nextInt(50)+55 + Math.random()) ));
-				ls.setScore(score); 
-				
-				
-				ls.setCreateTime(currentDate);
-				ls.setCity(e.getCity());  
-				landedScoreMapper.insertSelective(ls);
-				System.out.println("Task2048LandedPropertyUpdate -> TLandedScore insert already! ");
+			if(currentDate != null){
+				flag = 1 ;  
+				for(TLandedProperty e : list){
+					TLandedScore ls = new TLandedScore();
+					ls.setUuid(UUID.randomUUID().toString().replace("-", ""));
+					ls.setCode(e.getCode());
+					
+					DecimalFormat df = new DecimalFormat("#.00");
+					Random rand = new Random();  
+			        Double score = Double.valueOf(df.format (Double.valueOf( rand.nextInt(50)+55 + Math.random()) ));
+					ls.setScore(score); 
+					
+					ls.setCreateTime(currentDate);
+					ls.setCity(e.getCity());  
+					landedScoreMapper.insertSelective(ls);
+					System.out.println("Task2048LandedPropertyUpdate -> 强制插入t_landed_score表! ");
+				}
+			}else{
+				flag = this.getLrMapper().batchUpdateScore(this.getList());
+				for(TLandedProperty e : list){
+					TLandedScore ls = new TLandedScore();
+					ls.setUuid(UUID.randomUUID().toString().replace("-", ""));
+					ls.setCode(e.getCode());
+					ls.setScore(e.getScore()); 
+					ls.setCreateTime(new Date());
+					ls.setCity(e.getCity());  
+					landedScoreMapper.insertSelective(ls);
+					System.out.println("Task2048LandedPropertyUpdate -> TLandedScore insert already! ");
+				}
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace(); 
 		}
