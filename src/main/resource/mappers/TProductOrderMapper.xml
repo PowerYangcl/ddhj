@@ -154,6 +154,7 @@
 					and o.order_status = #{orderStatus , jdbcType=VARCHAR} 
 				</if>
 			group by o.code 
+			order by o.create_time desc 
 			limit  #{pageIndex,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
 	</select>
 	
