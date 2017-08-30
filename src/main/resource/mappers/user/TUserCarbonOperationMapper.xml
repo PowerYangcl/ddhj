@@ -167,13 +167,11 @@
 				GROUP BY
 				DATE_FORMAT(create_time,
 				'%Y-%m-%d')
-				having SUM(carbon_sum)>0
 				ORDER BY create_time DESC
 			</when>
 			<otherwise>
 				GROUP BY
 				DATE_FORMAT(create_time, '%Y-%m-%d')
-				having SUM(carbon_sum)>0
 				ORDER BY
 				create_time DESC
 				limit
