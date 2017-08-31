@@ -202,6 +202,7 @@
 		AS u
 		<where>
 			o.buyer_code = u.user_code
+			AND o.address_code = u.`code`
 			<if test="code != null and code != ''">
 				AND o.`code` = #{code,jdbcType=VARCHAR}
 			</if>
@@ -242,6 +243,7 @@
 		AS u
 		<where>
 			o.buyer_code = u.user_code
+			AND o.address_code = u.`code`
 			AND o.`code` = #{code,jdbcType=VARCHAR}
 		</where>
 	</select>

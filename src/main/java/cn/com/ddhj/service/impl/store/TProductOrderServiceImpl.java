@@ -631,6 +631,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 				result.setResultMessage("查询订单信息为空");
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			result.setResultCode(Constant.RESULT_ERROR);
 			result.setResultMessage("查询订单信息报错");
 		}
