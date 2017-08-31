@@ -126,16 +126,12 @@
 	<select id="findUserStepData" resultMap="BaseResultMap"
 		parameterType="cn.com.ddhj.dto.user.TUserStepDto">
 		select
-		step,
-		DATE_FORMAT(
-		create_date,
-		'%Y-%m-%d'
-		) AS
-		create_date
+		sum(step) AS step,
+		DATE_FORMAT(create_date,'%Y-%m-%d') AS create_date
 		from
 		t_user_step
 		<where>
-			create_date
+			STR_TO_DATE(create_date,'%Y-%m-%d') 
 			BETWEEN
 			STR_TO_DATE(#{startDate,jdbcType=VARCHAR},'%Y-%m-%d')
 			AND
@@ -149,6 +145,7 @@
 				</otherwise>
 			</choose>
 		</where>
+		group by create_date order by create_date desc
 	</select>
 	<select id="findUserStepOne" resultMap="BaseResultMap" parameterType="cn.com.ddhj.dto.user.TUserStepDto">
 		select
