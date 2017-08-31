@@ -157,7 +157,7 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 				JSONArray pics = new JSONArray();
 				for (TProductPic pic : list) {
 					String url = pic.getPicUrl();
-					String img = "<img src='" + basePath + pic.getPicUrl() + "' class='file-preview-image'>";
+					String img = "<img src='" + pic.getPicUrl() + "' class='file-preview-image'>";
 					imgs.add(img);
 					JSONObject obj = new JSONObject();
 					obj.put("caption", url);
