@@ -17,6 +17,7 @@ public class ProductOrderListResult {
 	private String productPrices;
 	private String productCode;
 	private String buyNums;
+	private String createTime;
 	
 	public String getBuyNums() {
 		return buyNums;
@@ -72,4 +73,11 @@ public class ProductOrderListResult {
 	public void setMpurl(String mpurl) {
 		this.mpurl = mpurl;
 	}
+	public String getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+	
 }

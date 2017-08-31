@@ -141,6 +141,7 @@
 	<select id="findProductOrderList" parameterType="cn.com.ddhj.dto.ProductOrderDto" resultMap="ProductOrderListResultMap">
 		 select 
 				o.code as orderCode,
+				o.create_time as createTime,
 				o.order_status as orderStatus,
 				o.pay_money as payMoney,
 				o.buyer_phone as mobile, 
@@ -153,7 +154,6 @@
 				<if test="orderStatus != null and orderStatus !=''">
 					and o.order_status = #{orderStatus , jdbcType=VARCHAR} 
 				</if>
-			group by o.code 
 			order by o.create_time desc 
 			limit  #{pageIndex,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
 	</select>

@@ -203,6 +203,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		boolean exchanged = false;
 		for(JSONObject userStepFilter : userStepFilterList) {
 			String type = userStepFilter.get("type").toString();
+			String createDate = userStepFilter.get("createDate").toString();
 			if(type.equals("new")) {
 				//新增步数
 				Integer newStep = Integer.parseInt(userStepFilter.get("newStep").toString());
@@ -225,11 +226,10 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						entity.setOperationType("DC170208100002");
 						entity.setOperationTypeChild("DC170208100004");
 						entity.setCreateUser(user.getUserCode());
-						entity.setCreateTime(DateUtil.getSysDateTime());
+						entity.setCreateTime(createDate + " 00:00:00");
 						entity.setCarbonSum(nsb);
 						carbonOperationMapper.insertSelective(entity);
 						
-						String createDate = userStepFilter.get("createDate").toString();
 						TUserStep step1 = new TUserStep();
 						step1.setIsSync(1);
 						step1.setUpdateTime(DateUtil.getSysDateTime());
@@ -286,17 +286,16 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 						entity.setOperationType("DC170208100002");
 						entity.setOperationTypeChild("DC170208100004");
 						entity.setCreateUser(user.getUserCode());
-						entity.setCreateTime(DateUtil.getSysDateTime());
+						entity.setCreateTime(createDate + " 00:00:00");
 						entity.setCarbonSum(ssb);
 						carbonOperationMapper.insertSelective(entity);
 						
-						String createDate = userStepFilter.get("createDate").toString();
 						TUserStep step1 = new TUserStep();
 						step1.setIsSync(1);
 						step1.setUpdateTime(DateUtil.getSysDateTime());
 						step1.setEquipmentCode(equipmentCode);
 						step1.setUserCode(user.getUserCode());
-						step1.setCreateDate(createDate);
+						step1.setCreateDate(createDate + " 00:00:00");
 						mapper.updateByEquipCodeAndUserCodeAndCreateDate(step1);
 					}
 				}

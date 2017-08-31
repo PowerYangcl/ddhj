@@ -2,6 +2,7 @@ package cn.com.ddhj.service.impl.store;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -411,8 +412,9 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			re.put("resultMessage", "用户订单列表为空");
 			return re;
 		}
+		
 		//		ordercode         pcode  byNums
-		Map<String , Map<String , String>> map = new TreeMap<>();
+		Map<String , Map<String , String>> map = new TreeMap<String , Map<String , String>>();
 		for (ProductOrderListResult r : list){
 			if(map.containsKey(r.getOrderCode())){
 				map.get(r.getOrderCode() +"@" + r.getPayMoney() + "@" + r.getOrderStatus()).put(r.getProductCode(), r.getBuyNums());
@@ -423,6 +425,9 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			}
 		}
 		
+		//将树倒序
+		TreeMap<String , Map<String , String>> treeMap = (TreeMap<String , Map<String , String>>) map;
+		map = treeMap.descendingMap();
 
 		List<ProductOrderApiResult> olist = new ArrayList<>();
 		for(Map.Entry<String , Map<String , String>> r : map.entrySet()){
