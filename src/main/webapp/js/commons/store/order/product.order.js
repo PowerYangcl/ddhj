@@ -66,7 +66,7 @@ var ProductOrder={
 	search:function(){
 		var type_ = 'post';
 		var url_ = 'data.htm';
-		var data_ = {"buyPhone":$("#buyPhone").val(),"nickName":$("#nickName").val(),"code":$("#code").val(),"orderStatus":$("#orderStatus").val(),"pageIndex":0,"pageSize":10};
+		var data_ = {"buyerPhone":$("#buyerPhone").val(),"nickName":$("#nickName").val(),"code":$("#code").val(),"orderStatus":$("#orderStatus").val(),"pageIndex":0,"pageSize":10};
 		var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
 		aForm.launch(url_, 'table-form', obj).init().drawForm(ProductOrder.loadTable);
 	},

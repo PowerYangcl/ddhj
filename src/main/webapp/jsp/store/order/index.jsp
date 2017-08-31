@@ -22,7 +22,7 @@
 					<div class="contenttitle2">
 						<p style="margin: 2px">
                             <label>收货人手机号：</label>
-                            <span class="field"><input id="buyPhone" type="text" name="buyPhone"  class="form-search"/></span>
+                            <span class="field"><input id="buyerPhone" type="text" name="buyerPhone"  class="form-search"/></span>
 						</p>
 						<p style="margin: 2px">
                             <label>收货人姓名：</label>
@@ -88,7 +88,7 @@
 			</div>
 		</div>
 	</div>
-	<div id="editOrderStatus" class="bodywrapper" style="margin-top: 39px;">
+	<div id="editOrderStatus" class="bodywrapper" style="margin-top: 39px;display: none;">
 		<input type="hidden" name="orderCode" id="orderCode" value=""/>
 		<div>
 			<span style="font-size:14px;">订单状态</span>

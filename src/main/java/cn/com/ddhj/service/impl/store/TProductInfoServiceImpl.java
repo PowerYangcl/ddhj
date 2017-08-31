@@ -1,6 +1,5 @@
 package cn.com.ddhj.service.impl.store;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -148,7 +147,7 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 					obj.put("key", pic.getId());
 					array.add(obj);
 					JSONObject picObj = new JSONObject();
-					picObj.put("path", url.substring(0, url.lastIndexOf("/")));
+					picObj.put("path", url.substring(0, url.lastIndexOf("/")+1));
 					picObj.put("name", url.substring(url.lastIndexOf("/") + 1, url.length()));
 					pics.add(picObj);
 				}
