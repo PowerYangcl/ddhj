@@ -59,6 +59,9 @@
 		from t_landed_property
 		where `code` = #{code,jdbcType=INTEGER}
 	</select>
+	<select id="getAllCity" resultType="java.lang.String">
+		select distinct city from t_landed_property
+	</select>	
 	<delete id="deleteByCode" parameterType="java.lang.String">
 		delete from
 		t_landed_property

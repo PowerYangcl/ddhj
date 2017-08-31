@@ -85,7 +85,28 @@ public interface IEstateEnvironmentService {
 	 */
 	public JSONObject perpetualCalendar(ServletContext application);
 
-
+	/**
+	 * 生成楼盘排行时用来查询某一个时间范围内某个城市的楼盘得分数据--定时专用
+	 * @param city
+	 * @param type
+	 * @param date
+	 * @param year
+	 * @param pageIndex
+	 * @param pageSize
+	 * @return
+	 */
+	public JSONObject landedScoreAverageForJob(String city, String type, String date, String year , Integer pageIndex ,  Integer pageSize);
+	
+	/**
+	 * 接口使用,根据前端传入的查询条件查询年,季,月楼盘排行静态数据
+	 * @param city
+	 * @param type
+	 * @param date
+	 * @param year
+	 * @param pageIndex
+	 * @param pageSize
+	 * @return
+	 */
 	public JSONObject landedScoreAverage(String city, String type, String date, String year , Integer pageIndex ,  Integer pageSize);
 	
 	/**

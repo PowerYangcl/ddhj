@@ -26,6 +26,29 @@
 		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
 		<result column="code" property="code" jdbcType="VARCHAR" /> 
 	</resultMap>
+	
+	<select id="findLandedScoreAverage" resultMap="LandedScoreResultMap" parameterType="cn.com.ddhj.dto.LandedScoreAverageDto">
+		select  
+				sum(ls.score)/count(*) as scoreavg ,
+				ls.`code`  ,
+				lp.title,
+				lp.addressFull,
+				lp.total,
+				lp.propertyCompany,
+				lp.propertyType,
+				lp.bus,
+				lp.lat,
+				lp.lng,
+				lp.images,
+				lp.overview
+		from 
+				t_landed_score  ls left join t_landed_property lp on lp.code = ls.code
+		where 
+				 ls.city = #{city, jdbcType=VARCHAR}
+		and  ls.create_time between #{startTime , jdbcType=VARCHAR}  and #{endTime , jdbcType=VARCHAR}
+		group by ls.`code` 
+		order by scoreavg desc 
+	</select>	
 	<select id="findLandedScoreAverageYear" resultMap="LandedScoreResultMap" parameterType="cn.com.ddhj.dto.LandedScoreAverageDto">
 		select  
 				sum(lp.score_avg)/count(*) as scoreavg ,

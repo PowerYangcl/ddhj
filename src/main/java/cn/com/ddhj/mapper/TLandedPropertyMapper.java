@@ -97,4 +97,10 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, TLand
 	 * @return
 	 */
 	Integer findScoreLessThanLpCount(TLandedPropertyDto dto);
+	
+	/**
+	 * 查询系统楼盘所属城市列表,不重复
+	 * @return
+	 */
+	List<String> getAllCity();
 }

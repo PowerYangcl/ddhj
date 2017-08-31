@@ -1005,7 +1005,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		return result;
 	}
 	
-	
 	/**
 	 * @description: 楼盘分数平局值统计
 	 * @test: http://api.sys.ecomapit.com/ddhj/api.htm?apiTarget=2052&api_key=appfamilyhas&apiInput={"city":"北京","type":"year","date":"2017","pageIndex":0,"pageSize":10}
@@ -1018,38 +1017,85 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	 * @date 2017年3月17日 下午6:33:48 
 	 * @version 1.0.0.1
 	 */
+	public JSONObject landedScoreAverageForJob(String city, String type, String date_ , String year , Integer pageIndex ,  Integer pageSize) {
+		JSONObject result = new JSONObject();
+		result.put("resultCode", 1);
+		try {
+			String startTime = "";
+			String endTime = "";
+			if(type.equals("year")){ 
+				startTime = date_ + "-01-01 00:00:00" ;
+				endTime = date_ + "-12-31 23:59:59" ; 
+			}else if(type.equals("quarter")){
+				if(date_.equals("1")){ 
+					startTime = year +"-01-01 00:00:00";   
+					endTime = year +"-03-31 23:59:59"; 
+				}else if(date_.equals("2")){
+					startTime = year +"-04-01 00:00:00";   
+					endTime = year +"-06-30 23:59:59";  
+				}else if(date_.equals("3")){
+					startTime = year +"-07-01 00:00:00";   
+					endTime = year +"-09-30 23:59:59";  
+				}else {
+					startTime = year +"-10-01 00:00:00";     
+					endTime = year +"-12-31 23:59:59";  
+				}
+			}else{  // month  
+				startTime = date_ + "-01 00:00:00";   
+				endTime = this.dateCount(startTime, 1); 
+			}
+			
+			LandedScoreAverageDto dto = new LandedScoreAverageDto(); 	// 保存数据库查询条件
+			dto.setCity(city);
+			dto.setPageIndex(pageIndex);
+			dto.setPageSize(pageSize);
+			dto.setStartTime(startTime);
+			dto.setEndTime(endTime);
+
+			PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
+			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(dto);
+			
+			if(list != null && list.size() != 0) {
+				result.put("data", list);
+			}else {
+				result.put("resultCode", Constant.RESULT_NULL);
+				result.put("resultMessage", "数据为空");
+			}
+			PageInfo<LandedScoreResult> page = new PageInfo<LandedScoreResult>(list);
+			result.put("data", page);
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+			result.put("resultCode", -1);  // 系统异常
+			result.put("resultMessage", e.getLocalizedMessage());
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * @description 根据接口查询条件找出楼盘分数平均值(从年季月三张表中查询静态数据,接口专用)
+	 * @author zht 
+	 */
 	public JSONObject landedScoreAverage(String city, String type, String date_ , String year , Integer pageIndex ,  Integer pageSize) {
 		JSONObject result = new JSONObject();
 		result.put("resultCode", 1);
-//		try {
 			String startTime = "";
 			String endTime = "";
 			String querydate = "";
 			if(type.equals("year")){ 
-//				startTime = date_ + "-01-01 00:00:00" ;  // this.getFormatDate(date_ , ""); 
-//				endTime = date_ + "-12-31 23:59:59" ; 
 				querydate = date_;
 			}else if(type.equals("quarter")){
 				if(date_.equals("1")){ 
-//					startTime = year +"-01-01 00:00:00";   
-//					endTime = year +"-03-31 23:59:59"; 
 					querydate = year + "Q1";
 				}else if(date_.equals("2")){
-//					startTime = year +"-04-01 00:00:00";   
-//					endTime = year +"-06-30 23:59:59";  
 					querydate = year + "Q2";
 				}else if(date_.equals("3")){
-//					startTime = year +"-07-01 00:00:00";   
-//					endTime = year +"-09-30 23:59:59";  
 					querydate = year + "Q3";
 				}else {
-//					startTime = year +"-10-01 00:00:00";     
-//					endTime = year +"-12-31 23:59:59";  
 					querydate = year + "Q4";
 				}
 			}else{  // month  
-//				startTime = date_ + "-01 00:00:00";   
-//				endTime = this.dateCount(startTime, 1); 
 				querydate = date_;
 			}
 			
@@ -1057,8 +1103,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			dto.setCity(city);
 			dto.setPageIndex(pageIndex);
 			dto.setPageSize(pageSize);
-//			dto.setStartTime(startTime);
-//			dto.setEndTime(endTime);
 			dto.setQuerydate(querydate);
 
 			PageHelper.startPage(dto.getPageIndex(), dto.getPageSize());
@@ -1082,38 +1126,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			}
 			PageInfo<LandedScoreResult> page = new PageInfo<LandedScoreResult>(list);
 			result.put("data", page);
-//			return result;
-//			List<TUserAddress> list = mapper.findEntityAll(dto);
-//			if (list != null && list.size() > 0) {
-//				result.setResultCode(Constant.RESULT_SUCCESS);
-//			} else {
-//				list = new ArrayList<TUserAddress>();
-//				result.setResultCode(Constant.RESULT_NULL);
-//				result.setResultMessage("查询用户收货地址列表为空");
-//			}
-//			PageInfo<TUserAddress> page = new PageInfo<TUserAddress>(list);
-//			result.setPage(page);
-//			return result;
-			
-			
-//			dto.setPageIndex(pageIndex);
-//			dto.setPageSize(pageSize);
-//			List<LandedScoreResult> list = landedScoreMapper.findLandedScoreAverage(dto);
-//			if(list != null && list.size() != 0){
-//				result.put("data", list);
-//			}else {
-//				result.put("resultCode", Constant.RESULT_NULL);
-//				result.put("resultMessage", "数据为空");
-//			}
-//			else{
-//				result.put("resultCode", 1);  // 无数据 
-//			}
-			
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//			result.put("resultCode", -1);  // 系统异常
-//			result.put("resultMessage", e.getLocalizedMessage());
-//		}
 		return result;
 	}
 
@@ -1317,61 +1329,20 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 
 	@Override
 	public void jobForStatLandScore() {
-		String city = "北京";
-		String type = "year"; // year：按年份平均|quarter：按季度平均|month：按月份平均
-		String date = "2017"; // 2016 1|2|3|4 2016-01
-		String year = "";
-		Integer pageIndex = 1;
-		Integer pageSize = 100000;
-		JSONObject result_ = landedScoreAverage(city, type, date, year, pageIndex, pageSize);
-		PageInfo<LandedScoreResult> page = (PageInfo<LandedScoreResult>) result_.get("data");
-		if(page.getList() != null && !page.getList().isEmpty()) {
-			for(LandedScoreResult result : page.getList()) {
-				TLandedScoreJob job = new TLandedScoreJob();
-				BeanUtils.copyProperties(result, job);
-				job.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
-				job.setCreateTime(DateUtil.getSysDateTime());
-				job.setCreateUser("sysjob");
-				job.setUpdateTime(DateUtil.getSysDateTime());
-				job.setUpdateUser("sysjob");
-				job.setCity("北京");
-				job.setQuerydate("2017");
-				landedScoreJobMapper.insertSelectiveYear(job);
-			}
+		List<String> citys = lrMapper.getAllCity();
+		if(citys == null || citys.isEmpty()) {
+			return ;
 		}
 		
-		city = "天津";
-		type = "year"; // year：按年份平均|quarter：按季度平均|month：按月份平均
-		date = "2017"; // 2016 1|2|3|4 2016-01
-		year = "";
-		pageIndex = 1;
-		pageSize = 100000;
-		result_ = landedScoreAverage(city, type, date, year, pageIndex, pageSize);
-		page = (PageInfo<LandedScoreResult>) result_.get("data");
-		if(page.getList() != null && !page.getList().isEmpty()) {
-			for(LandedScoreResult result : page.getList()) {
-				TLandedScoreJob job = new TLandedScoreJob();
-				BeanUtils.copyProperties(result, job);
-				job.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
-				job.setCreateTime(DateUtil.getSysDateTime());
-				job.setCreateUser("sysjob");
-				job.setUpdateTime(DateUtil.getSysDateTime());
-				job.setUpdateUser("sysjob");
-				job.setCity("天津");
-				job.setQuerydate("2017");
-				landedScoreJobMapper.insertSelectiveYear(job);
-			}
-		}
-		
-		city = "北京";
-		type = "quarter"; // year：按年份平均|quarter：按季度平均|month：按月份平均
-		year = "2017";
-		pageIndex = 1;
-		pageSize = 100000;
-		for(int i = 1; i <= 4; i++) {
-			date = String.valueOf(i); // 2016 1|2|3|4 2016-01
-			result_ = landedScoreAverage(city, type, date, year, pageIndex, pageSize);
-			page = (PageInfo<LandedScoreResult>) result_.get("data");
+		for(String city : citys) {
+			//年排行
+			String type = "year"; // year：按年份平均|quarter：按季度平均|month：按月份平均
+			String date = "2017"; // 2016 1|2|3|4 2016-01
+			String year = "";
+			Integer pageIndex = 1;
+			Integer pageSize = 1000000;
+			JSONObject result_ = landedScoreAverageForJob(city, type, date, year, pageIndex, pageSize);
+			PageInfo<LandedScoreResult> page = (PageInfo<LandedScoreResult>) result_.get("data");
 			if(page.getList() != null && !page.getList().isEmpty()) {
 				for(LandedScoreResult result : page.getList()) {
 					TLandedScoreJob job = new TLandedScoreJob();
@@ -1381,85 +1352,59 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 					job.setCreateUser("sysjob");
 					job.setUpdateTime(DateUtil.getSysDateTime());
 					job.setUpdateUser("sysjob");
-					job.setCity("北京");
-					job.setQuerydate("2017Q" + String.valueOf(i));
-					landedScoreJobMapper.insertSelectiveQuarter(job);
+					job.setCity(city);
+					job.setQuerydate("2017");
+					landedScoreJobMapper.insertSelectiveYear(job);
 				}
 			}
-		}
-		
-		city = "天津";
-		type = "quarter"; // year：按年份平均|quarter：按季度平均|month：按月份平均
-		year = "2017";
-		pageIndex = 1;
-		pageSize = 100000;
-		for(int i = 1; i <= 4; i++) {
-			date = String.valueOf(i); // 2016 1|2|3|4 2016-01
-			result_ = landedScoreAverage(city, type, date, year, pageIndex, pageSize);
-			page = (PageInfo<LandedScoreResult>) result_.get("data");
-			if(page.getList() != null && !page.getList().isEmpty()) {
-				for(LandedScoreResult result : page.getList()) {
-					TLandedScoreJob job = new TLandedScoreJob();
-					BeanUtils.copyProperties(result, job);
-					job.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
-					job.setCreateTime(DateUtil.getSysDateTime());
-					job.setCreateUser("sysjob");
-					job.setUpdateTime(DateUtil.getSysDateTime());
-					job.setUpdateUser("sysjob");
-					job.setCity("天津");
-					job.setQuerydate("2017Q" + String.valueOf(i));
-					landedScoreJobMapper.insertSelectiveQuarter(job);
+			
+			//季排行
+			type = "quarter"; // year：按年份平均|quarter：按季度平均|month：按月份平均
+			year = "2017";
+//			pageIndex = 1;
+//			pageSize = 100000;
+			for(int i = 1; i <= 4; i++) {
+				date = String.valueOf(i); // 2016 1|2|3|4 2016-01
+				result_ = landedScoreAverageForJob(city, type, date, year, pageIndex, pageSize);
+				page = (PageInfo<LandedScoreResult>) result_.get("data");
+				if(page.getList() != null && !page.getList().isEmpty()) {
+					for(LandedScoreResult result : page.getList()) {
+						TLandedScoreJob job = new TLandedScoreJob();
+						BeanUtils.copyProperties(result, job);
+						job.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
+						job.setCreateTime(DateUtil.getSysDateTime());
+						job.setCreateUser("sysjob");
+						job.setUpdateTime(DateUtil.getSysDateTime());
+						job.setUpdateUser("sysjob");
+						job.setCity(city);
+						job.setQuerydate("2017Q" + String.valueOf(i));
+						landedScoreJobMapper.insertSelectiveQuarter(job);
+					}
 				}
 			}
-		}
-		
-		city = "北京";
-		type = "month"; // year：按年份平均|quarter：按季度平均|month：按月份平均
-		year = "2017";
-		pageIndex = 1;
-		pageSize = 100000;
-		for(int i = 1; i <= 12; i++) {
-			date = year + (i<10?"-0":"-") + String.valueOf(i); // 2016 1|2|3|4 2016-01
-			result_ = landedScoreAverage(city, type, date, year, pageIndex, pageSize);
-			page = (PageInfo<LandedScoreResult>) result_.get("data");
-			if(page.getList() != null && !page.getList().isEmpty()) {
-				for(LandedScoreResult result : page.getList()) {
-					TLandedScoreJob job = new TLandedScoreJob();
-					BeanUtils.copyProperties(result, job);
-					job.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
-					job.setCreateTime(DateUtil.getSysDateTime());
-					job.setCreateUser("sysjob");
-					job.setUpdateTime(DateUtil.getSysDateTime());
-					job.setUpdateUser("sysjob");
-					job.setCity("北京");
-					job.setQuerydate(date);
-					landedScoreJobMapper.insertSelectiveMonth(job);
-				}
-			}
-		}
-		
-		
-		city = "天津";
-		type = "month"; // year：按年份平均|quarter：按季度平均|month：按月份平均
-		year = "2017";
-		pageIndex = 1;
-		pageSize = 100000;
-		for(int i = 1; i <= 12; i++) {
-			date = year + (i<10?"-0":"-") + String.valueOf(i); // 2016 1|2|3|4 2016-01
-			result_ = landedScoreAverage(city, type, date, year, pageIndex, pageSize);
-			page = (PageInfo<LandedScoreResult>) result_.get("data");
-			if(page.getList() != null && !page.getList().isEmpty()) {
-				for(LandedScoreResult result : page.getList()) {
-					TLandedScoreJob job = new TLandedScoreJob();
-					BeanUtils.copyProperties(result, job);
-					job.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
-					job.setCreateTime(DateUtil.getSysDateTime());
-					job.setCreateUser("sysjob");
-					job.setUpdateTime(DateUtil.getSysDateTime());
-					job.setUpdateUser("sysjob");
-					job.setCity("天津");
-					job.setQuerydate(date);
-					landedScoreJobMapper.insertSelectiveMonth(job);
+			
+			//月排行
+			type = "month"; // year：按年份平均|quarter：按季度平均|month：按月份平均
+			year = "2017";
+			pageIndex = 1;
+			pageSize = 100000;
+			for(int i = 1; i <= 12; i++) {
+				date = year + (i<10?"-0":"-") + String.valueOf(i); // 2016 1|2|3|4 2016-01
+				result_ = landedScoreAverageForJob(city, type, date, year, pageIndex, pageSize);
+				page = (PageInfo<LandedScoreResult>) result_.get("data");
+				if(page.getList() != null && !page.getList().isEmpty()) {
+					for(LandedScoreResult result : page.getList()) {
+						TLandedScoreJob job = new TLandedScoreJob();
+						BeanUtils.copyProperties(result, job);
+						job.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
+						job.setCreateTime(DateUtil.getSysDateTime());
+						job.setCreateUser("sysjob");
+						job.setUpdateTime(DateUtil.getSysDateTime());
+						job.setUpdateUser("sysjob");
+						job.setCity(city);
+						job.setQuerydate(date);
+						landedScoreJobMapper.insertSelectiveMonth(job);
+					}
 				}
 			}
 		}
