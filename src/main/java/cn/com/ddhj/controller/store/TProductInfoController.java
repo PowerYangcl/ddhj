@@ -107,9 +107,8 @@ public class TProductInfoController {
 
 	@RequestMapping("upload")
 	@ResponseBody
-	public JSONArray upload(@RequestParam("uploadFile[]") MultipartFile[] uploadFile, HttpServletRequest request,
-			HttpServletResponse response) {
-		return service.uploadFile(uploadFile, request, response);
+	public JSONArray upload(HttpServletRequest request, HttpServletResponse response) {
+		return service.uploadFile(request, response);
 	}
 
 	@RequestMapping("delfile")

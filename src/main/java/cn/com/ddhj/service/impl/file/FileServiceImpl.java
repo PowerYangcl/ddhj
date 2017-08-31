@@ -2,6 +2,9 @@ package cn.com.ddhj.service.impl.file;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +17,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
+
+import com.alibaba.fastjson.JSON;
 
 import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.helper.PropHelper;
@@ -31,6 +36,26 @@ public class FileServiceImpl extends BaseClass implements IFileService {
 		String path = PropHelper.getValue("user_header_path") + time + "/";
 		String visitPath = PropHelper.getValue("user_header_visit_path") + time + "/";
 		return upload(request, path, visitPath);
+	}
+
+	@Override
+	public List<FileResult> uploadProductImg(HttpServletRequest request) {
+		List<FileResult> list = new ArrayList<FileResult>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		String date = sdf.format(new Date());
+		String path = PropHelper.getValue("product_path") + date + "/";
+		String visitPath = "product/images/" + date + "/";
+		List<FileItem> fileItems = getFileFromRequest(request);
+		if (fileItems != null && fileItems.size() != 0) {
+			for (int i = 0; i < fileItems.size(); i++) {
+				FileItem item = fileItems.get(0);
+				FileResult result = saveFile(item.getName(), item.get(), path, visitPath);
+				result.setUrl("product/images/" + date + "/");
+				result.setName(result.getTitle() + "." + result.getType());
+				list.add(result);
+			}
+		}
+		return list;
 	}
 
 	private FileResult upload(HttpServletRequest request, String path, String visitPath) {

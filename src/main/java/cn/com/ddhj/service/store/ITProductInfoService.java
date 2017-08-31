@@ -37,7 +37,7 @@ public interface ITProductInfoService extends IBaseService<TProductInfo, TProduc
 	 * @param response
 	 * @return
 	 */
-	JSONArray uploadFile(MultipartFile[] updateFiles, HttpServletRequest request, HttpServletResponse response);
+	JSONArray uploadFile(HttpServletRequest request, HttpServletResponse response);
 
 	/**
 	 * 删除已上传的文件
