@@ -12,4 +12,6 @@ public interface TProductPicMapper extends BaseMapper<TProductPic, BaseDto> {
 	int batchInsert(List<TProductPic> list);
 
 	int deleteByProductCode(String productCode);
+	
+	int deleteByUuid(String uuid);
 }

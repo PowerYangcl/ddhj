@@ -111,7 +111,7 @@ public class TProductInfoController {
 
 	@RequestMapping("delfile")
 	@ResponseBody
-	public BaseResult delFile(String file, HttpServletRequest request, HttpServletResponse response) {
-		return service.delFile(file, request, response);
+	public BaseResult delFile(String uuid, HttpServletRequest request, HttpServletResponse response) {
+		return service.delFile(uuid, request, response);
 	}
 }

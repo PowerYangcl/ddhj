@@ -27,6 +27,11 @@
 		t_product_pic
 		where product_code = #{productCode,jdbcType=VARCHAR}
 	</delete>
+	<delete id="deleteByUuid" parameterType="java.lang.String">
+		delete from
+		t_product_pic
+		where uuid = #{uuid,jdbcType=VARCHAR}
+	</delete>
 	<insert id="insertSelective" parameterType="cn.com.ddhj.model.TProductPic">
 		insert into t_product_pic
 		<trim prefix="(" suffix=")" suffixOverrides=",">

@@ -144,7 +144,7 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 					JSONObject obj = new JSONObject();
 					obj.put("caption", url);
 					obj.put("width", "120px");
-					obj.put("url", "delfile.htm");
+					obj.put("url", "delfile.htm?uuid=" + pic.getUuid());
 					obj.put("key", pic.getId());
 					array.add(obj);
 					JSONObject picObj = new JSONObject();
@@ -302,25 +302,12 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 	}
 
 	@Override
-	public BaseResult delFile(String file, HttpServletRequest request, HttpServletResponse response) {
+	public BaseResult delFile(String uuid, HttpServletRequest request, HttpServletResponse response) {
 		BaseResult result = new BaseResult();
 		try {
-			// 将file转换为json对象，读取文件目录及文件名称
-			JSONArray array = JSONArray.parseArray(file);
-			if (array != null && array.size() > 0) {
-				for (int i = 0; i < array.size(); i++) {
-					JSONObject obj = array.getJSONObject(i);
-					if (obj != null) {
-						// 文件目录
-						String path = obj.getString("path");
-						// 文件名称
-						String name = obj.getString("name");
-						path = request.getSession().getServletContext().getRealPath(path);
-						File f = new File(path + name);
-						f.deleteOnExit();
-					}
-				}
-				result.setResultCode(1);
+			if (StringUtils.isNotBlank(uuid)) {
+				picMapper.deleteByUuid(uuid);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("删除成功");
 			} else {
 				result.setResultCode(0);
