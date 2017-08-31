@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -387,7 +388,7 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 			return re;
 		}
 		//		ordercode         pcode  byNums
-		Map<String , Map<String , String>> map = new HashMap<>();
+		Map<String , Map<String , String>> map = new TreeMap<>();
 		for (ProductOrderListResult r : list){
 			if(map.containsKey(r.getOrderCode())){
 				map.get(r.getOrderCode() +"@" + r.getPayMoney() + "@" + r.getOrderStatus()).put(r.getProductCode(), r.getBuyNums());

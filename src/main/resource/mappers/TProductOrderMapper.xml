@@ -158,7 +158,7 @@
 			limit  #{pageIndex,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
 	</select>
 	
-	<select id="findProductOrderListdddddddddddddddddd" parameterType="cn.com.ddhj.dto.ProductOrderDto" resultMap="ProductOrderListResultMap">
+	<select id="findProductOrderList" parameterType="cn.com.ddhj.dto.ProductOrderDto" resultMap="ProductOrderListResultMap">
 		 select 
 				o.code as orderCode,
 				o.order_status as orderStatus,
