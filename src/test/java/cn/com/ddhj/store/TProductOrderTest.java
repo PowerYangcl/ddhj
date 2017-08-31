@@ -47,6 +47,7 @@ public class TProductOrderTest extends BaseTest {
 		System.out.println(JSON.toJSON(result));
 	}
 
+	
 	public void findAll() {
 		TProductOrderDto dto = new TProductOrderDto();
 		PageResult result = service.findDataPage(dto);
@@ -55,7 +56,7 @@ public class TProductOrderTest extends BaseTest {
 
 	@Test
 	public void findOrder() {
-		String code = "PD170820100002";
+		String code = "PD170831100015";
 		EntityResult result = service.findOrderByCode(code);
 		System.out.println(JSON.toJSON(result));
 	}

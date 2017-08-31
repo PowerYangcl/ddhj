@@ -25,9 +25,6 @@
 			<result column="provinces" property="provinces" jdbcType="VARCHAR" />
 			<result column="street" property="street" jdbcType="VARCHAR" />
 		</collection>
-		<collection property="user" ofType="cn.com.ddhj.model.user.TUser">
-			<result column="nick_name" property="nickName" jdbcType="VARCHAR" />
-		</collection>
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, uuid, code, pay_money, buyer_code, buyer_phone,
@@ -187,8 +184,8 @@
 		o.`code`,
 		o.pay_money,
 		o.order_status,
-		u.nick_name,
-		o.buyer_phone,
+		u.`name`,
+		u.phone,
 		DATE_FORMAT(
 		o.create_time,
 		'%Y-%m-%d %H:%i:%s'
@@ -201,7 +198,7 @@
 		update_time
 		FROM
 		t_product_order AS o,
-		t_user
+		t_user_address
 		AS u
 		<where>
 			o.buyer_code = u.user_code
@@ -212,10 +209,10 @@
 				AND o.order_status = #{orderStatus,jdbcType=VARCHAR}
 			</if>
 			<if test="nickName!=null and nickName !=''">
-				AND u.nick_name like CONCAT('%',#{nickName},'%')
+				AND u.`name` like CONCAT('%',#{nickName,jdbcType=VARCHAR},'%')
 			</if>
 			<if test="buyerPhone != null and buyerPhone !=''">
-				AND o.buyer_phone = #{buyerPhone,jdbcType=VARCHAR}
+				AND u.phone = #{buyerPhone,jdbcType=VARCHAR}
 			</if>
 		</where>
 		order by o.create_time desc
@@ -227,8 +224,8 @@
 		o.`code`,
 		o.pay_money,
 		o.order_status,
-		u.nick_name,
-		o.buyer_phone,
+		u.`name`,
+		u.phone,
 		DATE_FORMAT(
 		o.create_time,
 		'%Y-%m-%d %H:%i:%s'
@@ -241,7 +238,7 @@
 		update_time
 		FROM
 		t_product_order AS o,
-		t_user
+		t_user_address
 		AS u
 		<where>
 			o.buyer_code = u.user_code

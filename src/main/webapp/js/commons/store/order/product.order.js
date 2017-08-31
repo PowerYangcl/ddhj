@@ -47,8 +47,8 @@ var ProductOrder={
 					html+"-";
 				}
 				html +="</td>";
-				html +="<td>"+obj.user.nickName+"</td>";
-				html +="<td>"+obj.buyerPhone+"</td>";
+				html +="<td>"+obj.address.name+"</td>";
+				html +="<td>"+obj.address.phone+"</td>";
 				html +="<td>"+obj.createTime+"</td>";
 				html +="<td>"+obj.updateTime+"</td>";
 				html +="<td>";

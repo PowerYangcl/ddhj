@@ -39,11 +39,11 @@
 						</tr>
 						<tr>
 							<td>收货人姓名</td>
-							<td>${order.user.nickName }</td>
+							<td>${order.address.name }</td>
 						</tr>
 						<tr>
 							<td>收货人手机号</td>
-							<td>${order.buyerPhone }</td>
+							<td>${order.address.phone }</td>
 						</tr>
 					</tbody>
 				</table>
