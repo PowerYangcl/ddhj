@@ -98,8 +98,6 @@ var Product={
 			}
 			$("#images").val(images.join(","));
 		}
-		alert($("#images").val());
-		return false;
 		jConfirm('您确定要编辑此商品吗?', '提示', function(r) {
 			if(r){
 				var param = $("#editFrm").serializeArray();
