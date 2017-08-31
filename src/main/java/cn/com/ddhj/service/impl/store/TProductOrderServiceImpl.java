@@ -101,16 +101,23 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 					}
 					
 					// 增加碳币消息记录
+					BigDecimal payMoney = new BigDecimal(dto.getPayMoney());
 					TUserCarbonOperation carbonOperation = new TUserCarbonOperation();
 					carbonOperation.setUuid(WebHelper.getInstance().genUuid());
 					carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
 					carbonOperation.setUserCode(user.getUserCode());
-					carbonOperation.setOperationType("DC161012100003");
+					carbonOperation.setOperationType("DC170208100003");
 					carbonOperation.setOperationTypeChild("DC170208100008");
-					carbonOperation.setCarbonSum(new BigDecimal(dto.getPayMoney()).setScale(2, BigDecimal.ROUND_DOWN));
+					carbonOperation.setCarbonSum(payMoney.setScale(2, BigDecimal.ROUND_DOWN));
 					carbonOperation.setCreateUser(user.getUserCode());
 					carbonOperation.setCreateTime(DateUtil.getSysDateTime());
 					userCarbonOperationserivce.insertSelective(carbonOperation);
+
+					// 更新用户碳币
+					user.setCarbonMoney(user.getCarbonMoney().subtract(payMoney).setScale(2, BigDecimal.ROUND_DOWN));
+					user.setUpdateUser(user.getUserCode());
+					user.setUpdateTime(DateUtil.getSysDateTime());
+					userService.updateByCode(user);
 				} else {
 					result.setResultCode(userResult.getResultCode());
 					result.setResultMessage(userResult.getResultMessage());
