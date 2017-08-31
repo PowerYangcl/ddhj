@@ -103,4 +103,7 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, TLand
 	 * @return
 	 */
 	List<String> getAllCity();
+	
+	
+	List<TLandedProperty> selectAllEstateInfoByCity(String city);
 }

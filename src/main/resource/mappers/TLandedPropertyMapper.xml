@@ -437,6 +437,16 @@
 		from
 		t_landed_property
 	</select>
+	
+	<select id="selectAllEstateInfoByCity" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			*
+		from
+			t_landed_property
+		where city =  #{city}
+	</select>
+	
+	
 	<update id="batchUpdateScore" parameterType="java.util.List">
 		<foreach collection="list" item="item" index="index" open=""
 			close="" separator=";">
