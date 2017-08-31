@@ -49,11 +49,13 @@ public class FileServiceImpl extends BaseClass implements IFileService {
 		List<FileItem> fileItems = getFileFromRequest(request);
 		if (fileItems != null && fileItems.size() != 0) {
 			for (int i = 0; i < fileItems.size(); i++) {
-				FileItem item = fileItems.get(0);
-				FileResult result = saveFile(item.getName(), item.get(), path, visitPath);
-				result.setUrl(url + "product/images/" + date + "/");
-				result.setName(result.getTitle() + "." + result.getType());
-				list.add(result);
+				FileItem item = fileItems.get(i);
+				if (StringUtils.isNotBlank(item.getName())) {
+					FileResult result = saveFile(item.getName(), item.get(), path, visitPath);
+					result.setUrl(url + "product/images/" + date + "/");
+					result.setName(result.getTitle() + "." + result.getType());
+					list.add(result);
+				}
 			}
 		}
 		return list;
