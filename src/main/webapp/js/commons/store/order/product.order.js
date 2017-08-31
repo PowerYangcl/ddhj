@@ -53,6 +53,7 @@ var ProductOrder={
 				html +="<td>"+obj.updateTime+"</td>";
 				html +="<td>";
 				html +="<a style=\"padding-right: 5px;\" href=\"detail.htm?code="+obj.code+"\">查看</a>";
+				html +="<a style=\"padding-right: 5px;\" href=\"javascript:openUdateStatus('"+obj.code+"');\">状态修改</a>";
 				html +="</td>";
 				html +="</tr>";
 			}

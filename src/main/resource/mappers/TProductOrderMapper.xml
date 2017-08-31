@@ -114,7 +114,7 @@
 			update_time =
 			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
 		</set>
-		where `code` = #{orderCode,jdbcType=VARCHAR}
+		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
 
 	<!-- 根据订单编码获取订单详情 -->

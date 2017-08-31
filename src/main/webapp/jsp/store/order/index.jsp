@@ -7,6 +7,7 @@
 <title>微信商城-订单管理</title>
 <%@ include file="/inc/head.jsp"%>
 <script type="text/javascript" src="${js}/system/ajax-form.js"></script>
+<script src="${js}/blockUI/jquery.blockUI.js" type="text/javascript"></script>
 
 </head>
 <body class="withvernav">
@@ -87,11 +88,71 @@
 			</div>
 		</div>
 	</div>
+	<div id="editOrderStatus" class="bodywrapper" style="margin-top: 39px;">
+		<input type="hidden" name="orderCode" id="orderCode" value=""/>
+		<div>
+			<span style="font-size:14px;">订单状态</span>
+	       	<select style="margin-left: 22px;padding: 8px 5px;" id="ediStatus" name="ediStatus">
+	       		<option value="">请选择</option>
+	       		<option value="8866002">请下单成功(待付款)</option>
+	       		<option value="8866001">下单成功(已付款)</option>
+	       		<option value="8866003">订单作废</option>
+	       		<option value="8866004">订单已确认</option>
+	       		<option value="866005">订单已取消</option>
+	       	</select>
+		</div>
+       	<div style="margin-top:55px;">
+       		<button type="button" class="stdbtn btn_blue" onclick="updateOrderStatus();">确认</button>
+       		<button style="margin:10px;" type="button" onclick="closeDialog();" class="stdbtn">取消</button>
+       	</div>
+	</div>
 <script type="text/javascript" src="${js}/commons/store/order/product.order.js"></script>
 <script type="text/javascript">
 $(function(){
 	ProductOrder.init();
 });
+function openUdateStatus(code){
+	$("#orderCode").val(code);
+    $.blockUI({
+        showOverlay:true ,
+        css:  {
+            cursor:'auto',
+            left: ($(window).width() - 300) / 2 + 'px',
+            top: ($(window).height() - 300) / 2 + 'px',
+            width:'300px',
+            height:'220px',
+            position:'fixed', //居中
+            border: '3px solid #FB9337'  // 边界
+        },
+        message: $('#editOrderStatus'),
+        fadeIn: 500,//淡入时间
+        fadeOut: 1000  //淡出时间
+    });
+}
+function updateOrderStatus(){
+	if($("#ediStatus").val() == ""){
+		jAlert("请选择要修改的订单状态");
+		return false;
+	}
+	var param = {"code":$("#orderCode").val(),"orderStatus":$("#ediStatus").val()};
+	$.ajax({
+		url : "editOrderStatus.htm",
+		type : "POST",
+		dataType : "json",
+		data : param,
+		success : function(result) {
+			$("#orderCode").val(code);
+			jAlert(result.resultMessage,"提示",function(){
+				closeDialog();
+			});
+		}
+	});
+}
+function closeDialog(){
+	$("#orderCode").val(code);
+    $.unblockUI();
+    ProductOrder.search()
+}
 </script>
 </body>
 </html>
