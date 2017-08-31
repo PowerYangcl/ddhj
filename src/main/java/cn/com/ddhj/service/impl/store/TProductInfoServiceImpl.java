@@ -1,6 +1,7 @@
 package cn.com.ddhj.service.impl.store;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,9 +11,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
@@ -23,14 +30,17 @@ import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.store.TProductInfoDto;
+import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TProductInfoMapper;
 import cn.com.ddhj.mapper.TProductPicMapper;
 import cn.com.ddhj.model.TProductInfo;
 import cn.com.ddhj.model.TProductPic;
 import cn.com.ddhj.result.PageResult;
+import cn.com.ddhj.result.file.FileResult;
 import cn.com.ddhj.result.product.TPageProductListResult;
 import cn.com.ddhj.result.product.TProductInfoResult;
+import cn.com.ddhj.service.file.IFileService;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductInfoService;
 import cn.com.ddhj.util.Constant;
@@ -47,6 +57,8 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 	private TProductInfoMapper mapper;
 	@Autowired
 	private TProductPicMapper picMapper;
+	@Autowired
+	private IFileService fileService;
 
 	@Override
 	public BaseResult insertSelective(TProductInfo entity) {
@@ -68,7 +80,6 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 							pic.setPicUrl(str);
 							pic.setCreateUser(entity.getCreateUser());
 							pic.setCreateTime(time);
-							System.out.println(JSON.toJSON(pic));
 							pics.add(pic);
 						}
 						picMapper.batchInsert(pics);
@@ -146,7 +157,7 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 				JSONArray pics = new JSONArray();
 				for (TProductPic pic : list) {
 					String url = pic.getPicUrl();
-					String img = "<img src='" + basePath + pic.getPicUrl() + "' class='file-preview-image'>";
+					String img = "<img src='" + pic.getPicUrl() + "' class='file-preview-image'>";
 					imgs.add(img);
 					JSONObject obj = new JSONObject();
 					obj.put("caption", url);
@@ -207,33 +218,43 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 
 	/**
 	 * @description: 获取商品详细信息
-	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=product_detail&api_key=appfamilyhas&apiInput={"productCode":"801613242"}
-	 * @返回参数如下：
-		 {
-		    "resultCode": 1,
-		    "resultMessage": "查询成功",
-		    "productName": "测试0", 
-		    "stockNum": 99,
-		    "productCode": "801613242",
-		    "discriptPicList": [
-		        "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/f56c0f2c02fd44dc85428116438e4c8f.jpg",
-		        "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/5c3c40cebeab451cac0548cee4875ada.jpg",
-		        "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/c8085670a5d44aa0b01c6b675881ae9b.jpg",
-		        "http://image-family.huijiayou.cn/cfiles/staticfiles/imzoom/29a16/7612922a79ce4faa92884678e9093e69.jpg",
-		        "http://image-family.huijiayou.cn/cfiles/staticfiles/imzoom/29a16/6ac99b8bb2c945c09b65cc53ca5ecf73.jpg"
-		    ],
-		    "productTip": "",
-		    "mainpicUrl": [
-		        "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/2729e/31c4f7b50a9e4a779dd7b57ccbf0b1aa.jpg"
-		    ], 
-		    "currentPrice": 1000,
-		    "telCS": "010-66668888",
-		    "QQCS": "66828979658" 
-		}
+	 * @测试地址如下：http://localhost:8080/ddhj/api.htm?apiTarget=product_detail&api_key=appfamilyhas&apiInput={"productCode":"801613242"} @返回参数如下：
+	 *                                                                                                                               {
+	 *                                                                                                                               "resultCode":
+	 *                                                                                                                               1,
+	 *                                                                                                                               "resultMessage":
+	 *                                                                                                                               "查询成功",
+	 *                                                                                                                               "productName":
+	 *                                                                                                                               "测试0",
+	 *                                                                                                                               "stockNum":
+	 *                                                                                                                               99,
+	 *                                                                                                                               "productCode":
+	 *                                                                                                                               "801613242",
+	 *                                                                                                                               "discriptPicList":
+	 *                                                                                                                               [
+	 *                                                                                                                               "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/f56c0f2c02fd44dc85428116438e4c8f.jpg",
+	 *                                                                                                                               "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/5c3c40cebeab451cac0548cee4875ada.jpg",
+	 *                                                                                                                               "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/275b1/c8085670a5d44aa0b01c6b675881ae9b.jpg",
+	 *                                                                                                                               "http://image-family.huijiayou.cn/cfiles/staticfiles/imzoom/29a16/7612922a79ce4faa92884678e9093e69.jpg",
+	 *                                                                                                                               "http://image-family.huijiayou.cn/cfiles/staticfiles/imzoom/29a16/6ac99b8bb2c945c09b65cc53ca5ecf73.jpg"
+	 *                                                                                                                               ],
+	 *                                                                                                                               "productTip":
+	 *                                                                                                                               "",
+	 *                                                                                                                               "mainpicUrl":
+	 *                                                                                                                               [
+	 *                                                                                                                               "http://image-family.huijiayou.cn/cfiles/staticfiles/upload/2729e/31c4f7b50a9e4a779dd7b57ccbf0b1aa.jpg"
+	 *                                                                                                                               ],
+	 *                                                                                                                               "currentPrice":
+	 *                                                                                                                               1000,
+	 *                                                                                                                               "telCS":
+	 *                                                                                                                               "010-66668888",
+	 *                                                                                                                               "QQCS":
+	 *                                                                                                                               "66828979658"
+	 *                                                                                                                               }
 	 * 
 	 * @param productCode
-	 * @author Yangcl 
-	 * @date 2017年7月26日 下午3:34:47 
+	 * @author Yangcl
+	 * @date 2017年7月26日 下午3:34:47
 	 * @version 1.0.0.1
 	 */
 	public JSONObject getProductInfo(String productCode) {
@@ -261,11 +282,11 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 		}
 		re.put("currentPrice", e.getCurrentPrice());
 		re.put("stockNum", e.getStockNum());
-		
+
 		List<TProductPic> list = picMapper.selectByProductCode(productCode);
 		if (list != null) {
 			List<String> pics = new ArrayList<>();
-			for(TProductPic p : list){
+			for (TProductPic p : list) {
 				pics.add(p.getPicUrl());
 			}
 			re.put("discriptPicList", pics);
@@ -279,35 +300,17 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 	}
 
 	@Override
-	public JSONArray uploadFile(MultipartFile[] updateFiles, HttpServletRequest request, HttpServletResponse response) {
+	public JSONArray uploadFile(HttpServletRequest request, HttpServletResponse response) {
 		JSONArray array = new JSONArray();
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-			String date = sdf.format(new Date());
-			String path = IMAGE_PATH;
-			// 遍历上传文件数组
-			for (MultipartFile file : updateFiles) {
-				if (!file.isEmpty()) {
-					path = path + "/" + date + "/";
-					File pathFile = new File(path);
-					if (!pathFile.exists()) {
-						pathFile.mkdirs();
-					}
-					// 文件名称
-					String name = file.getOriginalFilename();
-					name = MD5Util.md5Hex(name) + name.substring(name.lastIndexOf("."), name.length());
-					File uploaded = new File(path + name);
-					try {
-						file.transferTo(uploaded);
-						// 文件上传文件成功，将文件信息存储到array中
-						JSONObject fileObj = new JSONObject();
-						fileObj.put("path", "product/images/" + date + "/");
-						fileObj.put("name", name);
-						array.add(fileObj);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
+			List<FileResult> list = fileService.uploadProductImg(request);
+			if (list != null && list.size() > 0) {
+				for (int i = 0; i < list.size(); i++) {
+					FileResult result = list.get(i);
+					JSONObject fileObj = new JSONObject();
+					fileObj.put("path", result.getUrl());
+					fileObj.put("name", result.getName());
+					array.add(fileObj);
 				}
 			}
 		} catch (Exception e) {
@@ -347,5 +350,4 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 		}
 		return result;
 	}
-
 }
