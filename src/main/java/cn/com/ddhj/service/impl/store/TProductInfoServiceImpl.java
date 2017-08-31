@@ -1,28 +1,17 @@
 package cn.com.ddhj.service.impl.store;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -30,7 +19,6 @@ import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.store.TProductInfoDto;
-import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TProductInfoMapper;
 import cn.com.ddhj.mapper.TProductPicMapper;
@@ -45,13 +33,10 @@ import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductInfoService;
 import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
-import cn.com.ddhj.util.MD5Util;
 
 @Service
 public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProductInfoMapper, TProductInfoDto>
 		implements ITProductInfoService {
-	// 商品图片文件存储路径
-	private static final String IMAGE_PATH = "d:/product/images/";
 
 	@Autowired
 	private TProductInfoMapper mapper;
@@ -142,9 +127,6 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 
 	@Override
 	public TProductInfo selectByCode(String code, HttpServletRequest request) {
-		String path = request.getContextPath();
-		String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path
-				+ "/";
 		TProductInfo info = super.selectByCode(code);
 		if (info != null) {
 			/**

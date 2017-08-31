@@ -6,6 +6,7 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.model.TProductOrder;
 import cn.com.ddhj.result.EntityResult;
+import cn.com.ddhj.result.PageResult;
 import cn.com.ddhj.service.IBaseService;
 
 public interface ITProductOrderService extends IBaseService<TProductOrder, TProductOrderDto> {
@@ -58,4 +59,8 @@ public interface ITProductOrderService extends IBaseService<TProductOrder, TProd
 	public JSONObject deleteOrder(JSONObject input);
 	
 	public JSONObject cancelOrder(JSONObject input);
+	
+	PageResult findDataPage(TProductOrderDto dto);
+	
+	EntityResult findOrderDetail(String code);
 }

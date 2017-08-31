@@ -11,7 +11,8 @@
 		<result column="buyer_phone" property="buyerPhone" jdbcType="VARCHAR" />
 		<result column="dispatching" property="dispatching" jdbcType="VARCHAR" />
 		<result column="address_code" property="addressCode" jdbcType="VARCHAR" />
-		<result column="address_detail" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="address_detail" property="addressDetail"
+			jdbcType="VARCHAR" />
 		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
 		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
 		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
@@ -23,6 +24,9 @@
 			<result column="area_code" property="areaCode" jdbcType="VARCHAR" />
 			<result column="provinces" property="provinces" jdbcType="VARCHAR" />
 			<result column="street" property="street" jdbcType="VARCHAR" />
+		</collection>
+		<collection property="user" ofType="cn.com.ddhj.model.user.TUser">
+			<result column="nick_name" property="nickName" jdbcType="VARCHAR" />
 		</collection>
 	</resultMap>
 	<sql id="Base_Column_List">
@@ -86,7 +90,7 @@
 		update t_product_order
 		<set>
 			<if test="orderStatus != null and orderStatus !=''">
-				order_status = #{orderStatus , jdbcType=VARCHAR}, 
+				order_status = #{orderStatus , jdbcType=VARCHAR},
 			</if>
 			<if test="payMoney != null">
 				pay_money = #{payMoney,jdbcType=INTEGER},
@@ -112,62 +116,110 @@
 		</set>
 		where `code` = #{orderCode,jdbcType=VARCHAR}
 	</update>
-	
+
 	<!-- 根据订单编码获取订单详情 -->
-	<select id="findOrderDetailByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+	<select id="findOrderDetailByCode" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
 		SELECT
-			o.`code`,
-			o.order_status,
-			o.pay_money,
-			o.dispatching,
-			o.create_time,
-			ua.`code` AS address_code,
-			o.address_detail,
-			ua.`name`,
-			ua.phone,
-			ua.provinces,
-			ua.street
-			FROM
-			t_product_order AS o,
-			t_user_address AS ua
+		o.`code`,
+		o.order_status,
+		o.pay_money,
+		o.dispatching,
+		o.create_time,
+		ua.`code` AS address_code,
+		o.address_detail,
+		ua.`name`,
+		ua.phone,
+		ua.provinces,
+		ua.street
+		FROM
+		t_product_order AS o,
+		t_user_address AS ua
 		WHERE
-			o.address_code = ua.`code`
+		o.address_code = ua.`code`
 		and
-			o.`code`=#{code,jdbcType=VARCHAR}
+		o.`code`=#{code,jdbcType=VARCHAR}
 	</select>
 
-	<!-- 返回指定用户的订单列表信息 -->	
-	<resultMap id="ProductOrderListResultMap" type="cn.com.ddhj.result.order.ProductOrderListResult"></resultMap>
-	<select id="findProductOrderList" parameterType="cn.com.ddhj.dto.ProductOrderDto" resultMap="ProductOrderListResultMap">
-		 select 
-				o.code as orderCode,
-				o.create_time as createTime,
-				o.order_status as orderStatus,
-				o.pay_money as payMoney,
-				o.buyer_phone as mobile, 
-				d.product_code as productCode,
-				d.buy_num as buyNums 
-			from 
-				t_product_order o left join t_product_order_detail d on o.code = d.order_code 
-			where 
-				o.buyer_code = #{buyerCode , jdbcType=VARCHAR}
-				<if test="orderStatus != null and orderStatus !=''">
-					and o.order_status = #{orderStatus , jdbcType=VARCHAR} 
-				</if>
-			order by o.create_time desc 
-			limit  #{pageIndex,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+	<!-- 返回指定用户的订单列表信息 -->
+	<resultMap id="ProductOrderListResultMap"
+		type="cn.com.ddhj.result.order.ProductOrderListResult"></resultMap>
+	<select id="findProductOrderList" parameterType="cn.com.ddhj.dto.ProductOrderDto"
+		resultMap="ProductOrderListResultMap">
+		select
+		o.code as orderCode,
+		o.create_time as createTime,
+		o.order_status
+		as orderStatus,
+		o.pay_money as payMoney,
+		o.buyer_phone as mobile,
+		d.product_code as productCode,
+		d.buy_num as buyNums
+		from
+		t_product_order
+		o left join t_product_order_detail d on o.code = d.order_code
+		where
+		o.buyer_code = #{buyerCode , jdbcType=VARCHAR}
+		<if test="orderStatus != null and orderStatus !=''">
+			and o.order_status = #{orderStatus , jdbcType=VARCHAR}
+		</if>
+		order by o.create_time desc
+		limit #{pageIndex,jdbcType=INTEGER} ,
+		#{pageSize,jdbcType=INTEGER}
 	</select>
-	
+
 	<update id="updateOrderStatusByCode" parameterType="cn.com.ddhj.model.TProductOrder">
 		update t_product_order
 		<set>
 			<if test="orderStatus != null and orderStatus !=''">
-				order_status = #{orderStatus , jdbcType=VARCHAR}, 
+				order_status = #{orderStatus , jdbcType=VARCHAR},
 			</if>
-			update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),
 		</set>
 		where `code` = #{orderCode,jdbcType=VARCHAR}
 	</update>
+
+	<!-- 查询所有订单 -->
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.store.TProductOrderDto"
+		resultMap="BaseResultMap">
+		SELECT
+		o.`code`,
+		o.pay_money,
+		o.order_status,
+		u.nick_name,
+		o.buyer_phone,
+		DATE_FORMAT(
+		o.create_time,
+		'%Y-%m-%d %H:%i:%s'
+		) AS
+		create_time,
+		DATE_FORMAT(
+		o.update_time,
+		'%Y-%m-%d %H:%i:%s'
+		) AS
+		update_time
+		FROM
+		t_product_order AS o,
+		t_user
+		AS u
+		<where>
+			o.buyer_code = u.user_code
+			<if test="code != null and code != ''">
+				AND o.`code` = #{code,jdbcType=VARCHAR}
+			</if>
+			<if test="orderStatus != null and orderStatus != ''">
+				AND o.order_status = #{orderStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="nickName!=null and nickName !=''">
+				AND u.nick_name like CONCAT('%',#{nickName},'%')
+			</if>
+			<if test="buyerPhone != null and buyerPhone !=''">
+				AND o.buyer_phone = #{buyerPhone,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by o.create_time desc
+	</select>
 </mapper>
 
 

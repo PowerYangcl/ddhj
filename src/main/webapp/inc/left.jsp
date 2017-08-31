@@ -55,6 +55,9 @@ function clearCookie(name) {
             	<li id="li-5">
                 	<a href="${basePath}store/product/index.htm">商品管理</a>
                 </li> 
+            	<li id="li-5">
+                	<a href="${basePath}store/order/index.htm">订单管理</a>
+                </li> 
             </ul>
 		</li>
     </ul>
