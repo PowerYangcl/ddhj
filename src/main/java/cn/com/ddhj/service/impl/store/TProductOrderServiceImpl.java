@@ -1,5 +1,6 @@
 package cn.com.ddhj.service.impl.store;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import cn.com.ddhj.model.TProductOrder;
 import cn.com.ddhj.model.TProductOrderDetail;
 import cn.com.ddhj.model.TUserAddress;
 import cn.com.ddhj.model.user.TUser;
+import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.EntityResult;
 import cn.com.ddhj.result.order.ProductOrderApiResult;
@@ -36,6 +38,7 @@ import cn.com.ddhj.result.product.TProductInfoResult;
 import cn.com.ddhj.result.tuser.UserDataResult;
 import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductOrderService;
+import cn.com.ddhj.service.user.ITUserCarbonOperationService;
 import cn.com.ddhj.service.user.ITUserService;
 import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
@@ -57,6 +60,8 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 	private TProductInfoMapper productMapper;
 	@Autowired
 	private TUserAddressMapper addressMapper;
+	@Autowired
+	private ITUserCarbonOperationService userCarbonOperationserivce;	
 
 	/**
 	 * 
@@ -94,6 +99,18 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 					if (insertResult.getResultCode() == Constant.RESULT_SUCCESS) {
 						detailMapper.batchInsert(orderDetails(dto.getProductList(), orderCode, userCode));
 					}
+					
+					// 增加碳币消息记录
+					TUserCarbonOperation carbonOperation = new TUserCarbonOperation();
+					carbonOperation.setUuid(WebHelper.getInstance().genUuid());
+					carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+					carbonOperation.setUserCode(user.getUserCode());
+					carbonOperation.setOperationType("DC161012100003");
+					carbonOperation.setOperationTypeChild("DC170208100008");
+					carbonOperation.setCarbonSum(new BigDecimal(dto.getPayMoney()).setScale(2, BigDecimal.ROUND_DOWN));
+					carbonOperation.setCreateUser(user.getUserCode());
+					carbonOperation.setCreateTime(DateUtil.getSysDateTime());
+					userCarbonOperationserivce.insertSelective(carbonOperation);
 				} else {
 					result.setResultCode(userResult.getResultCode());
 					result.setResultMessage(userResult.getResultMessage());
