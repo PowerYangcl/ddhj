@@ -44,13 +44,14 @@ public class FileServiceImpl extends BaseClass implements IFileService {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		String date = sdf.format(new Date());
 		String path = PropHelper.getValue("product_path") + date + "/";
+		String url = PropHelper.getValue("product_url");
 		String visitPath = "product/images/" + date + "/";
 		List<FileItem> fileItems = getFileFromRequest(request);
 		if (fileItems != null && fileItems.size() != 0) {
 			for (int i = 0; i < fileItems.size(); i++) {
 				FileItem item = fileItems.get(0);
 				FileResult result = saveFile(item.getName(), item.get(), path, visitPath);
-				result.setUrl("product/images/" + date + "/");
+				result.setUrl(url + "product/images/" + date + "/");
 				result.setName(result.getTitle() + "." + result.getType());
 				list.add(result);
 			}
