@@ -31,8 +31,8 @@ public class TProductOrderController {
 
 	@RequestMapping("detail")
 	public String detail(String code, ModelMap model) {
-		EntityResult result = service.findOrderDetail(code);
+		EntityResult result = service.findOrderByCode(code);
 		model.addAttribute("order", result.getEntity());
-		return "/jsp/store/product/detail";
+		return "/jsp/store/order/detail";
 	}
 }

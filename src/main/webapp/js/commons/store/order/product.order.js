@@ -52,7 +52,7 @@ var ProductOrder={
 				html +="<td>"+obj.createTime+"</td>";
 				html +="<td>"+obj.updateTime+"</td>";
 				html +="<td>";
-				html +="<a style=\"padding-right: 5px;\" href=\"detail.htm?ProductOrderCode="+obj.code+"\">查看</a>";
+				html +="<a style=\"padding-right: 5px;\" href=\"detail.htm?code="+obj.code+"\">查看</a>";
 				html +="</td>";
 				html +="</tr>";
 			}

@@ -609,4 +609,31 @@ public class TProductOrderServiceImpl extends BaseServiceImpl<TProductOrder, TPr
 		}
 		return result;
 	}
+
+	@Override
+	public EntityResult findOrderByCode(String code) {
+		EntityResult result = new EntityResult();
+		try {
+			TProductOrder entity = mapper.findOrderByCode(code);
+			if (entity != null) {
+				/**
+				 * 查询订单详情
+				 */
+				List<TProductOrderDetail> details = detailMapper.findOrderProductDetail(code);
+				if (details != null && details.size() > 0) {
+					entity.setDetails(details);
+				}
+				result.setEntity(entity);
+				result.setResultCode(Constant.RESULT_SUCCESS);
+				result.setResultMessage("查询订单信息成功");
+			} else {
+				result.setResultCode(Constant.RESULT_NULL);
+				result.setResultMessage("查询订单信息为空");
+			}
+		} catch (Exception e) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("查询订单信息报错");
+		}
+		return result;
+	}
 }

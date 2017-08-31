@@ -220,6 +220,34 @@
 		</where>
 		order by o.create_time desc
 	</select>
+	<!-- 查询所有订单 -->
+	<select id="findOrderByCode" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		SELECT
+		o.`code`,
+		o.pay_money,
+		o.order_status,
+		u.nick_name,
+		o.buyer_phone,
+		DATE_FORMAT(
+		o.create_time,
+		'%Y-%m-%d %H:%i:%s'
+		) AS
+		create_time,
+		DATE_FORMAT(
+		o.update_time,
+		'%Y-%m-%d %H:%i:%s'
+		) AS
+		update_time
+		FROM
+		t_product_order AS o,
+		t_user
+		AS u
+		<where>
+			o.buyer_code = u.user_code
+			AND o.`code` = #{code,jdbcType=VARCHAR}
+		</where>
+	</select>
 </mapper>
 
 

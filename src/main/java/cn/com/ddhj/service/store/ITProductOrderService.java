@@ -34,33 +34,42 @@ public interface ITProductOrderService extends IBaseService<TProductOrder, TProd
 	 * @param orderCode
 	 * @return
 	 */
-	EntityResult findOrderDetailByCode(String orderCode,String userToken);
-	
+	EntityResult findOrderDetailByCode(String orderCode, String userToken);
+
 	/**
-	 * @description: 返回指定用户的订单列表信息 
+	 * @description: 返回指定用户的订单列表信息
 	 * 
 	 * @param buyerCode
 	 * @return
-	 * @author Yangcl 
-	 * @date 2017年7月27日 上午11:05:19 
+	 * @author Yangcl
+	 * @date 2017年7月27日 上午11:05:19
 	 * @version 1.0.0.1
 	 */
 	JSONObject findProductOrderList(JSONObject object, String userToken);
-	
+
 	/**
 	 * 订单确认
+	 * 
 	 * @param dto
 	 * @param userToken
 	 * @author zht
 	 * @return
 	 */
 	BaseResult confirmOrder(TProductOrderDto dto, String userToken);
-	
+
 	public JSONObject deleteOrder(JSONObject input);
-	
+
 	public JSONObject cancelOrder(JSONObject input);
-	
+
 	PageResult findDataPage(TProductOrderDto dto);
-	
+
 	EntityResult findOrderDetail(String code);
+
+	/**
+	 * 根据订单编码查询订单信息
+	 * 
+	 * @param code
+	 * @return
+	 */
+	EntityResult findOrderByCode(String code);
 }
