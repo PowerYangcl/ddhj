@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 
-import com.alibaba.fastjson.JSON;
 
 import cn.com.ddhj.base.BaseClass;
 import cn.com.ddhj.helper.PropHelper;

@@ -2,6 +2,8 @@ package cn.com.ddhj.model;
 
 import java.util.List;
 
+import cn.com.ddhj.model.user.TUser;
+
 public class TProductOrder extends BaseModel {
 	private String code;
 	private String orderStatus; // order_status 订单状态 OS8866001下单成功 OS8866002下单未付款 OS8866003订单作废
@@ -15,8 +17,17 @@ public class TProductOrder extends BaseModel {
 	private List<TProductOrderDetail> details;
 
 	private TUserAddress address;
-
 	
+	private TUser user;
+	
+	public TUser getUser() {
+		return user;
+	}
+
+	public void setUser(TUser user) {
+		this.user = user;
+	}
+
 	public String getAddressDetail() {
 		return addressDetail;
 	}

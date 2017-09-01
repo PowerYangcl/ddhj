@@ -16,6 +16,7 @@ import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.store.TProductOrderDto;
 import cn.com.ddhj.model.TProductInfo;
 import cn.com.ddhj.result.EntityResult;
+import cn.com.ddhj.result.PageResult;
 import cn.com.ddhj.service.store.ITProductOrderService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -25,7 +26,6 @@ public class TProductOrderTest extends BaseTest {
 	@Autowired
 	private ITProductOrderService service;
 
-	@Test
 	public void createOrder() {
 		TProductOrderDto dto = new TProductOrderDto();
 		dto.setPayMoney(100);
@@ -38,12 +38,26 @@ public class TProductOrderTest extends BaseTest {
 		product.setCurrentPrice(11);
 		list.add(product);
 		dto.setProductList(list);
-		BaseResult result = service.createOrder(dto,"6a0a01f3378a459580b20ac89eada0fd");
+		BaseResult result = service.createOrder(dto, "6a0a01f3378a459580b20ac89eada0fd");
 		System.out.println(JSON.toJSON(result));
 	}
 
 	public void findOrderDetailByCode() {
-		EntityResult result = service.findOrderDetailByCode("PD170728100001","6a0a01f3378a459580b20ac89eada0fd");
+		EntityResult result = service.findOrderDetailByCode("PD170728100001", "6a0a01f3378a459580b20ac89eada0fd");
+		System.out.println(JSON.toJSON(result));
+	}
+
+	
+	public void findAll() {
+		TProductOrderDto dto = new TProductOrderDto();
+		PageResult result = service.findDataPage(dto);
+		System.out.println(JSON.toJSON(result));
+	}
+
+	@Test
+	public void findOrder() {
+		String code = "PD170831100015";
+		EntityResult result = service.findOrderByCode(code);
 		System.out.println(JSON.toJSON(result));
 	}
 }

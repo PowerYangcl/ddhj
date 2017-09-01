@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONArray;
 
@@ -113,7 +111,7 @@ public class TProductInfoController {
 
 	@RequestMapping("delfile")
 	@ResponseBody
-	public BaseResult delFile(String file, HttpServletRequest request, HttpServletResponse response) {
-		return service.delFile(file, request, response);
+	public BaseResult delFile(String uuid, HttpServletRequest request, HttpServletResponse response) {
+		return service.delFile(uuid, request, response);
 	}
 }

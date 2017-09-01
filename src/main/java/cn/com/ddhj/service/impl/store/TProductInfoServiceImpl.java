@@ -1,28 +1,16 @@
 package cn.com.ddhj.service.impl.store;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -30,7 +18,6 @@ import com.github.pagehelper.PageInfo;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.store.TProductInfoDto;
-import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TProductInfoMapper;
 import cn.com.ddhj.mapper.TProductPicMapper;
@@ -45,13 +32,10 @@ import cn.com.ddhj.service.impl.BaseServiceImpl;
 import cn.com.ddhj.service.store.ITProductInfoService;
 import cn.com.ddhj.util.Constant;
 import cn.com.ddhj.util.DateUtil;
-import cn.com.ddhj.util.MD5Util;
 
 @Service
 public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProductInfoMapper, TProductInfoDto>
 		implements ITProductInfoService {
-	// 商品图片文件存储路径
-	private static final String IMAGE_PATH = "d:/product/images/";
 
 	@Autowired
 	private TProductInfoMapper mapper;
@@ -142,9 +126,6 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 
 	@Override
 	public TProductInfo selectByCode(String code, HttpServletRequest request) {
-		String path = request.getContextPath();
-		String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path
-				+ "/";
 		TProductInfo info = super.selectByCode(code);
 		if (info != null) {
 			/**
@@ -162,11 +143,11 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 					JSONObject obj = new JSONObject();
 					obj.put("caption", url);
 					obj.put("width", "120px");
-					obj.put("url", "delfile.htm");
+					obj.put("url", "delfile.htm?uuid=" + pic.getUuid());
 					obj.put("key", pic.getId());
 					array.add(obj);
 					JSONObject picObj = new JSONObject();
-					picObj.put("path", url.substring(0, url.lastIndexOf("/")));
+					picObj.put("path", url.substring(0, url.lastIndexOf("/")+1));
 					picObj.put("name", url.substring(url.lastIndexOf("/") + 1, url.length()));
 					pics.add(picObj);
 				}
@@ -320,25 +301,12 @@ public class TProductInfoServiceImpl extends BaseServiceImpl<TProductInfo, TProd
 	}
 
 	@Override
-	public BaseResult delFile(String file, HttpServletRequest request, HttpServletResponse response) {
+	public BaseResult delFile(String uuid, HttpServletRequest request, HttpServletResponse response) {
 		BaseResult result = new BaseResult();
 		try {
-			// 将file转换为json对象，读取文件目录及文件名称
-			JSONArray array = JSONArray.parseArray(file);
-			if (array != null && array.size() > 0) {
-				for (int i = 0; i < array.size(); i++) {
-					JSONObject obj = array.getJSONObject(i);
-					if (obj != null) {
-						// 文件目录
-						String path = obj.getString("path");
-						// 文件名称
-						String name = obj.getString("name");
-						path = request.getSession().getServletContext().getRealPath(path);
-						File f = new File(path + name);
-						f.deleteOnExit();
-					}
-				}
-				result.setResultCode(1);
+			if (StringUtils.isNotBlank(uuid)) {
+				picMapper.deleteByUuid(uuid);
+				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("删除成功");
 			} else {
 				result.setResultCode(0);

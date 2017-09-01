@@ -1,5 +1,7 @@
 package cn.com.ddhj.controller;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,8 +12,10 @@ import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.TLandedPropertyDto;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.model.TLandedProperty;
+import cn.com.ddhj.model.system.SysUser;
 import cn.com.ddhj.result.lp.TLandedPropertyDataResult;
 import cn.com.ddhj.service.ITLandedPropertyService;
+import cn.com.ddhj.util.Constant;
 
 @Controller
 @RequestMapping("lp/")
@@ -38,10 +42,18 @@ public class TLandedPropertyController {
 
 	@RequestMapping("add")
 	@ResponseBody
-	public BaseResult add(TLandedProperty entity) {
-		entity.setCode(WebHelper.getInstance().getUniqueCode("LP"));
-		entity.setCreateUser("system");
-		return service.insertSelective(entity);
+	public BaseResult add(TLandedProperty entity, HttpSession session) {
+		BaseResult result = new BaseResult();
+		SysUser user = (SysUser) session.getAttribute("user");
+		if (user != null) {
+			entity.setCode(WebHelper.getInstance().getUniqueCode("LP"));
+			entity.setCreateUser(user.getCode());
+			result = service.insertSelective(entity);
+		} else {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("用户尚未登录");
+		}
+		return result;
 	}
 
 	@RequestMapping("editindex")
@@ -53,8 +65,16 @@ public class TLandedPropertyController {
 
 	@RequestMapping("edit")
 	@ResponseBody
-	public BaseResult edit(TLandedProperty entity) {
-		entity.setUpdateUser("system");
-		return service.updateByCode(entity);
+	public BaseResult edit(TLandedProperty entity, HttpSession session) {
+		BaseResult result = new BaseResult();
+		SysUser user = (SysUser) session.getAttribute("user");
+		if (user != null) {
+			entity.setUpdateUser(user.getCode());
+			result = service.updateByCode(entity);
+		} else {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("用户尚未登录");
+		}
+		return result;
 	}
 }

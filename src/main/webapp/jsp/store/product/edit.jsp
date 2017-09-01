@@ -76,7 +76,7 @@ $('#uploadFile').fileinput({
 	//上传的地址
 	uploadUrl: 'upload.htm',
 	////接收的文件后缀,
-	allowedFileExtensions: ['jpg'],
+	allowedFileExtensions: ['jpg','jpeg','png','gif'],
 	//最大上传数量
 	maxFileCount: 5,
 	maxFileSize: fileSize,

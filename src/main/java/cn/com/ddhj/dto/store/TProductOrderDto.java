@@ -7,6 +7,14 @@ import cn.com.ddhj.model.TProductInfo;
 
 public class TProductOrderDto extends BaseDto {
 
+	private String code;
+
+	private String buyerPhone;
+
+	private String nickName;
+
+	private String orderStatus;
+
 	/**
 	 * 支付碳币
 	 */
@@ -29,6 +37,38 @@ public class TProductOrderDto extends BaseDto {
 	 * 商品列表
 	 */
 	private List<TProductInfo> productList;
+
+	public String getBuyerPhone() {
+		return buyerPhone;
+	}
+
+	public void setBuyerPhone(String buyerPhone) {
+		this.buyerPhone = buyerPhone;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	public String getAddressCode() {
 		return addressCode;
