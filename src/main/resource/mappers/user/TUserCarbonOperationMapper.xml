@@ -183,38 +183,30 @@
 	<select id="findCarbonOperationDetail" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"
 		resultMap="BaseResultMap">
 		SELECT
-		DATE_FORMAT(
-		create_time,
-		'%Y-%m-%d %H:%i:%s'
-		) AS
-		create_time,
-		operation_type,
-		(
-		SELECT
-		`name`
+			DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+			operation_type,
+			(
+				SELECT
+					`name`
+				FROM
+					sys_define_code
+				WHERE
+					`code` = operation_type
+			) AS operation_type_name,
+			operation_type_child,
+			(
+				SELECT
+					`name`
+				FROM
+					sys_define_code
+				WHERE
+				`code` = operation_type_child
+			) AS operation_type_child_name,
+			carbon_sum
 		FROM
-		sys_define_code
+			t_user_carbon_operation
 		WHERE
-		`code` = operation_type
-		) AS
-		operation_type_name,
-		operation_type_child,
-		(
-		SELECT
-		`name`
-		FROM
-		sys_define_code
-		WHERE
-		`code` =
-		operation_type_child
-		) AS
-		operation_type_child_name,
-		carbon_sum
-		FROM
-		t_user_carbon_operation
-		WHERE
-		user_code =
-		#{userCode,jdbcType=VARCHAR} and carbon_sum>0 
+			user_code = #{userCode,jdbcType=VARCHAR} and carbon_sum>0 
 		<if test="operationType != null and operationType != ''">
 			AND operation_type
 			=#{operationType,jdbcType=VARCHAR}
@@ -225,17 +217,58 @@
 		</if>
 		<choose>
 			<when test="day != null">
-				AND create_time >
-				DATE_SUB(CURDATE(),
-				INTERVAL
-				#{day,jdbcType=INTEGER} DAY)
+				AND create_time > DATE_SUB(CURDATE(), INTERVAL #{day,jdbcType=INTEGER} DAY)
 				ORDER BY create_time DESC
 			</when>
 			<otherwise>
-				ORDER BY
-				create_time DESC
-				limit
-				#{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+				ORDER BY create_time DESC
+				limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+			</otherwise>
+		</choose>
+	</select>
+	<!-- zht added -->
+		<select id="findCarbonOperationDetailDailyOne" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"
+		resultMap="BaseResultMap">
+		SELECT
+			DATE_FORMAT(create_time, '%Y-%m-%d') AS create_time,
+			operation_type,
+			(
+				SELECT
+					`name`
+				FROM
+					sys_define_code
+				WHERE
+					`code` = operation_type
+			) AS operation_type_name,
+			operation_type_child,
+			(
+				SELECT
+					`name`
+				FROM
+					sys_define_code
+				WHERE
+				`code` = operation_type_child
+			) AS operation_type_child_name,
+			sum(carbon_sum) AS carbon_sum
+		FROM
+			t_user_carbon_operation
+		WHERE
+			user_code = #{userCode,jdbcType=VARCHAR} and carbon_sum>0 
+		<if test="operationType != null and operationType != ''">
+			AND operation_type=#{operationType,jdbcType=VARCHAR}
+		</if>
+		<if test="operationTypeChild != null and operationTypeChild != ''">
+			AND operation_type_child=#{operationTypeChild,jdbcType=VARCHAR}
+		</if>
+		<choose>
+			<when test="day != null">
+				AND create_time > DATE_SUB(CURDATE(), INTERVAL #{day,jdbcType=INTEGER} DAY) 
+				GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d') 
+				ORDER BY create_time DESC
+			</when>
+			<otherwise>
+				ORDER BY create_time DESC
+				limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 			</otherwise>
 		</choose>
 	</select>

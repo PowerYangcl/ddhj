@@ -265,7 +265,12 @@ public class TUserCarbonOperationServiceImpl
 					dto.setStart(dto.getPageIndex() * dto.getPageSize());
 					dto.setPageSize(dto.getPageSize());
 				}
-				list = mapper.findCarbonOperationDetail(dto);
+				if(dto.getDay() != null && dto.getDay() > 0) {
+					list = mapper.findCarbonOperationDetailDailyOne(dto);
+				} else {
+					list = mapper.findCarbonOperationDetail(dto);
+				}
+				
 				if (list != null && list.size() > 0) {
 //					if (dto.getDay() != null) {
 //						list = trimData(list, dto.getDay());

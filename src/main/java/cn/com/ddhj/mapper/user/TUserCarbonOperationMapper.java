@@ -39,6 +39,13 @@ public interface TUserCarbonOperationMapper extends BaseMapper<TUserCarbonOperat
 	 * @return
 	 */
 	List<TUserCarbonOperation> findCarbonOperationDetail(TUserCarbonOperationDto dto);
+	
+	/**
+	 * 显示碳币交易明细 精确到秒一天合并一条记录
+	 * @param dto
+	 * @return
+	 */
+	List<TUserCarbonOperation> findCarbonOperationDetailDailyOne(TUserCarbonOperationDto dto);
 
 	/**
 	 * 
