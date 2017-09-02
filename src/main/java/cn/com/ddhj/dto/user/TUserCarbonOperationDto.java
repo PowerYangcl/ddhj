@@ -8,6 +8,7 @@ public class TUserCarbonOperationDto extends BaseDto {
 	private String operationType;
 	private String operationTypeChild;
 	private Integer day;
+	private String excludeChildType;
 
 	public Integer getDay() {
 		return day;
@@ -41,4 +42,12 @@ public class TUserCarbonOperationDto extends BaseDto {
 		this.operationTypeChild = operationTypeChild;
 	}
 
+	public String getExcludeChildType() {
+		return excludeChildType;
+	}
+
+	public void setExcludeChildType(String excludeChildType) {
+		this.excludeChildType = excludeChildType;
+	}
+	
 }

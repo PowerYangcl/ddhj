@@ -208,13 +208,19 @@
 		WHERE
 			user_code = #{userCode,jdbcType=VARCHAR} and carbon_sum>0 
 		<if test="operationType != null and operationType != ''">
-			AND operation_type
-			=#{operationType,jdbcType=VARCHAR}
+			AND operation_type=#{operationType,jdbcType=VARCHAR}
 		</if>
-		<if test="operationTypeChild != null and operationTypeChild != ''">
-			AND operation_type_child
-			=#{operationTypeChild,jdbcType=VARCHAR}
-		</if>
+		<choose>
+    		<when test="excludeChildType != null and excludeChildType != ''">
+        		AND operation_type_child!=#{operationTypeChild,jdbcType=VARCHAR}
+    		</when>
+    		<otherwise>
+       			<if test="operationTypeChild != null and operationTypeChild != ''">
+					AND operation_type_child=#{operationTypeChild,jdbcType=VARCHAR}
+				</if>
+   			</otherwise>
+		</choose>
+
 		<choose>
 			<when test="day != null">
 				AND create_time > DATE_SUB(CURDATE(), INTERVAL #{day,jdbcType=INTEGER} DAY)
@@ -255,19 +261,20 @@
 		WHERE
 			user_code = #{userCode,jdbcType=VARCHAR} and carbon_sum>0 
 		<if test="operationType != null and operationType != ''">
-			AND operation_type=#{operationType,jdbcType=VARCHAR}
+			AND operation_type=#{operationType,jdbcType=VARCHAR} 
 		</if>
 		<if test="operationTypeChild != null and operationTypeChild != ''">
-			AND operation_type_child=#{operationTypeChild,jdbcType=VARCHAR}
+			AND operation_type_child=#{operationTypeChild,jdbcType=VARCHAR} 
 		</if>
 		<choose>
 			<when test="day != null">
 				AND create_time > DATE_SUB(CURDATE(), INTERVAL #{day,jdbcType=INTEGER} DAY) 
 				GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d') 
-				ORDER BY create_time DESC
+				ORDER BY create_time DESC 
 			</when>
 			<otherwise>
-				ORDER BY create_time DESC
+				GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d') 
+				ORDER BY create_time DESC 
 				limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 			</otherwise>
 		</choose>

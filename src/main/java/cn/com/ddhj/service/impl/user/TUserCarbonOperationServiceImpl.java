@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -265,16 +267,64 @@ public class TUserCarbonOperationServiceImpl
 					dto.setStart(dto.getPageIndex() * dto.getPageSize());
 					dto.setPageSize(dto.getPageSize());
 				}
-				if(dto.getDay() != null && dto.getDay() > 0) {
-					list = mapper.findCarbonOperationDetailDailyOne(dto);
-				} else {
+				
+				if(StringUtils.isBlank(dto.getOperationType()) 
+						&& StringUtils.isBlank(dto.getOperationTypeChild())) {
+					//前端按全部类型查询所有碳币收支记录
+					//先查询步行换碳币记录
+					list = new LinkedList<TUserCarbonOperation>();
+					dto.setOperationType(null);
+					dto.setOperationTypeChild("DC170208100004");
+					List<TUserCarbonOperation> oneList = mapper.findCarbonOperationDetailDailyOne(dto);
+					list.addAll(oneList);
+					//再查询其他类型换碳币记录
+					dto.setExcludeChildType("true");
+					dto.setOperationType(null);
+					dto.setOperationTypeChild("DC170208100004");
+					List<TUserCarbonOperation> otherList = mapper.findCarbonOperationDetail(dto);
+					list.addAll(otherList);
+					Collections.sort(list, new Comparator<TUserCarbonOperation>() {
+						@Override
+						public int compare(TUserCarbonOperation o1, TUserCarbonOperation o2) {
+							return o2.getCreateTime().compareTo(o1.getCreateTime());
+						}
+					});
+					
+					list = list.subList(0, dto.getPageSize() > list.size() ? list.size() : dto.getPageSize());
+					
+				} else if(StringUtils.isNotBlank(dto.getOperationTypeChild())) {
+					//按碳币小类型查
+					if(dto.getOperationTypeChild().equals("DC170208100004")) {
+						//按碳币小类型-步行换碳币查,按日期合并---因为同步的步行碳币记录过多
+						list = mapper.findCarbonOperationDetailDailyOne(dto);
+					} else {
+						//按碳币小类型查,不按日期合并
+						list = mapper.findCarbonOperationDetail(dto);
+					}
+				} else if(StringUtils.isNotBlank(dto.getOperationType())) {
+					//按碳币操作大类型查
+					if(dto.getOperationType().equals("DC170208100002")) {
+						//步行换碳币收入小类
+						dto.setOperationTypeChild("DC170208100004");
+						list = mapper.findCarbonOperationDetailDailyOne(dto);
+						//其他收入小类
+						dto.setExcludeChildType("true");
+						List<TUserCarbonOperation> otherList = mapper.findCarbonOperationDetail(dto);
+						list.addAll(otherList);
+						Collections.sort(list, new Comparator<TUserCarbonOperation>() {
+							@Override
+							public int compare(TUserCarbonOperation o1, TUserCarbonOperation o2) {
+								return o2.getCreateTime().compareTo(o1.getCreateTime());
+							}
+						});
+						
+						list = list.subList(0, dto.getPageSize() > list.size() ? list.size() : dto.getPageSize());
+					}
+					
 					list = mapper.findCarbonOperationDetail(dto);
 				}
 				
 				if (list != null && list.size() > 0) {
-//					if (dto.getDay() != null) {
-//						list = trimData(list, dto.getDay());
-//					}
 					result.setData(list);
 					result.setResultCode(Constant.RESULT_SUCCESS);
 					result.setResultMessage("获取数据成功");
