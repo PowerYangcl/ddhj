@@ -210,17 +210,9 @@
 		<if test="operationType != null and operationType != ''">
 			AND operation_type=#{operationType,jdbcType=VARCHAR}
 		</if>
-		<choose>
-    		<when test="excludeChildType != null and excludeChildType != ''">
-        		AND operation_type_child!=#{operationTypeChild,jdbcType=VARCHAR}
-    		</when>
-    		<otherwise>
-       			<if test="operationTypeChild != null and operationTypeChild != ''">
-					AND operation_type_child=#{operationTypeChild,jdbcType=VARCHAR}
-				</if>
-   			</otherwise>
-		</choose>
-
+		<if test="operationTypeChild != null and operationTypeChild != ''">
+			AND operation_type_child=#{operationTypeChild,jdbcType=VARCHAR}
+		</if>
 		<choose>
 			<when test="day != null">
 				AND create_time > DATE_SUB(CURDATE(), INTERVAL #{day,jdbcType=INTEGER} DAY)
