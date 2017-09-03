@@ -1,18 +1,17 @@
 package cn.com.ddhj.service.impl;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -23,6 +22,7 @@ import java.util.concurrent.Future;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -581,13 +581,32 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		JSONObject addr = llService.getCurrentPositionInfo(lng, lat, "2");     
 		if(addr.getString("code").equals("1")){
 			result.put("currname", addr.getString("address")); // 当前位置信息
-			
-			JSONObject eListInfo = this.estateList(position, page , count , radius); // 经纬度周边地产信息
-			if(eListInfo.getString("code").equals("1")){
+			//将查询结果扩大10登,解决小结点集中一边的问题
+			String extend = String.valueOf(Integer.parseInt(count) * 10);
+			JSONObject eListInfo = this.estateList(position, page , extend, radius); // 经纬度周边地产信息
+			if(eListInfo.getString("code").equals("1")) {
 				List<EData> list = JSONArray.parseArray(eListInfo.getString("list") , EData.class); // 获取地产信息列表
-				if(list != null && list.size() > 0){  
+				if(list != null && list.size() > 0) {  
+					List<Integer> choose = new ArrayList<Integer>();
+					List<EData> chooseList = new ArrayList<EData>();
+					for(int i = 0; i < Integer.parseInt(count); i++) {
+						//从10倍的list中,随机选 择count个
+						int suffix = RandomUtils.nextInt(list.size());
+						int retry = 0;
+						while(choose.contains(suffix) && retry < 10) {
+							suffix = RandomUtils.nextInt(list.size());
+							retry++;
+						}
+						choose.add(suffix);
+						chooseList.add(list.get(suffix));
+					}
+					
+					if(chooseList.size() == Integer.parseInt(count)) {
+						list = chooseList;
+					}
+					
 					List<String> titles = new ArrayList<>();
-					for(int i = 0 ; i < list.size() ; i ++){
+					for(int i = 0 ; i < list.size() ; i ++) {
 						titles.add(list.get(i).getTitle() );
 					}
 					List<TLandedProperty> lpList = lrMapper.findCodeByTitle(titles); // 楼盘编号|楼盘名称
@@ -605,7 +624,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 					SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
 					List<Estate> projectList = new ArrayList<>();
 					// 开始组建数据
-					for(EData e : list){
+					for(EData e : list) {
 						String position_ = e.getLat() + "," + e.getLng();
 						String distance = CommonUtil.getDistance(lat, lng, e.getLat(), e.getLng());
 						String lpcode = "";
@@ -637,11 +656,23 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 					}
 
 //					System.out.println(JSONObject.toJSONString(projectList));   
-					Collections.sort(projectList); 
-					Collections.reverse(projectList); 
-					for(Estate e : projectList){
-						logger.info(e.getScore() + "|" + e.getDistance()); 
-					}
+					Collections.sort(projectList, new Comparator<Estate>() {
+						@Override
+						public int compare(Estate o1, Estate o2) {
+							if(o1.getScore() > o2.getScore()) {
+								return -1;
+							} else if(o1.getScore() < o2.getScore()) {
+								return 1;
+							} else {
+								return 0;
+							}
+						}
+						
+					}); 
+//					Collections.reverse(projectList); 
+//					for(Estate e : projectList){
+//						logger.info(e.getScore() + "|" + e.getDistance()); 
+//					}
 					if(projectList.size() != 0){
 						result.put("resultCode", 1);
 						result.put("resultMessage", "SUCCESS");

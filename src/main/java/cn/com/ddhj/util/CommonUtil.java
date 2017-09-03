@@ -145,7 +145,7 @@ public class CommonUtil {
         double mdifference = rad(lng1) - rad(lng2);
         double distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(difference / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(mdifference / 2), 2)));
         distance = distance * earthRadius;
-        System.out.println(Math.round(distance * 10000) / 10 + " 米"); 
+//        System.out.println(Math.round(distance * 10000) / 10 + " 米"); 
         distance = Math.round(distance * 10000) / 10000;
         String distanceStr = distance+"";
         distanceStr = distanceStr. substring(0, distanceStr.indexOf("."));
