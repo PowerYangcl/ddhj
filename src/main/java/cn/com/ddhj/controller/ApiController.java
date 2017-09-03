@@ -494,7 +494,7 @@ public class ApiController extends BaseClass {
 			CarbonDetailResult result = userCarbonOperationserivce.getCarbonOperationDetail(api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
-		// 根据碳币类型查询交易明细
+		// 根据碳币类型查询交易明细(折线图专用)
 		else if ("user_carbon_type_detail".equals(api.getApiTarget())) {
 			JSONObject param = JSONObject.parseObject(api.getApiInput());
 			TUserCarbonOperationDto dto = JSON.toJavaObject(param, TUserCarbonOperationDto.class);

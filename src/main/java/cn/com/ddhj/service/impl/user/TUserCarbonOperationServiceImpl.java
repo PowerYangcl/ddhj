@@ -261,7 +261,7 @@ public class TUserCarbonOperationServiceImpl
 	public DataResult findCarbonOperationDetail(TUserCarbonOperationDto dto, String userToken) {
 		DataResult result = new DataResult();
 		TUserLogin login = loginMapper.findLoginByUuid(userToken);
-//		List<TUserCarbonOperation> list = null;
+		List<TUserCarbonOperation> list = new LinkedList<TUserCarbonOperation>();
 		if (login != null) {
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
@@ -271,12 +271,21 @@ public class TUserCarbonOperationServiceImpl
 					dto.setPageSize(dto.getPageSize());
 				}
 				
-				List<TUserCarbonOperation> list = null;
 				if(StringUtils.isBlank(dto.getOperationType()) && StringUtils.isBlank(dto.getOperationTypeChild())) {
-					//按全部类型查询
-					list = mapper.findCarbonOperationDetail(dto);
-				} else {
-					if(StringUtils.isNotBlank(dto.getOperationTypeChild()) && dto.getOperationTypeChild().equals("DC170208100004")) {
+					//按全部类型查询(有day参数)
+					combineUserStepQuery(list, dto);
+				} else if(StringUtils.isNotBlank(dto.getOperationType()) && StringUtils.isBlank(dto.getOperationTypeChild())) { 
+					//按收入,支出大类查询
+					if(dto.getOperationType().equals("DC170208100002")) {
+						//查收入
+						combineUserStepQuery(list, dto);
+					} else if(dto.getOperationType().equals("DC170208100003")) {
+						//查支出
+						list = mapper.findCarbonOperationDetail(dto);
+					}
+				} else if(StringUtils.isBlank(dto.getOperationType()) && StringUtils.isNotBlank(dto.getOperationTypeChild())) {
+					//按小类查询
+					if(dto.getOperationTypeChild().equals("DC170208100004")) {
 						//按步行换碳币类型查询
 						list = mapper.findCarbonOperationDetailDailyOne(dto);
 					} else {
@@ -386,6 +395,42 @@ public class TUserCarbonOperationServiceImpl
 			}
 		}
 		return result;
+	}
+	
+	private void combineUserStepQuery(List<TUserCarbonOperation> list, TUserCarbonOperationDto dto) {
+		List<TUserCarbonOperation> list1 = mapper.findCarbonOperationDetail(dto);
+		List<TUserCarbonOperation> list2 = mapper.findCarbonOperationDetailDailyOne(dto);
+//		filterSameDay(list2);
+		list.addAll(list1);
+		list.addAll(list2);
+		Collections.sort(list, new Comparator<TUserCarbonOperation>() {
+			@Override
+			public int compare(TUserCarbonOperation o1, TUserCarbonOperation o2) {
+				return o2.getCreateTime().compareTo(o1.getCreateTime());
+			}
+		});
+	}
+	
+	private void filterSameDay(List<TUserCarbonOperation> list) {
+		Map<String, TUserCarbonOperation> stepMap = new HashMap<String, TUserCarbonOperation>();
+		List<TUserCarbonOperation> delList = new LinkedList<TUserCarbonOperation>();
+		if(list != null) {
+			for(TUserCarbonOperation tco : list) {
+				if(tco.getOperationTypeChild().equals("DC170208100004")) {
+					//步行换碳币按日期合并
+					System.out.println(tco.getCreateTime());
+					String date = tco.getCreateTime().substring(0, tco.getCreateTime().indexOf(" "));
+					if(stepMap.containsKey(date)) {
+						TUserCarbonOperation oneday = stepMap.get(date);
+						oneday.setCarbonSum(oneday.getCarbonSum().add(tco.getCarbonSum()).setScale(2, BigDecimal.ROUND_HALF_UP));
+						delList.add(tco);
+					} else {
+						stepMap.put(date, tco);
+					}
+				}
+			}
+			list.removeAll(delList);
+		}
 	}
 
 	/**
