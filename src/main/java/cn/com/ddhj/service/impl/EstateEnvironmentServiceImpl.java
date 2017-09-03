@@ -636,7 +636,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 						projectList.add(new Estate(e.getTitle() , distance , e.getAddressFull() , price , lpcode, position_, img , e.getScore() , updateTime) );		
 					}
 
-					System.out.println(JSONObject.toJSONString(projectList));   
+//					System.out.println(JSONObject.toJSONString(projectList));   
 					Collections.sort(projectList); 
 					Collections.reverse(projectList); 
 					for(Estate e : projectList){
