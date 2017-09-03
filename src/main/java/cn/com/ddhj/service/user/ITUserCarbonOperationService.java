@@ -97,4 +97,11 @@ public interface ITUserCarbonOperationService extends IBaseService<TUserCarbonOp
 	  */
 	 BaseResult presentCarbon(String userToken);
 	 
+	 /**
+	  * 查询用户从当前日期开始向前7天,每一天的步行数,步行公里数,步行减排数,对应的碳币数
+	  * @param userToken
+	  * @return
+	  */
+	 DataResult findWeekStepCarbonData(String userToken);
+	 
 }

@@ -508,6 +508,11 @@ public class ApiController extends BaseClass {
 			DataResult result = userCarbonOperationserivce.findCarbonOperationDetail(dto, api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
+		//查询用户从当前日期开始向前7天,每一天的步行数,步行公里数,步行减排数,对应的碳币数-zht
+		else if ("user_carbon_step_week".equals(api.getApiTarget())) {
+			DataResult result = userCarbonOperationserivce.findWeekStepCarbonData(api.getUserToken());
+			return JSONObject.parseObject(JSONObject.toJSONString(result));
+		}
 		// 查询支持碳交易的城市列表-zht
 		else if ("trade_city".equals(api.getApiTarget())) {
 			TradeCityResult result = tradeService.queryAllTradeCity();

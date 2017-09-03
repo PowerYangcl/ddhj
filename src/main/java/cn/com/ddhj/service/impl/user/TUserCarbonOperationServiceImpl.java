@@ -1,7 +1,7 @@
 package cn.com.ddhj.service.impl.user;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,6 +32,7 @@ import cn.com.ddhj.model.TPresentCarbon;
 import cn.com.ddhj.model.user.TUser;
 import cn.com.ddhj.model.user.TUserCarbonOperation;
 import cn.com.ddhj.model.user.TUserLogin;
+import cn.com.ddhj.model.user.TUserStepDailyInfo;
 import cn.com.ddhj.result.DataResult;
 import cn.com.ddhj.result.carbon.CarbonDetailResult;
 import cn.com.ddhj.result.carbon.CarbonRechargeResult;
@@ -253,6 +254,92 @@ public class TUserCarbonOperationServiceImpl
 		}
 		return result;
 	}
+	
+	public DataResult findWeekStepCarbonData(String userToken) {
+		DataResult result = new DataResult();
+		TUserLogin login = loginMapper.findLoginByUuid(userToken);
+		if (login == null) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("用户未登录");
+			return result;
+		}
+		
+		TUser user = userMapper.findTUserByUuid(login.getUserToken());
+		if (user == null) {
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("用户不存在");
+			return result;
+		}
+		
+		TUserCarbonOperationDto dto = new TUserCarbonOperationDto();
+		dto.setUserCode(user.getUserCode());
+		dto.setOperationTypeChild("DC170208100004");
+		dto.setDay(6);
+		List<TUserCarbonOperation> list = mapper.findCarbonOperationDetailDailyOne(dto);
+		if(list == null) {
+			result.setResultCode(Constant.RESULT_NULL);
+			result.setResultMessage("用户近七天无同步数据");
+			return result;
+		}
+		String carbonRatio = PropHelper.getValue("carbon_exchange_ratio");
+		DecimalFormat df = new DecimalFormat("#.##");
+		List<TUserStepDailyInfo> stepList = new ArrayList<TUserStepDailyInfo>();
+		
+		List<String> weekDays = sevenDay();
+		for(TUserCarbonOperation op : list) {
+			int step = op.getCarbonSum().divide(BigDecimal.valueOf(Double.parseDouble(carbonRatio))).intValue();
+			String kilo = df.format((step * 0.6) / 1000);
+			String co2 =  df.format(step * 0.008);
+			TUserStepDailyInfo info = new TUserStepDailyInfo();
+			info.setCarbonMoney(op.getCarbonSum());
+			info.setStep(step);
+			info.setKilo(kilo);
+			info.setCo2(co2);
+			String createDate = op.getCreateTime().substring(0, op.getCreateTime().indexOf(" "));
+			info.setCreateTime(createDate);
+			stepList.add(info);
+			weekDays.remove(createDate);
+		}
+		
+		for(String day : weekDays) {
+			TUserStepDailyInfo info = new TUserStepDailyInfo();
+			info.setCarbonMoney(BigDecimal.valueOf(0));
+			info.setStep(0);
+			info.setKilo("0");
+			info.setCo2("0");
+			info.setCreateTime(day);
+			stepList.add(info);
+		}
+		
+		if(stepList != null && !stepList.isEmpty()) {
+			Collections.sort(stepList, new Comparator<TUserStepDailyInfo>() {
+				@Override
+				public int compare(TUserStepDailyInfo o1, TUserStepDailyInfo o2) {
+					return o2.getCreateTime().compareTo(o1.getCreateTime());
+				}
+				
+			});
+		}
+		result.setData(stepList);
+		result.setResultCode(Constant.RESULT_SUCCESS);
+		result.setResultMessage("查询数据成功");
+		return result;
+	}
+	
+	private List<String> sevenDay() {
+		List<String> _7Days = new ArrayList<String>();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		_7Days.add(DateUtil.dateToString(cal.getTime()));
+//		cal.add(Calendar.DAY_OF_MONTH, 0-i);
+//		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH) - 6);
+//		String startDate = DateUtil.dateToString(cal.getTime());
+		for(int i = 1; i <= 6 ; i++) {
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			_7Days.add(DateUtil.dateToString(cal.getTime()));
+		}
+		return _7Days;
+	}
 
 	/**
 	 * 显示碳币交易明细 精确到秒
@@ -293,95 +380,6 @@ public class TUserCarbonOperationServiceImpl
 						list = mapper.findCarbonOperationDetail(dto);
 					}
 				}
-				
-//				SimpleDateFormat sdf = new SimpleDateFormat("");
-//				
-//				Map<String, TUserCarbonOperation> stepMap = new HashMap<String, TUserCarbonOperation>();
-//				List<TUserCarbonOperation> list = mapper.findCarbonOperationDetail(dto);
-//				List<TUserCarbonOperation> delList = new LinkedList<TUserCarbonOperation>();
-//				if(list != null) {
-//					for(TUserCarbonOperation tco : list) {
-//						if(tco.getOperationTypeChild().equals("DC170208100004")) {
-//							//步行换碳币按日期合并
-//							String date = tco.getCreateTime().substring(0, tco.getCreateTime().indexOf(" "));
-//							if(stepMap.containsKey(date)) {
-//								TUserCarbonOperation oneday = stepMap.get(date);
-//								oneday.setCarbonSum(oneday.getCarbonSum().add(tco.getCarbonSum()).setScale(2, BigDecimal.ROUND_HALF_UP));
-//								delList.add(tco);
-//							} else {
-//								stepMap.put(date, tco);
-//							}
-//						}
-//					}
-//					
-//					list.removeAll(delList);
-//					Collections.sort(list, new Comparator<TUserCarbonOperation>() {
-//						@Override
-//						public int compare(TUserCarbonOperation o1, TUserCarbonOperation o2) {
-//							return o2.getCreateTime().compareTo(o1.getCreateTime());
-//						}
-//					});
-//					
-////					list = list.subList(0, (dto.getPageSize() / 3) > list.size() ? list.size() : (dto.getPageSize() / 3));
-//				}
-				
-				
-				
-//				if(StringUtils.isBlank(dto.getOperationType()) 
-//						&& StringUtils.isBlank(dto.getOperationTypeChild())) {
-//					//前端按全部类型查询所有碳币收支记录
-//					//先查询步行换碳币记录
-//					list = new LinkedList<TUserCarbonOperation>();
-//					dto.setOperationType(null);
-//					dto.setOperationTypeChild("DC170208100004");
-//					List<TUserCarbonOperation> oneList = mapper.findCarbonOperationDetailDailyOne(dto);
-//					list.addAll(oneList);
-//					//再查询其他类型换碳币记录
-//					dto.setExcludeChildType("true");
-//					dto.setOperationType(null);
-//					dto.setOperationTypeChild("DC170208100004");
-//					List<TUserCarbonOperation> otherList = mapper.findCarbonOperationDetail(dto);
-//					list.addAll(otherList);
-//					Collections.sort(list, new Comparator<TUserCarbonOperation>() {
-//						@Override
-//						public int compare(TUserCarbonOperation o1, TUserCarbonOperation o2) {
-//							return o2.getCreateTime().compareTo(o1.getCreateTime());
-//						}
-//					});
-//					
-//					list = list.subList(0, dto.getPageSize() > list.size() ? list.size() : dto.getPageSize());
-//					
-//				} else if(StringUtils.isNotBlank(dto.getOperationTypeChild())) {
-//					//按碳币小类型查
-//					if(dto.getOperationTypeChild().equals("DC170208100004")) {
-//						//按碳币小类型-步行换碳币查,按日期合并---因为同步的步行碳币记录过多
-//						list = mapper.findCarbonOperationDetailDailyOne(dto);
-//					} else {
-//						//按碳币小类型查,不按日期合并
-//						list = mapper.findCarbonOperationDetail(dto);
-//					}
-//				} else if(StringUtils.isNotBlank(dto.getOperationType())) {
-//					//按碳币操作大类型查
-//					if(dto.getOperationType().equals("DC170208100002")) {
-//						//步行换碳币收入小类
-//						dto.setOperationTypeChild("DC170208100004");
-//						list = mapper.findCarbonOperationDetailDailyOne(dto);
-//						//其他收入小类
-//						dto.setExcludeChildType("true");
-//						List<TUserCarbonOperation> otherList = mapper.findCarbonOperationDetail(dto);
-//						list.addAll(otherList);
-//						Collections.sort(list, new Comparator<TUserCarbonOperation>() {
-//							@Override
-//							public int compare(TUserCarbonOperation o1, TUserCarbonOperation o2) {
-//								return o2.getCreateTime().compareTo(o1.getCreateTime());
-//							}
-//						});
-//						
-//						list = list.subList(0, dto.getPageSize() > list.size() ? list.size() : dto.getPageSize());
-//					}
-//					
-//					list = mapper.findCarbonOperationDetail(dto);
-//				}
 				
 				if (list != null && list.size() > 0) {
 					result.setData(list);
