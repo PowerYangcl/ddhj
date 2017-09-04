@@ -10,6 +10,7 @@ public class SearchLandPropertyDto extends BaseDto {
 	private Double minScore;
 	private Double maxScore;
 	private String base64;
+	private Integer pageIndex = Integer.valueOf(0);
 	
 	public String getKeyWord() {
 		return keyWord;
@@ -53,4 +54,11 @@ public class SearchLandPropertyDto extends BaseDto {
 	public void setCity(String city) {
 		this.city = city;
 	}
+	public Integer getPageIndex() {
+		return pageIndex;
+	}
+	public void setPageIndex(Integer pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+	
 }
