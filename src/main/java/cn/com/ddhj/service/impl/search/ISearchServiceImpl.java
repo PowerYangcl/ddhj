@@ -133,10 +133,10 @@ public class ISearchServiceImpl implements ISearchService {
 	}
 
 	@Override
-	public SearchResult<TSearchHotWord> getSearchHotWord() {
+	public SearchResult<TSearchHotWord> getSearchHotWord(String city) {
 		// TODO Auto-generated method stub
 		SearchResult<TSearchHotWord> result = new SearchResult<TSearchHotWord>();
-		List<TSearchHotWord> list = hotWordMapper.getSearchHotWord();
+		List<TSearchHotWord> list = hotWordMapper.getSearchHotWord(city);
 		result.setList(list);
 		return result;
 	}

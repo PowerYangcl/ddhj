@@ -733,7 +733,8 @@ public class ApiController extends BaseClass {
 		}
 		// 热搜接口-zht
 		else if ("hot_search".equals(api.getApiTarget())) {
-			SearchResult<TSearchHotWord> result = searchService.getSearchHotWord();
+			String city = obj.getString("city");
+			SearchResult<TSearchHotWord> result = searchService.getSearchHotWord(city);
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 赠送碳币接口-zht

@@ -589,6 +589,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				if(list != null && list.size() > 0) {  
 					List<Integer> choose = new ArrayList<Integer>();
 					List<EData> chooseList = new ArrayList<EData>();
+					boolean found = false;
 					for(int i = 0; i < Integer.parseInt(count); i++) {
 						//从10倍的list中,随机选 择count个
 						int suffix = RandomUtils.nextInt(list.size());
@@ -597,17 +598,28 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 							suffix = RandomUtils.nextInt(list.size());
 							retry++;
 						}
+						//根据随机生成的下标去扩大的列表中找到选中的楼盘
 						EData edata = list.get(suffix);
 						choose.add(suffix);
 						chooseList.add(edata);
 						
 						if(StringUtils.isNotBlank(lpCode) && lpCode.equals(edata.getCode())) {
+							//比本次随机选中的楼盘编号跟api传过来的关注楼盘编号
+							//随机选中的楼盘包含了api传过来的用户关注楼盘
 							found = true;
 						}
 					}
 					
 					if(chooseList.size() == Integer.parseInt(count)) {
 						list = chooseList;
+					}
+					if(!found) {
+						//随机选中的楼盘列表中不包含api传过来的用户关注楼盘
+						//查询用户关注的楼盘加到返回的楼盘列表中
+						EData edata = lrMapper.selectByCodeForEData(lpCode);
+						if(edata != null) {
+							list.add(edata);
+						}
 					}
 					
 					List<String> titles = new ArrayList<>();

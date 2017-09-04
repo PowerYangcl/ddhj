@@ -39,7 +39,7 @@ public interface ISearchService {
 	 * @author stockwyz
 	 * @return
 	 */
-	SearchResult<TSearchHotWord> getSearchHotWord();
+	SearchResult<TSearchHotWord> getSearchHotWord(String city);
 	
 	/**
 	 * 定时统计搜索热词

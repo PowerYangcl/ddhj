@@ -370,6 +370,15 @@
 		</where>
 		limit #{page , jdbcType=INTEGER} , #{count , jdbcType=INTEGER}
 	</select>
+	
+	<select id="selectByCodeForEData" parameterType="java.lang.String"
+		resultMap="ResultMap">
+		SELECT
+		*
+		FROM
+		t_landed_property 
+		where `code` = #{code,jdbcType=VARCHAR}			
+	</select>
 
 	<!-- 获取所有楼盘信息 2016-10-09 zhy -->
 	<select id="findTLandedPropertyAll" resultMap="BaseResultMap">

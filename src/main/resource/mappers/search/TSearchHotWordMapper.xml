@@ -23,11 +23,12 @@
 			zid = #{zid,jdbcType=INTEGER}
 	</select>
 	
-	<select id="getSearchHotWord" resultMap="BaseResultMap">
+	<select id="getSearchHotWord" resultMap="BaseResultMap" parameterType="java.lang.String">
 		select
 			city,key_word,score
 		from 
 			t_search_hot_word
+		where city=#{city, jdbcType=VARCHAR}
 		order by score desc limit 20
 	</select>
 	
