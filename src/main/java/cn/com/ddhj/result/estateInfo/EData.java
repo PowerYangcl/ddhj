@@ -3,6 +3,7 @@ package cn.com.ddhj.result.estateInfo;
 import java.util.List;
 
 public class EData {
+	private String code;    //楼盘编号
 	private String title;   // 地产名称
 	private String addressFull;  // 地址
 	private String total;	// 总住户
@@ -144,6 +145,12 @@ public class EData {
 	}
 	public void setScore(Double score) {
 		this.score = score;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
 	}
 	
 	

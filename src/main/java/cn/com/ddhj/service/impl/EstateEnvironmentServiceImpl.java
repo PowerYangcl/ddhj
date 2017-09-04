@@ -566,7 +566,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEstateList(String position , String city , String page , String count , String radius){
+	public JSONObject apiEstateList(String position , String city , String page , String count , String radius, String lpCode) {
 		JSONObject result = new JSONObject();
 		if(StringUtils.isAnyBlank(position , page)){
 			result.put("resultCode", -1); 
@@ -597,8 +597,13 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 							suffix = RandomUtils.nextInt(list.size());
 							retry++;
 						}
+						EData edata = list.get(suffix);
 						choose.add(suffix);
-						chooseList.add(list.get(suffix));
+						chooseList.add(edata);
+						
+						if(StringUtils.isNotBlank(lpCode) && lpCode.equals(edata.getCode())) {
+							found = true;
+						}
 					}
 					
 					if(chooseList.size() == Integer.parseInt(count)) {

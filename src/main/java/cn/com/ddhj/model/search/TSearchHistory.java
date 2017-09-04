@@ -4,6 +4,7 @@ import cn.com.ddhj.model.BaseModel;
 
 public class TSearchHistory extends BaseModel {
 	private String userCode;
+	private String city;
 	private String keyWord;
 	private Integer score;
 	public String getUserCode() {
@@ -11,6 +12,12 @@ public class TSearchHistory extends BaseModel {
 	}
 	public void setUserCode(String userCode) {
 		this.userCode = userCode;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
 	}
 	public String getKeyWord() {
 		return keyWord;

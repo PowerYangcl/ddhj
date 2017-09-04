@@ -78,20 +78,24 @@ public class ISearchServiceImpl implements ISearchService {
 				userCode = user.getUserCode();
 			}
 		}
-		TSearchHistory entity = new TSearchHistory();
-		entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
-		entity.setKeyWord(solrparams.getKeyWord());
-		entity.setUserCode(userCode);
-		entity.setCreateTime(DateUtil.getSysDateTime());
-		entity.setCreateUser(userCode);
-		entity.setUpdateTime(DateUtil.getSysDateTime());
-		entity.setUpdateUser(userCode);
-		mapper.insertSelective(entity);
 		
 		map = new SolrSearchServer().getSolrSearchData(solrQuery, Constant.SELLER_CODE);
 		if(map!=null && !map.isEmpty()) {
 			if(map.containsKey("items_rep")){
 				list=(List<SolrData>)map.get("items_rep");
+				if(list != null && !list.isEmpty()) {
+					//有搜索结果才记录搜索内容
+					TSearchHistory entity = new TSearchHistory();
+					entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
+					entity.setCity(dto.getCity());
+					entity.setKeyWord(solrparams.getKeyWord());
+					entity.setUserCode(userCode);
+					entity.setCreateTime(DateUtil.getSysDateTime());
+					entity.setCreateUser(userCode);
+					entity.setUpdateTime(DateUtil.getSysDateTime());
+					entity.setUpdateUser(userCode);
+					mapper.insertSelective(entity);
+				}
 			}
 			
 			if(map.containsKey("counts")){
@@ -171,6 +175,7 @@ public class ISearchServiceImpl implements ISearchService {
 			for(TSearchHistory hotWord : list) {
 				TSearchHotWord entity = new TSearchHotWord();
 				entity.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
+				entity.setCity(hotWord.getCity());
 				entity.setKeyWord(hotWord.getKeyWord());
 				entity.setScore(hotWord.getScore());
 				entity.setCreateUser("system-job");

@@ -297,7 +297,8 @@ public class ApiController extends BaseClass {
 			String page = obj.getString("page");
 			String radius = obj.getString("radius");
 			String count = obj.getString("count");
-			JSONObject result_ = estateEnvService.apiEstateList(position, city, page, count, radius);
+			String lpCode = obj.getString("lpCode");
+			JSONObject result_ = estateEnvService.apiEstateList(position, city, page, count, radius, lpCode);
 			long end = System.currentTimeMillis();
 			System.out.println("1033号接口总共耗时：" + +(end - start) + " 毫秒");
 			return result_;

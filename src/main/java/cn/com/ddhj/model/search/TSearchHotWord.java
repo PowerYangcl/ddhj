@@ -3,8 +3,16 @@ package cn.com.ddhj.model.search;
 import cn.com.ddhj.model.BaseModel;
 
 public class TSearchHotWord extends BaseModel {
+	private String city;
 	private String keyWord;
 	private Integer score;
+	
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
 	public String getKeyWord() {
 		return keyWord;
 	}
