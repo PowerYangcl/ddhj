@@ -135,15 +135,19 @@
 			BETWEEN
 			STR_TO_DATE(#{startDate,jdbcType=VARCHAR},'%Y-%m-%d')
 			AND
-			STR_TO_DATE(#{endDate,jdbcType=VARCHAR},'%Y-%m-%d')
-			<choose>
+			STR_TO_DATE(#{endDate,jdbcType=VARCHAR},'%Y-%m-%d') 
+			AND user_code = #{userCode,jdbcType=VARCHAR} 
+			<if test="equipmentCode != null and equipmentCode != ''">
+					AND equipment_code = #{equipmentCode,jdbcType=VARCHAR}
+			</if>
+			<!-- choose>
 				<when test="equipmentCode != null and equipmentCode != ''">
 					AND equipment_code = #{equipmentCode,jdbcType=VARCHAR}
 				</when>
 				<otherwise>
 					AND user_code = #{userCode,jdbcType=VARCHAR}
 				</otherwise>
-			</choose>
+			</choose -->
 		</where>
 		group by create_date order by create_date desc
 	</select>

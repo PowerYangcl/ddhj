@@ -478,9 +478,11 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		TUserStepDto dto = new TUserStepDto();
 		if (StringUtils.isNotBlank(equipmentCode)) {
 			dto.setEquipmentCode(equipmentCode);
-		} else {
-			dto.setUserCode(userCode);
-		}
+		} 
+//		else {
+//			dto.setUserCode(userCode);
+//		}
+		dto.setUserCode(userCode);
 		dto.setStartDate(startDate);
 		dto.setEndDate(endDate);
 		List<TUserStep> list = mapper.findUserStepData(dto);
@@ -504,9 +506,11 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		TUserStepDto dto = new TUserStepDto();
 		if (StringUtils.isNotBlank(equipmentCode)) {
 			dto.setEquipmentCode(equipmentCode);
-		} else {
-			dto.setUserCode(userCode);
 		}
+//		else {
+//			dto.setUserCode(userCode);
+//		}
+		dto.setUserCode(userCode);
 		dto.setStartDate(startDate);
 		dto.setEndDate(endDate);
 		List<TUserStep> list = mapper.findUserStepData(dto);
@@ -540,9 +544,11 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			TUserStepDto dto = new TUserStepDto();
 			if (StringUtils.isNotBlank(equipmentCode)) {
 				dto.setEquipmentCode(equipmentCode);
-			} else {
-				dto.setUserCode(userCode);
-			}
+			} 
+//			else {
+//				dto.setUserCode(userCode);
+//			}
+			dto.setUserCode(userCode);
 			dto.setStartDate(startDate);
 			dto.setEndDate(endDate);
 			List<TUserStep> month = mapper.findUserStepData(dto);

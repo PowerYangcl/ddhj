@@ -474,10 +474,12 @@ public class ApiController extends BaseClass {
 		} // 获取计步数据
 		else if ("step_data".equals(api.getApiTarget())) {
 			UserStepResult result = stepService.findUserStepData(obj.getString("equipmentCode"), api.getUserToken());
+			System.out.println("step_data::" + "$$" + JSONObject.parseObject(JSONObject.toJSONString(result)));
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
 		// 批量导入计步数据
 		else if ("step_sync".equals(api.getApiTarget())) {
+			System.out.println("step_sync::" + "$$"+ api.getApiInput());
 			BaseResult result = stepService.batchInsert(api.getApiInput(), api.getUserToken());
 			return JSONObject.parseObject(JSONObject.toJSONString(result));
 		}
