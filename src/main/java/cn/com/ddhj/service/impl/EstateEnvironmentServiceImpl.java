@@ -612,6 +612,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 					List<Integer> choose = new ArrayList<Integer>();
 					List<EData> chooseList = new ArrayList<EData>();
 					boolean found = false;
+					EData target = null;
 					for(int i = 0; i < Integer.parseInt(count); i++) {
 						//从10倍的list中,随机选 择count个
 						int suffix = RandomUtils.nextInt(list.size());
@@ -628,6 +629,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 						if(StringUtils.isNotBlank(lpCode) && lpCode.equals(edata.getCode())) {
 							//比本次随机选中的楼盘编号跟api传过来的关注楼盘编号
 							//随机选中的楼盘包含了api传过来的用户关注楼盘
+							target = edata;
 							found = true;
 						}
 					}
@@ -635,23 +637,33 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 					if(chooseList.size() == Integer.parseInt(count)) {
 						list = chooseList;
 					}
+					
+					JSONObject obj = apiEnvScore(position, city, radius, application, lpCode);
 					if(!found) {
 						//随机选中的楼盘列表中不包含api传过来的用户关注楼盘
 						//查询用户关注的楼盘加到返回的楼盘列表中
 						EData edata = lrMapper.selectByCodeForEData(lpCode);
-						if(edata != null) {
-							JSONObject obj = apiEnvScore(position, city, radius, application);
-							if(obj != null) {
-								String score = obj.getString("score");
-								if(StringUtils.isNotBlank(score)) {
-									try {
-										edata.setScore(Double.parseDouble(score));
-									} catch(Exception e) {
-										e.printStackTrace();
-									}
+						if(edata != null && obj != null) {
+							String score = obj.getString("score");
+							if(StringUtils.isNotBlank(score)) {
+								try {
+									edata.setScore(Double.parseDouble(score));
+								} catch(Exception e) {
+									e.printStackTrace();
 								}
 							}
 							list.add(edata);
+						}
+					} else {
+						if(obj != null) {
+							String score = obj.getString("score");
+							if(StringUtils.isNotBlank(score)) {
+								try {
+									target.setScore(Double.parseDouble(score));
+								} catch(Exception e) {
+									e.printStackTrace();
+								}
+							}
 						}
 					}
 					
