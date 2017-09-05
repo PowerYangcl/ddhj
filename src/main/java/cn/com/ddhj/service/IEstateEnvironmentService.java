@@ -51,7 +51,7 @@ public interface IEstateEnvironmentService {
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEstateList(String position , String city , String page , String count , String radius, String lpCode);
+	public JSONObject apiEstateList(String position , String city , String page , String count , String radius, String lpCode, ServletContext application);
 	
 	
 	/**

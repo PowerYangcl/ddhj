@@ -566,7 +566,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEstateList(String position , String city , String page , String count , String radius, String lpCode) {
+	public JSONObject apiEstateList(String position , String city , String page , String count , String radius, String lpCode, ServletContext application)  {
 		JSONObject result = new JSONObject();
 		if(StringUtils.isAnyBlank(position , page)){
 			result.put("resultCode", -1); 
@@ -618,6 +618,17 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 						//查询用户关注的楼盘加到返回的楼盘列表中
 						EData edata = lrMapper.selectByCodeForEData(lpCode);
 						if(edata != null) {
+							JSONObject obj = apiEnvScore(position, city, radius, application);
+							if(obj != null) {
+								String score = obj.getString("score");
+								if(StringUtils.isNotBlank(score)) {
+									try {
+										edata.setScore(Double.parseDouble(score));
+									} catch(Exception e) {
+										e.printStackTrace();
+									}
+								}
+							}
 							list.add(edata);
 						}
 					}
