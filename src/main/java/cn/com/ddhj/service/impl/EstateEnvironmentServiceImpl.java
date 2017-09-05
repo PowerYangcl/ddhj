@@ -291,7 +291,8 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				z2 = "3"; 
 				nscore = -10.00;
 			}
-			String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
+//			String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
+			String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, "0.5", volumeRate , wFuture.get().get("s") , z1 , z2);
 			if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
 				score = String.valueOf( (Double.valueOf(score) + nscore + Double.valueOf(rubFuture.get().get("score"))) );
 				if(score.length() > 5){
@@ -343,6 +344,8 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	
 	/**
 	 * @descriptions 环境综合评分接口|1032
+	 * 
+	 * 	 如果 lpcode不为空 则为 楼盘实时得分接口
 	 *
 	 * @test
 	 * 	http://stockwyz.xicp.net/ddhj/api.htm?apiTarget=1032&api_key=appfamilyhas&apiInput=%7b%22position%22%3a%2239.91488908%2c116.40387397%22%2c%22city%22%3a%22%e5%8c%97%e4%ba%ac%22%2c%22radius%22%3a2000%7d&api_timespan=2017-02-16+15%3a28%3a25&userToken=f32639fa4e494bec9d188c44417077c1&api_secret=6e832b4938e1c9d361cd0e0c6093e09b
@@ -356,7 +359,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	 * @author Yangcl 
 	 * @version 1.0.0.1
 	 */ 
-	public JSONObject apiEnvScore(String position , String city , String radius , ServletContext application){
+	public JSONObject apiEnvScore(String position , String city , String radius , ServletContext application , String lpcode){
 		JSONObject result = new JSONObject();
 		if(StringUtils.isAnyBlank(position , city)){
 			result.put("resultCode", -1); 
@@ -371,6 +374,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			twea.setCity(city); 
 			Future<JSONObject> weaTask =  executor.submit(twea); 
 	        
+			// 666
 	        Task1032Aqi taqi = new Task1032Aqi();
 	        taqi.setCityAirService(cityAirService);
 	        taqi.setCity(city); 
@@ -397,6 +401,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	        est.setEstateService(estateService);
 	        Future<List<EnvInfo>> estFuture = executor.submit(est);
 	        
+	        // 666
 	        Task1032WaterEnv w = new Task1032WaterEnv();
 	        w.setWaterEnvMapper(waterEnvMapper);
 	        w.setCity(city);
@@ -424,26 +429,42 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			
 			
 			String greeningRate = "1";  // 如下条件不满足则用默认值
-			String volumeRate = estFuture.get().get(0).getMemo();	   // 如下条件不满足则用默认值
-			JSONObject estate = this.estateList(position, "1" , "1" , radius); // 获取楼盘信息
-			if(estate.getString("code").equals("1")) {
-				List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
-				try {
-					if(estateList != null && estateList.size() > 0){
-						EData e = estateList.get(0);               // 因为精度是1米 所以只有一条记录，且就是这个楼盘
-						result.put("name", e.getTitle()); // 位置名称
-						if(StringUtils.isNoneBlank(e.getGreeningRate())){
-							if(Double.valueOf(e.getGreeningRate().split("%")[0])/100 < 0.5){   // 潜在的异常点
-								greeningRate = "0.5"; //教授接口返回HTTP Status 500 - 绿化率指数l只能是0.5或1|真坑爹
+			String volumeRate = "1.2";   // 如下条件不满足则用默认值 
+			if(StringUtils.isBlank(lpcode)){
+				volumeRate = estFuture.get().get(0).getMemo();	   // 如下条件不满足则用默认值
+				JSONObject estate = this.estateList(position, "1" , "1" , radius); // 获取楼盘信息
+				if(estate.getString("code").equals("1")) {
+					List<EData> estateList = JSONArray.parseArray(estate.getString("list"), EData.class);
+					try {
+						if(estateList != null && estateList.size() > 0){
+							EData e = estateList.get(0);               // 因为精度是1米 所以只有一条记录，且就是这个楼盘
+							result.put("name", e.getTitle()); // 位置名称
+							if(StringUtils.isNoneBlank(e.getGreeningRate())){
+								if(Double.valueOf(e.getGreeningRate().split("%")[0])/100 < 0.5){   // 潜在的异常点
+									greeningRate = "0.5"; //教授接口返回HTTP Status 500 - 绿化率指数l只能是0.5或1|真坑爹
+								}
 							}
+							// 聚合接口的容积率均返回错误数据，"volumeRate": "一期2.45元/平米/月;二期2.45/平米/月；三期3.1元/",	
+							// volumeRate = "0.4"; // 这里写定一个默认值		
 						}
-						// 聚合接口的容积率均返回错误数据，"volumeRate": "一期2.45元/平米/月;二期2.45/平米/月；三期3.1元/",	
-						// volumeRate = "0.4"; // 这里写定一个默认值		
+					} catch (Exception e) {
+						greeningRate = "1";
 					}
-				} catch (Exception e) {
-					greeningRate = "1";
 				}
-			} 
+			}else{
+				TLandedProperty lp = lrMapper.selectByCode(lpcode);
+				if(lp != null){
+					greeningRate = lp.getGreeningRate();
+					volumeRate = this.getRjLevel(lp.getPropertyType()).split("@")[1]; 
+					result.put("name", lp.getTitle()); // 位置名称
+				}else{
+					result.put("resultCode", -1); 
+					result.put("resultMessage", "楼盘编号错误"); 
+					return result;
+				}
+			}
+			
+			 
 			String z1 = "1";
 			String z2 = "0";
 			Double nscore = 0.00;
@@ -465,7 +486,8 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				z2 = "3"; 
 				nscore = -10.00;
 			}
-			String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
+//			String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, greeningRate, volumeRate , wFuture.get().get("s") , z1 , z2);
+			String score = DoctorScoreUtil.getDoctorScore(hourAqi, hourAqi, "0.5", volumeRate , wFuture.get().get("s") , z1 , z2);
 			if(rubFuture.get() != null){ // 污染源，针对最后的综合评分 距离500米 得出分-30
 				score = String.valueOf( (Double.valueOf(score) + nscore + Double.valueOf(rubFuture.get().get("score"))) );
 				if(score.length() > 5){
@@ -1581,6 +1603,27 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				}
 			}
 		}
+	}
+	
+	// 1.2那里要么显示普通or公寓or别墅  楼盘信息那里就是显示一个数字 - 程艳
+	private String getRjLevel(String str){
+		String re = "";
+		if(str.equals("普通住宅")){
+			re = "住宅@2";
+		}else if(str.equals("公寓、普通住宅")){
+			re = "公寓@1.6";
+		}else if(str.equals("公寓")){
+			re = "公寓@0.9";
+		}else if(str.equals("别墅")){
+			re = "别墅@0.3";
+		}else if(str.equals("别墅、普通住宅")){
+			re = "别墅@0.5";
+		}else if(str.equals("公寓、其它")){
+			re = "公寓@1.4";
+		}else{
+			re = "住宅@2";
+		}
+		return re;
 	}
 }
 
