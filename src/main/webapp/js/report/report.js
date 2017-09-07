@@ -14,5 +14,17 @@ var swiper = new Swiper('.swiper-container', {
             $("#btnNext").show();
             $("#btnPrev").show();
         }
+        var obj = $("#detail_top_" + swiper.realIndex);
+        if (obj[0]) {
+
+            if (obj[0].scrollHeight > obj[0].clientHeight || obj[0].offsetHeight > obj[0].clientHeight) {
+                $("#btnUp").show();
+            }
+        }
+        
+
+    },
+    onSlideChangeStart: function(swiper){
+        $("#btnUp").hide();
     }
-});
+})

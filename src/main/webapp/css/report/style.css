@@ -151,7 +151,7 @@ table {
     color: #222;
     font-size: .25rem;
     left: 0;
-    top: 14%;
+    top: 4%;
     text-align: center;
 }
 .verticalPage .swiper-slide .con{
@@ -169,15 +169,32 @@ table {
 .verticalPage .swiper-slide .detail{
     position: absolute;
     left: 0;
-    top: 21%;
+    top: 4%;
+    width: 100%;
+    /*overflow-y: scroll;
+    height: 70%;*/
+}
+.verticalPage .swiper-slide .detail_top{
+    position: absolute;
+    left: 0;
+    top: 10%;
     width: 100%;
     overflow-y: scroll;
-    height: 75%;
+    height: 80%;
+}
+.baogaoLookMore {
+    position: fixed;
+    width: 100%;
+    text-align: center;
+    color: #05a1ff;
+    font-size: .11rem;
+    bottom: .35rem;
+    z-index: 9999
 }
 .verticalPage .swiper-slide .detail02{
     position: absolute;
     left: 0;
-    top: 13%;
+    top: 3%;
     width: 100%;
 }
 .verticalPage .swiper-slide .detail h2{
