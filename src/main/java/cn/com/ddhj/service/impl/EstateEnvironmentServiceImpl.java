@@ -1112,7 +1112,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				}else{ 
 					logger.info("2050接口 type = B 开始请求聚合数据");
 					param.put("startTime" , this.getSpecifyDate(new Date(), 0, "yyyyMMdd"));  // 更新今天的数据
-					param.put("endTime" , this.getSpecifyDate(new Date(), 14, "yyyyMMdd"));  
+					param.put("endTime" , this.getSpecifyDate(new Date(), 13, "yyyyMMdd"));  
 					url = "http://v.juhe.cn/xiangji_weather/15_area.php";
 					responseJson = PureNetUtil.post(url , param);
 					if (responseJson != null && !"".equals(responseJson)) {
