@@ -848,7 +848,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				if (lpList != null && lpList.size() > 0) {
 					JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 					for (TLandedProperty lp : lpList) {
-						long lpStart = System.currentTimeMillis();
 						if (StringUtils.isNotBlank(lp.getLat())) {
 							lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
 						} else {
@@ -858,6 +857,10 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 								airArray);
 						if (list != null && list.size() > 0) {
 							lp.setEnvironmentIndexs(list);
+							lp.setEnvironmentIndexs1(list.subList(0, 3));
+							lp.setEnvironmentIndexs2(list.subList(3, 6));
+							lp.setEnvironmentIndexs3(list.subList(6, 9));
+							lp.setEnvironmentIndexs4(list.subList(9, list.size()));
 							lp.setUpdateTime(DateUtil.getCurrentDate());
 							reportLps.add(lp);
 						} else {
