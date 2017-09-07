@@ -63,13 +63,13 @@
 		            <div class="point"></div>
 		            <div class="detail detail02" style="top:12%;">
 		                <p class="txt" style="width:100%;text-align: left;">区域附近一个月内各项自然环境质量参数如下表所示</p>
-		                <div class="detail_table">
+		                <div class="detail_table" style="margin-top: -10px;">
 		                    <table border="1">
 		                      <thead>
 		                        <tr>
-		                          <th style="width:50%;">环境参数</th>
-		                          <th style="width:25%;">参数值</th>
-		                          <th style="width:25%;">等级</th>
+		                          <th class="cel-26">环境参数</th>
+		                          <th class="cel-37">参数值</th>
+		                          <th class="cel-37">等级</th>
 		                        </tr>
 		                      </thead>
 		                      <tbody>
