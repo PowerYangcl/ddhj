@@ -180,7 +180,7 @@ table {
     top: 10%;
     width: 100%;
     overflow-y: scroll;
-    height: 80%;
+    height: 82%;
 }
 .baogaoLookMore {
     position: fixed;
@@ -188,7 +188,7 @@ table {
     text-align: center;
     color: #05a1ff;
     font-size: .11rem;
-    bottom: .35rem;
+    bottom: .30rem;
     z-index: 9999
 }
 .verticalPage .swiper-slide .detail02{
@@ -201,7 +201,7 @@ table {
     color: #05a1ff;
     font-size: .16rem;
     text-align: center;
-    line-height: .36rem;
+    line-height: .31rem;
 }
 .verticalPage .swiper-slide .detail p.txt{
     color: #222;
@@ -210,7 +210,7 @@ table {
     width: 80%;
     margin:0 auto;
     text-indent: 24px;
-    padding-bottom: .15rem;
+    padding-bottom: .11rem;
 }
 .verticalPage .swiper-slide p.botm{
     position: absolute;
