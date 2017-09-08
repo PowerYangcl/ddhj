@@ -105,8 +105,8 @@
 			                        <tr>
 			                          <th class="cel-26">环境数据</th>
 			                          <th style="width:20%;">排名</th>
-			                          <th class="cel-26">排名时效</th>
-			                          <th class="cel-26">排名区域</th>
+			                          <th class="cel-26">时效</th>
+			                          <th class="cel-26">区域</th>
 			                        </tr>
 			                      </thead>
 			                     <tbody>

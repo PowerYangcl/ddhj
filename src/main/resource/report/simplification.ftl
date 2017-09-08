@@ -64,7 +64,7 @@
 		            <img class="bg_logo02" src="images/report/bg_logo02.png">
 		            <div class="point"></div>
 		            <div class="detail_top"  id="detail_top_3">
-			            <div class="detail detail02" style="top:12%;">
+			            <div class="detail detail02">
 			                <p class="txt" style="width:100%;text-align: left;">区域附近一个月内各项自然环境质量参数如下表所示</p>
 			                <div class="detail_table" style="margin-top: -10px;">
 		                    <table border="1">
