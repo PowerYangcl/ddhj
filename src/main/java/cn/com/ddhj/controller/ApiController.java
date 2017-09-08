@@ -295,6 +295,9 @@ public class ApiController extends BaseClass {
 			long start = System.currentTimeMillis();
 			String position = obj.getString("position");
 			String city = obj.getString("city");
+			if(StringUtils.isBlank(city)) {
+				city = "北京";
+			}
 			String page = obj.getString("page");
 			String radius = obj.getString("radius");
 			String count = obj.getString("count");
