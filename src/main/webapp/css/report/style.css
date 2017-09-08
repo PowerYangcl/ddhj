@@ -180,7 +180,7 @@ table {
     top: 10%;
     width: 100%;
     overflow-y: scroll;
-    height: 82%;
+    height: 83%;
 }
 .baogaoLookMore {
     position: fixed;
@@ -188,7 +188,7 @@ table {
     text-align: center;
     color: #05a1ff;
     font-size: .11rem;
-    bottom: .30rem;
+    bottom: .28rem;
     z-index: 9999
 }
 .verticalPage .swiper-slide .detail02{
@@ -231,7 +231,7 @@ table {
 
 .detail_table{
     width: 80%;
-    margin:0 auto .2rem;
+    margin:0 auto -0.2rem;
 }
 .detail_table table{
     width: 100%;
