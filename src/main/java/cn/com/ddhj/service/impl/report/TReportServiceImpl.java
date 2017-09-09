@@ -901,7 +901,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							List<TLandedProperty> subList = reportLps.subList(current * i, current * (i + 1));
 							new CreateReport(subList, config).run();
 						}
-						List<TLandedProperty> subList = reportLps.subList(current * size, lpList.size());
+						List<TLandedProperty> subList = reportLps.subList(current * size, reportLps.size());
 						new CreateReport(subList, config).run();
 					} catch (Exception e) {
 						e.printStackTrace();
