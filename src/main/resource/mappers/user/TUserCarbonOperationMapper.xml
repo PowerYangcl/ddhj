@@ -229,7 +229,7 @@
 		<select id="findCarbonOperationDetailDailyOne" parameterType="cn.com.ddhj.dto.user.TUserCarbonOperationDto"
 		resultMap="BaseResultMap">
 		SELECT
-			DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+			DATE_FORMAT(create_time, '%Y-%m-%d') AS create_time,
 			operation_type,
 			(
 				SELECT
