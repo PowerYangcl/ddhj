@@ -836,6 +836,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	 */
 	@Override
 	public int batchCreateH5Report() {
+		System.out.println("环境报告开始生成...................");
 		long start = System.currentTimeMillis();
 		int reCode = 1;
 		String lock = "";
@@ -866,32 +867,6 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						} else {
 							continue;
 						}
-						// /*
-						// * 精简版
-						// */
-						// TReport simplification = new TReport();
-						// simplification.setHousesCode(lp.getCode());
-						// simplification.setLevelCode("RL161006100001");
-						// String path =
-						// ReportHelper.getInstance().createHtml(lp,
-						// "simplification");
-						// simplification.setPath(path);
-						// String reportDate = DateUtil.getSysDateTime();
-						// simplification.setCreateTime(reportDate);
-						// /*
-						// * 完整版
-						// */
-						// TReport full = new TReport();
-						// full.setHousesCode(lp.getCode());
-						// full.setLevelCode("RL161006100002");
-						// String fullPath =
-						// ReportHelper.getInstance().createHtml(lp, "full");
-						// full.setPath(fullPath);
-						// String fullReportDate = DateUtil.getSysDateTime();
-						// full.setCreateTime(fullReportDate);
-						// long lpEnd = System.currentTimeMillis();
-						// getLogger().logInfo("获取楼盘信息时间为:" + (lpEnd -
-						// lpStart));
 					}
 					Configuration config = new Configuration(Configuration.VERSION_2_3_23);
 					try {
@@ -927,6 +902,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 			WebHelper.getInstance().unLock(lock);
 		}
 		Long end = System.currentTimeMillis();
+		System.out.println("环境报告生成结束...................");
 		getLogger().logInfo("定时执行时间为:" + (end - start));
 		return reCode;
 	}

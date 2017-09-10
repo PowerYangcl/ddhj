@@ -31,6 +31,7 @@ public class CreateReport implements Runnable {
 					 * 完整版
 					 */
 					ReportHelper.getInstance().createHtml(lp, "full");
+					System.out.println("楼盘"+lp.getCode()+"生成报告完成");
 				}
 			}
 		} catch (Exception e) {
