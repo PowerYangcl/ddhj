@@ -295,7 +295,13 @@ public class TUserCarbonOperationServiceImpl
 			info.setStep(step);
 			info.setKilo(kilo);
 			info.setCo2(co2);
-			String createDate = op.getCreateTime().substring(0, op.getCreateTime().indexOf(" "));
+			String createDate = "";
+			if(op.getCreateTime().indexOf(" ")>=0) {
+				createDate = op.getCreateTime().substring(0, op.getCreateTime().indexOf(" "));
+			} else {
+				createDate = op.getCreateTime();
+			}
+			
 			info.setCreateTime(createDate);
 			stepList.add(info);
 			weekDays.remove(createDate);
