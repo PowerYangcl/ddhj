@@ -721,4 +721,50 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			return BigDecimal.valueOf(0);
 		}
 	}
+	
+	public void dailyCountStepPresent(String createDate) {
+		List<TUserStep> list = mapper.dailyCountStepPresent(createDate);
+		for(TUserStep userStep : list) {
+			Integer step = userStep.getStep();
+			if(step >= 10000 && step < 20000) {
+				TUser user = userMapper.selectByCode(userStep.getUserCode());
+				//倍增
+				if(user.getCarbonMoney().compareTo(BigDecimal.valueOf(0)) == 0) {
+					user.setCarbonMoney(BigDecimal.valueOf(100));
+				}
+				user.setCarbonMoney(user.getCarbonMoney());
+				userMapper.updateCarbonByUserCode(user);
+				//记日志
+				TUserCarbonOperation entity = new TUserCarbonOperation();
+				entity.setUuid(WebHelper.getInstance().genUuid());
+				entity.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+				entity.setUserCode(user.getUserCode());
+				entity.setOperationType("DC170208100002");
+				entity.setOperationTypeChild("DC170208100012");
+				entity.setCreateUser(user.getUserCode());
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				entity.setCarbonSum(user.getCarbonMoney());
+				carbonOperationMapper.insertSelective(entity);
+			} else if(step >= 20000) {
+				TUser user = userMapper.selectByCode(userStep.getUserCode());
+				//三倍增
+				if(user.getCarbonMoney().compareTo(BigDecimal.valueOf(0)) == 0) {
+					user.setCarbonMoney(BigDecimal.valueOf(100));
+				}
+				user.setCarbonMoney(user.getCarbonMoney().multiply(BigDecimal.valueOf(2)).setScale(2,  BigDecimal.ROUND_HALF_UP));
+				userMapper.updateCarbonByUserCode(user);
+				//记日志
+				TUserCarbonOperation entity = new TUserCarbonOperation();
+				entity.setUuid(WebHelper.getInstance().genUuid());
+				entity.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+				entity.setUserCode(user.getUserCode());
+				entity.setOperationType("DC170208100002");
+				entity.setOperationTypeChild("DC170208100012");
+				entity.setCreateUser(user.getUserCode());
+				entity.setCreateTime(DateUtil.getSysDateTime());
+				entity.setCarbonSum(user.getCarbonMoney().multiply(BigDecimal.valueOf(2).setScale(2, BigDecimal.ROUND_HALF_UP)));
+				carbonOperationMapper.insertSelective(entity);
+			}
+		}
+	}
 }

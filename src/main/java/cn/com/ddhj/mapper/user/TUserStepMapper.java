@@ -26,6 +26,7 @@ public interface TUserStepMapper extends BaseMapper<TUserStep, TUserStepDto> {
 	 * @return
 	 */
 	int batchInsert(List<TUserStep> list);
+	
 
 	/**
 	 * 
@@ -65,6 +66,17 @@ public interface TUserStepMapper extends BaseMapper<TUserStep, TUserStepDto> {
 	 * @return
 	 */
 	List<TUserStep> findUserStepOne(TUserStepDto dto);
+	
+	/**
+	 * 
+	 * @Title: dailyCountStepPresent 
+	 * @Description: TODO 
+	 * @param @param createDate
+	 * @param @return    
+	 * @return List<TUserStep> 
+	 * @throws
+	 */
+	List<TUserStep> dailyCountStepPresent(String createDate);
 
 	/**
 	 * 
