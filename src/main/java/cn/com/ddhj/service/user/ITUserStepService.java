@@ -49,4 +49,14 @@ public interface ITUserStepService extends IBaseService<TUserStep, TUserStepDto>
 	 * 查询用户步数，按天显示，如果不传默认显示当天数据
 	 */
 	EntityResult findStepByDate(TUserStepDto dto,String userToken);
+	
+	/**
+	 * 每日凌晨统计根据用户当日步行数赠送碳币
+	 * @Title: dailyCountStepPresent 
+	 * @Description: TODO 
+	 * @param     
+	 * @return void 
+	 * @throws
+	 */
+	void dailyCountStepPresent(String createDate);
 }

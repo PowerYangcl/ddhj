@@ -133,6 +133,22 @@
 		<property name="cronExpression" value="0 5 0 * * ?"></property>
 	</bean>
 	
+	<!-- 碳步狂人 -->
+	<bean name="dailyCarbonStepPresentBean" class="cn.com.ddhj.job.DailyCarbonStepPresent" />
+	<bean id="quartzDailyCarbonStepPresent"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="dailyCarbonStepPresentBean"></property>
+		<property name="targetMethod" value="dailyCountStepPresent"></property>
+		<!-- 设定多个job不会并发运行 -->
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="dailyCarbonStepPresentTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="quartzDailyCarbonStepPresent" />
+		<!-- 凌晨5分运行定时任务 -->
+		<property name="cronExpression" value="0 5 0 * * ?"></property>
+	</bean>
+	
 	<bean name="quartzScheduler"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
@@ -142,6 +158,7 @@
 				<ref bean="reindexLandPropertyTrigger" />
 				<ref bean="createReportTrigger" />
 				<ref bean="StatSearchHotwordTrigger" />
+				<ref bean="dailyCarbonStepPresentTrigger" />
 			</list>
 		</property>
 	</bean>

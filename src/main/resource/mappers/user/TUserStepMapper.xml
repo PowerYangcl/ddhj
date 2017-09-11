@@ -219,4 +219,10 @@
 			</otherwise>
 		</choose>
 	</select>
+	<select id="dailyCountStepPresent" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select sum(step) as step, user_code 
+		from t_user_step 
+		where DATE_FORMAT(create_date, '%Y-%m-%d')=STR_TO_DATE(#{date,jdbcType=VARCHAR}, '%Y-%m-%d') 
+		group by user_code
+	</select>
 </mapper>
