@@ -905,6 +905,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			list.add("2017-08-01 06:06:08");
 			list.add("2017-08-15 06:06:08");
 			list.add("2017-08-30 06:06:08");
+			list.add("2017-09-01 06:06:08"); 
 			
 			for(String s : list){
 				System.out.println(s + "  数据开始刷新"); 

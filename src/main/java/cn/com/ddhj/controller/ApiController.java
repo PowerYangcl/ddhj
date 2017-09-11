@@ -357,7 +357,7 @@ public class ApiController extends BaseClass {
 			return result_;
 		}
 
-		 else if ("2068".equals(api.getApiTarget())) { // 手动刷楼盘得分  http://api.sys.ecomapit.com/ddhj/api.htm?apiTarget=2068&apiInput={%22city%22:%22%E9%9D%92%E5%B2%9B%22}
+		 else if ("2068".equals(api.getApiTarget())) { // 手动刷楼盘得分  http://api.sys.ecomapit.com/ddhj/api.htm?apiTarget=2068&apiInput={"city":"青岛"}
 				long start = System.currentTimeMillis();
 				estateEnvService.ressssyncEstateLoad(obj.getString("city")); 
 				long end = System.currentTimeMillis();

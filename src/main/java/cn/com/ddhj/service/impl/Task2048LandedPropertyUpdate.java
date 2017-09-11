@@ -48,13 +48,13 @@ public class Task2048LandedPropertyUpdate implements Callable<Integer> {
 					
 					DecimalFormat df = new DecimalFormat("#.00");
 					Random rand = new Random();  
-			        Double score = Double.valueOf(df.format (Double.valueOf( rand.nextInt(50)+55 + Math.random()) ));
+			        Double score = Double.valueOf(df.format (Double.valueOf( Math.abs(rand.nextInt(50))+49 + Math.random()) ));
 					ls.setScore(score); 
 					
 					ls.setCreateTime(currentDate);
 					ls.setCity(e.getCity());  
 					landedScoreMapper.insertSelective(ls);
-					System.out.println("Task2048LandedPropertyUpdate -> 强制插入t_landed_score表! ");
+					System.out.print(score + "|"); 
 				}
 			}else{
 				flag = this.getLrMapper().batchUpdateScore(this.getList());
