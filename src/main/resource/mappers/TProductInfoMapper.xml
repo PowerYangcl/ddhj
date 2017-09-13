@@ -180,7 +180,7 @@
 			</if>
 			
 		</where>
-		order by create_time desc
+		order by current_price desc, create_time desc
 	</select>
 	
 	
