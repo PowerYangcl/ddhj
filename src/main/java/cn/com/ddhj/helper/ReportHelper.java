@@ -788,6 +788,13 @@ public class ReportHelper extends BaseClass {
 				String url = PropHelper.getValue("user_report_url") + "/" + userCode + "/" + lpCode + "/full.html";
 				result.setUrl(url);
 				result.setResultCode(Constant.RESULT_SUCCESS);
+			} else {
+				File target = new File(USER_REPORT_PATH + userCode + "/" + lpCode + "/full.html");
+				if(target.exists()) {
+					String url = PropHelper.getValue("user_report_url") + "/" + userCode + "/" + lpCode + "/full.html";
+					result.setUrl(url);
+					result.setResultCode(Constant.RESULT_SUCCESS);
+				}
 			}
 		} catch (Exception e) {
 			result.setResultCode(Constant.RESULT_ERROR);
