@@ -274,7 +274,7 @@ public class TUserCarbonOperationServiceImpl
 		TUserCarbonOperationDto dto = new TUserCarbonOperationDto();
 		dto.setUserCode(user.getUserCode());
 		dto.setOperationTypeChild("DC170208100004");
-		dto.setDay(6);
+		dto.setDay(7);
 		List<TUserCarbonOperation> list = mapper.findCarbonOperationDetailDailyOne(dto);
 		if(list == null) {
 			result.setResultCode(Constant.RESULT_NULL);
@@ -403,6 +403,7 @@ public class TUserCarbonOperationServiceImpl
 	
 	private void combineUserStepQuery(List<TUserCarbonOperation> list, TUserCarbonOperationDto dto) {
 		List<TUserCarbonOperation> list1 = mapper.findCarbonOperationDetail(dto);
+		dto.setOperationTypeChild("DC170208100004");
 		List<TUserCarbonOperation> list2 = mapper.findCarbonOperationDetailDailyOne(dto);
 //		filterSameDay(list2);
 		list.addAll(list1);

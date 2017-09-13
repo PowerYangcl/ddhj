@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import cn.com.ddhj.annotation.Inject;
 import cn.com.ddhj.base.BaseClass;
@@ -22,9 +23,16 @@ import cn.com.ddhj.service.user.ITUserStepService;
 public class DailyCarbonStepPresent extends BaseClass {
 	@Inject
 	private ITUserStepService stepService;
+	private static String current;
 	
 	public void dailyCountStepPresent() {
-		String yesterday = DateUtil.formatDate(DateUtils.addDays(new Date(), -1), "yyyy-MM-dd");
-		stepService.dailyCountStepPresent(yesterday);
+		synchronized(this) {
+			String yesterday = DateUtil.formatDate(DateUtils.addDays(new Date(), -1), "yyyy-MM-dd");
+			if(StringUtils.isBlank(current) || !current.equals(yesterday)) {
+				current = yesterday;
+				stepService.dailyCountStepPresent(yesterday);
+			}
+		}
+		
 	}
 }
