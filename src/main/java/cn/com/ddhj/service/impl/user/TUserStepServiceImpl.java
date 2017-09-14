@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
+import cn.com.ddhj.dto.user.TUserCarbonOperationDto;
 import cn.com.ddhj.dto.user.TUserStepDto;
 import cn.com.ddhj.helper.PropHelper;
 import cn.com.ddhj.helper.WebHelper;
@@ -726,13 +727,29 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 		List<TUserStep> list = mapper.dailyCountStepPresent(createDate);
 		for(TUserStep userStep : list) {
 			Integer step = userStep.getStep();
-			if(step >= 10000 && step < 20000) {
-				TUser user = userMapper.selectByCode(userStep.getUserCode());
+			if(step < 10000) {
+				continue;
+			}
+			
+			TUser user = userMapper.selectByCode(userStep.getUserCode());
+			TUserCarbonOperationDto dto = new TUserCarbonOperationDto();
+			dto.setOperationTypeChild("DC170208100004");
+			dto.setDay(1);
+			dto.setUserCode(user.getUserCode());
+			List<TUserCarbonOperation> yesterDayList = carbonOperationMapper.findCarbonOperationDetailDailyOne(dto);
+			if(yesterDayList == null || yesterDayList.isEmpty()) {
+				continue;
+			}
+			//前一天步行兑换的碳币数
+			TUserCarbonOperation oper = yesterDayList.get(0);
+			BigDecimal carbon = oper.getCarbonSum();
+			if(carbon.compareTo(BigDecimal.valueOf(0)) == 0) {
+				continue;
+			}
+			
+			if(step >= 15000 && step < 20000) {
 				//倍增
-				if(user.getCarbonMoney().compareTo(BigDecimal.valueOf(0)) == 0) {
-					user.setCarbonMoney(BigDecimal.valueOf(100));
-				}
-				user.setCarbonMoney(user.getCarbonMoney());
+				user.setCarbonMoney(carbon.multiply(BigDecimal.valueOf(2)).setScale(2,  BigDecimal.ROUND_HALF_UP));
 				userMapper.updateCarbonByUserCode(user);
 				//记日志
 				TUserCarbonOperation entity = new TUserCarbonOperation();
@@ -743,15 +760,11 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 				entity.setOperationTypeChild("DC170208100012");
 				entity.setCreateUser(user.getUserCode());
 				entity.setCreateTime(DateUtil.getSysDateTime());
-				entity.setCarbonSum(user.getCarbonMoney());
+				entity.setCarbonSum(carbon.multiply(BigDecimal.valueOf(2)).setScale(2,  BigDecimal.ROUND_HALF_UP));
 				carbonOperationMapper.insertSelective(entity);
 			} else if(step >= 20000) {
-				TUser user = userMapper.selectByCode(userStep.getUserCode());
 				//三倍增
-				if(user.getCarbonMoney().compareTo(BigDecimal.valueOf(0)) == 0) {
-					user.setCarbonMoney(BigDecimal.valueOf(100));
-				}
-				user.setCarbonMoney(user.getCarbonMoney().multiply(BigDecimal.valueOf(2)).setScale(2,  BigDecimal.ROUND_HALF_UP));
+				user.setCarbonMoney(carbon.multiply(BigDecimal.valueOf(3)).setScale(2,  BigDecimal.ROUND_HALF_UP));
 				userMapper.updateCarbonByUserCode(user);
 				//记日志
 				TUserCarbonOperation entity = new TUserCarbonOperation();
@@ -762,7 +775,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 				entity.setOperationTypeChild("DC170208100012");
 				entity.setCreateUser(user.getUserCode());
 				entity.setCreateTime(DateUtil.getSysDateTime());
-				entity.setCarbonSum(user.getCarbonMoney().multiply(BigDecimal.valueOf(2).setScale(2, BigDecimal.ROUND_HALF_UP)));
+				entity.setCarbonSum(carbon.multiply(BigDecimal.valueOf(3)).setScale(2, BigDecimal.ROUND_HALF_UP));
 				carbonOperationMapper.insertSelective(entity);
 			}
 		}
