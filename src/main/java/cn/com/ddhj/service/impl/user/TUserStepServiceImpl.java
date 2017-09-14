@@ -734,7 +734,7 @@ public class TUserStepServiceImpl extends BaseServiceImpl<TUserStep, TUserStepMa
 			TUser user = userMapper.selectByCode(userStep.getUserCode());
 			TUserCarbonOperationDto dto = new TUserCarbonOperationDto();
 			dto.setOperationTypeChild("DC170208100004");
-			dto.setDay(1);
+			dto.setDay(2);
 			dto.setUserCode(user.getUserCode());
 			List<TUserCarbonOperation> yesterDayList = carbonOperationMapper.findCarbonOperationDetailDailyOne(dto);
 			if(yesterDayList == null || yesterDayList.isEmpty()) {
