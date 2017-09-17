@@ -1,9 +1,10 @@
 package cn.com.ddhj;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.httpclient.util.DateUtil;
-import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,10 @@ public class DailyUserStepCountPresent {
 	@Test
 	public void test() {
 		SpringCtxUtil.setApplicationContext(ctx);
-		String yesterday = DateUtil.formatDate(DateUtils.addDays(new Date(), -1), "yyyy-MM-dd");
-		stepService.dailyCountStepPresent(yesterday);
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		c.add(Calendar.DAY_OF_MONTH, -1);
+		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+		stepService.dailyCountStepPresent(f.format(c.getTime()));
 	}
 }
