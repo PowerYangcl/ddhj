@@ -266,11 +266,15 @@
 		   AND city_id=#{cityId,jdbcType=VARCHAR}
 		</if>
 		<if test="month != null">
-		   AND deal_date > DATE_SUB(CURDATE(), INTERVAL #{month,jdbcType=INTEGER} MONTH)
+		   AND deal_date > DATE_SUB(#{maxDate}, INTERVAL #{month,jdbcType=INTEGER} MONTH)
 		</if>
     </where>
     order by city_id,deal_date desc
   </select>
+  
+  <select id="queryDealsMaxDate" resultType="java.lang.String">
+ 	select max(deal_date) from t_trade_deal
+  </select>  
   
   <select id="queryDealsByCityIdCount" parameterType="cn.com.ddhj.dto.TOrderDto" resultType="java.lang.Integer">
     select count(*)

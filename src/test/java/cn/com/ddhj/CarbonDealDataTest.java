@@ -33,7 +33,7 @@ public class CarbonDealDataTest extends BaseTest {
 	@Autowired
 	private ITUserCarbonOperationService userCarbonService;
 	
-	
+	@Test
 	public void grab() {
 		service.grabDealData("http://k.tanjiaoyi.com:8080/KDataController/getHouseDatasInAverage.do?jsoncallback=abc&lcnK=7b56aba5e6e2b29d01587bf76dd3aa95&brand=TAN&_=1489330729677");
 	}

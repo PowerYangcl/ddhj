@@ -253,6 +253,8 @@ public class TTradeServiceImpl implements ITradeService {
 	@Override
 	public TradeDealChartResult queryDealsByCityIdAndPeriod(TTradeDealDto dto) {
 		TradeDealChartResult result = new TradeDealChartResult();
+		String maxDate = tradeDealMapper.queryDealsMaxDate();
+		dto.setMaxDate(maxDate);
 		List<TTradeDeal> dealList = tradeDealMapper.queryDealsByCityIdAndPeriod(dto);
 		if(dealList != null && !dealList.isEmpty()) {
 			result.setResultCode(Constant.RESULT_SUCCESS);

@@ -7,6 +7,7 @@ public class TTradeDealDto extends BaseDto {
 	private Integer month;
 	private String objectCode;
 	private String dealDate;
+	private String maxDate;
 
 	public String getCityId() {
 		return cityId;
@@ -39,4 +40,13 @@ public class TTradeDealDto extends BaseDto {
 	public void setDealDate(String dealDate) {
 		this.dealDate = dealDate;
 	}
+
+	public String getMaxDate() {
+		return maxDate;
+	}
+
+	public void setMaxDate(String maxDate) {
+		this.maxDate = maxDate;
+	}
+	
 }

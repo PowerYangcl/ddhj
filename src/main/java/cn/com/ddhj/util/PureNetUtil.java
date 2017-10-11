@@ -51,6 +51,7 @@ public class PureNetUtil {
 		HttpURLConnection conn = null;
 		try {
 			URL u = new URL(url);
+		
 			conn = (HttpURLConnection) u.openConnection();
 			StringBuffer sb = null;
 			if (param != null) {// 如果请求参数不为空
@@ -64,6 +65,7 @@ public class PureNetUtil {
 				conn.setDoOutput(true);
 				// 设定post方法,默认get
 				conn.setRequestMethod("POST");
+//				conn.setRequestProperty("Referer", "http://k.tanjiaoyi.com");
 				// 获得输出流
 				OutputStream out = conn.getOutputStream();
 				// 对输出流封装成高级输出流
@@ -77,6 +79,7 @@ public class PureNetUtil {
 				writer.close();// 一定要关闭,不然可能出现参数不全的错误
 				sb = null;
 			}
+			
 			conn.connect();// 建立连接
 			sb = new StringBuffer();
 			// 获取连接状态码

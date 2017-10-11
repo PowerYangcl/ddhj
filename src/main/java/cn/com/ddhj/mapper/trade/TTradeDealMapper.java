@@ -31,6 +31,8 @@ public interface TTradeDealMapper extends BaseMapper<TTradeDeal, TTradeDealDto> 
      */
     int deleteByCityAndDealDate(TTradeDeal record);
     
+    String queryDealsMaxDate();
+    
     /**
      * 
      * 方法: insertSelective<br>
