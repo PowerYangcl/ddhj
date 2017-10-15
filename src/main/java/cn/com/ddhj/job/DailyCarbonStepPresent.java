@@ -1,5 +1,7 @@
 package cn.com.ddhj.job;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.httpclient.util.DateUtil;
@@ -27,7 +29,12 @@ public class DailyCarbonStepPresent extends BaseClass {
 	
 	public void dailyCountStepPresent() {
 		synchronized(this) {
-			String yesterday = DateUtil.formatDate(DateUtils.addDays(new Date(), -1), "yyyy-MM-dd");
+			Calendar c = Calendar.getInstance();
+			c.setTime(new Date());
+			c.add(Calendar.DAY_OF_MONTH, -1);
+			SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+			String yesterday = f.format(c.getTime());
+//			String yesterday = DateUtil.formatDate(DateUtils.addDays(new Date(), -1), "yyyy-MM-dd");
 			if(StringUtils.isBlank(current) || !current.equals(yesterday)) {
 				current = yesterday;
 				stepService.dailyCountStepPresent(yesterday);
