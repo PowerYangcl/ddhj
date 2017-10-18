@@ -877,7 +877,147 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 	}
 	
 	
-	 
+	public void jobForRessssyncEstateLoad(){
+		List<String> list = new ArrayList<>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+		try {
+			list.add("2017-09-01 06:06:08");
+			list.add("2017-09-02 06:06:08");
+			list.add("2017-09-03 06:06:08");
+			list.add("2017-09-04 06:06:08");
+			list.add("2017-09-05 06:06:08");
+			list.add("2017-09-06 06:06:08");
+			list.add("2017-09-07 06:06:08");
+			list.add("2017-09-08 06:06:08");
+			list.add("2017-09-09 06:06:08");
+			list.add("2017-09-10 06:06:08");
+			list.add("2017-09-11 06:06:08");
+			list.add("2017-09-12 06:06:08");
+			list.add("2017-09-13 06:06:08");
+			list.add("2017-09-14 06:06:08");
+			list.add("2017-09-15 06:06:08");
+			list.add("2017-09-16 06:06:08");
+			list.add("2017-09-17 06:06:08");
+			list.add("2017-09-18 06:06:08");
+			list.add("2017-09-19 06:06:08");
+			list.add("2017-09-20 06:06:08");
+			list.add("2017-09-21 06:06:08");
+			list.add("2017-09-22 06:06:08");
+			list.add("2017-09-23 06:06:08");
+			list.add("2017-09-24 06:06:08");
+			list.add("2017-09-25 06:06:08");
+			list.add("2017-09-26 06:06:08");
+			list.add("2017-09-27 06:06:08");
+			list.add("2017-09-28 06:06:08");
+			list.add("2017-09-29 06:06:08");
+			list.add("2017-09-30 06:06:08");
+			for(String s : list){
+				System.out.println(s + "  数据开始刷新"); 
+				this.resyncEstateScoredddddd(sdf.parse(s));
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void resyncEstateScoredddddd(Date currentDate){ 
+		List<String> clist = new ArrayList<String>();
+		clist.add("北京");
+		
+		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
+		ExecutorService executor = Executors.newCachedThreadPool();
+		for(int i = 0 ; i < clist.size() ; i ++){
+			Task1032Aqi taqi = new Task1032Aqi();
+	        taqi.setCityAirService(cityAirService);
+	        taqi.setCity(clist.get(i));  
+	        futureList.add(executor.submit(taqi));
+		}
+
+		Map<String , List<TLandedProperty>> map = new TreeMap<String , List<TLandedProperty>>();
+		for(String city : clist){  // 默认初始化
+			List<TLandedProperty> elist = new ArrayList<TLandedProperty>();
+			map.put(city, elist);
+		}
+		List<TLandedProperty> estateList = lrMapper.selectAllEstateInfo();
+		for(TLandedProperty e : estateList){
+			if(map.containsKey(e.getCity())){
+				map.get(e.getCity()).add(e);
+			}
+		}
+		
+		List<TLandedProperty> nestateList = new ArrayList<>();
+		List<Future<List<TLandedProperty>>> tlpFutureList = new ArrayList<Future<List<TLandedProperty>>>();   
+		try {
+			for (Future<CityAqi> fs : futureList){  
+				CityAqi aqi = null;
+				while(!fs.isDone()){
+					logger.info("等待中");
+					Thread.sleep(100); 
+				}
+				aqi = fs.get();
+				String hourAqi = "80";
+				String dayAqi = "";
+				if(aqi.getEntity() != null) {
+					hourAqi = aqi.getEntity().getAQI();
+					for(CityAqiData d : aqi.getList()){
+						dayAqi += d.getAQI() + ",";
+					}
+					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
+				}
+				// 按照city名称 分为N个线程，一共会启动N*20个线程|TODO 注意：此处线程数量不建议超过120个  
+				if(map.containsKey(aqi.getName())){
+					List<TLandedProperty> tlpList = map.get(aqi.getName());
+					List<TAreaNoise> noiseList = noiseMapper.selectByArea(aqi.getName()); 
+					List<TWaterEnviroment> waterEnvList = waterEnvMapper.selectByCity(aqi.getName());
+					List<TRubbishRecycling> rubbishList = rubbishMapper.findListByCity(aqi.getName()); 
+					List<TChemicalPlant> chemicalList = chemicalMapper.findListByCity(aqi.getName());  
+					
+					Task2048EstateArea tea = new Task2048EstateArea(executor, tlpList, hourAqi, dayAqi, noiseList, waterEnvList, rubbishList, chemicalList); 
+					tlpFutureList.add(executor.submit(tea));
+				}
+			} 
+			
+			// 组合nestateList 然后批量更新数据库
+			for(Future<List<TLandedProperty>> fut : tlpFutureList){
+				while(!fut.isDone()){
+					Thread.sleep(1000); 
+				}
+				nestateList.addAll(fut.get());
+			}
+			
+			int size = 5000; // 单组list大小
+			int count = nestateList.size() / size; // TreeMap 的分组数       10008/20 = 500 余 8 
+			int count_ = nestateList.size() - count * size; // 余数 
+			Map<Integer , List<TLandedProperty>> mapgroup = new TreeMap<Integer , List<TLandedProperty>>();
+			for(int i = 0 ; i < count ; i ++){
+				mapgroup.put(i , nestateList.subList(i*size , size*(i+1)));
+			}
+			if(count_ != 0){
+				mapgroup.put(count, nestateList.subList(count*size, nestateList.size())); 
+			}
+			for (Map.Entry<Integer, List<TLandedProperty>> entry : mapgroup.entrySet()) {
+				Task2048LandedPropertyUpdate2 lpu = new Task2048LandedPropertyUpdate2(entry.getValue(), lrMapper , landedScoreMapper , currentDate);
+				executor.submit(lpu);
+			}
+			
+		} catch (InterruptedException | ExecutionException e1) {
+			e1.printStackTrace();
+		}finally{
+			executor.shutdown();  
+		}
+			
+	} 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	private String getNextDate(Date date){
 		 Calendar calendar = new GregorianCalendar();
@@ -888,9 +1028,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		 
 		 return formatter.format(date);
 	}
-	
-	
-	
 	
 	
 	/**
