@@ -20,54 +20,27 @@ public class Task2048LandedPropertyUpdate implements Callable<Integer> {
 	
 	private TLandedScoreMapper landedScoreMapper;
 
-	private Date currentDate;
 
 	public Task2048LandedPropertyUpdate(List<TLandedProperty> list, TLandedPropertyMapper lrMapper , TLandedScoreMapper landedScoreMapper) {
 		this.list = list;
 		this.lrMapper = lrMapper;
 		this.landedScoreMapper = landedScoreMapper;
 	}
-	
-	public Task2048LandedPropertyUpdate(List<TLandedProperty> list, TLandedPropertyMapper lrMapper , TLandedScoreMapper landedScoreMapper , Date currentDate) {
-		this.list = list;
-		this.lrMapper = lrMapper;
-		this.landedScoreMapper = landedScoreMapper;
-		this.currentDate = currentDate;
-	}
 
 
 	public Integer call() throws Exception {
 		Integer flag = 0;
 		try {
-			if(currentDate != null){
-				flag = 1 ;  
-				for(TLandedProperty e : list){
-					TLandedScore ls = new TLandedScore();
-					ls.setUuid(UUID.randomUUID().toString().replace("-", ""));
-					ls.setCode(e.getCode());
-					
-					DecimalFormat df = new DecimalFormat("#.00");
-					Random rand = new Random();  
-			        Double score = Double.valueOf(df.format (Double.valueOf( Math.abs(rand.nextInt(50))+49 + Math.random()) ));
-					ls.setScore(score); 
-					
-					ls.setCreateTime(currentDate);
-					ls.setCity(e.getCity());  
-					landedScoreMapper.insertSelective(ls);
-					System.out.print(score + "|"); 
-				}
-			}else{
-				flag = this.getLrMapper().batchUpdateScore(this.getList());
-				for(TLandedProperty e : list){
-					TLandedScore ls = new TLandedScore();
-					ls.setUuid(UUID.randomUUID().toString().replace("-", ""));
-					ls.setCode(e.getCode());
-					ls.setScore(e.getScore()); 
-					ls.setCreateTime(new Date());
-					ls.setCity(e.getCity());  
-					landedScoreMapper.insertSelective(ls);
-					System.out.println("Task2048LandedPropertyUpdate -> TLandedScore insert already! ");
-				}
+			flag = this.getLrMapper().batchUpdateScore(this.getList());
+			for(TLandedProperty e : list){
+				TLandedScore ls = new TLandedScore();
+				ls.setUuid(UUID.randomUUID().toString().replace("-", ""));
+				ls.setCode(e.getCode());
+				ls.setScore(e.getScore()); 
+				ls.setCreateTime(new Date());
+				ls.setCity(e.getCity());  
+				landedScoreMapper.insertSelective(ls);
+				System.out.println("Task2048LandedPropertyUpdate -> TLandedScore insert already! ");
 			}
 			
 		} catch (Exception e) {

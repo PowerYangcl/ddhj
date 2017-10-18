@@ -116,7 +116,6 @@ public interface IEstateEnvironmentService {
 	public void jobForStatLandScore();
 	
 	
-	public void ressssyncEstateLoad(String city);   
 }
 
 

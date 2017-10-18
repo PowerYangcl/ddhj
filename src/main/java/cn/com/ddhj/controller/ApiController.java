@@ -359,7 +359,7 @@ public class ApiController extends BaseClass {
 
 		 else if ("2068".equals(api.getApiTarget())) { // 手动刷楼盘得分  http://api.sys.ecomapit.com/ddhj/api.htm?apiTarget=2068&apiInput={"city":"青岛"}
 				long start = System.currentTimeMillis();
-				estateEnvService.ressssyncEstateLoad(obj.getString("city")); 
+//				estateEnvService.ressssyncEstateLoad(obj.getString("city")); 
 				long end = System.currentTimeMillis();
 				System.out.println("2068 号接口总共耗时：" + +(end - start) + " 毫秒");
 				return null;

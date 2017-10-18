@@ -876,48 +876,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		}
 	}
 	
-	public void ressssyncEstateLoad(String city){
-		List<String> list = new ArrayList<>();
-		String begin = "2017-01-01 06:06:08";
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
-		try {
-			list.add(begin);
-			list.add("2017-01-15 06:06:08");
-			list.add("2017-01-30 06:06:08");
-			list.add("2017-02-01 06:06:08");
-			list.add("2017-02-15 06:06:08");
-			list.add("2017-02-28 06:06:08");
-			list.add("2017-03-01 06:06:08");
-			list.add("2017-03-15 06:06:08");
-			list.add("2017-03-31 06:06:08");
-			list.add("2017-04-01 06:06:08");
-			list.add("2017-04-15 06:06:08");
-			list.add("2017-04-30 06:06:08");
-			list.add("2017-05-01 06:06:08");
-			list.add("2017-05-15 06:06:08");
-			list.add("2017-05-31 06:06:08");
-			list.add("2017-06-01 06:06:08");
-			list.add("2017-06-15 06:06:08");
-			list.add("2017-06-30 06:06:08");
-			list.add("2017-07-01 06:06:08");
-			list.add("2017-07-15 06:06:08");
-			list.add("2017-07-31 06:06:08");
-			list.add("2017-08-01 06:06:08");
-			list.add("2017-08-15 06:06:08");
-			list.add("2017-08-30 06:06:08");
-			list.add("2017-09-01 06:06:08"); 
-			
-			for(String s : list){
-				System.out.println(s + "  数据开始刷新"); 
-				this.resyncEstateScoredddddd(sdf.parse(s) , city);
-			}
-			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println(city +  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + JSONObject.toJSONString(list)); 
-	}
 	
 	 
 	
@@ -931,63 +889,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		 return formatter.format(date);
 	}
 	
-	private void resyncEstateScoredddddd(Date currentDate , String city_){ 
-		List<String> clist = new ArrayList<String>();
-		clist.add(city_);
-//		clist.add("北京");
-//		clist.add("天津");
-//		clist.add("深圳");
-//		clist.add("唐山");
-//		clist.add("廊坊");
-//		clist.add("沈阳");
-//		clist.add("武汉");
-//		clist.add("烟台");
-//		clist.add("长沙");
-//		clist.add("青岛");
-//		clist.add("重庆");
-//		clist.add("大连");
-//		clist.add("成都"); 
-		
-		List<Future<CityAqi>> futureList = new ArrayList<Future<CityAqi>>();   
-		ExecutorService executor = Executors.newCachedThreadPool();
-		for(int i = 0 ; i < clist.size() ; i ++){
-			Task1032Aqi taqi = new Task1032Aqi();
-	        taqi.setCityAirService(cityAirService);
-	        taqi.setCity(clist.get(i));  
-	        futureList.add(executor.submit(taqi));
-		}
-
-		Map<String , List<TLandedProperty>> map = new TreeMap<String , List<TLandedProperty>>();
-		for(String city : clist){  // 默认初始化
-			List<TLandedProperty> elist = new ArrayList<TLandedProperty>();
-			map.put(city, elist);
-		}
-//		List<TLandedProperty> estateList = lrMapper.selectAllEstateInfo();
-		List<TLandedProperty> estateList = lrMapper.selectAllEstateInfoByCity(city_);
-		for(TLandedProperty e : estateList){
-			if(map.containsKey(e.getCity())){
-				map.get(e.getCity()).add(e);
-			}
-		}
-		
-		List<TLandedProperty> nestateList = estateList ;   //new ArrayList<>();
-		List<Future<List<TLandedProperty>>> tlpFutureList = new ArrayList<Future<List<TLandedProperty>>>();   
-			int size = 5000; // 单组list大小
-			int count = nestateList.size() / size; // TreeMap 的分组数       10008/20 = 500 余 8 
-			int count_ = nestateList.size() - count * size; // 余数 
-			Map<Integer , List<TLandedProperty>> mapgroup = new TreeMap<Integer , List<TLandedProperty>>();
-			for(int i = 0 ; i < count ; i ++){
-				mapgroup.put(i , nestateList.subList(i*size , size*(i+1)));
-			}
-			if(count_ != 0){
-				mapgroup.put(count, nestateList.subList(count*size, nestateList.size())); 
-			}
-			for (Map.Entry<Integer, List<TLandedProperty>> entry : mapgroup.entrySet()) {
-				Task2048LandedPropertyUpdate lpu = new Task2048LandedPropertyUpdate(entry.getValue(), lrMapper , landedScoreMapper , currentDate);
-				executor.submit(lpu);
-			}
-			
-	}
 	
 	
 	
