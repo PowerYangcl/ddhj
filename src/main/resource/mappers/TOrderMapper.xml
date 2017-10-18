@@ -90,8 +90,7 @@
 	<!-- 查询所有已支付订单的楼盘编码和创建人 2017-08-19 zhy -->
 	<select id="findOrderLPAndCreateUserAll" resultMap="BaseResultMap">
 		select
-		lp_code,create_user from t_order where `status` in(1,2) and
-		DATE_ADD(update_time,INTERVAL 3 MONTH)>NOW() group by
+		lp_code,create_user from t_order where `status` in(1,2) group by
 		create_user,lp_code
 	</select>
 	<delete id="deleteByCode" parameterType="java.lang.String">
