@@ -63,4 +63,15 @@ public interface TOrderMapper extends BaseMapper<TOrder, TOrderDto> {
 	 * @return
 	 */
 	public List<TOrder> findOrderLPAndCreateUser();
+
+	/**
+	 * 
+	 * 方法: findOrderLPAndCreateUserAll <br>
+	 * 描述: 查询所有已支付订单的楼盘编码和创建人 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年10月18日 下午11:16:17
+	 * 
+	 * @return
+	 */
+	List<TOrder> findOrderLPAndCreateUserAll();
 }

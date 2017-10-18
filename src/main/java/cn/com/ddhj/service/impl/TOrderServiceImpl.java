@@ -85,7 +85,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			result.setResultMessage("用户不存在");
 			return result;
 		}
-		
+
 		dto.setStart(dto.getPageIndex() * dto.getPageSize());
 		dto.setCreateUser(user.getUserCode());
 		List<TOrder> list = mapper.findEntityAll(dto);
@@ -98,7 +98,7 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 			result.setRepCount(total);
 			return result;
 		}
-		
+
 		if (request != null) {
 			for (int i = 0; i < list.size(); i++) {
 				TOrder order = list.get(i);
@@ -124,16 +124,16 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 						e.printStackTrace();
 					}
 				} else if (order.getStatus() == 0) {
-					//未支付环境报告完整版返回为空
+					// 未支付环境报告完整版返回为空
 					order.setReportFull("");
 				}
 			}
 		}
 		String ratio = PropHelper.getValue("carbon_money_ratio");
-		if(ratio != null) {
+		if (ratio != null) {
 			Double limit = Double.valueOf(PropHelper.getValue("present_carbon_total_rmb"));
-			BigDecimal b = new BigDecimal(limit / Double.parseDouble(ratio));  
-			Double max = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); 
+			BigDecimal b = new BigDecimal(limit / Double.parseDouble(ratio));
+			Double max = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 			result.setMaxCarbon((int) Math.ceil(max));
 		}
 		result.setResultCode(Constant.RESULT_SUCCESS);
@@ -170,15 +170,15 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		if (login != null) {
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
-				if(entity.getCarbonMoney() != null && entity.getCarbonMoney().compareTo(BigDecimal.ZERO) > 0) {
-					if(user.getCarbonMoney().compareTo(entity.getCarbonMoney()) < 0) {
-						//用户帐户碳币金额小于支付金额,无法创建 订单
+				if (entity.getCarbonMoney() != null && entity.getCarbonMoney().compareTo(BigDecimal.ZERO) > 0) {
+					if (user.getCarbonMoney().compareTo(entity.getCarbonMoney()) < 0) {
+						// 用户帐户碳币金额小于支付金额,无法创建 订单
 						result.setResultCode(Constant.RESULT_ERROR);
 						result.setResultMessage("用户帐户碳币金额小于支付金额,无法创建订单");
 						return result;
 					}
 				}
-				
+
 				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 				String code = WebHelper.getInstance().getUniqueCode("D");
 				entity.setCode(code);
@@ -602,6 +602,26 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		BaseResult result = new BaseResult();
 		try {
 			List<TOrder> orders = mapper.findOrderLPAndCreateUser();
+			if (orders != null && orders.size() > 0) {
+				for (TOrder order : orders) {
+					ReportHelper.getInstance().createUserReport(order.getLpCode(), order.getCreateUser());
+				}
+			}
+			result.setResultCode(Constant.RESULT_SUCCESS);
+			result.setResultMessage("更新已支付订单环境报告成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setResultCode(Constant.RESULT_ERROR);
+			result.setResultMessage("更新已支付订单环境报告失败，失败原因：" + e.getMessage());
+		}
+		return result;
+	}
+
+	@Override
+	public BaseResult refreshUserReportAll() {
+		BaseResult result = new BaseResult();
+		try {
+			List<TOrder> orders = mapper.findOrderLPAndCreateUserAll();
 			if (orders != null && orders.size() > 0) {
 				for (TOrder order : orders) {
 					ReportHelper.getInstance().createUserReport(order.getLpCode(), order.getCreateUser());

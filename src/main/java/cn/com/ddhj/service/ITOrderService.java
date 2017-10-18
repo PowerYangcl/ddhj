@@ -143,25 +143,38 @@ public interface ITOrderService extends IBaseService<TOrder, TOrderDto> {
 	 * @return
 	 */
 	public BaseResult refreshReport(String code);
-	
+
 	/**
 	 * 
 	 * 方法: getOrderReportUrl <br>
 	 * 描述: 根据订单编码查询订单环境报告访问地址信息 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2017年8月19日 下午6:20:18
+	 * 
 	 * @param code
 	 * @return
 	 */
 	ReportResult getOrderReportUrl(String code);
-	
+
 	/**
 	 * 
 	 * 方法: refreshUserReport <br>
 	 * 描述: 刷新已支付订单报告信息 <br>
 	 * 作者: zhy<br>
 	 * 时间: 2017年8月21日 下午4:57:05
+	 * 
 	 * @return
 	 */
 	BaseResult refreshUserReport();
+
+	/**
+	 * 
+	 * 方法: refreshUserReportAll <br>
+	 * 描述: 刷新已支付订单报告信息 <br>
+	 * 作者: zhy<br>
+	 * 时间: 2017年8月21日 下午4:57:05
+	 * 
+	 * @return
+	 */
+	BaseResult refreshUserReportAll();
 }

@@ -35,8 +35,9 @@
 		<result column="app_vision" property="appVision" jdbcType="VARCHAR" />
 		<result column="os" property="os" jdbcType="VARCHAR" />
 		<result column="invoice_type" property="invoiceType" jdbcType="VARCHAR" />
-		<result column="invoice_content" property="invoiceContent" jdbcType="VARCHAR" />
-		<!-- 新加  -->
+		<result column="invoice_content" property="invoiceContent"
+			jdbcType="VARCHAR" />
+		<!-- 新加 -->
 		<result column="price" property="realPrice" jdbcType="DOUBLE" />
 	</resultMap>
 	<sql id="Base_Column_List">
@@ -81,6 +82,13 @@
 	</select>
 	<!-- 查询已支付订单的楼盘编码和创建人 2017-08-19 zhy -->
 	<select id="findOrderLPAndCreateUser" resultMap="BaseResultMap">
+		select
+		lp_code,create_user from t_order where `status` in(1,2) and
+		DATE_ADD(update_time,INTERVAL 3 MONTH)>NOW() group by
+		create_user,lp_code
+	</select>
+	<!-- 查询所有已支付订单的楼盘编码和创建人 2017-08-19 zhy -->
+	<select id="findOrderLPAndCreateUserAll" resultMap="BaseResultMap">
 		select
 		lp_code,create_user from t_order where `status` in(1,2) and
 		DATE_ADD(update_time,INTERVAL 3 MONTH)>NOW() group by
@@ -207,30 +215,33 @@
 		</set>
 		where `code` = #{code,jdbcType=VARCHAR}
 	</update>
-	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.TOrderDto" resultMap="BaseResultMap">
+	<select id="findEntityAll" parameterType="cn.com.ddhj.dto.TOrderDto"
+		resultMap="BaseResultMap">
 		SELECT
-			o.`code` AS `code`,
-			o.pay_price AS pay_price,
-			o.pay_code as
-			pay_code,
-			o.`status` AS
-			`status`,
-			o.carbon_money,
-			o.report_simplification,
-			o.report_full,
-			r.title,
-			r.pic AS pic,
-			r.image AS image,
-			r.path,
-			rl.`name` AS level_name,
-			lp.addressFull AS address,
-			o.report_code AS report_code,
-			o.create_time AS create_time,
-			o.update_time AS update_time,
-			r.price as realPrice
+		o.`code` AS `code`,
+		o.pay_price AS pay_price,
+		o.pay_code as
+		pay_code,
+		o.`status` AS
+		`status`,
+		o.carbon_money,
+		o.report_simplification,
+		o.report_full,
+		r.title,
+		r.pic AS pic,
+		r.image AS image,
+		r.path,
+		rl.`name` AS level_name,
+		lp.addressFull AS address,
+		o.report_code AS report_code,
+		o.create_time AS create_time,
+		o.update_time AS update_time,
+		r.price as realPrice
 		FROM
-			t_order AS o LEFT JOIN t_report AS r ON o.report_code = r.`code` LEFT JOIN t_landed_property AS lp ON r.houses_code = lp.`code`
-		LEFT JOIN t_report_level AS rl ON r.level_code = rl.`code`
+		t_order AS o LEFT JOIN t_report AS r ON o.report_code = r.`code` LEFT JOIN
+		t_landed_property AS lp ON r.houses_code = lp.`code`
+		LEFT JOIN
+		t_report_level AS rl ON r.level_code = rl.`code`
 		<where>
 			o.create_user = #{createUser,jdbcType=VARCHAR}
 			<if test="status != null">

@@ -2,6 +2,7 @@ package cn.com.ddhj;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseTest;
 import cn.com.ddhj.dto.TOrderDto;
+import cn.com.ddhj.helper.ReportHelper;
 import cn.com.ddhj.helper.WebHelper;
 import cn.com.ddhj.mapper.TOrderMapper;
 import cn.com.ddhj.model.TOrder;
@@ -79,10 +81,23 @@ public class TOrderTest extends BaseTest {
 		System.out.println(goodPercent);
 	}
 
-	@Test
 	public void selByCode() {
 		String code = "D161009100110";
 		TOrder order = mapper.selectByCode(code);
 		System.out.println(JSON.toJSON(order));
+	}
+	
+	@Test
+	public void createUserReport(){
+		/**
+		 * 查询用户最新下单购买报告记录<br>
+		 * 根据用户报告将指定楼盘报告复制到用户文件下<br>
+		 */
+		List<TOrder> orders = mapper.findOrderLPAndCreateUser();
+		if (orders != null && orders.size() > 0) {
+			for (TOrder order : orders) {
+				ReportHelper.getInstance().createUserReport(order.getLpCode(), order.getCreateUser());
+			}
+		}
 	}
 }

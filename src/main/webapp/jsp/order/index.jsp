@@ -128,6 +128,20 @@
 			}
 		}
 	}
+	
+	function refreshUserReportAll(){
+		if (confirm('您确定要刷新所有订单环境报告吗？')) {
+			var type_ = 'post';
+			var url_ = '${basePath}order/refresh_user_report_all.htm';
+			var data_ = {};
+			var obj = JSON.parse(ajaxs.sendAjax(type_, url_, data_));
+			if (obj.resultCode == '1') {
+				alert(obj.resultMessage);
+			} else {
+				alert(obj.resultMessage);
+			}
+		}
+	}
 	function searchReport(){
 		aForm.formPaging(0);
 	}
@@ -178,6 +192,7 @@
 					<div>
 						<p style="margin:5px 0px 0px 0px;">
 							<button type="button" onclick="refreshUserReport();" class="btn">刷新用户环境报告</a>
+							<button type="button" onclick="refreshUserReportAll();" class="btn">刷新所有用户环境报告</a>
 						</p>
 					</div>
 				</div>

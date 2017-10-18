@@ -41,10 +41,16 @@ public class TOrderController {
 	public BaseResult refreshReport(String code) {
 		return service.refreshReport(code);
 	}
-	
+
 	@RequestMapping("refresh_user_report")
 	@ResponseBody
-	public BaseResult refreshUserReport(){
+	public BaseResult refreshUserReport() {
 		return service.refreshUserReport();
+	}
+
+	@RequestMapping("refresh_user_report_all")
+	@ResponseBody
+	public BaseResult refreshUserReportAll() {
+		return service.refreshUserReportAll();
 	}
 }
