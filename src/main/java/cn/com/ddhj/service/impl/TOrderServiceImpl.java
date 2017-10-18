@@ -170,12 +170,15 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		if (login != null) {
 			TUser user = userMapper.findTUserByUuid(login.getUserToken());
 			if (user != null) {
-				if(user.getCarbonMoney().compareTo(entity.getCheckPayMoney()) < 0) {
-					//用户帐户碳币金额小于支付金额,无法创建 订单
-					result.setResultCode(Constant.RESULT_ERROR);
-					result.setResultMessage("用户帐户碳币金额小于支付金额,无法创建订单");
-					return result;
+				if(entity.getCarbonMoney() != null && entity.getCarbonMoney().compareTo(BigDecimal.ZERO) > 0) {
+					if(user.getCarbonMoney().compareTo(entity.getCarbonMoney()) < 0) {
+						//用户帐户碳币金额小于支付金额,无法创建 订单
+						result.setResultCode(Constant.RESULT_ERROR);
+						result.setResultMessage("用户帐户碳币金额小于支付金额,无法创建订单");
+						return result;
+					}
 				}
+				
 				entity.setUuid(UUID.randomUUID().toString().replace("-", ""));
 				String code = WebHelper.getInstance().getUniqueCode("D");
 				entity.setCode(code);
