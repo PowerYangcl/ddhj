@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -872,7 +873,12 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		} catch (InterruptedException | ExecutionException e1) {
 			e1.printStackTrace();
 		}finally{
-			executor.shutdown();  
+			try {
+				executor.awaitTermination(10, TimeUnit.HOURS);
+			} catch (InterruptedException e1) {
+			} 
+			//楼盘跑分执行后,按年季月周期统计排行榜
+			jobForStatLandScore();
 		}
 	}
 	
@@ -1597,7 +1603,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			String date = "2017"; // 2016 1|2|3|4 2016-01
 			String year = "";
 			Integer pageIndex = 1;
-			Integer pageSize = 1000000;
+			Integer pageSize = 10000000;
 			JSONObject result_ = landedScoreAverageForJob(city, type, date, year, pageIndex, pageSize);
 			PageInfo<LandedScoreResult> page = (PageInfo<LandedScoreResult>) result_.get("data");
 			if(page.getList() != null && !page.getList().isEmpty()) {
@@ -1611,7 +1617,18 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 					job.setUpdateUser("sysjob");
 					job.setCity(city);
 					job.setQuerydate("2017");
-					landedScoreJobMapper.insertSelectiveYear(job);
+					
+					Map<String, String> param = new HashMap<String, String>();
+					param.put("code", job.getCode());
+					param.put("querydate", job.getQuerydate());
+					int count = landedScoreJobMapper.countLandScoreYear(param);
+					
+					if(count == 0) {
+						landedScoreJobMapper.insertSelectiveYear(job);
+					} else {
+						landedScoreJobMapper.updateTLandScoreYear(job);
+					}
+					
 				}
 			}
 			
@@ -1635,7 +1652,17 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 						job.setUpdateUser("sysjob");
 						job.setCity(city);
 						job.setQuerydate("2017Q" + String.valueOf(i));
-						landedScoreJobMapper.insertSelectiveQuarter(job);
+						
+						Map<String, String> param = new HashMap<String, String>();
+						param.put("code", job.getCode());
+						param.put("querydate", job.getQuerydate());
+						int count = landedScoreJobMapper.countLandScoreQuarter(param);
+						
+						if(count == 0) {
+							landedScoreJobMapper.insertSelectiveQuarter(job);
+						} else {
+							landedScoreJobMapper.updateTLandScoreQuarter(job);
+						}
 					}
 				}
 			}
@@ -1644,7 +1671,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			type = "month"; // year：按年份平均|quarter：按季度平均|month：按月份平均
 			year = "2017";
 			pageIndex = 1;
-			pageSize = 100000;
+			pageSize = 1000000;
 			for(int i = 1; i <= 12; i++) {
 				date = year + (i<10?"-0":"-") + String.valueOf(i); // 2016 1|2|3|4 2016-01
 				result_ = landedScoreAverageForJob(city, type, date, year, pageIndex, pageSize);
@@ -1660,7 +1687,17 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 						job.setUpdateUser("sysjob");
 						job.setCity(city);
 						job.setQuerydate(date);
-						landedScoreJobMapper.insertSelectiveMonth(job);
+						
+						Map<String, String> param = new HashMap<String, String>();
+						param.put("code", job.getCode());
+						param.put("querydate", job.getQuerydate());
+						int count = landedScoreJobMapper.countLandScoreMonth(param);
+						
+						if(count == 0) {
+							landedScoreJobMapper.insertSelectiveMonth(job);
+						} else {
+							landedScoreJobMapper.updateTLandScoreMonth(job);
+						}
 					}
 				}
 			}

@@ -24,6 +24,10 @@
 		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
 	</resultMap>
 	
+	<select id="countLandScoreYear" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(*) from t_land_score_year where code=#{code} and querydate=#{querydate}
+	</select>
+	
 	<insert id="insertSelectiveYear" parameterType="cn.com.ddhj.model.TLandedScoreJob">
 		insert into t_land_score_year
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -105,7 +109,52 @@
 			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</trim>
 	</insert>	
+	<update id="updateTLandScoreYear" parameterType="cn.com.ddhj.model.TLandedScoreJob">
+		update t_land_score_year
+		<set>
+			<if test="scoreavg != null">
+				score_avg = #{scoreavg,jdbcType=DOUBLE},
+			</if>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="addressFull != null">
+				addressFull = #{addressFull,jdbcType=VARCHAR},
+			</if>
+			<if test="total != null">
+				total = #{total,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyCompany != null">
+				propertyCompany = #{propertyCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyType != null">
+				propertyType = #{propertyType,jdbcType=VARCHAR},
+			</if>
+			<if test="bus != null">
+				bus = #{bus , jdbcType=VARCHAR},
+			</if>
+			<if test="lat != null">
+				lat = #{lat , jdbcType=VARCHAR},
+			</if>
+			<if test="lng != null">
+				lng = #{lng , jdbcType=VARCHAR},
+			</if>
+			<if test="images != null">
+				images = #{images , jdbcType=VARCHAR},
+			</if>	
+			<if test="overview != null">
+				overview = #{overview , jdbcType=VARCHAR},
+			</if>	
+			<if test="updateTime != null">
+				update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			</if>	
+		</set>
+		where code = #{code,jdbcType=VARCHAR} and city = #{city,jdbcType=VARCHAR} and querydate = #{querydate,jdbcType=VARCHAR}
+	</update>
 	
+	<select id="countLandScoreQuarter" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(*) from t_land_score_quarter where code=#{code} and querydate=#{querydate}
+	</select>
 	<insert id="insertSelectiveQuarter" parameterType="cn.com.ddhj.model.TLandedScoreJob">
 		insert into t_land_score_quarter
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -187,7 +236,53 @@
 			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</trim>
 	</insert>
+	<update id="updateTLandScoreQuarter" parameterType="cn.com.ddhj.model.TLandedScoreJob">
+		update t_land_score_quarter
+		<set>
+			<if test="scoreavg != null">
+				score_avg = #{scoreavg,jdbcType=DOUBLE},
+			</if>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="addressFull != null">
+				addressFull = #{addressFull,jdbcType=VARCHAR},
+			</if>
+			<if test="total != null">
+				total = #{total,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyCompany != null">
+				propertyCompany = #{propertyCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyType != null">
+				propertyType = #{propertyType,jdbcType=VARCHAR},
+			</if>
+			<if test="bus != null">
+				bus = #{bus , jdbcType=VARCHAR},
+			</if>
+			<if test="lat != null">
+				lat = #{lat , jdbcType=VARCHAR},
+			</if>
+			<if test="lng != null">
+				lng = #{lng , jdbcType=VARCHAR},
+			</if>
+			<if test="images != null">
+				images = #{images , jdbcType=VARCHAR},
+			</if>	
+			<if test="overview != null">
+				overview = #{overview , jdbcType=VARCHAR},
+			</if>	
+			<if test="updateTime != null">
+				update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			</if>	
+		</set>
+		where code = #{code,jdbcType=VARCHAR} and city = #{city,jdbcType=VARCHAR} and querydate = #{querydate,jdbcType=VARCHAR}
+	</update>	
 	
+	
+	<select id="countLandScoreMonth" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(*) from t_land_score_month where code=#{code} and querydate=#{querydate}
+	</select>	
 	<insert id="insertSelectiveMonth" parameterType="cn.com.ddhj.model.TLandedScoreJob">
 		insert into t_land_score_month
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -268,5 +363,47 @@
 			#{updateUser,jdbcType=VARCHAR},
 			STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
 		</trim>
-	</insert>			
+	</insert>
+	<update id="updateTLandScoreMonth" parameterType="cn.com.ddhj.model.TLandedScoreJob">
+		update t_land_score_month
+		<set>
+			<if test="scoreavg != null">
+				score_avg = #{scoreavg,jdbcType=DOUBLE},
+			</if>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="addressFull != null">
+				addressFull = #{addressFull,jdbcType=VARCHAR},
+			</if>
+			<if test="total != null">
+				total = #{total,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyCompany != null">
+				propertyCompany = #{propertyCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="propertyType != null">
+				propertyType = #{propertyType,jdbcType=VARCHAR},
+			</if>
+			<if test="bus != null">
+				bus = #{bus , jdbcType=VARCHAR},
+			</if>
+			<if test="lat != null">
+				lat = #{lat , jdbcType=VARCHAR},
+			</if>
+			<if test="lng != null">
+				lng = #{lng , jdbcType=VARCHAR},
+			</if>
+			<if test="images != null">
+				images = #{images , jdbcType=VARCHAR},
+			</if>	
+			<if test="overview != null">
+				overview = #{overview , jdbcType=VARCHAR},
+			</if>	
+			<if test="updateTime != null">
+				update_time = STR_TO_DATE(#{updateTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'),
+			</if>	
+		</set>
+		where code = #{code,jdbcType=VARCHAR} and city = #{city,jdbcType=VARCHAR} and querydate = #{querydate,jdbcType=VARCHAR}
+	</update>				
 </mapper>
