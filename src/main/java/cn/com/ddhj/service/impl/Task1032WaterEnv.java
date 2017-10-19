@@ -82,6 +82,7 @@ public class Task1032WaterEnv implements Callable<Map<String , String>>{
 			 }else{
 				 water.put("level", "II");
 				 water.put("s", "2");
+				 water.put("memo", "良");
 			 }
 		}
 		
