@@ -1015,16 +1015,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			
 	} 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	private String getNextDate(Date date){
 		 Calendar calendar = new GregorianCalendar();
 		 calendar.setTime(date);

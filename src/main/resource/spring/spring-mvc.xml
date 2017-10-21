@@ -167,7 +167,7 @@
 		<property name="triggers">
 			<list>
 				<ref bean="quartzTrigger" />
-				<ref bean="quartzTriggerOneTime" />
+				<!-- ref bean="quartzTriggerOneTime" /-->
 				<ref bean="carbonDealDataTrigger" />
 				<ref bean="reindexLandPropertyTrigger" />
 				<ref bean="createReportTrigger" />

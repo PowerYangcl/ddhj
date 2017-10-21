@@ -303,17 +303,17 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 		Integer distance = map.firstKey();
 		if(distance > 5000){
 			msg = "5Km以外";
-		}else if(4000< distance &&distance < 5000){
+		}else if(4000 < distance &&distance <= 5000){
 			msg = "4Km以外";
-		}else if(3000< distance &&distance < 4000){
+		}else if(3000 < distance &&distance <= 4000){
 			msg = "3Km以外";
-		}else if(2000< distance &&distance < 3000){
+		}else if(2000 < distance &&distance <= 3000){
 			msg = "2Km以外";
 			score = "-5";
-		}else if (1000 < distance && distance < 2000){
+		}else if (1000 < distance && distance <= 2000){
 			msg = "1Km以外";
 			score = "-20";
-		}else if(distance < 500){
+		}else if(distance <= 1000){
 			score = "-30"; 
 		}
 		 
