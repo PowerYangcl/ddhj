@@ -310,10 +310,13 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 		}else if(2000 < distance &&distance <= 3000){
 			msg = "2Km以外";
 			score = "-5";
-		}else if (1000 < distance && distance <= 2000){
+		}else if (1000 < distance && distance < 2000){
 			msg = "1Km以外";
+			score = "-5";
+		}else if ( distance < 1000 ){
+			msg = "1Km以内";
 			score = "-20";
-		}else if(distance <= 1000){
+		} else if(distance < 500){
 			score = "-30"; 
 		}
 		 
