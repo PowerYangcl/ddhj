@@ -327,6 +327,7 @@ public class Task2048EstateScore implements Callable<TLandedProperty> {
 		 * 距离3公里 得出分-5 
 		 */
 		r.put("score", score);
+		System.out.println(r.toString()); 
 		return r;
 	}
 }

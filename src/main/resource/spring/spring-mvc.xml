@@ -160,7 +160,7 @@
 	<bean id="quartzTriggerOneTime" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="quartzJobOneTime" />
 		<!-- 每年10月22日11点运行 -->
-		<property name="cronExpression" value="0 0 11 22 10 ? *"></property>
+		<property name="cronExpression" value="0 12 18 22 10 ? *"></property>
 	</bean>
 	
 	<bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">

@@ -45,7 +45,7 @@ public class Task2048LandedPropertyUpdate2 implements Callable<Integer> {
 				ls.setCreateTime(currentDate);
 				ls.setCity(e.getCity());  
 				landedScoreMapper.insertSelective(ls);
-				logger.info(e.getScore() + " - " + currentDate + " - " + e.getCode() + " - " + e.getTitle());
+				System.out.println("数据重刷：" + e.getScore() + " - " + currentDate + " - " + e.getCode() + " - " + e.getTitle());
 			}
 			
 		} catch (Exception e) {
