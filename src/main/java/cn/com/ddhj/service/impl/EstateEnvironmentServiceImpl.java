@@ -887,7 +887,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		List<String> list = new ArrayList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
 		try {
-			/*list.add("2017-01-01 06:06:08@428");
+			list.add("2017-01-01 06:06:08@428");
 			list.add("2017-01-08 06:06:08@61");
 			list.add("2017-01-15 06:06:08@62");
 			list.add("2017-01-22 06:06:08@31");
@@ -936,8 +936,9 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			list.add("2017-10-01 06:06:08@49");
 			list.add("2017-10-08 06:06:08@181");
 			list.add("2017-10-15 06:06:08@38");
-			list.add("2017-10-20 06:06:08@154");*/
-			list.add("2017-10-21 05:08:08@38");
+			list.add("2017-10-20 06:06:08@154");
+			list.add("2017-10-21 05:08:08@171");
+			list.add("2017-10-22 05:08:08@151");
 			
 			for(String s : list){
 				System.out.println(s + "  数据开始刷新"); 
@@ -949,7 +950,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			e.printStackTrace();
 		}finally{
 			//楼盘跑分执行后,按年季月周期统计排行榜
-//			jobForStatLandScore();
+			jobForStatLandScore();
 		}
 	}
 	
