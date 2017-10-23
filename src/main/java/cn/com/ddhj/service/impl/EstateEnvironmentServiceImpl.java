@@ -882,7 +882,6 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		}
 	}
 	
-	
 	public void jobForRessssyncEstateLoad(){
 		List<String> list = new ArrayList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
@@ -944,13 +943,14 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				System.out.println(s + "  数据开始刷新"); 
 				String s_ = s.split("@")[0];
 				this.resyncEstateScoredddddd(sdf.parse(s_) , s.split("@")[1]);
+				
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally{
 			//楼盘跑分执行后,按年季月周期统计排行榜
-			// jobForStatLandScore();
+			 jobForStatLandScore();
 		}
 	}
 	
@@ -1034,7 +1034,117 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			executor.shutdown();  
 		}
 			
-	} 
+	}
+	
+	
+	
+	public void jobForRessssyncEstateLoadByCode(String code){
+		List<String> list = new ArrayList<>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+		try {
+			list.add("2017-01-01 06:06:08@428");
+			list.add("2017-01-08 06:06:08@61");
+			list.add("2017-01-15 06:06:08@62");
+			list.add("2017-01-22 06:06:08@31");
+			
+			list.add("2017-02-01 06:06:08@22");
+			list.add("2017-02-08 06:06:08@34");
+			list.add("2017-02-15 06:06:08@283");
+			list.add("2017-02-22 06:06:08@169");
+			
+			list.add("2017-03-01 06:06:08@52");
+			list.add("2017-03-08 06:06:08@37");
+			list.add("2017-03-15 06:06:08@97");
+			list.add("2017-03-22 06:06:08@188");
+			
+			list.add("2017-04-01 06:06:08@34");
+			list.add("2017-04-08 06:06:08@74");
+			list.add("2017-04-15 06:06:08@53");
+			list.add("2017-04-22 06:06:08@80");
+			
+			list.add("2017-05-01 06:06:08@115");
+			list.add("2017-05-08 06:06:08@104");
+			list.add("2017-05-15 06:06:08@69");
+			list.add("2017-05-22 06:06:08@103");
+			
+			list.add("2017-06-01 06:06:08@31");
+			list.add("2017-06-08 06:06:08@66");
+			list.add("2017-06-15 06:06:08@41");
+			list.add("2017-06-22 06:06:08@37");
+			
+			list.add("2017-07-01 06:06:08@140");
+			list.add("2017-07-08 06:06:08@99");
+			list.add("2017-07-15 06:06:08@54");
+			list.add("2017-07-22 06:06:08@45");
+			
+			list.add("2017-08-01 06:06:08@95");
+			list.add("2017-08-08 06:06:08@61");
+			list.add("2017-08-15 06:06:08@68");
+			list.add("2017-08-22 06:06:08@107");
+			
+			list.add("2017-09-01 06:06:08@174");
+			list.add("2017-09-08 06:06:08@154");
+			list.add("2017-09-15 06:06:08@109");
+			list.add("2017-09-22 06:06:08@45");
+			
+			
+			list.add("2017-10-01 06:06:08@49");
+			list.add("2017-10-08 06:06:08@181");
+			list.add("2017-10-15 06:06:08@38");
+			list.add("2017-10-20 06:06:08@154");
+			list.add("2017-10-21 05:08:08@171");
+			list.add("2017-10-22 05:08:08@151");
+			
+			for(String s : list){
+				System.out.println(s + "  数据开始刷新"); 
+				String s_ = s.split("@")[0];
+				
+				resyncEstateScoreOne(sdf.parse(s_) , s.split("@")[1] , code , "北京");		
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+		}
+	}
+	
+	private void resyncEstateScoreOne(Date currentDate , String aqisss , String code , String city_){ 
+		ExecutorService executor = Executors.newCachedThreadPool();
+		
+		Task1032Aqi taqi = new Task1032Aqi();
+        taqi.setCityAirService(cityAirService);
+        taqi.setCity( city_ );  
+        Future<CityAqi> aqiFuture = executor.submit(taqi);
+		
+		try {
+			CityAqi aqi = aqiFuture.get();
+			String hourAqi = aqisss;
+			String dayAqi = "";
+			
+			List<TLandedProperty> tlpList = lrMapper.findListByCode(code);
+			List<TAreaNoise> noiseList = noiseMapper.selectByArea(city_); 
+			List<TWaterEnviroment> waterEnvList = waterEnvMapper.selectByCity(city_);
+			List<TRubbishRecycling> rubbishList = rubbishMapper.findListByCity(city_); 
+			List<TChemicalPlant> chemicalList = chemicalMapper.findListByCity(city_);  
+			
+			Task2048EstateArea tea = new Task2048EstateArea(executor, tlpList, hourAqi, dayAqi, noiseList, waterEnvList, rubbishList, chemicalList); 
+			Future<List<TLandedProperty>> teaF = executor.submit(tea);
+			
+			List<TLandedProperty> list = teaF.get();
+			
+			Task2048LandedPropertyUpdate2 lpu = new Task2048LandedPropertyUpdate2(list , lrMapper , landedScoreMapper , currentDate);
+			executor.submit(lpu);
+			
+			
+		} catch (InterruptedException | ExecutionException e1) {
+			e1.printStackTrace();
+		}finally{
+			executor.shutdown();  
+		}
+			
+	}
+	
+	
 	
 	private String getNextDate(Date date){
 		 Calendar calendar = new GregorianCalendar();
@@ -1735,6 +1845,8 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 		}
 		return re;
 	}
+
+
 }
 
 

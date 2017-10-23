@@ -468,4 +468,31 @@
 			where id = #{item.id , jdbcType=INTEGER}
 		</foreach>
 	</update>
+	
+	
+	<select id="findListByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT
+			*
+		FROM
+			t_landed_property l
+		where 
+			l.code = #{code , jdbcType=VARCHAR}			
+	</select>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

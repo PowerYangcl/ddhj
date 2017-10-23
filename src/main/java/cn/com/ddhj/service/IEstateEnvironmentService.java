@@ -116,7 +116,10 @@ public interface IEstateEnvironmentService {
 	public void jobForStatLandScore();
 
 
-	public void jobForRessssyncEstateLoad(); 
+	public void jobForRessssyncEstateLoad();
+
+
+	public void jobForRessssyncEstateLoadByCode(String code);  
 	
 	
 }
