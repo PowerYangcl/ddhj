@@ -515,18 +515,35 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			EnvInfo noise = new EnvInfo();
 			noise.setName("噪音");
 			noise.setMemo(noiFuture.get().split("@")[1]);  
-			noise.setLevel(noiFuture.get().split("@")[0]);  
+			if(noiFuture.get().split("@")[0].equals("0类")){
+				noise.setLevel("I类"); 
+			}else{
+				noise.setLevel(noiFuture.get().split("@")[0]); 
+			}
 			envList.add(noise);
 			
 			// 污染源
 			EnvInfo gar = new EnvInfo();
 			gar.setName("污染源");
-			if(rubFuture.get() != null){
+			/*if(rubFuture.get() != null){
 				Map<String , String> rmap = rubFuture.get(); 
 				gar.setMemo(rmap.get("memo"));
 				gar.setLevel(rmap.get("level")); 
 			}else{
 				gar.setMemo("5Km以内");
+				gar.setLevel("无"); 
+			}*/
+			if(rubFuture.get() != null){
+				Map<String , String> rmap = rubFuture.get(); 
+				if(rmap.get("memo").equals("5Km以内") || rmap.get("memo").equals("4Km以内")){
+					gar.setMemo("3Km以内");
+					gar.setLevel("无");
+				}else{
+					gar.setMemo(rmap.get("memo"));
+					gar.setLevel(rmap.get("level")); 
+				}
+			}else{
+				gar.setMemo("3Km以内");
 				gar.setLevel("无"); 
 			}
 			envList.add(gar);
