@@ -950,7 +950,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 			e.printStackTrace();
 		}finally{
 			//楼盘跑分执行后,按年季月周期统计排行榜
-			jobForStatLandScore();
+			// jobForStatLandScore();
 		}
 	}
 	
@@ -991,13 +991,7 @@ public class EstateEnvironmentServiceImpl implements IEstateEnvironmentService	{
 				aqi = fs.get();
 				String hourAqi = aqisss;
 				String dayAqi = "";
-				/*if(aqi.getEntity() != null) {
-					hourAqi = aqi.getEntity().getAQI();
-					for(CityAqiData d : aqi.getList()){
-						dayAqi += d.getAQI() + ",";
-					}
-					dayAqi = dayAqi.substring(0 , dayAqi.length()-1);
-				}*/
+				
 				// 按照city名称 分为N个线程，一共会启动N*20个线程|TODO 注意：此处线程数量不建议超过120个  
 				if(map.containsKey(aqi.getName())){
 					List<TLandedProperty> tlpList = map.get(aqi.getName());

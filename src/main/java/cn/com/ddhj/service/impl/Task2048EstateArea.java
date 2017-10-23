@@ -78,6 +78,7 @@ public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
 		
 		List<TLandedProperty> list_ = new ArrayList<TLandedProperty>(); 
 		for (Map.Entry<Integer, List<TLandedProperty>> entry : map.entrySet()) {
+			
 			List<Future<TLandedProperty>> futList = new ArrayList<>();
 			List<TLandedProperty> subList = entry.getValue();
 			for(TLandedProperty e : subList){
@@ -95,6 +96,8 @@ public class Task2048EstateArea implements Callable<List<TLandedProperty>> {
 				}
 				list_.add(fut.get()); 
 			}
+			
+			
 		}
 		
 		return list_; 
