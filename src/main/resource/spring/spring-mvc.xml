@@ -55,6 +55,22 @@
 	<!-- Quartz http://www.cnblogs.com/jianzhi/p/3384436.html -->
 	<!-- bean name="jobResyncEstateScore" class="cn.com.ddhj.service.impl.EstateEnvironmentServiceImpl" 
 		/ -->
+	
+	<bean name="tmpStatScore" class="cn.com.ddhj.job.LandScoreJob" />
+	<bean id="tmpStatScoreJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="tmpStatScore"></property>
+		<property name="targetMethod" value="statScore"></property>
+		<!-- 设定多个job不会并发运行 -->
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="quartzTmpStatScore"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="tmpStatScoreJob" />
+		<property name="cronExpression" value="0 22 23 22 10 ? *"></property>
+	</bean>
+	
+	
 	<bean name="jobResyncEstateScore" class="cn.com.ddhj.job.ResyncEstateScore" />
 	<bean id="quartzJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -66,9 +82,11 @@
 	<bean id="quartzTrigger"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="quartzJob" />
-		<!-- 每天6点运行一次 "0 00 06 ? * *" | 每30秒运行一次 "30 * * * * ?" -->
-		<property name="cronExpression" value="0 00 06 ? * *"></property>
+		<!-- 每周六0点22分22秒运行楼盘分数和排行榜统计 -->
+		<property name="cronExpression" value="0 22 22 ? * SAT"></property>
 	</bean>
+	
+	
 	<!-- 定时生成环境报告 -->
 	<bean name="createReportJob" class="cn.com.ddhj.job.BatchCreateReportJob" />
 	<bean id="quartzCreateReport"
@@ -168,6 +186,7 @@
 			<list>
 				<ref bean="quartzTrigger" />
 				<ref bean="quartzTriggerOneTime" />
+				<ref bean="quartzTmpStatScore" />
 				<ref bean="carbonDealDataTrigger" />
 				<ref bean="reindexLandPropertyTrigger" />
 				<ref bean="createReportTrigger" />
