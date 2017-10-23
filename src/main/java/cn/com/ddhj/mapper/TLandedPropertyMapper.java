@@ -108,4 +108,6 @@ public interface TLandedPropertyMapper extends BaseMapper<TLandedProperty, TLand
 	
 	
 	List<TLandedProperty> selectAllEstateInfoByCity(String city);
+	
+	public List<TLandedProperty> findListByCode(String code);
 }
