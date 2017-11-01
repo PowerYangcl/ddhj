@@ -67,7 +67,7 @@
 	<bean id="quartzTmpStatScore"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="tmpStatScoreJob" />
-		<property name="cronExpression" value="0 22 23 22 10 ? *"></property>
+		<property name="cronExpression" value="0 50 14 24 10 ? *"></property>
 	</bean>
 	
 	

@@ -19,6 +19,4 @@ public class TLandScoreJobTest {
 	public void statjob() {
 		service.jobForStatLandScore();
 	}
-
-
 }
