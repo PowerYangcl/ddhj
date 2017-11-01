@@ -385,6 +385,7 @@
 		select
 		<include refid="Base_Column_List" />
 		from t_landed_property
+		where `code`='LP161004101860'
 	</select>
 	<!-- 查询楼盘数据中的所有城市 -->
 	<select id="findTLandedPropertyCity" resultType="java.lang.String">
