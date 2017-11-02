@@ -9,7 +9,7 @@
 		<result column="air" property="air" jdbcType="DECIMAL" />
 		<result column="afforest" property="afforest" jdbcType="DECIMAL" />
 		<result column="volume" property="volume" jdbcType="DECIMAL" />
-		<result column="water" property="water" jdbcType="DECIMAL" />
+		<result column="water" property="water" jdbcType="VARCHAR" />
 		<result column="soil" property="soil" jdbcType="DECIMAL" />
 		<result column="rubbish" property="rubbish" jdbcType="DECIMAL" />
 		<result column="chemical" property="chemical" jdbcType="DECIMAL" />
@@ -107,7 +107,7 @@
 				#{volume,jdbcType=DECIMAL},
 			</if>
 			<if test="water != null">
-				#{water,jdbcType=DECIMAL},
+				#{water,jdbcType=VARCHAR},
 			</if>
 			<if test="soil != null">
 				#{soil,jdbcType=DECIMAL},
@@ -165,7 +165,7 @@
 				#{item.air,jdbcType=INTEGER},
 				#{item.afforest,jdbcType=INTEGER},
 				#{item.volume,jdbcType=INTEGER},
-				#{item.water,jdbcType=INTEGER},
+				#{item.water,jdbcType=VARCHAR},
 				#{item.rubbish,jdbcType=INTEGER},
 				#{item.chemical,jdbcType=INTEGER},
 				#{item.nosie,jdbcType=INTEGER},
@@ -194,7 +194,7 @@
 				volume = #{volume,jdbcType=DECIMAL},
 			</if>
 			<if test="water != null">
-				water = #{water,jdbcType=DECIMAL},
+				water = #{water,jdbcType=VARCHAR},
 			</if>
 			<if test="soil != null">
 				soil = #{soil,jdbcType=DECIMAL},
@@ -240,7 +240,7 @@
 				AND volume &gt; #{volume,jdbcType=DECIMAL}
 			</if>
 			<if test="water != null">
-				AND water &gt; #{water,jdbcType=DECIMAL}
+				AND water &gt; #{water,jdbcType=VARCHAR}
 			</if>
 			<if test="soil != null">
 				AND soil = #{soil,jdbcType=DECIMAL}

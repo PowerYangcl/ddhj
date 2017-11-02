@@ -848,6 +848,7 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				// 获取报告列表
 				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
 				List<TLandedProperty> reportLps = new ArrayList<TLandedProperty>();
+				JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 				if (lpList != null && lpList.size() > 0) {
 					for (TLandedProperty lp : lpList) {
 						if (StringUtils.isNotBlank(lp.getLat())) {
@@ -855,7 +856,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 						} else {
 							continue;
 						}
-						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
+						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp,
+								airArray);
 						if (list != null && list.size() > 0) {
 							lp.setEnvironmentIndexs(list);
 							lp.setEnvironmentIndexs1(list.subList(0, 3));
@@ -952,13 +954,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult createHtmlAll() {
 		BaseResult result = new BaseResult();
 		try {
+			JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 			List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
 			String date = DateUtil.getCurrentDate();
 			if (lpList != null && lpList.size() > 0) {
 				for (TLandedProperty lp : lpList) {
 					try {
 						lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
-						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
+						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp,airArray);
 						lp.setEnvironmentIndexs(list);
 						lp.setEnvironmentIndexs1(list.subList(0, 3));
 						lp.setEnvironmentIndexs2(list.subList(3, 6));
@@ -987,10 +990,11 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public ReportResult createHtmlByLpCode(String lpCode, String type) {
 		ReportResult result = new ReportResult();
 		try {
+			JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 			TLandedProperty lp = lpMapper.selectByCode(lpCode);
 			if (lp != null) {
 				lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
-				List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp);
+				List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp,airArray);
 				lp.setEnvironmentIndexs(list);
 				lp.setEnvironmentIndexs1(list.subList(0, 3));
 				lp.setEnvironmentIndexs2(list.subList(3, 6));

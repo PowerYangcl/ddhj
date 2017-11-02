@@ -16,8 +16,8 @@ public class TLpEnvironment extends BaseModel {
 
 	private BigDecimal volume;
 
-	private BigDecimal water;
-	
+	private String water;
+
 	private BigDecimal soil;
 
 	private BigDecimal rubbish;
@@ -31,7 +31,7 @@ public class TLpEnvironment extends BaseModel {
 	private BigDecimal hazardousArticle;
 
 	private Integer sortTime;
-	
+
 	public Integer getSortTime() {
 		return sortTime;
 	}
@@ -88,11 +88,11 @@ public class TLpEnvironment extends BaseModel {
 		this.volume = volume;
 	}
 
-	public BigDecimal getWater() {
+	public String getWater() {
 		return water;
 	}
 
-	public void setWater(BigDecimal water) {
+	public void setWater(String water) {
 		this.water = water;
 	}
 

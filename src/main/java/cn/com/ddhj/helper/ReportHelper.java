@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.annotation.Inject;
 import cn.com.ddhj.base.BaseClass;
@@ -23,7 +23,6 @@ import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.mapper.lp.TLpEnvironmentMapper;
 import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
-import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.model.lp.TLpEnvironment;
 import cn.com.ddhj.model.lp.TLpEnvironmentIndex;
 import cn.com.ddhj.result.ReportResult;
@@ -55,11 +54,12 @@ public class ReportHelper extends BaseClass {
 	/**
 	 * 楼盘报告存放地址
 	 */
-	public static final String REPORT_PATH = "/opt/ddhj/report/html/";
+	// public static final String REPORT_PATH = "/opt/ddhj/report/html/";
+	public static final String REPORT_PATH = "D:\\project\\ddhj\\report\\";
 	/**
 	 * 用户购买楼盘报告存放地址
 	 */
-	public static final String USER_REPORT_PATH = "/opt/ddhj/report/user/";
+	public static final String USER_REPORT_PATH = "D:\\project\\ddhj\\report\\user\\";
 	private static ReportHelper self;
 
 	public static ReportHelper getInstance() {
@@ -328,7 +328,7 @@ public class ReportHelper extends BaseClass {
 	 * @param list
 	 * @return
 	 */
-	public TLpEnvironmentIndex waterLevel(TLandedProperty lp, Double oxy) {
+	public TLpEnvironmentIndex waterLevel(TLandedProperty lp, String val) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
 		entity.setCity(lp.getCity());
 		Integer level = 2;
@@ -345,38 +345,27 @@ public class ReportHelper extends BaseClass {
 			level = 2;
 		} else {
 			if (StringUtils.isNoneBlank(lp.getLat()) && StringUtils.isNotBlank(lp.getLng())) {
-				List<TWaterEnviroment> list = waterEnvMapper.selectByCity(city_);
-				if (list != null && list.size() != 0) {
-					Double lat = Double.valueOf(lp.getLat());
-					Double lng = Double.valueOf(lp.getLng());
-					TreeMap<Integer, TWaterEnviroment> map_ = new TreeMap<Integer, TWaterEnviroment>();
-					for (TWaterEnviroment e : list) {
-						Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()),
-								Double.valueOf(e.getLng()));
-						map_.put(d, e);
-					}
-					if (oxy == null) {
+				if (StringUtils.isNotBlank(val)) {
+					String[] water = val.split("@");
+					Double oxy = Double.valueOf(water[0]);
+					String oxyLevel = water[1];
+					if (oxyLevel.equals("Ⅰ")) {
+						level = 1;
+						levelName = "优";
+					} else if (oxyLevel.equals("-") || oxyLevel.equals("Ⅱ")) {
+						level = 1;
+						levelName = "优";
+					} else if (oxyLevel.equals("Ⅲ")) {
 						level = 2;
 						levelName = "良";
+					} else if (oxyLevel.equals("Ⅳ")) {
+						level = 3;
+						levelName = "差";
 					} else {
-						if (oxy.equals("Ⅰ")) {
-							level = 1;
-							levelName = "优";
-						} else if (oxy.equals("-") || oxy.equals("Ⅱ")) {
-							level = 1;
-							levelName = "优";
-						} else if (oxy.equals("Ⅲ")) {
-							level = 2;
-							levelName = "良";
-						} else if (oxy.equals("Ⅳ")) {
-							level = 3;
-							levelName = "差";
-						} else {
-							level = 3;
-							levelName = "差";
-						}
-						value = oxy;
+						level = 3;
+						levelName = "差";
 					}
+					value = oxy;
 				} else {
 					level = 2;
 					levelName = "良";
@@ -399,7 +388,7 @@ public class ReportHelper extends BaseClass {
 			entity.setSortTime(PropHelper.getValue("report_sort_time_value"));
 			TLpEnvironment lpEnv = new TLpEnvironment();
 			lpEnv.setCity(lp.getCity());
-			lpEnv.setWater(BigDecimal.valueOf(value));
+			lpEnv.setWater(String.valueOf(value));
 			lpEnv.setSortTime(Integer.parseInt(PropHelper.getValue("report_sort_time_key")));
 			Integer sort = lpEnvMapper.findEnvironmentSort(lpEnv);
 			if (sort != null) {
@@ -595,35 +584,26 @@ public class ReportHelper extends BaseClass {
 	/**
 	 * 空气质量
 	 */
-	public TLpEnvironmentIndex airLevel(Double air, String city) {
+	public TLpEnvironmentIndex airLevel(JSONArray cityAirLevel, String city) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
 		entity.setCity(city);
 		Integer level = 2;
 		String levelName = "良";
-		if (air < 50) {
-			level = 1;
-			levelName = "优";
-		}
-		if (air >= 50 && air <= 100) {
-			level = 2;
-			levelName = "良";
-		} else if (air >= 101 && air <= 150) {
-			level = 3;
-			levelName = "轻度污染";
-		} else if (air >= 151 && air <= 200) {
-			level = 4;
-			levelName = "中度污染";
-		} else if (air >= 201 && air <= 300) {
-			level = 5;
-			levelName = "重度污染";
-		} else {
-			level = 6;
-			levelName = "严重污染";
+		Double value = Double.valueOf("0.00");
+		if (cityAirLevel != null && cityAirLevel.size() > 0) {
+			for (int i = 0; i < cityAirLevel.size(); i++) {
+				JSONObject air = cityAirLevel.getJSONObject(i);
+				if (StringUtils.equals(city, air.getString("name"))) {
+					level = air.getInteger("level");
+					levelName = air.getString("levelName");
+					value = air.getDouble("aqi");
+				}
+			}
 		}
 		entity.setName("空气质量（AQI）");
 		entity.setLevel(level);
 		entity.setLevelName(levelName);
-		entity.setValue(air);
+		entity.setValue(value);
 		String evaluate = PropHelper.getValue("air_level_" + level);
 		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
 		/**
@@ -633,7 +613,7 @@ public class ReportHelper extends BaseClass {
 			entity.setSortTime(PropHelper.getValue("report_sort_time_value"));
 			TLpEnvironment lpEnv = new TLpEnvironment();
 			lpEnv.setCity(city);
-			lpEnv.setAir(BigDecimal.valueOf(air));
+			lpEnv.setAir(BigDecimal.valueOf(value));
 			lpEnv.setSortTime(Integer.parseInt(PropHelper.getValue("report_sort_time_key")));
 			Integer sort = lpEnvMapper.findEnvironmentSort(lpEnv);
 			if (sort != null) {
@@ -698,7 +678,7 @@ public class ReportHelper extends BaseClass {
 	 * @param lp
 	 * @return
 	 */
-	public List<TLpEnvironmentIndex> getLpEnvironmentIndexs(TLandedProperty lp) {
+	public List<TLpEnvironmentIndex> getLpEnvironmentIndexs(TLandedProperty lp, JSONArray airArray) {
 
 		List<TLpEnvironmentIndex> list = null;
 		try {
@@ -711,8 +691,7 @@ public class ReportHelper extends BaseClass {
 				/**
 				 * 空气质量
 				 */
-				Double airValue = entity.getAir() != null ? entity.getAir().doubleValue() : 0;
-				TLpEnvironmentIndex air = ReportHelper.getInstance().airLevel(airValue, lp.getCity());
+				TLpEnvironmentIndex air = ReportHelper.getInstance().airLevel(airArray, lp.getCity());
 				list.add(air);
 				/**
 				 * 噪音
@@ -723,8 +702,7 @@ public class ReportHelper extends BaseClass {
 				/**
 				 * 水质
 				 */
-				Double waterValue = entity.getWater() != null ? entity.getWater().doubleValue() : 0;
-				TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, waterValue);
+				TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, entity.getWater());
 				list.add(water);
 				/**
 				 * 土壤
@@ -742,7 +720,8 @@ public class ReportHelper extends BaseClass {
 				 * 危险品
 				 */
 				Double hazardousArticleValue = entity.getHazardousArticle() != null
-						? entity.getHazardousArticle().doubleValue() : 0;
+						? entity.getHazardousArticle().doubleValue()
+						: 0;
 				TLpEnvironmentIndex hazardousArticle = ReportHelper.getInstance()
 						.hazardousArticleLevel(hazardousArticleValue, lp.getCity());
 				list.add(hazardousArticle);
