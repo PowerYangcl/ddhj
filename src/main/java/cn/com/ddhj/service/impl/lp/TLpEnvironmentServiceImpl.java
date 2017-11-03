@@ -110,17 +110,6 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 					try {
 						List<TWaterEnviroment> waterEnvs = waterEnvMapper.selectByCity(lp.getCity());
 						if (waterEnvs != null && waterEnvs.size() > 0) {
-							// Double lat = Double.valueOf(lp.getLat());
-							// Double lng = Double.valueOf(lp.getLng());
-							// TreeMap<Integer, TWaterEnviroment> map_ = new TreeMap<Integer,
-							// TWaterEnviroment>();
-							// for (TWaterEnviroment e : waterEnvs) {
-							// Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()),
-							// Double.valueOf(e.getLng()));
-							// map_.put(d, e);
-							// }
-							// TWaterEnviroment w = map_.get(map_.firstKey());
-							// String oxy = w.getOxygenquality();
 							String oxy = waterEnvs.get(0).getOxygen();
 							String level = waterEnvs.get(0).getOxygenquality();
 							if (StringUtils.isNotBlank(oxy) && StringUtils.isNotBlank(level)) {

@@ -296,7 +296,7 @@ public class ReportHelper extends BaseClass {
 		entity.setValue(value);
 		entity.setLevel(level);
 		entity.setLevelName(levelName);
-		String evaluate = PropHelper.getValue("volume_level_" + level);
+		String evaluate = PropHelper.getValue("noise_level_" + level);
 		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
 		/**
 		 * 获取楼盘排行
