@@ -55,7 +55,7 @@
 		update_time,
 		'%Y-%m-%d'
 		) AS
-		update_time,check_pay_money,buyer_code,buyer_mobile,pay_ip,uniqid,app_vision,os,invoice_type,invoice_content
+		update_time,check_pay_money,carbon_money,buyer_code,buyer_mobile,pay_ip,uniqid,app_vision,os,invoice_type,invoice_content
 	</sql>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.String">

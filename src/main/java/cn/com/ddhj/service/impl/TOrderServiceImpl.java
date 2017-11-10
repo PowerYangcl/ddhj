@@ -273,6 +273,31 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 				entity.setUpdateUser(user.getUserCode());
 				entity.setUpdateTime(DateUtil.getSysDateTime());
 				mapper.updateByCode(entity);
+				//订单取消后,如使用了碳币,加回,记日志   //zht 20171110
+				if(entity.getStatus() == 3) {
+					//订单取消
+					TOrder order = mapper.selectByCode(entity.getCode());
+					if(order.getCarbonMoney() != null && order.getCarbonMoney().compareTo(BigDecimal.ZERO) > 0) {
+						//订单使用了碳币,加回
+						TUser updateCarbonMoneyUser = new TUser();
+						updateCarbonMoneyUser.setUserCode(user.getUserCode());
+						updateCarbonMoneyUser.setCarbonMoney(user.getCarbonMoney().add(order.getCarbonMoney()));
+						updateCarbonMoneyUser.setUpdateUser(user.getUserCode());
+						updateCarbonMoneyUser.setUpdateTime(DateUtil.getSysDateTime());
+						userMapper.updateByCode(updateCarbonMoneyUser);
+						//记日志
+						TUserCarbonOperation carbonOperation = new TUserCarbonOperation();
+						carbonOperation.setUuid(WebHelper.getInstance().genUuid());
+						carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+						carbonOperation.setUserCode(user.getUserCode());
+						carbonOperation.setOperationType("DC170208100002");
+						carbonOperation.setOperationTypeChild("DC170208100013");
+						carbonOperation.setCarbonSum(order.getCarbonMoney());
+						carbonOperation.setCreateUser(user.getUserCode());
+						carbonOperation.setCreateTime(DateUtil.getSysDateTime());
+						carbonOperationMapper.insertSelective(carbonOperation);
+					}
+				}
 				result.setResultCode(Constant.RESULT_SUCCESS);
 				result.setResultMessage("编辑订单成功");
 			} else {
