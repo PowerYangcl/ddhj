@@ -509,19 +509,19 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 		// 检查报告是否需要更新
 		if (user != null) {
-			if(reports != null && !reports.isEmpty()) {
+			if (reports != null && !reports.isEmpty()) {
 				TOrderDto orderDto = new TOrderDto();
 				for (TReport report : reports) {
 					orderDto.setCreateUser(user.getUserCode());
 					orderDto.setReportCode(report.getCode());
 					List<TOrder> orderList = orderMapper.findOrderByReportCodeAndUserCode(orderDto);
 					if (orderList == null || orderList.isEmpty()) {
-						//用户未购买该楼盘报告,把报告模板中的报告路径设为空
+						// 用户未购买该楼盘报告,把报告模板中的报告路径设为空
 						report.setPath("");
 						continue;
 					}
-						
-					//用户购买过该楼盘报告,检验报告是否要更新并返回用户目录下的报告路径
+
+					// 用户购买过该楼盘报告,检验报告是否要更新并返回用户目录下的报告路径
 					for (TOrder order : orderList) {
 						// 报告订单已支付
 						if (order.getStatus() == 1 || order.getStatus() == 2) {
@@ -546,12 +546,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							} catch (ParseException e) {
 								e.printStackTrace();
 							}
-							String url = PropHelper.getValue("user_report_url") + user.getUserCode()  + "/" + order.getLpCode() + "/full.html";
-							if(isConnect(url)) {
+							String url = PropHelper.getValue("user_report_url") + user.getUserCode() + "/"
+									+ order.getLpCode() + "/full.html";
+							if (isConnect(url)) {
 								report.setPath(url);
 							} else {
-								ReportResult rr = ReportHelper.getInstance().createUserReport(order.getLpCode(), user.getUserCode());
-								if(rr.getResultCode() == Constant.RESULT_SUCCESS) {
+								ReportResult rr = ReportHelper.getInstance().createUserReport(order.getLpCode(),
+										user.getUserCode());
+								if (rr.getResultCode() == Constant.RESULT_SUCCESS) {
 									report.setPath(rr.getUrl());
 								} else {
 									report.setPath("");
@@ -559,14 +561,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 							}
 							break;
 						} else if (order.getStatus() == 0) {
-//							order.setReportFull("");
+							// order.setReportFull("");
 							report.setPath("");
 						}
 					}
 				}
 			}
 		} else if (user == null && reports != null && !reports.isEmpty()) {
-			//用户未登录把报告模板中的报告路径设为空
+			// 用户未登录把报告模板中的报告路径设为空
 			for (TReport treport : reports) {
 				treport.setPath("");
 			}
@@ -584,13 +586,13 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 
 		return result;
 	}
-	
+
 	public static void main(String[] args) {
 		String url = "http://api.sys.ecomapit.com/ddhj/report/user/U161009100001/LP161004113677/full.html";
 		TReportServiceImpl imp = new TReportServiceImpl();
 		imp.isConnect(url);
 	}
-	
+
 	private boolean isConnect(String urlStr) {
 		boolean result = false;
 		int counts = 0;
@@ -846,8 +848,8 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 				// 获取报告列表
 				List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
 				List<TLandedProperty> reportLps = new ArrayList<TLandedProperty>();
+				JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 				if (lpList != null && lpList.size() > 0) {
-					JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 					for (TLandedProperty lp : lpList) {
 						if (StringUtils.isNotBlank(lp.getLat())) {
 							lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
@@ -952,15 +954,14 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public BaseResult createHtmlAll() {
 		BaseResult result = new BaseResult();
 		try {
-			List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
 			JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
+			List<TLandedProperty> lpList = lpMapper.findTLandedPropertyAll();
 			String date = DateUtil.getCurrentDate();
 			if (lpList != null && lpList.size() > 0) {
 				for (TLandedProperty lp : lpList) {
 					try {
 						lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
-						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp,
-								airArray);
+						List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp,airArray);
 						lp.setEnvironmentIndexs(list);
 						lp.setEnvironmentIndexs1(list.subList(0, 3));
 						lp.setEnvironmentIndexs2(list.subList(3, 6));
@@ -989,11 +990,11 @@ public class TReportServiceImpl extends BaseServiceImpl<TReport, TReportMapper, 
 	public ReportResult createHtmlByLpCode(String lpCode, String type) {
 		ReportResult result = new ReportResult();
 		try {
+			JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 			TLandedProperty lp = lpMapper.selectByCode(lpCode);
 			if (lp != null) {
-				JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
 				lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));
-				List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp, airArray);
+				List<TLpEnvironmentIndex> list = ReportHelper.getInstance().getLpEnvironmentIndexs(lp,airArray);
 				lp.setEnvironmentIndexs(list);
 				lp.setEnvironmentIndexs1(list.subList(0, 3));
 				lp.setEnvironmentIndexs2(list.subList(3, 6));

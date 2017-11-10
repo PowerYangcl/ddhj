@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,7 +23,6 @@ import cn.com.ddhj.mapper.TWaterEnviromentMapper;
 import cn.com.ddhj.mapper.lp.TLpEnvironmentMapper;
 import cn.com.ddhj.model.TAreaNoise;
 import cn.com.ddhj.model.TLandedProperty;
-import cn.com.ddhj.model.TWaterEnviroment;
 import cn.com.ddhj.model.lp.TLpEnvironment;
 import cn.com.ddhj.model.lp.TLpEnvironmentIndex;
 import cn.com.ddhj.result.ReportResult;
@@ -106,8 +104,9 @@ public class ReportHelper extends BaseClass {
 		entity.setCity(city);
 		Integer level = 2;
 		String levelName = "良";
+		entity.setValue(afforest);
 		if (afforest != null) {
-			entity.setValue(afforest);
+
 			if (afforest > 30) {
 				level = 1;
 				levelName = "优";
@@ -297,7 +296,7 @@ public class ReportHelper extends BaseClass {
 		entity.setValue(value);
 		entity.setLevel(level);
 		entity.setLevelName(levelName);
-		String evaluate = PropHelper.getValue("volume_level_" + level);
+		String evaluate = PropHelper.getValue("noise_level_" + level);
 		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
 		/**
 		 * 获取楼盘排行
@@ -328,7 +327,7 @@ public class ReportHelper extends BaseClass {
 	 * @param list
 	 * @return
 	 */
-	public TLpEnvironmentIndex waterLevel(TLandedProperty lp, Double oxy) {
+	public TLpEnvironmentIndex waterLevel(TLandedProperty lp, String val) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
 		entity.setCity(lp.getCity());
 		Integer level = 2;
@@ -345,38 +344,27 @@ public class ReportHelper extends BaseClass {
 			level = 2;
 		} else {
 			if (StringUtils.isNoneBlank(lp.getLat()) && StringUtils.isNotBlank(lp.getLng())) {
-				List<TWaterEnviroment> list = waterEnvMapper.selectByCity(city_);
-				if (list != null && list.size() != 0) {
-					Double lat = Double.valueOf(lp.getLat());
-					Double lng = Double.valueOf(lp.getLng());
-					TreeMap<Integer, TWaterEnviroment> map_ = new TreeMap<Integer, TWaterEnviroment>();
-					for (TWaterEnviroment e : list) {
-						Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()),
-								Double.valueOf(e.getLng()));
-						map_.put(d, e);
-					}
-					if (oxy == null) {
+				if (StringUtils.isNotBlank(val)) {
+					String[] water = val.split("@");
+					Double oxy = Double.valueOf(water[0]);
+					String oxyLevel = water[1];
+					if (oxyLevel.equals("Ⅰ")) {
+						level = 1;
+						levelName = "优";
+					} else if (oxyLevel.equals("-") || oxyLevel.equals("Ⅱ")) {
+						level = 1;
+						levelName = "优";
+					} else if (oxyLevel.equals("Ⅲ")) {
 						level = 2;
 						levelName = "良";
+					} else if (oxyLevel.equals("Ⅳ")) {
+						level = 3;
+						levelName = "差";
 					} else {
-						if (oxy.equals("Ⅰ")) {
-							level = 1;
-							levelName = "优";
-						} else if (oxy.equals("-") || oxy.equals("Ⅱ")) {
-							level = 1;
-							levelName = "优";
-						} else if (oxy.equals("Ⅲ")) {
-							level = 2;
-							levelName = "良";
-						} else if (oxy.equals("Ⅳ")) {
-							level = 3;
-							levelName = "差";
-						} else {
-							level = 3;
-							levelName = "差";
-						}
-						value = oxy;
+						level = 3;
+						levelName = "差";
 					}
+					value = oxy;
 				} else {
 					level = 2;
 					levelName = "良";
@@ -399,7 +387,7 @@ public class ReportHelper extends BaseClass {
 			entity.setSortTime(PropHelper.getValue("report_sort_time_value"));
 			TLpEnvironment lpEnv = new TLpEnvironment();
 			lpEnv.setCity(lp.getCity());
-			lpEnv.setWater(BigDecimal.valueOf(value));
+			lpEnv.setWater(String.valueOf(value));
 			lpEnv.setSortTime(Integer.parseInt(PropHelper.getValue("report_sort_time_key")));
 			Integer sort = lpEnvMapper.findEnvironmentSort(lpEnv);
 			if (sort != null) {
@@ -420,7 +408,7 @@ public class ReportHelper extends BaseClass {
 		entity.setCity(city);
 		String levelName = "良";
 		entity.setName("土壤");
-		entity.setValue(Double.valueOf("0.00"));
+		entity.setValue(soil);
 		entity.setLevel(2);
 		entity.setLevelName(levelName);
 		String evaluate = PropHelper.getValue("soil_level_" + 2);
@@ -450,13 +438,18 @@ public class ReportHelper extends BaseClass {
 	 */
 	public TLpEnvironmentIndex hazardousArticleLevel(Double hazardousArticle, String city) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		Integer level = 2;
+		String levelName = "良";
+		if (hazardousArticle > 3) {
+			level = 1;
+			levelName = "优";
+		}
 		entity.setCity(city);
 		entity.setName("危险品存放");
-		entity.setLevel(2);
-		entity.setValue(Double.valueOf("0.00"));
-		String levelName = "良";
+		entity.setLevel(level);
+		entity.setValue(hazardousArticle);
 		entity.setLevelName(levelName);
-		String evaluate = PropHelper.getValue("hazardous_article_level_" + 2);
+		String evaluate = PropHelper.getValue("hazardous_article_level_" + level);
 		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
 		/**
 		 * 获取楼盘排行
@@ -480,13 +473,18 @@ public class ReportHelper extends BaseClass {
 	 */
 	public TLpEnvironmentIndex radiationLevel(Double radiation, String city) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
+		Integer level = 2;
+		String levelName = "良";
+		if (radiation > 1000) {
+			level = 1;
+			levelName = "优";
+		}
 		entity.setCity(city);
 		entity.setName("高压电辐射");
-		entity.setLevel(2);
-		String levelName = "良";
+		entity.setLevel(level);
 		entity.setLevelName(levelName);
 		entity.setValue(radiation);
-		String evaluate = PropHelper.getValue("radiation_level_" + 2);
+		String evaluate = PropHelper.getValue("radiation_level_" + level);
 		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
 		/**
 		 * 获取楼盘排行
@@ -508,22 +506,22 @@ public class ReportHelper extends BaseClass {
 	/**
 	 * 垃圾设施
 	 */
-	public TLpEnvironmentIndex rubbishLevel(TLandedProperty lp) {
+	public TLpEnvironmentIndex rubbishLevel(Double rubbish, String city) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
-		entity.setCity(lp.getCity());
+		Double distance = rubbish;
 		Integer level = 2;
 		String levelName = "良";
-		Double distance = Double.valueOf("0.00");
-		try {
-			Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
-			if (rubbish != null) {
-				level = Integer.valueOf(rubbish.get("level"));
-				levelName = rubbish.get("levelName");
-				distance = Double.valueOf(rubbish.get("distance"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (distance > 3000) {
+			level = 1;
+			levelName = "优";
+		} else if (1000 < distance && distance <= 3000) {
+			level = 2;
+			levelName = "良";
+		} else {
+			level = 3;
+			levelName = "差";
 		}
+		entity.setCity(city);
 		entity.setName("污染源<br>垃圾设施");
 		entity.setLevel(level);
 		entity.setLevelName(levelName);
@@ -533,10 +531,10 @@ public class ReportHelper extends BaseClass {
 		/**
 		 * 获取楼盘排行
 		 */
-		if (StringUtils.isNotBlank(lp.getCity())) {
+		if (StringUtils.isNotBlank(city)) {
 			entity.setSortTime(PropHelper.getValue("report_sort_time_value"));
 			TLpEnvironment lpEnv = new TLpEnvironment();
-			lpEnv.setCity(lp.getCity());
+			lpEnv.setCity(city);
 			lpEnv.setRubbish(BigDecimal.valueOf(distance));
 			lpEnv.setSortTime(Integer.parseInt(PropHelper.getValue("report_sort_time_key")));
 			Integer sort = lpEnvMapper.findEnvironmentSort(lpEnv);
@@ -550,36 +548,29 @@ public class ReportHelper extends BaseClass {
 	/**
 	 * 化工厂
 	 */
-	public TLpEnvironmentIndex chemicalLevel(TLandedProperty lp) {
+	public TLpEnvironmentIndex chemicalLevel(Double chemical, String city) {
 		TLpEnvironmentIndex entity = new TLpEnvironmentIndex();
-		entity.setCity(lp.getCity());
 		Integer level = 2;
 		String levelName = "良";
-		Double distance = Double.valueOf("0.00");
-		try {
-			Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(), lp.getLng());
-			if (chemical != null && StringUtils.isNotBlank(chemical.get("distance"))) {
-				level = Integer.valueOf(chemical.get("level"));
-				levelName = chemical.get("levelName");
-				distance = Double.valueOf(chemical.get("distance"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (chemical > 1000) {
+			level = 1;
+			levelName = "优";
 		}
+		entity.setCity(city);
 		entity.setName("污染源<br>化工厂");
 		entity.setLevel(level);
 		entity.setLevelName(levelName);
-		entity.setValue(distance);
+		entity.setValue(chemical);
 		String evaluate = PropHelper.getValue("chemical_level_" + level);
 		entity.setEvaluate(StringUtils.isNotBlank(evaluate) ? evaluate : "");
 		/**
 		 * 获取楼盘排行
 		 */
-		if (StringUtils.isNotBlank(lp.getCity())) {
+		if (StringUtils.isNotBlank(city)) {
 			entity.setSortTime(PropHelper.getValue("report_sort_time_value"));
 			TLpEnvironment lpEnv = new TLpEnvironment();
-			lpEnv.setCity(lp.getCity());
-			lpEnv.setChemical(BigDecimal.valueOf(distance));
+			lpEnv.setCity(city);
+			lpEnv.setChemical(BigDecimal.valueOf(chemical));
 			lpEnv.setSortTime(Integer.parseInt(PropHelper.getValue("report_sort_time_key")));
 			Integer sort = lpEnvMapper.findEnvironmentSort(lpEnv);
 			if (sort != null) {
@@ -601,10 +592,10 @@ public class ReportHelper extends BaseClass {
 		if (cityAirLevel != null && cityAirLevel.size() > 0) {
 			for (int i = 0; i < cityAirLevel.size(); i++) {
 				JSONObject air = cityAirLevel.getJSONObject(i);
-				if (StringUtils.equals(city, air.getString("city"))) {
-					level = air.getJSONObject("level").getInteger("air");
-					levelName = air.getJSONObject("level").getString("levelName");
-					value = air.getJSONObject("level").getDouble("aqi");
+				if (StringUtils.equals(city, air.getString("name"))) {
+					level = air.getInteger("level");
+					levelName = air.getString("levelName");
+					value = air.getDouble("aqi");
 				}
 			}
 		}
@@ -710,8 +701,7 @@ public class ReportHelper extends BaseClass {
 				/**
 				 * 水质
 				 */
-				Double waterValue = entity.getWater() != null ? entity.getWater().doubleValue() : 0;
-				TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, waterValue);
+				TLpEnvironmentIndex water = ReportHelper.getInstance().waterLevel(lp, entity.getWater());
 				list.add(water);
 				/**
 				 * 土壤
@@ -729,19 +719,22 @@ public class ReportHelper extends BaseClass {
 				 * 危险品
 				 */
 				Double hazardousArticleValue = entity.getHazardousArticle() != null
-						? entity.getHazardousArticle().doubleValue() : 0;
+						? entity.getHazardousArticle().doubleValue()
+						: 0;
 				TLpEnvironmentIndex hazardousArticle = ReportHelper.getInstance()
 						.hazardousArticleLevel(hazardousArticleValue, lp.getCity());
 				list.add(hazardousArticle);
 				/**
 				 * 垃圾回收
 				 */
-				TLpEnvironmentIndex rubbish = ReportHelper.getInstance().rubbishLevel(lp);
+				Double rubbishValue = entity.getRubbish() != null ? entity.getRubbish().doubleValue() : 0;
+				TLpEnvironmentIndex rubbish = ReportHelper.getInstance().rubbishLevel(rubbishValue, lp.getCity());
 				list.add(rubbish);
 				/**
 				 * 化工厂
 				 */
-				TLpEnvironmentIndex chemical = ReportHelper.getInstance().chemicalLevel(lp);
+				Double chemicalValue = entity.getChemical() != null ? entity.getChemical().doubleValue() : 0;
+				TLpEnvironmentIndex chemical = ReportHelper.getInstance().chemicalLevel(chemicalValue, lp.getCity());
 				list.add(chemical);
 				/**
 				 * 绿化率
@@ -790,7 +783,7 @@ public class ReportHelper extends BaseClass {
 				result.setResultCode(Constant.RESULT_SUCCESS);
 			} else {
 				File target = new File(USER_REPORT_PATH + userCode + "/" + lpCode + "/full.html");
-				if(target.exists()) {
+				if (target.exists()) {
 					String url = PropHelper.getValue("user_report_url") + "/" + userCode + "/" + lpCode + "/full.html";
 					result.setUrl(url);
 					result.setResultCode(Constant.RESULT_SUCCESS);

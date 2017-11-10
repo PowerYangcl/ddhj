@@ -4,14 +4,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 import cn.com.ddhj.base.BaseResult;
 import cn.com.ddhj.dto.landedProperty.TLpEnvironmentDto;
@@ -60,7 +56,7 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 			if (list != null && list.size() > 0) {
 				int size = list.size() / 10000;
 				int current = 10000;
-				for (int i = 0; i <= size-1; i++) {
+				for (int i = 0; i <= size - 1; i++) {
 					List<TLpEnvironment> subList = list.subList(current * i, current * (i + 1));
 					mapper.batchInsert(subList);
 				}
@@ -109,45 +105,22 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 						}
 					}
 					entity.setVolume(volume);
-					// 空气质量等级
-					Integer airLevel = 1;
-					// if (StringUtils.isNotBlank(lp.getCity())) {
-					// if (cityAirLevel != null && cityAirLevel.size() > 0) {
-					// for (int i = 0; i < cityAirLevel.size(); i++) {
-					// JSONObject level = cityAirLevel.getJSONObject(i);
-					// if (StringUtils.equals(lp.getCity(),
-					// level.getString("city"))) {
-					// airLevel =
-					// level.getJSONObject("level").getInteger("air");
-					// }
-					// }
-					// }
-					// }
-					entity.setAir(BigDecimal.ZERO);
 					// 水质量数值
-					BigDecimal water = BigDecimal.ZERO;
+					String water = "";
 					try {
 						List<TWaterEnviroment> waterEnvs = waterEnvMapper.selectByCity(lp.getCity());
-						if (list != null && list.size() != 0) {
-							Double lat = Double.valueOf(lp.getLat());
-							Double lng = Double.valueOf(lp.getLng());
-							TreeMap<Integer, TWaterEnviroment> map_ = new TreeMap<Integer, TWaterEnviroment>();
-							for (TWaterEnviroment e : waterEnvs) {
-								Integer d = CommonUtil.getMeterDistance(lat, lng, Double.valueOf(e.getLat()),
-										Double.valueOf(e.getLng()));
-								map_.put(d, e);
-							}
-							TWaterEnviroment w = map_.get(map_.firstKey());
-							String oxy = w.getOxygenquality();
-							if (StringUtils.isNotBlank(oxy)) {
-								water = BigDecimal.valueOf(Double.valueOf(oxy));
+						if (waterEnvs != null && waterEnvs.size() > 0) {
+							String oxy = waterEnvs.get(0).getOxygen();
+							String level = waterEnvs.get(0).getOxygenquality();
+							if (StringUtils.isNotBlank(oxy) && StringUtils.isNotBlank(level)) {
+								water = oxy + "@" + level;
 							}
 						}
 					} catch (Exception e) {
 					}
 					entity.setWater(water);
 					// 垃圾设施数值
-					String rubbishDistance = "0.00";
+					String rubbishDistance = "999";
 					if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
 							&& StringUtils.isNotBlank(lp.getLng())) {
 						Map<String, String> rubbish = rubbishService.getRubbish(lp.getCity(), lp.getLat(), lp.getLng());
@@ -157,7 +130,7 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 					}
 					entity.setRubbish(BigDecimal.valueOf(Double.valueOf(rubbishDistance)));
 					// 化工厂数值
-					String chemicalDistance = "0.00";
+					String chemicalDistance = "999";
 					if (StringUtils.isNotBlank(lp.getCity()) && StringUtils.isNotBlank(lp.getLat())
 							&& StringUtils.isNotBlank(lp.getLng())) {
 						Map<String, String> chemical = chemicalService.getChemical(lp.getCity(), lp.getLat(),
@@ -171,9 +144,9 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 					Double nosie = noiseLevel(lp);
 					entity.setNosie(BigDecimal.valueOf(nosie));
 					// 高压电辐射
-					entity.setRadiation(BigDecimal.valueOf(1));
+					entity.setRadiation(BigDecimal.valueOf(999));
 					// 危险品存放
-					entity.setHazardousArticle(BigDecimal.valueOf(1));
+					entity.setHazardousArticle(BigDecimal.valueOf(2999));
 					entity.setCreateUser("timer");
 					entity.setCreateTime(DateUtil.getSysDateTime());
 					entity.setUpdateUser("timer");
@@ -199,7 +172,7 @@ public class TLpEnvironmentServiceImpl extends BaseServiceImpl<TLpEnvironment, T
 	 */
 	@SuppressWarnings("unused")
 	public Double noiseLevel(TLandedProperty lp) {
-		Double distance = Double.valueOf("0.00");
+		Double distance = Double.valueOf("59");
 		if (StringUtils.isNoneBlank(lp.getLat()) || StringUtils.isNoneBlank(lp.getLng())) {
 			Double lat = Double.valueOf(lp.getLat());
 			Double lng = Double.valueOf(lp.getLng());

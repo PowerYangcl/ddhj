@@ -28,7 +28,7 @@
 		            <h1><span>楼盘质量报告</span></h1>
 		            <div class="time">更新日期${updateTime}</div>
 		            <div class="position">${title}</div>
-		            <div class="copyright">北京亿科云科有限公司版权所有</div>
+		            <div class="copyright">北京亿科云科技有限公司版权所有</div>
 		            <div class="point"></div>
                 </div>
             </div>

@@ -197,8 +197,8 @@ public class TReportTest extends BaseTest {
 
 	public void updateReportByLpAndLevel() {
 		try {
-			List<TLandedProperty> lps = lpMapper.findTLandedPropertyAll();
 			JSONArray airArray = ReportHelper.getInstance().getCityAirLevel();
+			List<TLandedProperty> lps = lpMapper.findTLandedPropertyAll();
 			for (TLandedProperty lp : lps) {
 				System.out.println(lp.getCode());
 				lp.setWeatherDistribution(ReportHelper.getWeatherDistribution(Float.valueOf(lp.getLat())));

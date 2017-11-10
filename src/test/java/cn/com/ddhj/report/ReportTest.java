@@ -21,7 +21,8 @@ public class ReportTest extends BaseTest {
 
 	@Test
 	public void createHtml() {
-		BaseResult result = service.createHtmlAll();
-		System.out.println(JSON.toJSON(result));
+//		BaseResult result = service.createHtmlAll();
+//		System.out.println(JSON.toJSON(result));
+		service.batchCreateH5Report();
 	}
 }
