@@ -533,6 +533,35 @@ public class TOrderServiceImpl extends BaseServiceImpl<TOrder, TOrderMapper, TOr
 		e.setUpdateTime(DateUtil.getSysDateTime());
 		e.setStatus(3); // 取消该订单
 		Integer flag = mapper.updateOrderStatus(e);
+		if(flag > 0) {
+			//订单取消
+			TOrder order = mapper.selectByCode(orderCode);
+			if(order != null && order.getCarbonMoney() != null && order.getCarbonMoney().compareTo(BigDecimal.ZERO) > 0) {
+				//订单使用了碳币,加回
+				TUser user = userMapper.selectByCode(order.getBuyerCode());
+				if(user != null) {
+					TUser updateCarbonMoneyUser = new TUser();
+					updateCarbonMoneyUser.setUserCode(order.getBuyerCode());
+					updateCarbonMoneyUser.setCarbonMoney(user.getCarbonMoney().add(order.getCarbonMoney()));
+					updateCarbonMoneyUser.setUpdateUser(order.getBuyerCode());
+					updateCarbonMoneyUser.setUpdateTime(DateUtil.getSysDateTime());
+					userMapper.updateByCode(updateCarbonMoneyUser);
+					
+					//记日志
+					TUserCarbonOperation carbonOperation = new TUserCarbonOperation();
+					carbonOperation.setUuid(WebHelper.getInstance().genUuid());
+					carbonOperation.setCode(WebHelper.getInstance().getUniqueCode("LC"));
+					carbonOperation.setUserCode(order.getBuyerCode());
+					carbonOperation.setOperationType("DC170208100002");
+					carbonOperation.setOperationTypeChild("DC170208100013");
+					carbonOperation.setCarbonSum(order.getCarbonMoney());
+					carbonOperation.setCreateUser(order.getBuyerCode());
+					carbonOperation.setCreateTime(DateUtil.getSysDateTime());
+					carbonOperationMapper.insertSelective(carbonOperation);
+				}
+			}
+		}
+		
 		if (flag == 1) {
 			re.put("resultCode", Constant.RESULT_SUCCESS);
 			re.put("resultMessage", "取消成功");
